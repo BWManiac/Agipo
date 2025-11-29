@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { agents as registryAgents } from "@/_tables/agents";
 import type { AgentConfig } from "@/_tables/types";
-import { AgentModal } from "./AgentModal";
+import { AgentModal } from "./agent-modal";
 
 const statusStyles: Record<AgentConfig["status"], string> = {
   active: "bg-emerald-100 text-emerald-700 border border-emerald-200",
