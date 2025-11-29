@@ -1,6 +1,6 @@
 {
-  "id": "tewt",
-  "name": "tewt",
+  "id": "test",
+  "name": "test",
   "description": "Workflow saved from the editor.",
   "nodes": [
     {
@@ -95,6 +95,6 @@
       "target": "2"
     }
   ],
-  "lastModified": "2025-11-29T11:14:21.981Z",
+  "lastModified": "2025-11-29T13:32:33.188Z",
   "apiKeys": {}
 }

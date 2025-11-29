@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { AgentConfig } from "@/_tables/types";
-import { getToolById } from "@/_tables/tools";
+import type { AgentConfig, ToolDefinition } from "@/_tables/types";
 import { AgentChat } from "./AgentChat";
 import { ToolInspector } from "./ToolInspector";
 import { ToolEditor } from "./ToolEditor";
@@ -25,13 +24,32 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
   const [toolOpen, setToolOpen] = useState(false);
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
   const [toolEditorOpen, setToolEditorOpen] = useState(false);
+  const [allTools, setAllTools] = useState<ToolDefinition[]>([]);
+
+  // Load tools on mount
+  useEffect(() => {
+    const fetchTools = async () => {
+      try {
+        const response = await fetch("/api/tools");
+        if (!response.ok) throw new Error("Failed to fetch tools");
+        const data = await response.json();
+        setAllTools(data.tools || []);
+      } catch (error) {
+        console.error("Error fetching tools:", error);
+      }
+    };
+    fetchTools();
+  }, []);
 
   if (!agent) {
     return null;
   }
 
-  const tools = agent.toolIds.map((id) => getToolById(id)).filter((t): t is NonNullable<typeof t> => t !== undefined);
-  const selectedTool = selectedToolId ? getToolById(selectedToolId) : null;
+  const tools = agent.toolIds
+    .map((id) => allTools.find((t) => t.id === id))
+    .filter((t): t is ToolDefinition => t !== undefined);
+    
+  const selectedTool = selectedToolId ? allTools.find((t) => t.id === selectedToolId) ?? null : null;
 
   const handleFeedbackSubmit = () => {
     if (!feedback.trim()) return;
@@ -40,7 +58,7 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
   };
 
   const handleSaveTools = async (toolIds: string[]) => {
-    const response = await fetch(`/api/agents/${agent.id}/tools`, {
+    const response = await fetch(`/api/workforce/${agent.id}/tools`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ toolIds }),

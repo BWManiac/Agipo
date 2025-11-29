@@ -29,12 +29,12 @@ export function AgentChat({
 }) {
   const [input, setInput] = useState("");
   
-  console.log("[AgentChat] Mounting with:", { agentId, agentName, api: "/api/workforce/agent" });
+    console.log("[AgentChat] Mounting with:", { agentId, agentName, api: `/api/workforce/${agentId}/chat` });
   
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
-        api: "/api/workforce/agent",
+        api: `/api/workforce/${agentId}/chat`,
         prepareSendMessagesRequest: async ({ id, messages, body, trigger, messageId }) => ({
     body: {
             ...(body ?? {}),
@@ -42,7 +42,7 @@ export function AgentChat({
             messages,
             trigger,
             messageId,
-            agentId,
+            // agentId is now in URL
       agentName,
       context: defaultPrompt,
     },
@@ -98,8 +98,12 @@ export function AgentChat({
 
   useEffect(() => {
     if (!queuedPrompt) return;
-    void handleSubmit(queuedPrompt);
-    onPromptConsumed?.();
+    // Wrap in setTimeout to avoid setting state during render (useEffect)
+    const timer = setTimeout(() => {
+      void handleSubmit(queuedPrompt);
+      onPromptConsumed?.();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [queuedPrompt, handleSubmit, onPromptConsumed]);
 
   const isSending = status === "submitted" || status === "streaming";

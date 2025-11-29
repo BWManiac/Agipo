@@ -15,7 +15,7 @@ export default function WorkflowsPage() {
   useEffect(() => {
     async function fetchWorkflows() {
       try {
-        const response = await fetch("/api/workflows");
+        const response = await fetch("/api/tools/list");
         if (!response.ok) {
           throw new Error("Failed to fetch workflows");
         }

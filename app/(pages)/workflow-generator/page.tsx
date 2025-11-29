@@ -56,7 +56,7 @@ function WorkflowEditor() {
 
     const load = async () => {
       try {
-        const response = await fetch(`/api/workflows/${workflowId}`);
+        const response = await fetch(`/api/tools/${workflowId}/read`);
         if (!response.ok) throw new Error("Workflow not found");
         const data = await response.json();
         if (!cancelled) {

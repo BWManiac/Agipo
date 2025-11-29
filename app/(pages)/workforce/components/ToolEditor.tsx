@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { tools } from "@/_tables/tools";
-import type { AgentConfig } from "@/_tables/types";
+import type { AgentConfig, ToolDefinition } from "@/_tables/types";
 
 type ToolEditorProps = {
   agent: AgentConfig;
@@ -23,33 +22,47 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [tools, setTools] = useState<ToolDefinition[]>([]);
+  const [isLoadingTools, setIsLoadingTools] = useState(false);
 
-  // Reset state when dialog opens
+  // Load tools when dialog opens
   useEffect(() => {
     if (open) {
       setSelectedToolIds(new Set(agent.toolIds));
       setSearchQuery("");
+      loadTools();
     }
   }, [open, agent.toolIds]);
 
-  // Group tools by source (built-in vs workflow)
-  const { builtInTools, workflowTools } = useMemo(() => {
-    const builtIn: typeof tools = [];
-    const workflow: typeof tools = [];
-
-    tools.forEach((tool) => {
-      if (tool.id.startsWith("workflow-")) {
-        workflow.push(tool);
-      } else {
-        builtIn.push(tool);
+  const loadTools = async () => {
+    setIsLoadingTools(true);
+    try {
+      const response = await fetch("/api/tools");
+      if (!response.ok) {
+        throw new Error("Failed to load tools");
       }
-    });
+      const data = await response.json();
+      setTools(data.tools || []);
+    } catch (error) {
+      console.error("Failed to load tools:", error);
+      setTools([]);
+    } finally {
+      setIsLoadingTools(false);
+    }
+  };
 
-    return { builtInTools: builtIn, workflowTools: workflow };
-  }, []);
+  // Group tools by source (workflow only - no built-in tools anymore)
+  const { workflowTools } = useMemo(() => {
+    const workflow: ToolDefinition[] = [];
+    tools.forEach((tool) => {
+      // All tools now come from workflows
+        workflow.push(tool);
+    });
+    return { workflowTools: workflow };
+  }, [tools]);
 
   // Filter tools by search query
-  const filterTools = (toolList: typeof tools) => {
+  const filterTools = (toolList: ToolDefinition[]) => {
     if (!searchQuery) return toolList;
     const query = searchQuery.toLowerCase();
     return toolList.filter(
@@ -83,7 +96,6 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
     }
   };
 
-  const filteredBuiltIn = filterTools(builtInTools);
   const filteredWorkflow = filterTools(workflowTools);
 
   const handleCancel = () => {
@@ -112,35 +124,15 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
 
           <ScrollArea className="flex-1 overflow-auto">
             <div className="space-y-6 pr-4">
-              {/* Built-in Tools Section */}
-              <div>
-                <h3 className="text-sm font-semibold mb-3">Built-in Tools</h3>
-                <div className="space-y-2">
-                  {filteredBuiltIn.map((tool) => (
-                    <div
-                      key={tool.id}
-                      className="flex items-start space-x-3 p-3 rounded-lg border"
-                    >
-                      <Checkbox
-                        checked={selectedToolIds.has(tool.id)}
-                        onCheckedChange={() => handleToggle(tool.id)}
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{tool.name}</h4>
-                          <Badge variant="secondary">Built-in</Badge>
+              {isLoadingTools ? (
+                <div className="text-center text-muted-foreground py-8">
+                  Loading tools...
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {tool.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+              ) : filteredWorkflow.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  No workflow tools available. Create workflows to generate tools.
                 </div>
-              </div>
-
-              {/* Workflow Tools Section */}
-              {filteredWorkflow.length > 0 && (
+              ) : (
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Workflow Tools</h3>
                   <div className="space-y-2">

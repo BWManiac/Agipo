@@ -15,7 +15,7 @@ export function useChatTransport() {
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
-        api: "/api/agent",
+        api: "/api/tools/chat",
         prepareSendMessagesRequest: async ({
           id,
           messages,

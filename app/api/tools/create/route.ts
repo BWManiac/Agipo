@@ -1,27 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { getWorkflows, getWorkflowById, saveWorkflow } from "@/_tables/workflows";
+import { getWorkflowById, saveWorkflow, saveToolCode } from "@/_tables/workflows";
+import { transpileWorkflowToTool } from "@/app/api/tools/services";
 
-/**
- * GET /api/workflows
- * Retrieves a list of all saved workflow summaries.
- */
-export async function GET() {
-  try {
-    const workflows = await getWorkflows();
-    return NextResponse.json(workflows);
-  } catch (error) {
-    console.error("API Error: Failed to get workflows:", error);
-    return NextResponse.json(
-      { message: "Failed to retrieve workflows" },
-      { status: 500 }
-    );
-  }
-}
+export const runtime = "nodejs";
 
-// Schema to validate the body of a POST request for creating a workflow.
-const CreateWorkflowBodySchema = z.object({
+// Schema to validate the body of a POST request for creating a tool definition.
+const CreateToolDefinitionBodySchema = z.object({
   id: z.string().min(1).optional(),
   name: z.string().min(1),
   description: z.string().optional(),
@@ -45,7 +31,7 @@ const ensureUniqueId = async (preferred: string) => {
   }
 
   while (true) {
-    candidate = `${preferred || "workflow"}-${nanoid(6)}`;
+    candidate = `${preferred || "tool"}-${nanoid(6)}`;
     const existing = await getWorkflowById(candidate);
     if (!existing) {
       return candidate;
@@ -54,19 +40,32 @@ const ensureUniqueId = async (preferred: string) => {
 };
 
 /**
- * POST /api/workflows
- * Creates a new workflow.
+ * POST /api/tools/create
+ * Creates a new tool definition (workflow).
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedBody = CreateWorkflowBodySchema.parse(body);
+    const validatedBody = CreateToolDefinitionBodySchema.parse(body);
     const { id: rawId, ...data } = validatedBody;
     const baseSource = rawId ?? data.name;
     const baseSlug = slugify(baseSource);
     const uniqueId = await ensureUniqueId(baseSlug);
 
     const savedWorkflow = await saveWorkflow(uniqueId, data);
+
+    // Transpile and save tool executable
+    try {
+      const toolCode = await transpileWorkflowToTool(savedWorkflow);
+      await saveToolCode(uniqueId, toolCode);
+    } catch (transpileError) {
+      console.warn(
+        `[API] Failed to transpile tool for definition ${uniqueId}:`,
+        transpileError
+      );
+      // Don't fail the request, just log the warning
+    }
+
     return NextResponse.json(savedWorkflow, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -75,10 +74,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.error("API Error: Failed to save workflow:", error);
+    console.error("API Error: Failed to save tool definition:", error);
     return NextResponse.json(
-      { message: "Failed to save workflow" },
+      { message: "Failed to save tool definition" },
       { status: 500 }
     );
   }
 }
+

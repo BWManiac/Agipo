@@ -6,7 +6,7 @@ import {
 } from "ai";
 import { NextResponse } from "next/server";
 import { getAgentById } from "@/_tables/agents";
-import { getToolById } from "@/_tables/tools";
+import { initializeTools, getToolById } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -18,16 +18,23 @@ type IncomingPayload = {
   context?: string;
 };
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  routeContext: { params: Promise<{ agentId: string }> }
+) {
   try {
     const payload = (await request.json()) as IncomingPayload;
-    const { messages, agentId, context } = payload;
+    const { messages, context } = payload;
+    const { agentId } = await routeContext.params;
 
     if (!messages) {
       return NextResponse.json({ message: "Missing messages array." }, { status: 400 });
     }
 
-    // Load agent from registry; default to Mira if not specified.
+    // Initialize tools from workflow folders
+    await initializeTools();
+
+    // Load agent from registry
     const requestedAgentId = agentId ?? "pm";
     const agent = getAgentById(requestedAgentId);
     

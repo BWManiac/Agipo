@@ -7,6 +7,10 @@ import type { WorkflowData, WorkflowSummary } from "../types";
 // Define the directory for storing workflows within the _tables pseudo-database.
 const WORKFLOWS_DIR = path.join(process.cwd(), "_tables", "workflows");
 
+// Constants for folder structure
+const WORKFLOW_FILE_NAME = "workflow.json";
+const TOOL_FILE_NAME = "tool.ts";
+
 // Use Zod to define a strict schema for our workflow data.
 // This ensures that we only read and write well-structured data.
 const WorkflowDataSchema = z.object({
@@ -39,17 +43,23 @@ class FileSystemWorkflowRepository {
 
   /**
    * Retrieves a list of summaries for all saved workflows.
-   * It reads the directory and parses each file to get its metadata.
+   * Supports both old format (flat files) and new format (folders).
    */
   async getWorkflows(): Promise<WorkflowSummary[]> {
     await this.ensureDirectoryExists();
-    const files = await fs.readdir(WORKFLOWS_DIR);
-    const workflowPromises = files
-      .filter((file) => file.endsWith(".json"))
-      .map(async (file) => {
-        const id = path.basename(file, ".json");
-        return this.getWorkflowById(id);
-      });
+    const entries = await fs.readdir(WORKFLOWS_DIR, { withFileTypes: true });
+    const workflowPromises: Promise<WorkflowData | null>[] = [];
+
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        // New format: folder with workflow.json inside
+        workflowPromises.push(this.getWorkflowById(entry.name));
+      } else if (entry.isFile() && entry.name.endsWith(".json")) {
+        // Old format: flat file (for backward compatibility)
+        const id = path.basename(entry.name, ".json");
+        workflowPromises.push(this.getWorkflowById(id));
+      }
+    }
 
     const workflows = (await Promise.all(workflowPromises)).filter(
       (wf): wf is WorkflowData => wf !== null
@@ -66,23 +76,78 @@ class FileSystemWorkflowRepository {
 
   /**
    * Retrieves the full data for a single workflow by its ID.
+   * Supports both old format (flat files) and new format (folders).
+   * Automatically migrates old workflows to new format on access.
    */
   async getWorkflowById(id: string): Promise<WorkflowData | null> {
     await this.ensureDirectoryExists();
-    const filePath = path.join(WORKFLOWS_DIR, `${id}.json`);
+    
+    // Try new format first: folder with workflow.json
+    const folderPath = path.join(WORKFLOWS_DIR, id);
+    const newFormatPath = path.join(folderPath, WORKFLOW_FILE_NAME);
+    
     try {
-      const fileContent = await fs.readFile(filePath, "utf-8");
+      const fileContent = await fs.readFile(newFormatPath, "utf-8");
       const data = JSON.parse(fileContent);
-      // Validate the data against our schema before returning it.
       return WorkflowDataSchema.parse(data);
     } catch {
-      // If the file doesn't exist or is invalid, return null.
+      // New format doesn't exist, try old format
+    }
+    
+    // Try old format: flat JSON file (backward compatibility)
+    const oldFormatPath = path.join(WORKFLOWS_DIR, `${id}.json`);
+    try {
+      const fileContent = await fs.readFile(oldFormatPath, "utf-8");
+      const data = JSON.parse(fileContent);
+      const workflow = WorkflowDataSchema.parse(data);
+      
+      // Migrate to new format automatically
+      await this.migrateToFolderStructure(workflow);
+      
+      return workflow;
+    } catch {
+      // If neither format exists, return null
       return null;
     }
   }
 
   /**
-   * Saves a workflow to the file system.
+   * Migrates a workflow from flat file format to folder structure.
+   * Called automatically when an old format workflow is accessed.
+   */
+  private async migrateToFolderStructure(workflow: WorkflowData): Promise<void> {
+    const folderPath = path.join(WORKFLOWS_DIR, workflow.id);
+    const workflowPath = path.join(folderPath, WORKFLOW_FILE_NAME);
+    const oldFilePath = path.join(WORKFLOWS_DIR, `${workflow.id}.json`);
+    
+    try {
+      // Create folder
+      await fs.mkdir(folderPath, { recursive: true });
+      
+      // Save workflow.json in new location
+      await fs.writeFile(
+        workflowPath,
+        JSON.stringify(workflow, null, 2)
+      );
+      
+      // Remove old file after successful migration
+      try {
+        await fs.unlink(oldFilePath);
+      } catch {
+        // Ignore if old file doesn't exist or can't be deleted
+      }
+    } catch (error) {
+      console.error(
+        `[WorkflowRepository] Failed to migrate workflow ${workflow.id}:`,
+        error
+      );
+      // Don't throw - migration is best effort
+    }
+  }
+
+  /**
+   * Saves a workflow to the file system using folder-based structure.
+   * Creates a folder {id}/ containing workflow.json.
    * If the workflow already exists, it will be overwritten.
    */
   async saveWorkflow(
@@ -96,7 +161,6 @@ class FileSystemWorkflowRepository {
     }
   ): Promise<WorkflowData> {
     await this.ensureDirectoryExists();
-    const filePath = path.join(WORKFLOWS_DIR, `${id}.json`);
 
     const workflowToSave: WorkflowData = {
       ...data,
@@ -107,8 +171,43 @@ class FileSystemWorkflowRepository {
 
     // Validate the data before writing it to disk to prevent corruption.
     const validatedData = WorkflowDataSchema.parse(workflowToSave);
-    await fs.writeFile(filePath, JSON.stringify(validatedData, null, 2));
+    
+    // Create folder for workflow
+    const folderPath = path.join(WORKFLOWS_DIR, id);
+    await fs.mkdir(folderPath, { recursive: true });
+    
+    // Save workflow.json
+    const workflowPath = path.join(folderPath, WORKFLOW_FILE_NAME);
+    await fs.writeFile(
+      workflowPath,
+      JSON.stringify(validatedData, null, 2)
+    );
+    
+    // Clean up old flat file if it exists (migration cleanup)
+    const oldFilePath = path.join(WORKFLOWS_DIR, `${id}.json`);
+    try {
+      await fs.unlink(oldFilePath);
+    } catch {
+      // Ignore if old file doesn't exist
+    }
+    
     return validatedData;
+  }
+
+  /**
+   * Saves the transpiled tool code for a workflow.
+   * This is called separately from saveWorkflow to separate data persistence from code generation.
+   */
+  async saveToolCode(id: string, code: string): Promise<void> {
+    await this.ensureDirectoryExists();
+    
+    // Ensure workflow folder exists
+    const folderPath = path.join(WORKFLOWS_DIR, id);
+    await fs.mkdir(folderPath, { recursive: true });
+    
+    // Save tool.ts
+    const toolPath = path.join(folderPath, TOOL_FILE_NAME);
+    await fs.writeFile(toolPath, code, "utf-8");
   }
 }
 
@@ -116,8 +215,10 @@ class FileSystemWorkflowRepository {
 const repository = new FileSystemWorkflowRepository();
 
 /**
- * Registry functions following the same pattern as agents and tools.
+ * Public API for accessing workflows.
+ * These functions abstract the underlying file system operations.
  */
+
 export async function getWorkflows(): Promise<WorkflowSummary[]> {
   return repository.getWorkflows();
 }
@@ -139,6 +240,9 @@ export async function saveWorkflow(
   return repository.saveWorkflow(id, data);
 }
 
+export async function saveToolCode(id: string, code: string): Promise<void> {
+  return repository.saveToolCode(id, code);
+}
+
 // Export the repository instance for direct access if needed
 export { repository };
-
