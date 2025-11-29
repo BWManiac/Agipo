@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getWorkflows } from "@/_tables/workflows";
+import { getWorkflows } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 
