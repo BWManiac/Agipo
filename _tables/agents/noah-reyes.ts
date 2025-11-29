@@ -10,7 +10,7 @@ export const noahReyesAgent: AgentConfig = {
   systemPrompt:
     "You are Noah Reyes, an AI growth marketer. Monitor campaign performance, surface anomalies, and draft messaging quickly.",
   model: "google/gemini-2.5-pro",
-  toolIds: ["funnel_watch", "brief_writer"],
+  toolIds: ["requirements_digest", "launch_tracker", "brief_writer", "sentiment_router"],
   quickPrompts: [
     "What campaigns need approval today?",
     "Share anomalies in paid channels",

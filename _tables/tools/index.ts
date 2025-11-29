@@ -5,6 +5,9 @@ import { funnelWatchTool } from "./funnel-watch";
 import { briefWriterTool } from "./brief-writer";
 import { sentimentRouterTool } from "./sentiment-router";
 import { summarizeRisksTool } from "./prototype-risk-summary";
+import { quickSummaryTool } from "./quick-summary";
+import { priorityCheckerTool } from "./priority-checker";
+import { statusReporterTool } from "./status-reporter";
 
 export const tools = [
   requirementsDigestTool,
@@ -14,6 +17,9 @@ export const tools = [
   briefWriterTool,
   sentimentRouterTool,
   summarizeRisksTool,
+  quickSummaryTool,
+  priorityCheckerTool,
+  statusReporterTool,
 ];
 
 export function getToolById(id: string) {

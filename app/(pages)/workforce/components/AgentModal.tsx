@@ -11,6 +11,7 @@ import type { AgentConfig } from "@/_tables/types";
 import { getToolById } from "@/_tables/tools";
 import { AgentChat } from "./AgentChat";
 import { ToolInspector } from "./ToolInspector";
+import { ToolEditor } from "./ToolEditor";
 
 export type AgentModalProps = {
   agent: AgentConfig | null;
@@ -23,6 +24,7 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
   const [queuedPrompt, setQueuedPrompt] = useState<string | null>(null);
   const [toolOpen, setToolOpen] = useState(false);
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
+  const [toolEditorOpen, setToolEditorOpen] = useState(false);
 
   if (!agent) {
     return null;
@@ -35,6 +37,22 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
     if (!feedback.trim()) return;
     // For demo purposes we simply clear the textarea—persistence would hook into API later.
     setFeedback("");
+  };
+
+  const handleSaveTools = async (toolIds: string[]) => {
+    const response = await fetch(`/api/agents/${agent.id}/tools`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ toolIds }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+      throw new Error(errorData.error || `HTTP ${response.status}: Failed to save tools`);
+    }
+    
+    // Reload page to reflect changes
+    window.location.reload();
   };
 
   return (
@@ -102,9 +120,18 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
                 </div>
               </div>
               <div className="mb-6 space-y-3">
+                <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Tool usage
                 </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setToolEditorOpen(true)}
+                  >
+                    Edit tools
+                  </Button>
+                </div>
                 <div className="grid gap-3">
                   {tools.map((tool) => (
                     <div key={tool.id} className="rounded-xl border border-border bg-background p-4">
@@ -205,6 +232,12 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
               setSelectedToolId(null);
             }
           }}
+        />
+        <ToolEditor
+          agent={agent}
+          open={toolEditorOpen}
+          onOpenChange={setToolEditorOpen}
+          onSave={handleSaveTools}
         />
       </DialogContent>
     </Dialog>
