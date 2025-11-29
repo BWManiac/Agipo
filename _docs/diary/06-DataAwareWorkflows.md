@@ -83,7 +83,7 @@ This entry documents the product areas touched, the problems we solved, assumpti
    - Wrapper design is documented in the edge mapping spec: node scripts will read/write `/tmp/io-<edgeId>.json` and transform payloads according to `EdgeMapping.links`.
 
 5. **AI Integration**  
-   - Chat tools live in `app/experiments/workflow-generator/tools/`. Each tool defines intent and result types; updates should route through `applyToolResult.ts`.  
+   - Chat tools live in `app/(pages)/workflow-generator/tools/`. Each tool defines intent and result types; updates should route through `applyToolResult.ts`.  
    - Serialized workflow context is produced by `workflowContextService.serializeWorkflowContext`.
 
 ---

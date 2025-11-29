@@ -20,7 +20,7 @@ import {
   type Tool,
 } from "ai";
 
-import { workflowTools } from "@/app/experiments/workflow-generator/tools";
+import { workflowTools } from "@/app/(pages)/workflow-generator/tools";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -59,23 +59,23 @@ export async function POST(request: Request) {
       messages,
       tools: toolValidationMap,
     });
-    
+
     // Stream a UI-friendly response compatible with @ai-sdk/react useChat
     const augmentedMessages: AgentMessage[] = [
       ...(workflowContext
         ? [
-            // System message must remain at the very start to satisfy Gemini’s
-            // “system-first” constraint. We only add it when context is present.
-            {
-              role: "system",
-              parts: [
-                {
-                  type: "text",
-                  text: `Current workflow state:\n${workflowContext}`,
-                },
-              ],
-            } as AgentMessage,
-          ]
+          // System message must remain at the very start to satisfy Gemini’s
+          // “system-first” constraint. We only add it when context is present.
+          {
+            role: "system",
+            parts: [
+              {
+                type: "text",
+                text: `Current workflow state:\n${workflowContext}`,
+              },
+            ],
+          } as AgentMessage,
+        ]
         : []),
       ...validated,
     ];

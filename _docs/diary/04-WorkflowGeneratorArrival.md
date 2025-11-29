@@ -45,7 +45,7 @@ We reached a significant milestone today: the “Workflow Generator” experimen
 - **Extensibility:** Services encapsulate runtime behavior, making it easier to swap in future execution targets or add telemetry.
 - **Documentation & Onboarding:** The new experiment’s README, store slices, and domain tables offer a much clearer entry point for teammates.
 
-Next steps include verifying feature parity thoroughly, then formally deprecating `app/experiments/webcontainer-test`.
+Next steps include verifying feature parity thoroughly, then formally deprecating `app/(pages)/workflow-generator`.
 
 ---
 

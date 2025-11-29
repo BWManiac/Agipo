@@ -53,7 +53,7 @@ The UI was modified to consume the new logic. The `page.tsx` now uses the `useSe
 ## 4. The User Flow in Code
 
 1.  **Load Page:** A user navigates to `/workflows`. The `WorkflowsPage` component fetches data from `/api/workflows` and renders a list of `<WorkflowCard>` components.
-2.  **Open Editor:** The user clicks a card, navigating to `/experiments/workflow-generator?id=my-workflow`.
+2.  **Open Editor:** The user clicks a card, navigating to `app/(pages)/workflow-generator?id=my-workflow`.
 3.  **Fetch Data:** The `page.tsx` component sees the `id` in the URL, triggers a `fetch` to `/api/workflows/my-workflow`, and receives the saved JSON data.
 4.  **Hydrate Store:** The `loadCompleteWorkflow` action is called, which replaces the nodes, edges, and name in the `canvasSlice` with the loaded data. The UI re-renders, displaying the saved state.
 5.  **Save Action:** The user changes the name in the `ControlPanel`'s input field, which calls `setWorkflowName`. They then click "Save."

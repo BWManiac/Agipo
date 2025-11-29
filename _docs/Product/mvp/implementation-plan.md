@@ -8,7 +8,7 @@ This document outlines the minimal file impact and step-by-step implementation p
 | --------------------------------------------- | ------------ | ---------------------------------------------------------------------- |
 | `package.json`                                | Modify       | Add dependencies: `@xyflow/react`, `zustand`, `@webcontainer/api`.      |
 | `next.config.mjs`                             | Modify       | Configure COOP/COEP headers for `SharedArrayBuffer` support.           |
-| `_experiments/webcontainer-test/page.tsx`     | **Create**   | A single file to house all MVP logic for rapid development and testing. |
+| `app/(pages)/workflow-generator/page.tsx`     | **Create**   | A single file to house all MVP logic for rapid development and testing. |
 
 ---
 

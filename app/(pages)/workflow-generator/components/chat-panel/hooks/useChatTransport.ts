@@ -4,7 +4,7 @@ import { useWorkflowGeneratorStore } from "../../../store";
 import { serializeWorkflowContext } from "../../../services/workflowContextService";
 
 /**
- * @file app/experiments/workflow-generator/components/chat-panel/hooks/useChatTransport.ts
+ * @file app/(pages)/workflow-generator/components/chat-panel/hooks/useChatTransport.ts
  * @description A custom hook that creates a specialized API transport for the AI chat.
  * This transport intercepts every outgoing request to inject the latest
  * workflow context, ensuring the AI assistant always knows what's on the canvas.

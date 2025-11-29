@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * @file app/experiments/workflow-generator/components/ChatPanel.tsx
+ * @file app/(pages)/workflow-generator/components/ChatPanel.tsx
  * @description The main component for the AI assistant chat panel. This component
  * has been refactored to be a "thin" orchestrator. Its primary
  * responsibilities are:

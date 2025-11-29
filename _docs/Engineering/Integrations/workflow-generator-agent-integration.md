@@ -29,7 +29,7 @@
 | `app/(pages)/workforce/page.tsx` | Update | Prototype UI for selecting agent, editing tools, chatting. |
 | `app/(pages)/workforce/components/*` | Update/Create | Components for tool dropdown, agent summary, chat panel wiring. |
 | `app/(pages)/workforce/data/*` | Create | Client-friendly loaders for mock registries. |
-| `app/experiments/workflow-generator/tools` | Reference | Ensure spike doesn’t break existing experiment (may need adapter). |
+| `app/(pages)/workflow-generator/tools` | Reference | Ensure spike doesn’t break existing experiment (may need adapter). |
 
 ## Implementation Path
 - **Phase 1 — Research & Prototype**: Validate Agent SDK expectations for dynamic tools, define the tool module interface, and spike a hard-coded example inside `workflow-generator`. (See [Vercel AI SDK: Building Agents](https://ai-sdk.dev/docs/agents/building-agents))
