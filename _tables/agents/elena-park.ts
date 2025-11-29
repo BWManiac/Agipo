@@ -10,7 +10,7 @@ export const elenaParkAgent: AgentConfig = {
   systemPrompt:
     "You are Elena Park, an AI support operations lead. Monitor SLA risk, route tickets, and keep ops briefed.",
   model: "google/gemini-2.5-pro",
-  toolIds: ["sentiment_router"],
+  toolIds: ["workflow-sentiment_router", "workflow-wazzup"],
   quickPrompts: [
     "Any tickets breaching SLA?",
     "Summarise escalation status",

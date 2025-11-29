@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getWorkflowById } from "@/app/api/tools/services";
+import { getToolDefinition } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 
@@ -13,7 +13,7 @@ export async function GET(
 ) {
   try {
     const { toolId } = await context.params;
-    const workflow = await getWorkflowById(toolId);
+    const workflow = await getToolDefinition(toolId);
     if (!workflow) {
       return NextResponse.json({ message: "Tool definition not found" }, { status: 404 });
     }

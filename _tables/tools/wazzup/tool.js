@@ -1,44 +1,37 @@
 /**
- * Generated tool file for workflow: tsets
- * Auto-generated from workflow: tsets
+ * Generated tool file for workflow: WAZZUP
+ * Auto-generated from workflow: wazzup
  * Do not edit manually - this file will be regenerated on workflow save.
  */
 
 import { z } from "zod";
 import { tool } from "ai";
-import type { ToolDefinition } from "@/_tables/types";
 
 // ============================================================================
 // SCHEMA GENERATION
 // ============================================================================
 
-const Tsets_InputSchema = z.object({
+const Wazzup_InputSchema = z.object({
   message: z.string().describe("Plain text captured from the requester.")
 });
 
-const Tsets_OutputSchema = z.object({
+const Wazzup_OutputSchema = z.object({
   cleanMessage: z.string().describe("Sanitized text ready for formatting.")
 });
-
-type Tsets_Input = z.infer<typeof Tsets_InputSchema>;
-type Tsets_Output = z.infer<typeof Tsets_OutputSchema>;
 
 // ============================================================================
 // USER CODE WRAPPER
 // ============================================================================
 
-async function tsetsNode(
-  input: Tsets_Input
-): Promise<Tsets_Output> {
-  const validatedInput = Tsets_InputSchema.parse(input);
+async function wazzupNode(input) {
+  const validatedInput = Wazzup_InputSchema.parse(input);
   
-  // Extract typed inputs
+  // Extract inputs
   const { message } = validatedInput;
   
   // ========================================================================
   // USER'S CODE (from node.data.code) - injected here
   // ========================================================================
-  // User code should return an object matching the output schema
   
   // This node simply outputs a string to be used by the next node.
   process.stdout.write("Data flows like a river!");
@@ -48,27 +41,24 @@ async function tsetsNode(
   // ========================================================================
   
   // Validate output against schema
-  // Note: User code should return the expected output shape
-  // User code execution result (may be undefined if code doesn't return)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userResult: any = typeof result !== 'undefined' ? result : {};
-  const output: Tsets_Output = {
+  const userResult = typeof result !== 'undefined' ? result : {};
+  const output = {
     cleanMessage: userResult?.cleanMessage ?? "",
   };
   
-  return Tsets_OutputSchema.parse(output);
+  return Wazzup_OutputSchema.parse(output);
 }
 
 // ============================================================================
 // AGENT TOOL EXPORT (Vercel AI SDK Compatible)
 // ============================================================================
 
-export const workflowTsetsTool = tool({
+export const workflowWazzupTool = tool({
   description: "Workflow saved from the editor.",
-  inputSchema: Tsets_InputSchema,
-  execute: async (input: Tsets_Input): Promise<Record<string, unknown>> => {
-    const result = await tsetsNode(input);
-    return result as Record<string, unknown>;
+  inputSchema: Wazzup_InputSchema,
+  execute: async (input) => {
+    const result = await wazzupNode(input);
+    return result;
   },
 });
 
@@ -76,11 +66,10 @@ export const workflowTsetsTool = tool({
 // TOOL DEFINITION FOR REGISTRY
 // ============================================================================
 
-export const workflowTsetsToolDefinition: ToolDefinition = {
-  id: "workflow-tsets",
-  name: "tsets",
+export const workflowWazzupToolDefinition = {
+  id: "workflow-wazzup",
+  name: "WAZZUP",
   description: "Workflow saved from the editor.",
-  runtime: "internal" as const,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  run: workflowTsetsTool as any,
+  runtime: "internal",
+  run: workflowWazzupTool,
 };

@@ -16,7 +16,7 @@ type WorkflowCardProps = {
 export function WorkflowCard({ workflow }: WorkflowCardProps) {
   return (
     <Link
-      href={`/workflow-generator?id=${workflow.id}`}
+      href={`/tools/editor?id=${workflow.id}`}
       className="block h-full"
     >
       <Card className="h-full transition-all border-border/40 hover:border-border/80 hover:shadow-md">

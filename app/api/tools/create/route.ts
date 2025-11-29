@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { getWorkflowById, saveWorkflow, saveToolCode, transpileWorkflowToTool } from "@/app/api/tools/services";
+import { getToolDefinition, saveToolDefinition, saveToolExecutable, transpileWorkflowToTool } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 
@@ -25,13 +25,13 @@ const slugify = (value: string) =>
 const ensureUniqueId = async (preferred: string) => {
   let candidate = preferred || nanoid();
 
-  if (!(await getWorkflowById(candidate))) {
+  if (!(await getToolDefinition(candidate))) {
     return candidate;
   }
 
   while (true) {
     candidate = `${preferred || "tool"}-${nanoid(6)}`;
-    const existing = await getWorkflowById(candidate);
+    const existing = await getToolDefinition(candidate);
     if (!existing) {
       return candidate;
     }
@@ -51,12 +51,12 @@ export async function POST(request: NextRequest) {
     const baseSlug = slugify(baseSource);
     const uniqueId = await ensureUniqueId(baseSlug);
 
-    const savedWorkflow = await saveWorkflow(uniqueId, data);
+    const savedWorkflow = await saveToolDefinition(uniqueId, data);
 
     // Transpile and save tool executable
     try {
       const toolCode = await transpileWorkflowToTool(savedWorkflow);
-      await saveToolCode(uniqueId, toolCode);
+      await saveToolExecutable(uniqueId, toolCode);
     } catch (transpileError) {
       console.warn(
         `[API] Failed to transpile tool for definition ${uniqueId}:`,

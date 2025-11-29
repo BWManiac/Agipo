@@ -1,9 +1,11 @@
 /**
  * Workflow Transpiler
  * 
- * Converts workflow data (nodes, edges) into a TypeScript tool file that can be
- * used by AI agents. The transpiler generates Zod schemas, typed execution functions,
- * and a ToolDefinition export that matches the _tables/types.ts interface.
+ * Converts workflow data (nodes, edges) into a JavaScript tool file that can be
+ * used by AI agents. The transpiler generates Zod schemas and an executable function.
+ * 
+ * Note: Generates JavaScript (ESM) to ensure compatibility with dynamic imports
+ * in standard Node.js environments without requiring ts-node/tsx at runtime.
  */
 
 import type { WorkflowData } from "@/_tables/types";
@@ -71,61 +73,7 @@ function generateSchema(
 }
 
 /**
- * Finds entry nodes (nodes with no incoming edges)
- */
-// function findEntryNodes(nodes: Node[], edges: Edge[]): Node[] {
-//   const hasIncomingEdge = new Set(edges.map((e) => e.target));
-//   return nodes.filter((node) => !hasIncomingEdge.has(node.id));
-// }
-
-/**
- * Performs a topological sort to determine execution order
- */
-// function topologicalSort(nodes: Node[], edges: Edge[]): Node[] {
-//   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-//   const incoming = new Map<string, Set<string>>();
-//   const outgoing = new Map<string, Set<string>>();
-//
-//   nodes.forEach((node) => {
-//     incoming.set(node.id, new Set());
-//     outgoing.set(node.id, new Set());
-//   });
-//
-//   edges.forEach((edge) => {
-//     incoming.get(edge.target)?.add(edge.source);
-//     outgoing.get(edge.source)?.add(edge.target);
-//   });
-//
-//   const queue: Node[] = [];
-//   const result: Node[] = [];
-//
-//   nodes.forEach((node) => {
-//     if (incoming.get(node.id)?.size === 0) {
-//       queue.push(node);
-//     }
-//   });
-//
-//   while (queue.length > 0) {
-//     const node = queue.shift()!;
-//     result.push(node);
-//
-//     outgoing.get(node.id)?.forEach((targetId) => {
-//       const targetIncoming = incoming.get(targetId);
-//       targetIncoming?.delete(node.id);
-//       if (targetIncoming?.size === 0) {
-//         const targetNode = nodeMap.get(targetId);
-//         if (targetNode) {
-//           queue.push(targetNode);
-//         }
-//       }
-//     });
-//   }
-//
-//   return result;
-// }
-
-/**
- * Transpiles a workflow into a TypeScript tool file
+ * Transpiles a workflow into a JavaScript tool file
  */
 export async function transpileWorkflowToTool(
   workflow: WorkflowData
@@ -166,7 +114,6 @@ export async function transpileWorkflowToTool(
   }
 
   // For MVP: handle single-node workflows first
-  // Multi-node will be handled in a later iteration
   const firstNode = workflowNodes[0];
   const nodeData = firstNode.data;
 
@@ -197,7 +144,7 @@ export async function transpileWorkflowToTool(
   // Generate tool ID following convention: workflow-{id}
   const toolId = `workflow-${id}`;
 
-  // Build the TypeScript file
+  // Build the JavaScript file
   const lines: string[] = [];
 
   // Header comment
@@ -208,10 +155,9 @@ export async function transpileWorkflowToTool(
   lines.push(" */");
   lines.push("");
 
-  // Imports
+  // Imports (Standard ESM)
   lines.push('import { z } from "zod";');
   lines.push('import { tool } from "ai";');
-  lines.push('import type { ToolDefinition } from "@/_tables/types";');
   lines.push("");
 
   // Input schema
@@ -224,31 +170,21 @@ export async function transpileWorkflowToTool(
   lines.push(generateSchema(outputs, outputSchemaName));
   lines.push("");
 
-  // Type inference
-  lines.push(`type ${toPascalCase(id)}_Input = z.infer<typeof ${inputSchemaName}>;`);
-  lines.push(
-    `type ${toPascalCase(id)}_Output = z.infer<typeof ${outputSchemaName}>;`
-  );
-  lines.push("");
-
-  // Node function wrapper
+  // Node function wrapper (No types)
   lines.push("// ============================================================================");
   lines.push("// USER CODE WRAPPER");
   lines.push("// ============================================================================");
   lines.push("");
-  lines.push(`async function ${nodeFunctionName}(`);
-  lines.push(`  input: ${toPascalCase(id)}_Input`);
-  lines.push(`): Promise<${toPascalCase(id)}_Output> {`);
+  lines.push(`async function ${nodeFunctionName}(input) {`);
   lines.push(`  const validatedInput = ${inputSchemaName}.parse(input);`);
   lines.push("  ");
-  lines.push("  // Extract typed inputs");
+  lines.push("  // Extract inputs");
   const inputVars = inputs.map((i) => i.name).join(", ");
   lines.push(`  const { ${inputVars} } = validatedInput;`);
   lines.push("  ");
   lines.push("  // ========================================================================");
   lines.push("  // USER'S CODE (from node.data.code) - injected here");
   lines.push("  // ========================================================================");
-  lines.push("  // User code should return an object matching the output schema");
   lines.push("  ");
 
   // Inject user code with proper indentation
@@ -264,13 +200,10 @@ export async function transpileWorkflowToTool(
   lines.push("  // ========================================================================");
   lines.push("  ");
   lines.push("  // Validate output against schema");
-  lines.push("  // Note: User code should return the expected output shape");
-  lines.push("  // User code execution result (may be undefined if code doesn't return)");
-  lines.push("  // eslint-disable-next-line @typescript-eslint/no-explicit-any");
-  lines.push("  const userResult: any = typeof result !== 'undefined' ? result : {};");
-  lines.push(`  const output: ${toPascalCase(id)}_Output = {`);
+  lines.push("  const userResult = typeof result !== 'undefined' ? result : {};");
+  lines.push(`  const output = {`);
   
-  // Map outputs with defaults based on type
+  // Map outputs with defaults
   outputs.forEach((output) => {
     const defaultValue =
       output.type === "text"
@@ -303,25 +236,24 @@ export async function transpileWorkflowToTool(
   lines.push(`export const ${toCamelCase(toolId)}Tool = tool({`);
   lines.push(`  description: ${JSON.stringify(toolDescription)},`);
   lines.push(`  inputSchema: ${inputSchemaName},`);
-  lines.push(`  execute: async (input: ${toPascalCase(id)}_Input): Promise<Record<string, unknown>> => {`);
+  lines.push(`  execute: async (input) => {`);
   lines.push(`    const result = await ${nodeFunctionName}(input);`);
-  lines.push("    return result as Record<string, unknown>;");
+  lines.push("    return result;");
   lines.push("  },");
   lines.push("});");
   lines.push("");
 
-  // ToolDefinition export
+  // ToolDefinition export (JS Object)
   lines.push("// ============================================================================");
   lines.push("// TOOL DEFINITION FOR REGISTRY");
   lines.push("// ============================================================================");
   lines.push("");
-  lines.push(`export const ${toCamelCase(toolId)}ToolDefinition: ToolDefinition = {`);
+  lines.push(`export const ${toCamelCase(toolId)}ToolDefinition = {`);
   lines.push(`  id: ${JSON.stringify(toolId)},`);
   lines.push(`  name: ${JSON.stringify(name)},`);
   lines.push(`  description: ${JSON.stringify(toolDescription)},`);
-  lines.push(`  runtime: "internal" as const,`);
-  lines.push(`  // eslint-disable-next-line @typescript-eslint/no-explicit-any`);
-  lines.push(`  run: ${toCamelCase(toolId)}Tool as any,`);
+  lines.push(`  runtime: "internal",`);
+  lines.push(`  run: ${toCamelCase(toolId)}Tool,`);
   lines.push("};");
   lines.push("");
 
@@ -337,7 +269,7 @@ function toPascalCase(str: string): string {
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join("")
-    .replace(/^[0-9]/, (match) => `N${match}`); // Ensure doesn't start with number
+    .replace(/^[0-9]/, (match) => `N${match}`);
 }
 
 /**
@@ -347,4 +279,3 @@ function toCamelCase(str: string): string {
   const pascal = toPascalCase(str);
   return pascal.charAt(0).toLowerCase() + pascal.slice(1);
 }
-

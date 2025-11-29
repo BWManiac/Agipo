@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 import type { WorkflowLayer } from "../store/slices/editorSlice";
 import { ApiKeyManager } from "./settings/ApiKeyManager";
@@ -43,6 +45,11 @@ export function ControlPanel({
   return (
     <div className="pointer-events-none absolute top-4 left-1/2 z-10 flex w-full max-w-5xl -translate-x-1/2 items-center justify-between rounded-2xl border border-slate-200 bg-background/90 px-4 py-3 shadow-lg backdrop-blur">
       <div className="flex items-center gap-2">
+        <Button variant="ghost" size="icon" asChild className="pointer-events-auto mr-2">
+          <Link href="/tools">
+            <ChevronLeft className="h-4 w-4" />
+          </Link>
+        </Button>
         <Button onClick={onAdd} disabled={isLoading} className="pointer-events-auto">
           Add Node
         </Button>

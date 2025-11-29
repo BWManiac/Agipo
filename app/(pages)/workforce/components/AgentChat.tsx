@@ -100,8 +100,8 @@ export function AgentChat({
     if (!queuedPrompt) return;
     // Wrap in setTimeout to avoid setting state during render (useEffect)
     const timer = setTimeout(() => {
-      void handleSubmit(queuedPrompt);
-      onPromptConsumed?.();
+    void handleSubmit(queuedPrompt);
+    onPromptConsumed?.();
     }, 0);
     return () => clearTimeout(timer);
   }, [queuedPrompt, handleSubmit, onPromptConsumed]);

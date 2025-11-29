@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { AgentConfig, ToolDefinition } from "@/_tables/types";
+import type { AgentConfig, WorkflowSummary } from "@/_tables/types";
 
 type ToolEditorProps = {
   agent: AgentConfig;
@@ -16,19 +16,38 @@ type ToolEditorProps = {
   onSave: (toolIds: string[]) => Promise<void>;
 };
 
+/**
+ * Normalizes tool ID by removing the "workflow-" prefix if present.
+ * Used for comparing agent toolIds (which may have prefix) with list API IDs (which don't).
+ */
+function normalizeToolIdForComparison(id: string): string {
+  return id.startsWith("workflow-") ? id.slice("workflow-".length) : id;
+}
+
+/**
+ * Converts a tool definition ID to the executable tool format (adds "workflow-" prefix).
+ * Used when saving tool IDs to match the format expected by executable tools.
+ */
+function toExecutableToolId(id: string): string {
+  return id.startsWith("workflow-") ? id : `workflow-${id}`;
+}
+
 export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProps) {
-  const [selectedToolIds, setSelectedToolIds] = useState<Set<string>>(
-    new Set(agent.toolIds)
-  );
+  // Store normalized IDs (without "workflow-" prefix) for comparison with list API
+  const [selectedToolIds, setSelectedToolIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [tools, setTools] = useState<ToolDefinition[]>([]);
+  const [tools, setTools] = useState<WorkflowSummary[]>([]);
   const [isLoadingTools, setIsLoadingTools] = useState(false);
 
   // Load tools when dialog opens
   useEffect(() => {
     if (open) {
-      setSelectedToolIds(new Set(agent.toolIds));
+      // Normalize agent.toolIds (remove "workflow-" prefix) for comparison with list API
+      const normalizedAgentToolIds = new Set(
+        agent.toolIds.map(normalizeToolIdForComparison)
+      );
+      setSelectedToolIds(normalizedAgentToolIds);
       setSearchQuery("");
       loadTools();
     }
@@ -37,12 +56,12 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
   const loadTools = async () => {
     setIsLoadingTools(true);
     try {
-      const response = await fetch("/api/tools");
+      const response = await fetch("/api/tools/list");
       if (!response.ok) {
         throw new Error("Failed to load tools");
       }
       const data = await response.json();
-      setTools(data.tools || []);
+      setTools(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to load tools:", error);
       setTools([]);
@@ -51,18 +70,8 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
     }
   };
 
-  // Group tools by source (workflow only - no built-in tools anymore)
-  const { workflowTools } = useMemo(() => {
-    const workflow: ToolDefinition[] = [];
-    tools.forEach((tool) => {
-      // All tools now come from workflows
-        workflow.push(tool);
-    });
-    return { workflowTools: workflow };
-  }, [tools]);
-
   // Filter tools by search query
-  const filterTools = (toolList: ToolDefinition[]) => {
+  const filterTools = (toolList: WorkflowSummary[]) => {
     if (!searchQuery) return toolList;
     const query = searchQuery.toLowerCase();
     return toolList.filter(
@@ -73,6 +82,7 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
   };
 
   const handleToggle = (toolId: string) => {
+    // toolId from list API is already normalized (no prefix)
     const newSet = new Set(selectedToolIds);
     if (newSet.has(toolId)) {
       newSet.delete(toolId);
@@ -85,7 +95,9 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await onSave(Array.from(selectedToolIds));
+      // Convert normalized IDs back to executable format (with "workflow-" prefix)
+      const executableToolIds = Array.from(selectedToolIds).map(toExecutableToolId);
+      await onSave(executableToolIds);
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to save tools:", error);
@@ -96,10 +108,14 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
     }
   };
 
-  const filteredWorkflow = filterTools(workflowTools);
+  const filteredTools = filterTools(tools);
 
   const handleCancel = () => {
-    setSelectedToolIds(new Set(agent.toolIds)); // Reset to original
+    // Reset to original normalized agent toolIds
+    const normalizedAgentToolIds = new Set(
+      agent.toolIds.map(normalizeToolIdForComparison)
+    );
+    setSelectedToolIds(normalizedAgentToolIds);
     setSearchQuery("");
     onOpenChange(false);
   };
@@ -127,16 +143,16 @@ export function ToolEditor({ agent, open, onOpenChange, onSave }: ToolEditorProp
               {isLoadingTools ? (
                 <div className="text-center text-muted-foreground py-8">
                   Loading tools...
-                        </div>
-              ) : filteredWorkflow.length === 0 ? (
+                </div>
+              ) : filteredTools.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">
-                  No workflow tools available. Create workflows to generate tools.
+                  No tools available. Create tools in the workflow editor to get started.
                 </div>
               ) : (
                 <div>
-                  <h3 className="text-sm font-semibold mb-3">Workflow Tools</h3>
+                  <h3 className="text-sm font-semibold mb-3">Available Tools</h3>
                   <div className="space-y-2">
-                    {filteredWorkflow.map((tool) => (
+                    {filteredTools.map((tool) => (
                       <div
                         key={tool.id}
                         className="flex items-start space-x-3 p-3 rounded-lg border"

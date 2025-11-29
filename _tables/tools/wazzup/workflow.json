@@ -1,6 +1,5 @@
 {
-  "id": "test",
-  "name": "test",
+  "name": "WAZZUP",
   "description": "Workflow saved from the editor.",
   "nodes": [
     {
@@ -95,6 +94,7 @@
       "target": "2"
     }
   ],
-  "lastModified": "2025-11-29T13:32:33.188Z",
-  "apiKeys": {}
+  "apiKeys": {},
+  "id": "wazzup",
+  "lastModified": "2025-11-29T15:30:50.524Z"
 }

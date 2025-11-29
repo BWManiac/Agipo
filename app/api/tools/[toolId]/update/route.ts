@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { saveWorkflow, saveToolCode, transpileWorkflowToTool } from "@/app/api/tools/services";
+import { saveToolDefinition, saveToolExecutable, transpileWorkflowToTool } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 
@@ -26,12 +26,12 @@ export async function PUT(
     const body = await request.json();
     const validatedBody = UpdateToolDefinitionBodySchema.parse(body);
 
-    const savedWorkflow = await saveWorkflow(toolId, validatedBody);
+    const savedWorkflow = await saveToolDefinition(toolId, validatedBody);
 
     // Transpile and save tool executable
     try {
       const toolCode = await transpileWorkflowToTool(savedWorkflow);
-      await saveToolCode(toolId, toolCode);
+      await saveToolExecutable(toolId, toolCode);
     } catch (transpileError) {
       console.warn(
         `[API] Failed to transpile tool for definition ${toolId}:`,

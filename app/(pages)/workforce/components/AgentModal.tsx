@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { AgentConfig, ToolDefinition } from "@/_tables/types";
+import type { AgentConfig, WorkflowSummary } from "@/_tables/types";
 import { AgentChat } from "./AgentChat";
 import { ToolInspector } from "./ToolInspector";
 import { ToolEditor } from "./ToolEditor";
@@ -24,32 +24,85 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
   const [toolOpen, setToolOpen] = useState(false);
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
   const [toolEditorOpen, setToolEditorOpen] = useState(false);
-  const [allTools, setAllTools] = useState<ToolDefinition[]>([]);
+  const [allTools, setAllTools] = useState<WorkflowSummary[]>([]);
+  const [toolsLoadError, setToolsLoadError] = useState<string | null>(null);
+  const [isLoadingToolsState, setIsLoadingToolsState] = useState(true);
 
-  // Load tools on mount
+  // Load tools when agent changes or on mount
   useEffect(() => {
+    if (!agent) {
+      setAllTools([]);
+      setToolsLoadError(null);
+      setIsLoadingToolsState(false);
+      return;
+    }
+    
     const fetchTools = async () => {
+      setIsLoadingToolsState(true);
+      setToolsLoadError(null);
+      
       try {
-        const response = await fetch("/api/tools");
-        if (!response.ok) throw new Error("Failed to fetch tools");
-        const data = await response.json();
-        setAllTools(data.tools || []);
+        const response = await fetch("/api/tools/list");
+        
+        if (!response.ok) {
+          const errorMsg = `HTTP ${response.status}: Failed to fetch tools`;
+          console.error("[AgentModal] API error:", errorMsg);
+          throw new Error(errorMsg);
+        }
+        
+        const tools = await response.json();
+        const toolList = Array.isArray(tools) ? tools : [];
+        setAllTools(toolList);
+        setToolsLoadError(null);
+        
+        // Debug logging
+        console.log(`[AgentModal] Loaded ${toolList.length} tool definitions`);
+        console.log(`[AgentModal] Agent ${agent.id} has toolIds:`, agent.toolIds);
+        
+        // Normalize agent toolIds and match against list
+        const normalizeId = (id: string) => id.startsWith("workflow-") ? id.slice("workflow-".length) : id;
+        const normalizedAgentToolIds = agent.toolIds.map(normalizeId);
+        const matched = normalizedAgentToolIds
+          .map((normalizedId) => toolList.find((t) => t.id === normalizedId))
+          .filter((t): t is WorkflowSummary => t !== undefined);
+        console.log(`[AgentModal] Matched ${matched.length} tools for agent ${agent.id}`);
       } catch (error) {
-        console.error("Error fetching tools:", error);
+        console.error("[AgentModal] Error fetching tools:", error);
+        setToolsLoadError(error instanceof Error ? error.message : "Failed to load tools");
+        setAllTools([]); // Clear tools on error so we don't stay in loading state
+      } finally {
+        setIsLoadingToolsState(false);
       }
     };
     fetchTools();
-  }, []);
+  }, [agent]); // Reload when agent changes
 
   if (!agent) {
     return null;
   }
 
-  const tools = agent.toolIds
-    .map((id) => allTools.find((t) => t.id === id))
-    .filter((t): t is ToolDefinition => t !== undefined);
+  // Normalize tool ID helper
+  const normalizeToolId = (id: string): string => {
+    return id.startsWith("workflow-") ? id.slice("workflow-".length) : id;
+  };
+
+  // Match agent toolIds with tool definitions (normalize IDs for comparison)
+  const normalizedAgentToolIds = agent.toolIds.map(normalizeToolId);
+  const tools = normalizedAgentToolIds
+    .map((normalizedId) => allTools.find((t) => t.id === normalizedId))
+    .filter((t): t is WorkflowSummary => t !== undefined);
     
-  const selectedTool = selectedToolId ? allTools.find((t) => t.id === selectedToolId) ?? null : null;
+  // Convert WorkflowSummary to format expected by ToolInspector (id, name, description, runtime)
+  const selectedTool = selectedToolId 
+    ? (() => {
+        const normalizedId = normalizeToolId(selectedToolId);
+        const tool = allTools.find((t) => t.id === normalizedId);
+        return tool ? { ...tool, runtime: "internal" as const } : null;
+      })()
+    : null;
+  
+  // Use explicit loading state instead of inferring from empty array
+  // This prevents getting stuck in loading state if API fails
 
   const handleFeedbackSubmit = () => {
     if (!feedback.trim()) return;
@@ -150,30 +203,49 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
                     Edit tools
                   </Button>
                 </div>
-                <div className="grid gap-3">
-                  {tools.map((tool) => (
-                    <div key={tool.id} className="rounded-xl border border-border bg-background p-4">
-                      <button
-                        className="flex w-full items-start justify-between gap-4 text-left"
-                        onClick={() => {
-                          setSelectedToolId(tool.id);
-                          setToolOpen(true);
-                        }}
-                      >
-                        <div>
-                          <h4 className="font-semibold text-foreground underline-offset-4 hover:underline">
-                            {tool.name}
-                          </h4>
-                          <p className="text-sm text-muted-foreground">{tool.description}</p>
-                        </div>
-                        <div className="text-right text-xs text-muted-foreground">
-                          <div>—</div>
-                          <div>—</div>
-                        </div>
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                {isLoadingToolsState ? (
+                  <div className="rounded-xl border border-border bg-background p-6 text-center text-sm text-muted-foreground">
+                    Loading tools...
+                  </div>
+                ) : toolsLoadError ? (
+                  <div className="rounded-xl border border-destructive/50 bg-destructive/10 p-6 text-center">
+                    <p className="text-sm font-medium text-destructive">Failed to load tools</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{toolsLoadError}</p>
+                  </div>
+                ) : tools.length === 0 ? (
+                  <div className="rounded-xl border border-border bg-muted/40 p-6 text-center">
+                    <p className="text-sm font-medium text-foreground">No tools assigned</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Click &quot;Edit tools&quot; to assign tools to this agent.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid gap-3">
+                    {tools.map((tool) => (
+                      <div key={tool.id} className="rounded-xl border border-border bg-background p-4">
+                        <button
+                          className="flex w-full items-start justify-between gap-4 text-left"
+                          onClick={() => {
+                            // Store with workflow- prefix to match agent.toolIds format
+                            setSelectedToolId(`workflow-${tool.id}`);
+                            setToolOpen(true);
+                          }}
+                        >
+                          <div>
+                            <h4 className="font-semibold text-foreground underline-offset-4 hover:underline">
+                              {tool.name}
+                            </h4>
+                            <p className="text-sm text-muted-foreground">{tool.description}</p>
+                          </div>
+                          <div className="text-right text-xs text-muted-foreground">
+                            <div>—</div>
+                            <div>—</div>
+                          </div>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="mb-6 space-y-3">
                 <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">

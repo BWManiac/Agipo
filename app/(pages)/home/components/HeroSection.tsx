@@ -12,10 +12,10 @@ import { cn } from "@/lib/utils";
 
 const ROTATION_INTERVAL = 3000;
 const actions = [
-  { href: "/workflow-generator", label: "Create an agent", variant: "default" as const },
-  { href: "/workflow-generator", label: "Create a workflow", variant: "outline" as const },
+  { href: "/tools/editor", label: "Create an agent", variant: "default" as const },
+  { href: "/tools/editor", label: "Create a tool", variant: "outline" as const },
   { href: "/marketplace", label: "Browse marketplace", variant: "outline" as const },
-  { href: "/workflows", label: "View my workflows", variant: "outline" as const },
+  { href: "/tools", label: "View my tools", variant: "outline" as const },
   { href: "/workforce", label: "Manage workforce", variant: "outline" as const },
   { href: "/profile", label: "Open profile", variant: "ghost" as const },
 ];

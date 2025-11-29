@@ -6,7 +6,7 @@ import {
 } from "ai";
 import { NextResponse } from "next/server";
 import { getAgentById } from "@/_tables/agents";
-import { initializeTools, getToolById } from "@/app/api/tools/services";
+import { getExecutableToolById } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -31,9 +31,6 @@ export async function POST(
       return NextResponse.json({ message: "Missing messages array." }, { status: 400 });
     }
 
-    // Initialize tools from workflow folders
-    await initializeTools();
-
     // Load agent from registry
     const requestedAgentId = agentId ?? "pm";
     const agent = getAgentById(requestedAgentId);
@@ -49,7 +46,7 @@ export async function POST(
     // Build tool map dynamically from agent's toolIds.
     const toolMap: Record<string, Tool<unknown, unknown>> = {};
     for (const toolId of agent.toolIds) {
-      const toolDef = getToolById(toolId);
+      const toolDef = await getExecutableToolById(toolId);
       if (!toolDef) {
         console.warn(`[workforce/agent] Tool not found: ${toolId}; skipping.`);
         continue;

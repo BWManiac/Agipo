@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getWorkflows } from "@/app/api/tools/services";
+import { listToolDefinitions } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 
@@ -9,7 +9,7 @@ export const runtime = "nodejs";
  */
 export async function GET() {
   try {
-    const workflows = await getWorkflows();
+    const workflows = await listToolDefinitions();
     return NextResponse.json(workflows);
   } catch (error) {
     console.error("API Error: Failed to get tool definitions:", error);
