@@ -1,6 +1,6 @@
 import { type StateCreator } from "zustand";
 
-import type { WorkflowData } from "@/app/(pages)/workflows/repository/FileSystemWorkflowRepository";
+import type { WorkflowData } from "@/_tables/types";
 import type { WorkflowGeneratorStore, WorkflowNode, ApiKeyMap } from "../types";
 import type { Edge } from "@xyflow/react";
 

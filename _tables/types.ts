@@ -1,4 +1,5 @@
 import type { Tool } from "ai";
+import type { Node, Edge } from "@xyflow/react";
 
 export type AgentStatus = "active" | "paused" | "attention";
 
@@ -32,4 +33,21 @@ export type ToolDefinition = {
   description: string;
   runtime?: "webcontainer" | "internal" | "http" | string;
   run: Tool<unknown, unknown>;
+};
+
+export type WorkflowData = {
+  id: string;
+  name: string;
+  description?: string;
+  nodes: Node[];
+  edges: Edge[];
+  lastModified?: string;
+  apiKeys?: Record<string, string>;
+};
+
+export type WorkflowSummary = {
+  id: string;
+  name: string;
+  description: string;
+  lastModified?: string;
 };

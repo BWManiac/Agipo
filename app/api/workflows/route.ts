@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { FileSystemWorkflowRepository } from "@/app/(pages)/workflows/repository/FileSystemWorkflowRepository";
-
-const repo = new FileSystemWorkflowRepository();
+import { getWorkflows, getWorkflowById, saveWorkflow } from "@/_tables/workflows";
 
 /**
  * GET /api/workflows
@@ -11,7 +9,7 @@ const repo = new FileSystemWorkflowRepository();
  */
 export async function GET() {
   try {
-    const workflows = await repo.getWorkflows();
+    const workflows = await getWorkflows();
     return NextResponse.json(workflows);
   } catch (error) {
     console.error("API Error: Failed to get workflows:", error);
@@ -42,13 +40,13 @@ const slugify = (value: string) =>
 const ensureUniqueId = async (preferred: string) => {
   let candidate = preferred || nanoid();
 
-  if (!(await repo.getWorkflowById(candidate))) {
+  if (!(await getWorkflowById(candidate))) {
     return candidate;
   }
 
   while (true) {
     candidate = `${preferred || "workflow"}-${nanoid(6)}`;
-    const existing = await repo.getWorkflowById(candidate);
+    const existing = await getWorkflowById(candidate);
     if (!existing) {
       return candidate;
     }
@@ -68,7 +66,7 @@ export async function POST(request: NextRequest) {
     const baseSlug = slugify(baseSource);
     const uniqueId = await ensureUniqueId(baseSlug);
 
-    const savedWorkflow = await repo.saveWorkflow(uniqueId, data);
+    const savedWorkflow = await saveWorkflow(uniqueId, data);
     return NextResponse.json(savedWorkflow, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {

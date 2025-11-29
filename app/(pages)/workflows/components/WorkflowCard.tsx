@@ -7,13 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-export type WorkflowSummary = {
-  id: string;
-  name: string;
-  description: string;
-  lastModified?: string;
-};
+import type { WorkflowSummary } from "@/_tables/types";
 
 type WorkflowCardProps = {
   workflow: WorkflowSummary;

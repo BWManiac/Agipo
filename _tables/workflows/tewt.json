@@ -1,0 +1,100 @@
+{
+  "id": "tewt",
+  "name": "tewt",
+  "description": "Workflow saved from the editor.",
+  "nodes": [
+    {
+      "id": "1",
+      "type": "code",
+      "position": {
+        "x": -100,
+        "y": 200
+      },
+      "data": {
+        "id": "1",
+        "title": "Collect Input",
+        "code": "// This node simply outputs a string to be used by the next node.\nprocess.stdout.write(\"Data flows like a river!\");",
+        "isRunning": false,
+        "flow": {
+          "summary": "Listen for the source message, tidy it up, and pass it downstream."
+        },
+        "spec": {
+          "inputs": [
+            {
+              "name": "message",
+              "type": "text",
+              "description": "Plain text captured from the requester."
+            }
+          ],
+          "process": [
+            "Trim whitespace and normalize spacing.",
+            "Remove unsupported characters.",
+            "Emit a clean string for the next node."
+          ],
+          "outputs": [
+            {
+              "name": "cleanMessage",
+              "type": "text",
+              "description": "Sanitized text ready for formatting."
+            }
+          ]
+        }
+      },
+      "measured": {
+        "width": 360,
+        "height": 273
+      }
+    },
+    {
+      "id": "2",
+      "type": "code",
+      "position": {
+        "x": 200,
+        "y": 200
+      },
+      "data": {
+        "id": "2",
+        "title": "Format Message",
+        "code": "const cowsay = require('cowsay');\nconst readline = require('readline');\n\nconst rl = readline.createInterface({ input: process.stdin });\n\nrl.on('line', (line) => {\n  console.log(cowsay.say({\n    text: line,\n    e: 'oO',\n    T: 'U '\n  }));\n});",
+        "isRunning": false,
+        "flow": {
+          "summary": "Apply the cowsay persona to the cleaned message and render ASCII art."
+        },
+        "spec": {
+          "inputs": [
+            {
+              "name": "cleanMessage",
+              "type": "text",
+              "description": "Sanitized text from the upstream node."
+            }
+          ],
+          "process": [
+            "Load cowsay template and tone modifiers.",
+            "Wrap lines to keep width manageable.",
+            "Render final ASCII output."
+          ],
+          "outputs": [
+            {
+              "name": "asciiArt",
+              "type": "text",
+              "description": "Cowsay-formatted string for display."
+            }
+          ]
+        }
+      },
+      "measured": {
+        "width": 360,
+        "height": 273
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1-2",
+      "source": "1",
+      "target": "2"
+    }
+  ],
+  "lastModified": "2025-11-29T11:14:21.981Z",
+  "apiKeys": {}
+}

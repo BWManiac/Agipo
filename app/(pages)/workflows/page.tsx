@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import { WorkflowCard } from "./components/WorkflowCard";
-import type { WorkflowSummary } from "./components/WorkflowCard";
+import type { WorkflowSummary } from "@/_tables/types";
 
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<WorkflowSummary[]>([]);

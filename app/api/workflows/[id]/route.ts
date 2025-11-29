@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { FileSystemWorkflowRepository } from "@/app/(pages)/workflows/repository/FileSystemWorkflowRepository";
-
-const repo = new FileSystemWorkflowRepository();
+import { getWorkflowById, saveWorkflow } from "@/_tables/workflows";
 
 /**
  * GET /api/workflows/[id]
@@ -14,7 +12,7 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    const workflow = await repo.getWorkflowById(id);
+    const workflow = await getWorkflowById(id);
     if (!workflow) {
       return NextResponse.json({ message: "Workflow not found" }, { status: 404 });
     }
@@ -50,7 +48,7 @@ export async function PUT(
     const body = await request.json();
     const validatedBody = UpdateWorkflowBodySchema.parse(body);
 
-    const savedWorkflow = await repo.saveWorkflow(id, validatedBody);
+    const savedWorkflow = await saveWorkflow(id, validatedBody);
     return NextResponse.json(savedWorkflow);
   } catch (error) {
     if (error instanceof z.ZodError) {
