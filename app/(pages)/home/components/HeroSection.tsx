@@ -17,6 +17,7 @@ const actions = [
   { href: "/marketplace", label: "Browse marketplace", variant: "outline" as const },
   { href: "/tools", label: "View my tools", variant: "outline" as const },
   { href: "/workforce", label: "Manage workforce", variant: "outline" as const },
+  { href: "/records", label: "Manage Records", variant: "outline" as const },
   { href: "/profile", label: "Open profile", variant: "ghost" as const },
 ];
 
