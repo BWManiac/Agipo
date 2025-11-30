@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { WorkflowCard } from "./components/WorkflowCard";
+import { ToolCard } from "./components/ToolCard";
 import type { WorkflowSummary } from "@/_tables/types";
 
 export default function WorkflowsPage() {
@@ -48,7 +48,7 @@ export default function WorkflowsPage() {
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {workflows.map((wf) => (
-            <WorkflowCard key={wf.id} workflow={wf} />
+            <ToolCard key={wf.id} workflow={wf} />
           ))}
         </div>
       )}

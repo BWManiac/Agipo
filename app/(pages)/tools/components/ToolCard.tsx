@@ -9,11 +9,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { WorkflowSummary } from "@/_tables/types";
 
-type WorkflowCardProps = {
+type ToolCardProps = {
   workflow: WorkflowSummary;
 };
 
-export function WorkflowCard({ workflow }: WorkflowCardProps) {
+export function ToolCard({ workflow }: ToolCardProps) {
   return (
     <Link
       href={`/tools/editor?id=${workflow.id}`}
@@ -35,3 +35,4 @@ export function WorkflowCard({ workflow }: WorkflowCardProps) {
     </Link>
   );
 }
+
