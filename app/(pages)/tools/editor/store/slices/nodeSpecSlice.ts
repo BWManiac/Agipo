@@ -7,7 +7,7 @@ import {
 
 // 1. State Interface
 // This slice is purely action-based and doesn't have its own state properties.
-export type NodeSpecSliceState = Record<string, never>;
+export type NodeSpecSliceState = {};
 
 // 2. Actions Interface
 export interface NodeSpecSliceActions {

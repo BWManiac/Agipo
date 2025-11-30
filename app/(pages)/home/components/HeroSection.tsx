@@ -53,9 +53,9 @@ export function HeroSection() {
               {rotatingMessages[messageIndex]}
             </div>
             <div className="flex gap-3 overflow-x-auto pb-1 md:flex-nowrap">
-              {actions.map((action) => (
+              {actions.map((action, index) => (
                 <Button
-                  key={action.href}
+                  key={`${action.href}-${action.label}-${index}`}
                   size="lg"
                   variant={action.variant}
                   className={cn(

@@ -53,16 +53,6 @@ export function AgentChat({
   
   const { messages, sendMessage, status } = useChat({
     transport,
-    initialMessages:
-      defaultPrompt.trim().length > 0
-        ? [
-            {
-              id: "agent-greeting",
-              role: "assistant",
-              parts: [{ type: "text", text: defaultPrompt }],
-            } satisfies UIMessage,
-          ]
-        : [],
   });
 
   const displayMessages = useMemo(() => {
@@ -76,8 +66,18 @@ export function AgentChat({
         },
       ],
     };
-    return [intro, ...messages];
-  }, [agentName, messages]);
+    const initialGreeting: UIMessage[] =
+      defaultPrompt.trim().length > 0 && messages.length === 0
+        ? [
+            {
+              id: "agent-greeting",
+              role: "assistant",
+              parts: [{ type: "text", text: defaultPrompt }],
+            } satisfies UIMessage,
+          ]
+        : [];
+    return [intro, ...initialGreeting, ...messages];
+  }, [agentName, messages, defaultPrompt]);
 
   const textFromMessage = useCallback((message: UIMessage) => {
     return message.parts

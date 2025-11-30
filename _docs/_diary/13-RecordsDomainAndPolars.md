@@ -10,12 +10,13 @@
 ### Backend (Infrastructure & Logic)
 | Path | Status | Purpose |
 | :--- | :--- | :--- |
-| `_tables/data/` | **New** | Root storage for all table packages (`[tableId]/records.json`). |
-| `app/api/records/services/io.ts` | **New** | File system access (Polars read/write, schema read/write). |
+| `_tables/records/` | **New** | Root storage for all table packages (`[tableId]/records.json`). Renamed from `data` to `records` to match domain. |
+| `app/api/records/services/io.ts` | **New** | File system access (Polars read/write, schema read/write). Enforces pretty-printed JSON for inspectability. |
 | `app/api/records/services/schema.ts` | **New** | Schema validation (Zod) & column addition logic. |
-| `app/api/records/services/query.ts` | **New** | Read-only operations (filtering, sorting, pagination). |
+| `app/api/records/services/query.ts` | **New** | Read-only operations (filtering, sorting, pagination) via Polars. |
 | `app/api/records/services/mutation.ts` | **New** | Write operations (insert/update with validation). |
 | `app/api/records/services/catalog.ts` | **New** | Directory scanning to list available tables. |
+| `app/api/records/services/index.ts` | **New** | Barrel export for services. |
 | `next.config.ts` | **Modified** | Added `nodejs-polars` to `serverExternalPackages` to fix binary bundling. |
 
 ### API Routes (Interface)
@@ -31,12 +32,13 @@
 ### Frontend (Experience)
 | Path | Status | Purpose |
 | :--- | :--- | :--- |
-| `app/(pages)/records/page.tsx` | **New** | Catalog View (Grid of Cards). |
-| `app/(pages)/records/[tableId]/page.tsx` | **New** | Grid View wrapper. |
-| `app/(pages)/records/components/RecordsGrid.tsx` | **New** | Main TanStack Table component with inline editing. |
-| `app/(pages)/records/hooks/useRecords.ts` | **New** | React Query hooks for all API interactions. |
+| `app/(pages)/records/page.tsx` | **New** | Catalog View (Grid of Cards) + Create Table Dialog. |
+| `app/(pages)/records/[tableId]/page.tsx` | **New** | Grid View wrapper + Header + Settings. |
+| `app/(pages)/records/components/RecordsGrid.tsx` | **New** | Main TanStack Table component with inline editing (Text, Date, Select). |
+| `app/(pages)/records/hooks/useRecords.ts` | **New** | React Query hooks for all API interactions. Strongly typed. |
 | `app/(pages)/home/components/HeroSection.tsx` | **Modified** | Added "Manage Records" button. |
 | `components/react-query-provider.tsx` | **New** | Global provider for TanStack Query. |
+| `app/layout.tsx` | **Modified** | Wrapped app in `ReactQueryProvider`. |
 
 ---
 
@@ -59,13 +61,13 @@ We chose **Polars** over SQLite or raw JSON arrays.
 *   **Why Polars?** It brings "Dataframe" power to Node.js. It allows us to perform complex queries (filtering, sorting, aggregations) at Rust speeds, even on simple JSON files.
 *   **The Trade-off:** It introduces a native binary dependency (`.node`). This led to significant build challenges (see Section 4).
 
-### B. Colocation Strategy (`_tables/data/[tableId]/`)
-We moved away from a flat `_tables/data/` folder to a package-based structure:
+### B. Colocation Strategy (`_tables/records/[tableId]/`)
+We moved away from a flat `_tables/records/` folder to a package-based structure:
 ```text
-_tables/data/
+_tables/records/
   posts/
     schema.json   <-- The Contract (Zod)
-    records.json  <-- The Database (Polars)
+    records.json  <-- The Database (Polars source)
 ```
 *   **Reasoning:** This treats data like a "Document." You can copy the `posts/` folder to another machine, and it carries both its data and its definition. It aligns with how we handle Tools (`tool.js` + `workflow.json`).
 

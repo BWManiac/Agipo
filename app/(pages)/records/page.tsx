@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTables, useCreateTable } from "./hooks/useRecords";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Database, Calendar, FileText, BarChart3, Users } from "lucide-react";
+import { Plus, Database, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
@@ -151,4 +151,3 @@ function CreateTableDialog({ trigger }: { trigger?: React.ReactNode }) {
     </Dialog>
   );
 }
-

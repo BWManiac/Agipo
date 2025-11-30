@@ -39,7 +39,6 @@ export function EditorPanel({
     return (
       <div className="h-full overflow-auto p-4">
         <EdgeEditorTable
-          edgeId={edgeId}
           sourceNode={sourceNode}
           targetNode={targetNode}
           mapping={mapping}

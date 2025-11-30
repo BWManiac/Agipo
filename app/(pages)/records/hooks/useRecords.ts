@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CatalogItem } from "./types"; // We'll need to move types out ideally, but for now inline is fine or imports
+
+export type CatalogItem = {
+  id: string;
+  name: string;
+  description?: string;
+  recordCount: number;
+  lastModified?: string;
+};
 
 export type TableSchema = {
   id: string;
@@ -61,7 +68,7 @@ export function useTableSchema(tableId: string) {
 }
 
 export function useTableRows(tableId: string) {
-  return useQuery<any[]>({
+  return useQuery<Record<string, unknown>[]>({
     queryKey: ["table", tableId, "rows"],
     queryFn: async () => {
       const res = await fetch(`/api/records/${tableId}/rows/query`, {
@@ -98,7 +105,7 @@ export function useAddColumn(tableId: string) {
 export function useAddRow(tableId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (row: any) => {
+    mutationFn: async (row: Record<string, unknown>) => {
       const res = await fetch(`/api/records/${tableId}/rows`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -119,7 +126,7 @@ export function useAddRow(tableId: string) {
 export function useUpdateRow(tableId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ rowId, updates }: { rowId: string; updates: any }) => {
+    mutationFn: async ({ rowId, updates }: { rowId: string; updates: Record<string, unknown> }) => {
       const res = await fetch(`/api/records/${tableId}/rows/${rowId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
