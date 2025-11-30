@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { readSchema } from "./io";
 
-const BASE_DIR = path.join(process.cwd(), "_tables", "data");
+const BASE_DIR = path.join(process.cwd(), "_tables", "records");
 
 export type CatalogItem = {
   id: string;

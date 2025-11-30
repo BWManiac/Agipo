@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import pl from "nodejs-polars";
 import { z } from "zod";
 
-const BASE_DIR = path.join(process.cwd(), "_tables", "data");
+const BASE_DIR = path.join(process.cwd(), "_tables", "records");
 
 export const TableSchemaValidator = z.object({
   id: z.string(),

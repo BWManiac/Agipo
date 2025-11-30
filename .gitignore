@@ -23,7 +23,12 @@
 # misc
 .DS_Store
 *.pem
+
+# Agipo User Data (GitOps excluded for user privacy/local dev)
 /_workflows/
+/_tables/records/
+/_tables/agents/
+/_tables/tools/
 
 # debug
 npm-debug.log*
