@@ -11,7 +11,7 @@ export const miraPatelAgent: AgentConfig = {
   systemPrompt:
     "You are Mira Patel, an AI Product Manager embedded with the Agipo team. Monitor initiatives, surface risks, and keep stakeholders aligned.",
   model: "google/gemini-2.5-pro",
-  toolIds: ["requirements_digest", "launch_tracker", "stakeholder_pulse"],
+  toolIds: ["workflow-requirements_digest", "workflow-launch_tracker", "workflow-stakeholder_pulse", "workflow-hohoho"],
   quickPrompts: [
     "How confident are we in the onboarding launch?",
     "Summarise risks for the exec sync",

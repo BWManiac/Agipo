@@ -42,4 +42,3 @@
 3. Experiment with running the agent inside a Next.js API route vs. client environment, measuring latency and tool execution constraints.  
 4. Draft schemas for node-editing tools (e.g., `z.object({ nodeId: z.string(), layer: z.enum(["flow","spec","code"]), content: z.string() })`).  
 5. Define telemetry/logging strategy for agent interactions to aid debugging and rollback.
-
