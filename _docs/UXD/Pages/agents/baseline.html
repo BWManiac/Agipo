@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Modal - Baseline (Interactive)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 p-8 flex items-center justify-center min-h-screen">
+
+    <!-- Modal Container -->
+    <div class="w-[1200px] h-[800px] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 relative">
+        
+        <!-- Header -->
+        <div class="p-6 flex items-start justify-between shrink-0">
+            <div class="flex gap-4">
+                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-2xl">🧭</div>
+                <div>
+                    <h1 class="text-xl font-bold">Mira Patel</h1>
+                    <p class="text-sm text-gray-500 font-medium">Product Manager</p>
+                    <p class="text-sm text-gray-600 mt-1 max-w-2xl">Synthesises feedback, prioritises roadmap items, and keeps delivery aligned with business goals.</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full uppercase tracking-wider cursor-default" title="Agent is online">Active</span>
+                <button class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+        </div>
+
+        <div class="h-px bg-gray-200 shrink-0"></div>
+
+        <!-- Main Content -->
+        <div class="flex flex-1 overflow-hidden">
+            
+            <!-- Left: Chat Section (60%) -->
+            <div class="flex-[1.5] flex flex-col border-r border-gray-200">
+                
+                <!-- Quick Prompts -->
+                <div class="p-6 pb-4 space-y-2 shrink-0">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Quick Prompts</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setInput('How confident are we in the launch?')" class="px-3 py-1.5 border border-gray-200 rounded-md text-xs hover:bg-gray-50 transition-colors">How confident are we in the launch?</button>
+                        <button onclick="setInput('Summarise risks')" class="px-3 py-1.5 border border-gray-200 rounded-md text-xs hover:bg-gray-50 transition-colors">Summarise risks</button>
+                    </div>
+                </div>
+
+                <div class="h-px bg-gray-200 mx-6 shrink-0"></div>
+
+                <!-- Chat Area -->
+                <div id="chat-container" class="flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth">
+                    
+                    <!-- System Message -->
+                    <div class="bg-gray-50 p-4 rounded-lg text-sm text-gray-600 border border-gray-100">
+                        You're connected to Mira Patel. Ask for updates, approve decisions, or assign tasks.
+                    </div>
+
+                    <!-- Agent Message -->
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center text-sm">🧭</div>
+                        <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed">
+                            Identified 3 risks blocking the self-service onboarding initiative.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-6 pt-2 shrink-0">
+                    <div class="relative">
+                        <textarea id="chat-input" class="w-full border border-gray-200 rounded-xl p-4 pr-16 text-sm focus:outline-none focus:ring-2 focus:ring-black/5 resize-none h-24 transition-shadow" placeholder="Ask Mira Patel for an update or give feedback..." onkeydown="handleEnter(event)"></textarea>
+                        <button onclick="sendMessage()" class="absolute bottom-4 right-4 bg-black text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition-colors">Send</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Info Panel (40%) -->
+            <div class="flex-1 flex flex-col bg-gray-50/50 overflow-y-auto">
+                <div class="p-8 space-y-8">
+                    
+                    <!-- Objectives -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Objectives</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs shadow-sm">Accelerate PLG roadmap</span>
+                            <span class="px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs shadow-sm">Improve onboarding completion</span>
+                        </div>
+                    </div>
+
+                    <!-- Insights -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Insights & Signals</h3>
+                        
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-2 hover:shadow-md transition-shadow cursor-pointer">
+                            <span class="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded uppercase tracking-wide">Question</span>
+                            <p class="text-sm font-medium">Need approval: Delay onboarding rollout?</p>
+                            <p class="text-xs text-gray-500">Enabling SMS verification would extend schedule by 1 sprint.</p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-2 hover:shadow-md transition-shadow cursor-pointer">
+                            <span class="text-[10px] font-bold bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded uppercase tracking-wide">Risk</span>
+                            <p class="text-sm font-medium">Risk: Research bandwidth</p>
+                            <p class="text-xs text-gray-500">User research agent is over capacity.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tool Usage -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Tool Usage</h3>
+                            <button onclick="toggleToolModal()" class="text-xs text-blue-600 font-medium hover:underline">Edit tools</button>
+                        </div>
+                        <div class="bg-gray-100 rounded-xl p-8 text-center border border-dashed border-gray-300">
+                            <p class="text-sm text-gray-500">No tools assigned</p>
+                            <p class="text-xs text-gray-400 mt-1">Click "Edit tools" to assign tools to this agent.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Mock Tool Modal Overlay -->
+        <div id="tool-modal" class="absolute inset-0 bg-black/20 backdrop-blur-sm z-50 hidden items-center justify-center animate-fade-in">
+            <div class="bg-white w-[600px] rounded-2xl shadow-xl p-6 space-y-4 m-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-bold text-lg">Edit Tools</h2>
+                    <button onclick="toggleToolModal()" class="p-1 hover:bg-gray-100 rounded-full"><svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+                <div class="space-y-2 max-h-[400px] overflow-y-auto">
+                    <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-black focus:ring-black">
+                        <div>
+                            <div class="font-medium text-sm">Lead Scraper</div>
+                            <div class="text-xs text-gray-500">Extracts emails from LinkedIn</div>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-black focus:ring-black">
+                        <div>
+                            <div class="font-medium text-sm">Slack Notifier</div>
+                            <div class="text-xs text-gray-500">Posts messages to channels</div>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button onclick="toggleToolModal()" class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+                    <button onclick="toggleToolModal()" class="px-4 py-2 text-sm font-medium bg-black text-white hover:bg-gray-800 rounded-lg">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function setInput(text) {
+            document.getElementById('chat-input').value = text;
+            document.getElementById('chat-input').focus();
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const container = document.getElementById('chat-container');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'flex gap-4 flex-row-reverse animate-fade-in';
+            userMsg.innerHTML = `
+                <div class="w-8 h-8 bg-black text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs font-medium">ME</div>
+                <div class="bg-black text-white p-4 rounded-2xl rounded-tr-none shadow-sm text-sm leading-relaxed">
+                    ${text}
+                </div>
+            `;
+            container.appendChild(userMsg);
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Mock reply delay
+            setTimeout(() => {
+                const agentMsg = document.createElement('div');
+                agentMsg.className = 'flex gap-4 animate-fade-in';
+                agentMsg.innerHTML = `
+                    <div class="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center text-sm">🧭</div>
+                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed">
+                        I've received your update. I'll add it to the next sprint review.
+                    </div>
+                `;
+                container.appendChild(agentMsg);
+                container.scrollTop = container.scrollHeight;
+            }, 1000);
+        }
+
+        function toggleToolModal() {
+            const modal = document.getElementById('tool-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+    </script>
+
+</body>
+</html>

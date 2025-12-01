@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Modal - Variation 1 (Assistant - Interactive)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Tab Active State */
+        .tab-btn.active { color: black; border-bottom-color: black; }
+        
+        /* Content Display */
+        .tab-content { display: none; }
+        .tab-content.active { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8 flex items-center justify-center min-h-screen">
+
+    <!-- Modal Container -->
+    <div class="w-[1200px] h-[800px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 relative">
+        
+        <!-- Header -->
+        <div class="h-16 border-b border-gray-100 flex items-center px-6 justify-between bg-white shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center text-base shadow-sm">🧭</div>
+                <div>
+                    <h1 class="text-sm font-bold text-gray-900">Mira Patel</h1>
+                    <p class="text-xs text-gray-500">Product Manager • Active</p>
+                </div>
+            </div>
+            <div class="flex gap-6 text-sm font-medium text-gray-500 h-full items-end">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active text-black border-b-2 border-black pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Overview</button>
+                <button onclick="switchTab('chat')" id="tab-chat" class="tab-btn border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Chat</button>
+                <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Tasks</button>
+                <button onclick="switchTab('planner')" id="tab-planner" class="tab-btn border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Planner</button>
+                <button onclick="switchTab('memory')" id="tab-memory" class="tab-btn border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Records</button>
+                <button onclick="switchTab('capabilities')" id="tab-capabilities" class="tab-btn border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Capabilities</button>
+                <button onclick="switchTab('config')" id="tab-config" class="tab-btn border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Config</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+        </div>
+
+        <!-- CONTENT: OVERVIEW TAB (Default) -->
+        <div id="content-overview" class="tab-content flex-1 bg-gray-50 overflow-y-auto active animate-fade-in">
+            <div class="p-8 max-w-6xl mx-auto w-full grid grid-cols-12 gap-8">
+                
+                <!-- Left Column (Status & Attention) - Span 7 -->
+                <div class="col-span-7 space-y-6">
+                    
+                    <!-- Current Status Card -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Current Focus</h3>
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <div class="w-3 h-3 bg-green-500 rounded-full animate-ping absolute"></div>
+                                <div class="w-3 h-3 bg-green-500 rounded-full relative"></div>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900">Synthesising Feedback</h2>
+                                <p class="text-sm text-gray-500">Reading "QBR Recordings" table to extract themes. (Step 2/4)</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-green-500 h-full w-[45%] rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Attention Needed -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Needs Attention</h3>
+                        
+                        <!-- Approval Request -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 border-l-4 border-l-blue-500 flex justify-between items-center hover:shadow-md transition-shadow cursor-pointer" onclick="switchTab('chat')">
+                            <div class="flex gap-3 items-center">
+                                <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Approval Required</h4>
+                                    <p class="text-xs text-gray-500">Create "Technical Debt" ticket in Roadmap.</p>
+                                </div>
+                            </div>
+                            <button class="text-xs font-medium text-blue-600 border border-blue-200 px-3 py-1 rounded-full hover:bg-blue-50">Review</button>
+                        </div>
+
+                        <!-- Blocker -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 border-l-4 border-l-red-500 flex justify-between items-center hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="flex gap-3 items-center">
+                                <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Missing Credentials</h4>
+                                    <p class="text-xs text-gray-500">Jira API Token has expired.</p>
+                                </div>
+                            </div>
+                            <button class="text-xs font-medium text-gray-600 border border-gray-200 px-3 py-1 rounded-full hover:bg-gray-50">Fix</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column (Actions & Activity) - Span 5 -->
+                <div class="col-span-5 space-y-6">
+                    
+                    <!-- Quick Message (Updated) -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Start Conversation</h3>
+                        <div class="relative">
+                            <textarea id="quick-input" class="w-full border border-gray-200 rounded-lg p-3 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-black/5 resize-none h-20 transition-shadow" placeholder="Ask Mira to do something..." onkeydown="handleQuickEnter(event)"></textarea>
+                            <button onclick="sendQuickMessage()" class="absolute bottom-3 right-3 p-1.5 bg-black text-white rounded hover:bg-gray-800 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                            </button>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button class="text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 px-2 py-1 rounded border border-gray-200 transition-colors">Run Standup</button>
+                            <button class="text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 px-2 py-1 rounded border border-gray-200 transition-colors">Draft Report</button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Recent Highlights</h3>
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div class="divide-y divide-gray-100">
+                                <div class="p-3 flex gap-3 items-start hover:bg-gray-50 transition-colors">
+                                    <div class="mt-1 p-1 bg-green-100 text-green-700 rounded">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Drafted Release Notes</p>
+                                        <p class="text-xs text-gray-500">9:00 AM • Saved to Docs</p>
+                                    </div>
+                                </div>
+                                <div class="p-3 flex gap-3 items-start hover:bg-gray-50 transition-colors">
+                                    <div class="mt-1 p-1 bg-blue-100 text-blue-700 rounded">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Morning Briefing</p>
+                                        <p class="text-xs text-gray-500">Yesterday • Chat Session</p>
+                                    </div>
+                                </div>
+                                <div class="p-3 flex gap-3 items-start hover:bg-gray-50 transition-colors">
+                                    <div class="mt-1 p-1 bg-purple-100 text-purple-700 rounded">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Lead Qualified: Acme Corp</p>
+                                        <p class="text-xs text-gray-500">Mon 2pm • Triggered by 'Leads'</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="switchTab('tasks')" class="w-full p-2 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">View Full History</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CONTENT: CHAT TAB -->
+        <div id="content-chat" class="tab-content flex-1 overflow-hidden animate-fade-in">
+            <!-- Sidebar: Context (Left) -->
+            <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col overflow-y-auto shrink-0">
+                <div class="p-4 space-y-6">
+                    <!-- Current Task -->
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Current Focus</h3>
+                        <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-xs font-medium text-gray-700">Synthesising Feedback</span>
+                            </div>
+                            <p class="text-[10px] text-gray-500">Reading "QBR Recordings" table to extract themes.</p>
+                        </div>
+                    </div>
+                    <!-- Recent Conversations -->
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Recent Conversations</h3>
+                        <ul class="space-y-1">
+                            <li class="flex items-center gap-2 text-xs text-gray-600 bg-blue-50 border border-blue-200 p-2 rounded cursor-pointer font-medium text-blue-700">
+                                <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                Admin Dashboard Latency
+                            </li>
+                            <li class="flex items-center gap-2 text-xs text-gray-600 bg-white border border-gray-200 p-2 rounded hover:bg-gray-50 cursor-pointer transition-colors">
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                Onboarding Launch Plan
+                            </li>
+                            <li class="flex items-center gap-2 text-xs text-gray-600 bg-white border border-gray-200 p-2 rounded hover:bg-gray-50 cursor-pointer transition-colors">
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                Daily Standup (Oct 24)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Chat Area (Center) -->
+            <div class="flex-1 flex flex-col bg-white">
+                <div id="chat-history" class="flex-1 p-6 space-y-6 overflow-y-auto scroll-smooth">
+                    <div class="flex justify-center">
+                        <span class="text-[10px] text-gray-400 bg-gray-50 px-2 py-1 rounded">Today, 9:41 AM</span>
+                    </div>
+                    <div class="flex gap-4 max-w-3xl">
+                        <div class="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center text-sm mt-1">🧭</div>
+                        <div class="space-y-2">
+                            <div class="text-sm text-gray-800 leading-relaxed">
+                                I've analysed the last 14 entries in the <strong>Stakeholder Interviews</strong> table. There is a recurring concern about the "Admin Dashboard" latency.
+                            </div>
+                            <div id="action-widget" class="bg-blue-50 border border-blue-100 rounded-lg p-3 max-w-md">
+                                <div class="flex items-start gap-3">
+                                    <div class="p-1.5 bg-blue-100 rounded text-blue-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-blue-900">Suggested Action</p>
+                                        <p class="text-xs text-blue-800 mt-0.5">Create a "Technical Debt" ticket in the roadmap.</p>
+                                        <div class="flex gap-2 mt-2">
+                                            <button onclick="approveAction(this)" class="px-3 py-1 bg-blue-600 text-white text-xs rounded font-medium hover:bg-blue-700 transition-colors">Approve</button>
+                                            <button class="px-3 py-1 bg-white border border-blue-200 text-blue-600 text-xs rounded font-medium hover:bg-blue-50 transition-colors">Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-100">
+                    <div class="relative bg-white border border-gray-200 rounded-xl shadow-sm focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-500 transition-all">
+                        <textarea id="chat-input" class="w-full p-3 pr-12 text-sm bg-transparent focus:outline-none resize-none h-14" placeholder="Message Mira..." onkeydown="handleChatEnter(event)"></textarea>
+                        <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                            <button onclick="sendChatMessage()" class="p-1.5 bg-black text-white rounded hover:bg-gray-800 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT: TASKS TAB (History) -->
+        <div id="content-tasks" class="tab-content flex-1 flex-col bg-gray-50 overflow-y-auto animate-fade-in">
+            <div class="p-6 max-w-4xl mx-auto w-full space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-semibold">Task Execution History</h2>
+                        <p class="text-sm text-gray-500">Review tool calls and workflow runs.</p>
+                    </div>
+                </div>
+
+                <!-- Task: Workflow Execution (Completed) -->
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div class="flex gap-3">
+                            <div class="mt-1 p-1.5 bg-green-50 text-green-600 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-medium text-sm">Draft Release Notes</h3>
+                                    <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-wide">Workflow</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Today, 9:00 AM • Duration: 45s</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleFeedback(this)" class="text-xs font-medium text-blue-600 border border-blue-200 px-3 py-1 rounded-full hover:bg-blue-50 transition-colors">Give Feedback</button>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 font-mono border border-gray-100">
+                        Output: "v2.4 Release Notes: Fixed login latency..."
+                    </div>
+                    
+                    <!-- Feedback Form (Improved Split) -->
+                    <div class="feedback-form hidden mt-3 bg-blue-50/50 p-3 rounded-lg border border-blue-100 space-y-2">
+                        <p class="text-xs font-medium text-blue-900 mb-2">How can we improve this task?</p>
+                        <div class="flex gap-3">
+                            <button class="flex-1 flex items-center justify-center gap-2 p-2 bg-white border border-blue-200 rounded hover:bg-blue-50 text-xs text-blue-700 transition-colors">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                Edit Workflow Logic
+                            </button>
+                            <button class="flex-1 flex items-center justify-center gap-2 p-2 bg-white border border-blue-200 rounded hover:bg-blue-50 text-xs text-blue-700 transition-colors">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                                Refine Prompt Context
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task: Tool Call (Completed) -->
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div class="flex gap-3">
+                            <div class="mt-1 p-1.5 bg-green-50 text-green-600 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-medium text-sm">Jira: Create Ticket</h3>
+                                    <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-wide">Tool Call</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Today, 9:42 AM • Duration: 1.2s</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 font-mono border border-gray-100">
+                        Input: { title: "Technical Debt", priority: "High" }<br>
+                        Result: { id: "PROD-1042", status: "Created" }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CONTENT: PLANNER TAB -->
+        <div id="content-planner" class="tab-content flex-1 flex-col bg-gray-50 overflow-y-auto animate-fade-in">
+            <div class="p-6 max-w-4xl mx-auto w-full space-y-8">
+                
+                <!-- Scheduled Jobs -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 class="text-lg font-semibold">Scheduled Jobs</h2>
+                            <p class="text-sm text-gray-500">Time-based recurring tasks.</p>
+                        </div>
+                        <button class="px-3 py-1.5 bg-white border border-gray-200 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">+ Add Job</button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Type A: Scheduled Conversation -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="text-xs font-bold bg-purple-50 text-purple-700 px-2 py-1 rounded">09:00 AM • Daily</span>
+                                <button class="text-gray-400 hover:text-gray-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg></button>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                <h3 class="font-semibold text-sm">Morning Briefing</h3>
+                            </div>
+                            <p class="text-xs text-gray-500">Starts a conversation with:</p>
+                            <div class="mt-2 p-2 bg-gray-50 rounded border border-gray-100 text-xs italic text-gray-600">
+                                "Good morning. Here are the tasks for today..."
+                            </div>
+                        </div>
+
+                        <!-- Type B: Scheduled Workflow -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded">05:00 PM • Fridays</span>
+                                <button class="text-gray-400 hover:text-gray-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg></button>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                <h3 class="font-semibold text-sm">Weekly Report</h3>
+                            </div>
+                            <p class="text-xs text-gray-500">Executes <strong>"Draft Release Notes"</strong> workflow silently.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-px bg-gray-200"></div>
+
+                <!-- Event Triggers -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 class="text-lg font-semibold">Event Triggers</h2>
+                            <p class="text-sm text-gray-500">Actions triggered by data changes.</p>
+                        </div>
+                        <button class="px-3 py-1.5 bg-white border border-gray-200 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">+ Add Trigger</button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Trigger 1 (Workflow) -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-sm">New Lead Qualification</h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">When a row is added to <span class="font-mono text-gray-700 bg-gray-100 px-1 rounded">Leads</span></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <p class="text-xs font-bold text-gray-700 uppercase tracking-wide">Run Workflow</p>
+                                    <p class="text-xs text-gray-500">Qualify Lead</p>
+                                </div>
+                                <button class="px-3 py-1.5 bg-gray-50 border border-gray-200 text-xs font-medium rounded hover:bg-gray-100">Test Run</button>
+                            </div>
+                        </div>
+
+                        <!-- Trigger 2 (Conversation) -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-sm">New Support Ticket</h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">When row added to <span class="font-mono text-gray-700 bg-gray-100 px-1 rounded">Tickets</span> with priority='P1'</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <p class="text-xs font-bold text-gray-700 uppercase tracking-wide">Start Chat</p>
+                                    <p class="text-xs text-gray-500">"Hi, a P1 ticket just came in..."</p>
+                                </div>
+                                <button class="px-3 py-1.5 bg-gray-50 border border-gray-200 text-xs font-medium rounded hover:bg-gray-100">Test Run</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CONTENT: RECORDS TAB -->
+        <div id="content-memory" class="tab-content flex-1 flex-col bg-gray-50 overflow-y-auto animate-fade-in">
+            <div class="p-6 max-w-5xl mx-auto w-full space-y-8">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-semibold">Assigned Tables</h2>
+                    <button class="px-4 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-800 transition-colors">+ Assign Table</button>
+                </div>
+                
+                <!-- Table 1: Stakeholder Interviews -->
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                         <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                         </div>
+                         <div>
+                             <h3 class="font-semibold text-sm">Stakeholder Interviews</h3>
+                             <p class="text-xs text-gray-500">Read-Only • 124 Records</p>
+                         </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+                                <tr>
+                                    <th class="px-4 py-3 font-medium border-b">ID</th>
+                                    <th class="px-4 py-3 font-medium border-b">Stakeholder</th>
+                                    <th class="px-4 py-3 font-medium border-b">Topic</th>
+                                    <th class="px-4 py-3 font-medium border-b">Sentiment</th>
+                                    <th class="px-4 py-3 font-medium border-b">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-400">#1024</td>
+                                    <td class="px-4 py-3">Sarah Chen (CTO)</td>
+                                    <td class="px-4 py-3">Admin Dashboard</td>
+                                    <td class="px-4 py-3"><span class="text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs">Negative</span></td>
+                                    <td class="px-4 py-3 text-gray-500">Oct 24</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-400">#1023</td>
+                                    <td class="px-4 py-3">Mike Ross (Sales)</td>
+                                    <td class="px-4 py-3">Mobile App</td>
+                                    <td class="px-4 py-3"><span class="text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs">Positive</span></td>
+                                    <td class="px-4 py-3 text-gray-500">Oct 23</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table 2: Product Roadmap -->
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                         <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                         </div>
+                         <div>
+                             <h3 class="font-semibold text-sm">Product Roadmap</h3>
+                             <p class="text-xs text-gray-500">Read/Write • 45 Records</p>
+                         </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+                                <tr>
+                                    <th class="px-4 py-3 font-medium border-b">Feature</th>
+                                    <th class="px-4 py-3 font-medium border-b">Status</th>
+                                    <th class="px-4 py-3 font-medium border-b">Quarter</th>
+                                    <th class="px-4 py-3 font-medium border-b">Owner</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 font-medium">Self-Service Onboarding</td>
+                                    <td class="px-4 py-3"><span class="bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded text-xs">In Progress</span></td>
+                                    <td class="px-4 py-3 text-gray-500">Q4 2025</td>
+                                    <td class="px-4 py-3 text-gray-500">Mira P.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 font-medium">Enterprise SSO</td>
+                                    <td class="px-4 py-3"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">Planned</span></td>
+                                    <td class="px-4 py-3 text-gray-500">Q1 2026</td>
+                                    <td class="px-4 py-3 text-gray-500">Alex K.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CONTENT: CAPABILITIES TAB -->
+        <div id="content-capabilities" class="tab-content flex-1 flex-col bg-gray-50 overflow-y-auto animate-fade-in">
+             <div class="p-6 max-w-4xl mx-auto w-full space-y-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                         <h2 class="text-lg font-semibold">Assigned Capabilities</h2>
+                         <p class="text-sm text-gray-500">Manage what this agent can do.</p>
+                    </div>
+                    <button class="px-4 py-2 bg-white border border-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">Manage</button>
+                </div>
+
+                <!-- Section 1: Tools -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Tools</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Tool Card -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase rounded">Read/Write</span>
+                            </div>
+                            <h3 class="font-semibold text-sm">Jira Integration</h3>
+                            <p class="text-xs text-gray-500 mt-1">Can create tickets, update status, and read comments.</p>
+                        </div>
+
+                         <!-- Tool Card -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase rounded">Send Only</span>
+                            </div>
+                            <h3 class="font-semibold text-sm">Email Sender</h3>
+                            <p class="text-xs text-gray-500 mt-1">Sends weekly summaries to stakeholders.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Workflows -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Workflows</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Workflow Card -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                </div>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase rounded">Workflow</span>
+                            </div>
+                            <h3 class="font-semibold text-sm">Draft Release Notes</h3>
+                            <p class="text-xs text-gray-500 mt-1">Compiles Jira items + Git commits into a summary.</p>
+                        </div>
+
+                        <!-- Workflow Card -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase rounded">Workflow</span>
+                            </div>
+                            <h3 class="font-semibold text-sm">Weekly Report</h3>
+                            <p class="text-xs text-gray-500 mt-1">Generates and sends the Friday status email.</p>
+                        </div>
+                    </div>
+                </div>
+
+             </div>
+        </div>
+
+        <!-- CONTENT: CONFIG TAB -->
+        <div id="content-config" class="tab-content flex-1 flex-col bg-gray-50 overflow-y-auto animate-fade-in">
+             <div class="p-6 max-w-2xl mx-auto w-full space-y-6">
+                 <h2 class="text-lg font-semibold">Agent Configuration</h2>
+                 
+                 <!-- Objectives Section -->
+                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-1">Objectives</label>
+                         <p class="text-xs text-gray-500 mb-2">What is this agent trying to achieve?</p>
+                         <textarea class="w-full border border-gray-200 rounded-lg p-3 text-sm h-24 focus:ring-2 focus:ring-black/5 focus:border-black outline-none" placeholder="- Increase user retention&#10;- Reduce support ticket volume"></textarea>
+                     </div>
+                 </div>
+
+                 <!-- Configuration Variables -->
+                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                     <h3 class="text-sm font-medium text-gray-700">Variables & Preferences</h3>
+                     <div class="grid grid-cols-2 gap-4">
+                         <div>
+                             <label class="block text-xs font-medium text-gray-500 mb-1">Tone</label>
+                             <select class="w-full border border-gray-200 rounded-lg p-2 text-sm bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none">
+                                 <option>Professional</option>
+                                 <option>Casual</option>
+                                 <option>Enthusiastic</option>
+                             </select>
+                         </div>
+                         <div>
+                             <label class="block text-xs font-medium text-gray-500 mb-1">Output Length</label>
+                             <select class="w-full border border-gray-200 rounded-lg p-2 text-sm bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none">
+                                 <option>Concise</option>
+                                 <option>Detailed</option>
+                             </select>
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Core Settings -->
+                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-1">System Prompt</label>
+                         <textarea class="w-full border border-gray-200 rounded-lg p-3 text-sm h-32 focus:ring-2 focus:ring-black/5 focus:border-black outline-none">You are Mira Patel, an AI Product Manager embedded with the Agipo team. Monitor initiatives, surface risks, and keep stakeholders aligned.</textarea>
+                     </div>
+                     
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                         <select class="w-full border border-gray-200 rounded-lg p-2 text-sm bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none">
+                             <option>Google Gemini 2.5 Pro</option>
+                             <option>OpenAI GPT-4o</option>
+                             <option>Anthropic Claude 3.5 Sonnet</option>
+                         </select>
+                     </div>
+
+                     <div class="flex justify-end pt-4">
+                         <button class="px-4 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-800 transition-colors">Save Changes</button>
+                     </div>
+                 </div>
+             </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg transform translate-y-20 opacity-0 transition-all duration-300">
+            Action Approved
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.id === `tab-${tabName}`) {
+                    btn.classList.add('active', 'text-black', 'border-black');
+                    btn.classList.remove('border-transparent');
+                } else {
+                    btn.classList.remove('active', 'text-black', 'border-black');
+                    btn.classList.add('border-transparent');
+                }
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`content-${tabName}`).classList.add('active');
+        }
+
+        function toggleFeedback(btn) {
+            const container = btn.closest('.bg-white').querySelector('.feedback-form');
+            container.classList.toggle('hidden');
+        }
+
+        function approveAction(btn) {
+            btn.innerHTML = `<svg class="w-3 h-3 animate-spin inline mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Approving`;
+            setTimeout(() => {
+                const widget = btn.closest('#action-widget');
+                widget.innerHTML = `
+                    <div class="flex items-center gap-2 text-green-700">
+                        <div class="p-1 bg-green-100 rounded-full"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>
+                        <span class="text-xs font-medium">Approved by User</span>
+                    </div>
+                `;
+                widget.classList.replace('bg-blue-50', 'bg-green-50');
+                widget.classList.replace('border-blue-100', 'border-green-100');
+                const toast = document.getElementById('toast');
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 2000);
+            }, 1000);
+        }
+
+        function handleChatEnter(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            const container = document.getElementById('chat-history');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'flex gap-4 flex-row-reverse max-w-3xl ml-auto animate-fade-in';
+            userMsg.innerHTML = `
+                <div class="w-8 h-8 bg-gray-900 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs mt-1">ME</div>
+                <div class="bg-gray-100 text-gray-900 p-3 px-4 rounded-2xl rounded-tr-none text-sm">
+                    ${text}
+                </div>
+            `;
+            container.appendChild(userMsg);
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleQuickEnter(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendQuickMessage();
+            }
+        }
+
+        function sendQuickMessage() {
+            const input = document.getElementById('quick-input');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            // Switch to chat tab
+            switchTab('chat');
+            
+            // Small delay to allow tab switch animation
+            setTimeout(() => {
+                const container = document.getElementById('chat-history');
+                const userMsg = document.createElement('div');
+                userMsg.className = 'flex gap-4 flex-row-reverse max-w-3xl ml-auto animate-fade-in';
+                userMsg.innerHTML = `
+                    <div class="w-8 h-8 bg-gray-900 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs mt-1">ME</div>
+                    <div class="bg-gray-100 text-gray-900 p-3 px-4 rounded-2xl rounded-tr-none text-sm">
+                        ${text}
+                    </div>
+                `;
+                container.appendChild(userMsg);
+                container.scrollTop = container.scrollHeight;
+                input.value = '';
+            }, 100);
+        }
+    </script>
+
+</body>
+</html>
