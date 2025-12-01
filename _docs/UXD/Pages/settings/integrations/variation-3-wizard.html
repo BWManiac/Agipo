@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integrations - Variation 3 (Wizard - Robust)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <style>
+      :root { font-family: 'Inter', sans-serif; }
+      .hidden-panel { display: none; }
+      /* Timeline Line */
+      .timeline-line::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 15px;
+        width: 2px;
+        background-color: #E2E8F0;
+        z-index: 0;
+      }
+      /* Toast Animation */
+      @keyframes slideUp {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .toast {
+        animation: slideUp 0.3s ease-out forwards;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex">
+    
+    <!-- Left Sidebar (Catalog) -->
+    <aside class="w-80 bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0 z-10">
+        <div class="p-6 border-b border-slate-100">
+            <h2 class="text-lg font-semibold text-slate-900">Available Tools</h2>
+            <div class="mt-4 relative">
+                <input type="text" placeholder="Search..." class="w-full pl-3 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm focus:ring-1 focus:ring-indigo-500 transition-shadow">
+            </div>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-4 space-y-2">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Connected</div>
+            
+            <!-- Gmail Sidebar Item -->
+            <button id="btn-gmail" onclick="showPanel('gmail')" class="w-full flex items-center gap-3 p-3 bg-white border border-transparent hover:bg-slate-50 rounded-lg text-left transition-colors group relative">
+                <div id="ind-gmail" class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 rounded-l-lg hidden"></div>
+                
+                <div class="h-8 w-8 bg-white rounded flex items-center justify-center border border-slate-200 group-hover:border-slate-300 transition-colors">
+                    <svg class="w-5 h-5 text-red-600" viewBox="0 0 24 24" fill="currentColor"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                </div>
+                <div>
+                    <div class="text-sm font-medium text-slate-900">Gmail</div>
+                    <div class="text-xs text-green-600 font-medium flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                        2 Accounts
+                    </div>
+                </div>
+            </button>
+
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-6 mb-2 px-2">Catalog</div>
+
+            <!-- Browse AI Sidebar Item -->
+            <button id="btn-browse" onclick="showPanel('browse')" class="w-full flex items-center gap-3 p-3 bg-indigo-50 border border-indigo-100 rounded-lg text-left transition-colors relative shadow-sm">
+                <div id="ind-browse" class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 rounded-l-lg"></div>
+
+                <div class="h-8 w-8 bg-white rounded flex items-center justify-center border border-indigo-200 shadow-sm">
+                    <span class="text-lg">🤖</span>
+                </div>
+                <div>
+                    <div class="text-sm font-medium text-indigo-900">Browse AI</div>
+                    <div class="text-xs text-indigo-600">Web Scraping</div>
+                </div>
+            </button>
+
+            <!-- GitHub Sidebar Item -->
+             <button id="btn-github" onclick="showPanel('github')" class="w-full flex items-center gap-3 p-3 bg-white border border-transparent hover:bg-slate-50 rounded-lg text-left transition-colors group relative">
+                <div id="ind-github" class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 rounded-l-lg hidden"></div>
+                
+                <div class="h-8 w-8 bg-white rounded flex items-center justify-center border border-slate-200 group-hover:border-slate-300 transition-colors">
+                    <svg class="w-5 h-5 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                </div>
+                <div>
+                    <div class="text-sm font-medium text-slate-900">GitHub</div>
+                    <div class="text-xs text-red-600 font-medium flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        Re-auth Needed
+                    </div>
+                </div>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-10 overflow-y-auto bg-slate-50">
+        <div class="max-w-3xl mx-auto">
+            
+            <!-- PANEL 1: BROWSE AI (API Key Wizard) -->
+            <div id="panel-browse">
+                <!-- Detail Header -->
+                <div class="flex items-center gap-6 mb-10">
+                    <div class="h-20 w-20 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                        <span class="text-4xl">🤖</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900">Browse AI</h1>
+                        <p class="text-lg text-slate-500 mt-1">Extract data from any website as a spreadsheet or API.</p>
+                        <div class="flex gap-2 mt-3">
+                            <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded font-medium border border-slate-200">Productivity</span>
+                            <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded font-medium border border-slate-200">Automation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Card (API Key Flow) -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-lg font-medium text-slate-900">Connect Account</h3>
+                            <p class="text-sm text-slate-500 mt-1">Enter your credentials to enable this integration.</p>
+                        </div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                            Auth: API Key
+                        </span>
+                    </div>
+                    
+                    <div class="p-8 space-y-6">
+                        <!-- Input Field -->
+                        <div id="api-key-section">
+                            <label for="api-key" class="block text-sm font-medium text-slate-700">API Key <span class="text-red-500">*</span></label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <input type="password" name="api-key" id="api-key" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 rounded-md py-2 pl-3 pr-10" placeholder="sk_live_..." value="existing_key_hidden" readonly onclick="this.removeAttribute('readonly'); this.value='';">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-sm text-green-600 flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Connected and valid.
+                            </p>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 mt-6">
+                            <button onclick="removeConnection('Browse AI')" class="text-red-600 text-sm font-medium hover:text-red-700 mr-auto">Remove Connection</button>
+                            <button onclick="testKey()" class="bg-white py-2 px-4 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none transition-colors">
+                                Test Key
+                            </button>
+                            <button onclick="saveKey()" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none transition-colors">
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation -->
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                    <h3 class="font-semibold text-blue-900 mb-2">Security Note</h3>
+                    <p class="text-sm text-blue-800 leading-relaxed mb-4">
+                        Your API key is encrypted using AES-256. Agipo agents will only use this key when you explicitly assign this tool to them.
+                    </p>
+                </div>
+            </div>
+
+            <!-- PANEL 2: GMAIL (Connected Details) -->
+            <div id="panel-gmail" class="hidden-panel animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <!-- Detail Header -->
+                <div class="flex items-center gap-6 mb-10">
+                    <div class="h-20 w-20 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                        <svg class="w-10 h-10 text-red-600" viewBox="0 0 24 24" fill="currentColor"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900">Gmail</h1>
+                        <p class="text-lg text-slate-500 mt-1">Integrate your inbox with Agipo agents.</p>
+                        <div class="flex gap-2 mt-3">
+                            <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded font-medium border border-slate-200">Email</span>
+                            <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded font-medium border border-slate-200">Google</span>
+                        </div>
+                    </div>
+                    <div class="ml-auto">
+                        <button onclick="addAccount()" class="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                            Add Account
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Connections -->
+                <section class="mb-12">
+                    <h3 class="text-base font-semibold text-slate-900 mb-4">Connected Accounts</h3>
+                    
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="divide-y divide-slate-100">
+                            <!-- Account 1 -->
+                            <div class="p-4 hover:bg-slate-50 transition-colors group" id="row-gmail-1">
+                                <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                        <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm border border-indigo-200">Z</div>
+                                    <div>
+                                        <div class="text-sm font-medium text-slate-900">zen@agipo.com</div>
+                                            <div class="text-xs text-slate-500 flex items-center gap-1">
+                                                <span>Added Dec 1</span>
+                                                <span>&middot;</span>
+                                                <span class="text-xs bg-slate-100 px-1.5 rounded text-slate-600">Read-Only</span>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                        Healthy
+                                    </span>
+                                        <button onclick="disconnectRow('row-gmail-1')" class="text-slate-400 hover:text-red-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">Disconnect</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account 2 -->
+                            <div class="p-4 hover:bg-slate-50 transition-colors group" id="row-gmail-2">
+                                <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                        <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-bold text-sm border border-orange-200">P</div>
+                                    <div>
+                                        <div class="text-sm font-medium text-slate-900">personal@gmail.com</div>
+                                            <div class="text-xs text-slate-500 flex items-center gap-1">
+                                                <span>Added Nov 28</span>
+                                                <span>&middot;</span>
+                                                <span class="text-xs bg-slate-100 px-1.5 rounded text-slate-600">Read-Only</span>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                        Healthy
+                                    </span>
+                                        <button onclick="disconnectRow('row-gmail-2')" class="text-slate-400 hover:text-red-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">Disconnect</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Activity Log -->
+                <section>
+                    <h3 class="text-base font-semibold text-slate-900 mb-4 flex justify-between items-center">
+                        Recent Activity
+                        <button class="text-xs text-indigo-600 hover:text-indigo-700">View All</button>
+                    </h3>
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <div class="relative timeline-line space-y-8 pl-2">
+                            
+                            <!-- Log Item 1 -->
+                            <div class="relative flex gap-4 z-10">
+                                <div class="h-8 w-8 rounded-full bg-white border-2 border-indigo-500 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-900"><span class="font-semibold">Agent Mira</span> read 3 emails.</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">2 minutes ago &middot; via zen@agipo.com</p>
+                                </div>
+                            </div>
+
+                            <!-- Log Item 2 -->
+                            <div class="relative flex gap-4 z-10">
+                                <div class="h-8 w-8 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-900"><span class="font-semibold">Zen</span> connected a new account.</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">1 hour ago &middot; personal@gmail.com</p>
+                                </div>
+                        </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- PANEL 3: GITHUB (Error State) -->
+             <div id="panel-github" class="hidden-panel animate-in fade-in slide-in-from-bottom-4 duration-500">
+                 <div class="flex items-center gap-6 mb-10">
+                    <div class="h-20 w-20 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                        <svg class="w-10 h-10 text-slate-900" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900">GitHub</h1>
+                        <p class="text-lg text-slate-500 mt-1">Manage code and pull requests.</p>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
+                    <h3 class="text-red-800 font-semibold mb-2">Action Required</h3>
+                    <p class="text-red-700 text-sm mb-4">The connection for <strong>zen-dev</strong> has expired. Agents cannot access this account until you re-authenticate.</p>
+                    <button class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors" onclick="addAccount()">Reconnect Account</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Simple Scripts for Interactivity -->
+    <script>
+        // Toast System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = type === 'success' ? 'bg-slate-900 text-white' : 'bg-red-600 text-white';
+            toast.className = `toast ${colors} px-4 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-2`;
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.remove();
+            }, 3000);
+        }
+
+        function showPanel(id) {
+            // Hide all panels
+            document.querySelectorAll('[id^="panel-"]').forEach(p => p.classList.add('hidden-panel'));
+            
+            // Show selected
+            document.getElementById('panel-' + id).classList.remove('hidden-panel');
+
+            // Reset All Buttons
+            ['btn-gmail', 'btn-browse', 'btn-github'].forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                const ind = document.getElementById(btnId.replace('btn', 'ind'));
+                if (btn && ind) {
+                    btn.classList.remove('bg-indigo-50', 'border-indigo-100', 'shadow-sm');
+                    btn.classList.add('bg-white', 'border-transparent', 'hover:bg-slate-50');
+                    ind.classList.add('hidden');
+                }
+            });
+
+            // Activate Selected
+            const btn = document.getElementById('btn-' + id);
+            const ind = document.getElementById('ind-' + id);
+            
+            btn.classList.remove('bg-white', 'border-transparent', 'hover:bg-slate-50');
+            btn.classList.add('bg-indigo-50', 'border-indigo-100', 'shadow-sm');
+            ind.classList.remove('hidden');
+        }
+
+        function testKey() {
+            const btn = event.target;
+            const original = btn.innerHTML;
+            btn.innerHTML = 'Verifying...';
+            btn.disabled = true;
+            setTimeout(() => {
+                showToast('API Key is valid!');
+                btn.innerHTML = original;
+                btn.disabled = false;
+            }, 1000);
+        }
+
+        function saveKey() {
+            const btn = event.target;
+            btn.innerHTML = 'Saving...';
+            setTimeout(() => {
+                showToast('Connection updated successfully.');
+                btn.innerHTML = 'Update';
+            }, 1000);
+        }
+
+        function removeConnection(name) {
+            if(confirm(`Disconnect ${name}? This will break any agents using it.`)) {
+                showToast(`${name} disconnected.`, 'error');
+                // In a real app, reset the UI state here
+            }
+        }
+
+        function addAccount() {
+            showToast('Redirecting to provider...');
+        }
+
+        function disconnectRow(id) {
+            if(confirm("Disconnect this account?")) {
+                document.getElementById(id).remove();
+                showToast('Account removed.');
+            }
+        }
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integrations - Variation 2 (Control Panel - Robust)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <style>
+      :root { font-family: 'Inter', sans-serif; }
+      /* Utility for nested rows */
+      .child-row td:first-child {
+        padding-left: 3rem;
+        position: relative;
+      }
+      .child-row td:first-child::before {
+        content: '';
+        position: absolute;
+        left: 1.5rem;
+        top: -50%;
+        bottom: 50%;
+        width: 1px;
+        background-color: #E2E8F0;
+      }
+      .child-row td:first-child::after {
+        content: '';
+        position: absolute;
+        left: 1.5rem;
+        top: 50%;
+        width: 1rem;
+        height: 1px;
+        background-color: #E2E8F0;
+      }
+      /* Simple Modal Overlay for "Add Connection" */
+      .modal-overlay {
+        background: rgba(0,0,0,0.5);
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased min-h-screen p-8">
+    
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-slate-900">Integrations</h1>
+                <p class="text-sm text-slate-500 mt-1">Manage API access, auth types, and OAuth scopes for your organization.</p>
+            </div>
+            <div class="flex gap-3">
+                 <button onclick="alert('Opening Audit Logs...')" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-md text-sm font-medium shadow-sm hover:bg-slate-50 transition-colors">
+                    View Audit Logs
+                </button>
+                <button onclick="openAddModal()" class="px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-medium shadow-sm hover:bg-slate-800 flex items-center gap-2 transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    Add Connection
+            </button>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                <div class="text-xs font-medium text-slate-500 uppercase">Total Connections</div>
+                <div class="text-2xl font-semibold text-slate-900 mt-1">4</div>
+            </div>
+             <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                <div class="text-xs font-medium text-slate-500 uppercase">Active Agents</div>
+                <div class="text-2xl font-semibold text-slate-900 mt-1">12</div>
+            </div>
+             <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                <div class="text-xs font-medium text-slate-500 uppercase">Healthy</div>
+                <div class="text-2xl font-semibold text-green-600 mt-1">3</div>
+            </div>
+             <div class="bg-white p-4 rounded-lg border border-red-100 bg-red-50/50 shadow-sm">
+                <div class="text-xs font-medium text-red-600 uppercase">Errors</div>
+                <div class="text-2xl font-semibold text-red-700 mt-1">1</div>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+            
+            <!-- Toolbar -->
+            <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                <div class="flex gap-2">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-2 flex items-center text-slate-400">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </span>
+                        <input type="text" placeholder="Filter integrations..." class="pl-8 pr-3 py-1.5 text-sm border border-slate-300 rounded-md focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white w-64 shadow-sm">
+                    </div>
+                    <select class="pl-3 pr-8 py-1.5 text-sm border border-slate-300 rounded-md bg-white text-slate-700 focus:ring-1 focus:ring-indigo-500 shadow-sm">
+                        <option>All Categories</option>
+                        <option>CRM</option>
+                        <option>Productivity</option>
+                        <option>Dev Tools</option>
+                    </select>
+                </div>
+                <div class="text-xs text-slate-500">
+                    Sorted by <span class="font-medium text-slate-700">Status</span>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-1/4">Service / Account</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-1/6">Auth Type</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-1/4">Scopes / Permissions</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-32">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-32">Last Activity</th>
+                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                    
+                    <!-- GROUP 1: Gmail (Multi-Account) -->
+                    <!-- Header Row -->
+                    <tr class="bg-slate-50/50">
+                        <td class="px-6 py-3 whitespace-nowrap" colspan="6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-6 w-6 bg-red-50 rounded flex items-center justify-center border border-red-100 text-red-600">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                                </div>
+                                <span class="ml-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Gmail (Google Workspace)</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Account 1 -->
+                    <tr class="hover:bg-slate-50 child-row transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="h-6 w-6 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-bold flex items-center justify-center mr-3">Z</span>
+                                <div class="text-sm font-medium text-slate-900">zen@agipo.com</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
+                                OAuth 2.0
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600">gmail.readonly</span>
+                                <span class="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600">gmail.send</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Healthy
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            2 mins ago
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="configure('zen@agipo.com')" class="text-indigo-600 hover:text-indigo-900">Configure</button>
+                        </td>
+                    </tr>
+
+                    <!-- Account 2 -->
+                    <tr class="hover:bg-slate-50 child-row transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="h-6 w-6 rounded-full bg-orange-100 text-orange-600 text-[10px] font-bold flex items-center justify-center mr-3">P</span>
+                                <div class="text-sm font-medium text-slate-900">personal@gmail.com</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
+                                OAuth 2.0
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600">gmail.readonly</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Healthy
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            3 days ago
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="configure('personal@gmail.com')" class="text-indigo-600 hover:text-indigo-900">Configure</button>
+                        </td>
+                    </tr>
+
+                    <!-- GROUP 2: Browse AI (API Key) -->
+                     <tr class="bg-slate-50/50">
+                        <td class="px-6 py-3 whitespace-nowrap" colspan="6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-6 w-6 bg-indigo-50 rounded flex items-center justify-center border border-indigo-100 text-indigo-600">
+                                    <span class="text-xs">🤖</span>
+                                </div>
+                                <span class="ml-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Browse AI</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 child-row transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-slate-900">Production Key</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                                API Key
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-xs text-slate-500 italic">Full Account Access</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Healthy
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            1 hour ago
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="rotateKey('Production Key')" class="text-indigo-600 hover:text-indigo-900">Rotate Key</button>
+                        </td>
+                    </tr>
+
+                    <!-- GROUP 3: GitHub (Error State) -->
+                    <tr class="bg-slate-50/50">
+                        <td class="px-6 py-3 whitespace-nowrap" colspan="6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-6 w-6 bg-slate-100 rounded flex items-center justify-center border border-slate-200 text-slate-900">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                                </div>
+                                <span class="ml-2 text-xs font-bold text-slate-500 uppercase tracking-wider">GitHub</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="bg-red-50/30 hover:bg-red-50/50 child-row transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-slate-900">zen-dev</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
+                                OAuth 2.0
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                             <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600">repo</span>
+                                <span class="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600">user</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Token Expired
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            Yesterday
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="reconnect('GitHub')" class="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-xs font-bold shadow-sm transition-colors">Reconnect</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function configure(email) {
+            alert(`Navigating to deep configuration for ${email}...`);
+        }
+
+        function rotateKey(keyName) {
+            if (confirm(`Are you sure you want to rotate the ${keyName}? This will invalidate existing scripts.`)) {
+                alert('Key rotation started. Check your email for the new secret.');
+            }
+        }
+
+        function reconnect(service) {
+             const btn = event.target;
+             const originalText = btn.innerHTML;
+             
+             btn.innerHTML = 'Connecting...';
+             btn.disabled = true;
+             btn.classList.add('opacity-75');
+             
+             setTimeout(() => {
+                 alert(`Redirecting to ${service} OAuth flow...`);
+                 btn.innerHTML = originalText;
+                 btn.disabled = false;
+                 btn.classList.remove('opacity-75');
+             }, 500);
+        }
+
+        function openAddModal() {
+            // Mock modal
+            const service = prompt("Which service would you like to connect? (e.g. Notion, Linear)");
+            if (service) {
+                alert(`Starting connection flow for ${service}...`);
+            }
+        }
+    </script>
+
+  </body>
+</html>
