@@ -212,9 +212,96 @@ Instead of free-form app name input, show:
 
 ---
 
-## 8. References
+## 8. Phase 2: Tools & Triggers Discovery
+
+### 8.1 Research Findings (December 3, 2025)
+
+Beyond auth configs and connected accounts, Composio provides APIs to discover **what capabilities** each integration unlocks.
+
+**Toolkits API** (`composio.toolkits`):
+```typescript
+// Get a specific toolkit with full details
+const githubToolkit = await composio.toolkits.get('github');
+
+// List all toolkits
+const allToolkits = await composio.toolkits.get({});
+
+// List by category
+const devToolkits = await composio.toolkits.get({ category: 'developer-tools' });
+
+// List all categories
+const categories = await composio.toolkits.listCategories();
+
+// Authorize a user (creates auth config + initiates connection)
+const connectionRequest = await composio.toolkits.authorize(userId, 'github');
+```
+
+**Tools API** (`composio.tools`):
+```typescript
+// List tools for a toolkit
+const githubTools = await composio.tools.getRawComposioTools({
+  toolkits: ['github'],
+  limit: 10
+});
+
+// Get a specific tool
+const tool = await composio.tools.getRawComposioToolBySlug('GMAIL_SEND_EMAIL');
+
+// Search tools
+const searchResults = await composio.tools.getRawComposioTools({
+  search: 'send email'
+});
+```
+
+**Triggers API** (`composio.triggers`):
+```typescript
+// List all trigger types
+const triggerTypes = await composio.triggers.listTypes();
+
+// Get a specific trigger type
+const trigger = await composio.triggers.getType('GMAIL_NEW_GMAIL_MESSAGE');
+
+// List all available trigger enums
+const triggerEnums = await composio.triggers.listEnum();
+
+// Create a trigger for a user
+const trigger = await composio.triggers.create(
+  'user_123',
+  'GMAIL_NEW_GMAIL_MESSAGE',
+  { triggerConfig: { labelIds: 'INBOX', interval: 1 } }
+);
+```
+
+### 8.2 UX Design: Integration Detail View
+
+Created mockup at: `_docs/UXD/Pages/settings/integrations/variation-2/integration-detail.html`
+
+**Design decisions:**
+1. **Nested modal** - Opens on top of the Integrations table (popup in popup)
+2. **Header** - Integration icon, name, description, status, categories
+3. **Connected Accounts** - List of user's connections with status
+4. **Available Tools** - Grid of tool cards showing what agents can do
+5. **Available Triggers** - List of events that can start workflows
+6. **Documentation link** - Link to Composio docs for full reference
+
+### 8.3 Implementation Plan (Phase 3 - Pending Review)
+
+**New backend endpoints needed:**
+- `GET /api/integrations/toolkits/:slug` - Get toolkit details
+- `GET /api/integrations/toolkits/:slug/tools` - List tools for a toolkit
+- `GET /api/integrations/toolkits/:slug/triggers` - List triggers for a toolkit
+
+**New frontend components needed:**
+- `IntegrationDetailModal` - The nested detail view
+- `ToolCard` - Display a single tool with name, description
+- `TriggerCard` - Display a single trigger with config info
+
+---
+
+## 9. References
 
 - Composio TypeScript SDK types: `node_modules/@composio/core/dist/index.d.ts`
 - SDK documentation: https://docs.composio.dev/type-script/core-classes/composio
 - Composio Platform: https://platform.composio.dev/
 - Our backend service: `app/api/integrations/services/composio.ts`
+- Integration Detail Mockup: `_docs/UXD/Pages/settings/integrations/variation-2/integration-detail.html`

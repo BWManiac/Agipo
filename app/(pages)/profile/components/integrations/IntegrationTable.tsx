@@ -16,6 +16,7 @@ type IntegrationTableProps = {
   authConfigs: AuthConfig[];
   onAddConnection: () => void;
   onConnect?: (authConfigId: string) => void;
+  onViewDetails?: (config: AuthConfig) => void;
 };
 
 /**
@@ -69,6 +70,7 @@ export function IntegrationTable({
   authConfigs,
   onAddConnection,
   onConnect,
+  onViewDetails,
 }: IntegrationTableProps) {
   if (authConfigs.length === 0) {
     return <EmptyState onAddConnection={onAddConnection} />;
@@ -97,7 +99,7 @@ export function IntegrationTable({
           const statusBadge = getStatusBadge(config);
           
           return (
-            <TableRow key={config.id} className="hover:bg-slate-50">
+            <TableRow key={config.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => onViewDetails?.(config)}>
               {/* Integration name */}
               <TableCell className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-3">
@@ -132,14 +134,11 @@ export function IntegrationTable({
               {/* Actions */}
               <TableCell className="px-6 py-4 whitespace-nowrap text-right">
                 {config.isConnected ? (
-                  <button className="text-indigo-600 hover:text-indigo-900 text-sm">
-                    Manage
+                  <button className="text-indigo-600 hover:text-indigo-900 text-sm" onClick={(e) => { e.stopPropagation(); onViewDetails?.(config); }}>
+                    View
                   </button>
                 ) : (
-                  <Button
-                    size="sm"
-                    onClick={() => onConnect?.(config.id)}
-                  >
+                  <Button size="sm" onClick={(e) => { e.stopPropagation(); onConnect?.(config.id); }}>
                     Connect
                   </Button>
                 )}

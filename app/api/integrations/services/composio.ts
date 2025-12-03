@@ -23,10 +23,11 @@ export function getComposioClient(): Composio {
 /**
  * Lists all available auth configs from Composio.
  * These are the pre-configured integrations (gmail, github, etc.)
+ * Note: Default limit is 20, so we request up to 100 to get all configs.
  */
 export async function listAuthConfigs() {
   const client = getComposioClient();
-  const authConfigs = await client.authConfigs.list();
+  const authConfigs = await client.authConfigs.list({ limit: 100 });
   return authConfigs;
 }
 
@@ -90,33 +91,49 @@ export async function getAvailableTools(
 
 /**
  * Gets a specific tool by its action name (e.g., "GMAIL_SEND_EMAIL").
- * This fetches the tool schema and execution capability.
- * @param userId - The Agipo user ID (maps to Composio entity ID)
- * @param actionName - The Composio action name (e.g., "GMAIL_SEND_EMAIL")
- * @returns Tool instance that can be executed
  */
 export async function getToolAction(userId: string, actionName: string) {
   const client = getComposioClient();
+  const tools = await client.tools.get(userId, { tools: [actionName] });
+  if (!tools || tools.length === 0) return null;
+  const toolArray = Array.isArray(tools) ? tools : (tools as Record<string, unknown>).tools as unknown[] || [];
+  return toolArray.length > 0 ? toolArray[0] : null;
+}
+
+/**
+ * Gets toolkit details by slug (e.g., "gmail", "github")
+ */
+export async function getToolkit(slug: string) {
+  const client = getComposioClient();
+  return await client.toolkits.get(slug);
+}
+
+/**
+ * Gets all tools for a toolkit
+ */
+export async function getToolsForToolkit(toolkitSlug: string) {
+  const client = getComposioClient();
+  return await client.tools.getRawComposioTools({ toolkits: [toolkitSlug] });
+}
+
+/**
+ * Gets all trigger types for a toolkit.
+ * Note: Composio's API seems to ignore the `toolkits` filter,
+ * so we fetch all and filter client-side by toolkit.slug.
+ */
+export async function getTriggersForToolkit(toolkitSlug: string) {
+  const client = getComposioClient();
+  const normalizedSlug = toolkitSlug.toLowerCase();
   
-  // Fetch the tool by name - Composio SDK: tools.get(userId, { tools: [...] })
-  const tools = await client.tools.get(userId, {
-    tools: [actionName],
-  });
-
-  if (!tools || tools.length === 0) {
-    return null;
-  }
-
-  // Composio returns a collection, extract the first tool
-  // The structure may vary - check if it's an array or object with tools property
-  const toolArray = Array.isArray(tools) 
-    ? tools 
-    : (tools as Record<string, unknown>).tools as unknown[] || [];
+  // Fetch all triggers (API filter is broken)
+  const allTriggers = await client.triggers.listTypes({ limit: 100 });
   
-  if (toolArray.length === 0) {
-    return null;
-  }
-
-  return toolArray[0];
+  // Filter client-side by toolkit.slug
+  const filtered = (allTriggers.items || []).filter(
+    (trigger: { toolkit?: { slug?: string } }) => 
+      trigger.toolkit?.slug?.toLowerCase() === normalizedSlug
+  );
+  
+  return { items: filtered, totalPages: 1 };
 }
 
