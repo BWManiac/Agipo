@@ -1,80 +1,220 @@
-# Task 7: Composio Integrations Spike (Backend Discovery)
+# Task 7: Composio Integrations Research Spike
 
-**Status:** Complete
-**Date:** December 2, 2025
-**Goal:** Establish a "Source of Truth" for the Composio Node.js SDK integration.
+**Status:** Research Complete  
+**Date:** December 2025  
+**Goal:** Understand Composio's data model and fix our integrations implementation
 
 ---
 
-## 1. Canonical Implementation Guide
+## 1. Problem Statement
 
-This document serves as the definitive reference for integrating `@composio/core` into our codebase. It supersedes all previous notes.
-
-### 1.1. Installation & Setup
-
-**Package:**
-We use the official Node.js SDK.
-```bash
-npm install @composio/core
+Our Integrations dialog is failing with:
+```
+400 {"error":{"message":"Auth config not found","code":607,"status":400}}
 ```
 
-**Initialization:**
-Always initialize the client with your API key.
-```typescript
-import { Composio } from "@composio/core";
+The frontend UI is built (IntegrationSettingsDialog, IntegrationTable, etc.) but the backend API calls are not returning data correctly.
 
-const client = new Composio({ 
-    apiKey: process.env.COMPOSIO_API_KEY 
-});
+## 2. Research Findings
+
+### 2.1 Composio Data Model (Confirmed from SDK Type Definitions)
+
+Composio has **two distinct concepts**:
+
+1. **Auth Configs** (`authConfigs`) - Pre-configured authentication templates
+   - Created in Composio dashboard or via API
+   - Define HOW to authenticate with a service (OAuth2, API Key, Basic, etc.)
+   - Have IDs like `ac_FpW8_GwXyMBz` or `auth_abc123`
+   - Include: name, toolkit, auth scheme, credentials, scopes, status
+   - Example: "gmail-oxzcjt" with OAuth2
+
+2. **Connected Accounts** (`connectedAccounts`) - Actual user connections
+   - Created when a user authorizes access using an Auth Config
+   - Link a specific user to a specific Auth Config
+   - Have IDs like `conn_abc123`
+   - Include: userId, authConfigId, status, credentials
+
+### 2.2 API Methods (from SDK type definitions)
+
+**Auth Configs API** (`composio.authConfigs`):
+```typescript
+// List all auth configs (what we need for "available integrations")
+const allConfigs = await composio.authConfigs.list();
+
+// List auth configs for a specific toolkit
+const githubConfigs = await composio.authConfigs.list({ toolkit: 'github' });
+
+// Get a specific auth config
+const authConfig = await composio.authConfigs.get('auth_abc123');
 ```
 
-### 1.2. Connection Flow (The "Golden Path")
-
-The `initiate` method requires **positional arguments**, NOT an object. This was the source of previous confusion (ZodErrors).
-
-**Incorrect:**
+**Connected Accounts API** (`composio.connectedAccounts`):
 ```typescript
-// ❌ DO NOT DO THIS
-await client.connectedAccounts.initiate({
-    entityId: "user-1",
-    authConfigId: "gmail" 
-});
-```
+// List all connected accounts for a user
+const userAccounts = await composio.connectedAccounts.list({ userIds: ['user_123'] });
 
-**Correct:**
-```typescript
-// ✅ DO THIS
-const connection = await client.connectedAccounts.initiate(
-    "user-1",      // userId (entityId)
-    "gmail",       // authConfigId (integration slug)
-    {
-        redirectUri: "http://localhost:3000/callback" // Optional config
-    }
+// INITIATE REQUIRES AUTH CONFIG ID, NOT APP NAME!
+const connectionRequest = await composio.connectedAccounts.initiate(
+  'user_123',           // userId
+  'auth_config_123',    // authConfigId (NOT app name!)
+  {
+    callbackUrl: 'https://your-app.com/callback',
+  }
 );
 ```
 
-### 1.3. API Surface Reference
+### 2.3 Root Cause of Our Bug
 
-| Feature | Method | Notes |
-| :--- | :--- | :--- |
-| **List Integrations** | `client.toolkits.get()` | Returns array of available apps. |
-| **Start Auth** | `client.connectedAccounts.initiate(u, a, opts)` | Returns `{ redirectUrl, connectionStatus }`. |
-| **Check Status** | `client.connectedAccounts.list({ userIds: [...] })` | Use to poll for completion. |
-| **Execute Tool** | `client.tools.execute(...)` | (Future) For running actions. |
+**Our code is wrong:**
+```typescript
+// WRONG - passing appName as authConfigId
+await client.connectedAccounts.initiate(userId, appName, {...})
+```
 
----
+**Should be:**
+```typescript
+// CORRECT - need to pass actual auth config ID
+await client.connectedAccounts.initiate(userId, 'ac_FpW8_GwXyMBz', {...})
+```
 
-## 2. Common Pitfalls & Errors
-
-| Error | Cause | Solution |
-| :--- | :--- | :--- |
-| `Module not found` | Wrong package import. | Use `@composio/core`, NOT `composio-core`. |
-| `ZodError: authConfigIds.0 - Required` | Passing object to `initiate` instead of args. | Change to `initiate(userId, authConfigId)`. |
-| `401 Invalid API key` | Typo or truncation. | Verify key matches Dashboard exactly. |
+The second parameter to `initiate()` is `authConfigId`, not `appName`. Composio returns "Auth config not found" because "gmail" is not a valid auth config ID.
 
 ---
 
-## 3. Validated Usage Script
+## 3. Correct Implementation Flow
 
-See `_docs/_tasks/7-composio-spike.ts` for the executable proof-of-concept. This script has been successfully run and verified.
+### 3.1 Listing Available Integrations
 
+To show "available integrations" in our UI, we need to:
+
+1. Call `composio.authConfigs.list()` to get all pre-configured auth configs
+2. Display each auth config with its name, toolkit, auth type, status
+3. This corresponds to what we see in Composio dashboard's "Auth Configs" page
+
+### 3.2 Initiating a New Connection
+
+To connect a user to an integration:
+
+1. User selects an auth config from the list (e.g., "gmail-oxzcjt")
+2. Call `composio.connectedAccounts.initiate(userId, authConfigId, { callbackUrl })`
+3. Redirect user to OAuth flow (for OAuth2) or directly create connection (for API Key)
+4. On callback, the connection is now active
+
+### 3.3 Listing User's Connections
+
+To show a user's active connections:
+
+1. Call `composio.connectedAccounts.list({ userIds: [userId] })`
+2. Each connection has an `authConfigId` - can look up auth config details
+3. Display status, last activity, etc.
+
+---
+
+## 4. Proposed Backend Changes
+
+### 4.1 Add New Endpoint: List Auth Configs
+
+**File:** `app/api/integrations/auth-configs/route.ts` (new)
+
+```typescript
+export async function GET() {
+  const client = getComposioClient();
+  const authConfigs = await client.authConfigs.list();
+  return NextResponse.json(authConfigs);
+}
+```
+
+### 4.2 Fix: Connect Endpoint
+
+**File:** `app/api/integrations/connect/route.ts` (modify)
+
+Change request body from `appName` to `authConfigId`:
+
+```typescript
+type ConnectRequest = {
+  authConfigId: string;  // Changed from appName
+  userId?: string;
+  redirectUri?: string;
+};
+```
+
+### 4.3 Fix: Composio Service
+
+**File:** `app/api/integrations/services/composio.ts` (modify)
+
+```typescript
+// Add new function
+export async function listAuthConfigs() {
+  const client = getComposioClient();
+  return await client.authConfigs.list();
+}
+
+// Fix existing function - rename parameter for clarity
+export async function initiateConnection(
+  userId: string,
+  authConfigId: string,  // Was 'appName' - now correctly named
+  redirectUri?: string
+) {
+  const client = getComposioClient();
+  const connection = await client.connectedAccounts.initiate(
+    userId,
+    authConfigId,  // This must be an actual auth config ID!
+    { callbackUrl: redirectUri || "..." }
+  );
+  return connection;
+}
+```
+
+---
+
+## 5. Proposed Frontend Changes
+
+### 5.1 Update useIntegrations Hook
+
+Change data fetching to:
+1. Fetch auth configs (available integrations)
+2. Fetch connected accounts (user's connections)
+3. Merge data to show "available" and "connected" states
+
+### 5.2 Update AddConnectionDialog
+
+Instead of free-form app name input, show:
+- Dropdown/list of available auth configs
+- Each with its name, toolkit, auth type
+- User selects one to initiate connection
+
+---
+
+## 6. Implementation Order
+
+1. **Backend first:**
+   - [ ] Add `listAuthConfigs()` to composio service
+   - [ ] Create new `/api/integrations/auth-configs` route
+   - [ ] Fix `/api/integrations/connect` to accept `authConfigId`
+   - [ ] Test endpoints directly
+
+2. **Frontend second:**
+   - [ ] Update `useIntegrations` hook to fetch auth configs
+   - [ ] Update `IntegrationTable` to show auth configs
+   - [ ] Update `AddConnectionDialog` to select from available auth configs
+   - [ ] Test full OAuth flow
+
+---
+
+## 7. Success Criteria
+
+1. `GET /api/integrations/auth-configs` returns list of available auth configs
+2. UI shows all available integrations (gmail, github, slack, etc.)
+3. User can select an auth config and initiate OAuth flow
+4. OAuth callback completes successfully
+5. Connected account appears in user's list
+6. No more "Auth config not found" errors
+
+---
+
+## 8. References
+
+- Composio TypeScript SDK types: `node_modules/@composio/core/dist/index.d.ts`
+- SDK documentation: https://docs.composio.dev/type-script/core-classes/composio
+- Composio Platform: https://platform.composio.dev/
+- Our backend service: `app/api/integrations/services/composio.ts`
