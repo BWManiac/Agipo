@@ -1,27 +1,28 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { initiateConnection } from "../services/composio";
 
 export const runtime = "nodejs";
 
 type ConnectRequest = {
   authConfigId: string;
-  userId?: string;
   redirectUri?: string;
 };
 
 /**
  * POST /api/integrations/connect
- * Initiates OAuth connection flow for a user.
- * 
- * Request body:
- *   - authConfigId: string (required) - The Composio auth config ID
- *   - userId: string (optional) - The Agipo user ID (defaults to test user for MVP)
- *   - redirectUri: string (optional) - OAuth callback URL
+ * Initiates OAuth connection flow for the authenticated user.
  */
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const body = (await request.json()) as ConnectRequest;
-    const { authConfigId, userId, redirectUri } = body;
+    const { authConfigId, redirectUri } = body;
 
     if (!authConfigId || typeof authConfigId !== "string") {
       return NextResponse.json(
@@ -30,15 +31,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const effectiveUserId = userId || "agipo_test_user";
+    console.log(`[integrations/connect] Initiating connection for user: ${userId}, authConfig: ${authConfigId}`);
 
-    console.log(`[integrations/connect] Initiating connection for user: ${effectiveUserId}, authConfig: ${authConfigId}`);
-
-    const connection = await initiateConnection(
-      effectiveUserId,
-      authConfigId,
-      redirectUri
-    );
+    const connection = await initiateConnection(userId, authConfigId, redirectUri);
 
     return NextResponse.json({
       redirectUrl: connection.redirectUrl,

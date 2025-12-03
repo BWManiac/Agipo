@@ -1,32 +1,25 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { listConnections } from "../services/composio";
 
 export const runtime = "nodejs";
 
 /**
  * GET /api/integrations/list
- * Lists all connected accounts for a user.
- * 
- * Query params:
- *   - userId: string (optional) - The Agipo user ID (defaults to test user for MVP)
- * 
- * Returns:
- *   - Array of connection objects with id, appName, status, etc.
+ * Lists all connected accounts for the authenticated user.
  */
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const { userId } = await auth();
 
-    // For MVP, use provided userId or default test user
-    // TODO: Replace with actual user authentication
-    const effectiveUserId = userId || "agipo_test_user";
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-    console.log(`[integrations/list] Listing connections for user: ${effectiveUserId}`);
+    console.log(`[integrations/list] Listing connections for user: ${userId}`);
 
-    const connections = await listConnections(effectiveUserId);
+    const connections = await listConnections(userId);
 
-    // Transform Composio response to our API format
     const formattedConnections = connections.items.map((item) => ({
       id: item.id,
       appName: item.authConfigId || item.appUniqueId || "unknown",

@@ -62,7 +62,7 @@ export function useIntegrations() {
       // Fetch both auth configs and connected accounts in parallel
       const [authConfigsRes, connectionsRes] = await Promise.all([
         fetch("/api/integrations/auth-configs"),
-        fetch("/api/integrations/list?userId=agipo_test_user"),
+        fetch("/api/integrations/list"),
       ]);
 
       if (!authConfigsRes.ok) {
