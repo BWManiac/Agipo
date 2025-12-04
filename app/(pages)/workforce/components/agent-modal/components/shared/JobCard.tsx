@@ -1,5 +1,5 @@
 import { Calendar, MessageSquare, RefreshCw } from "lucide-react";
-import type { ScheduledJob } from "../../../data/mocks";
+import type { ScheduledJob } from "../../data/mocks";
 
 interface JobCardProps {
   job: ScheduledJob;

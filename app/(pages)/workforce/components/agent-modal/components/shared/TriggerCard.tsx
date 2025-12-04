@@ -1,6 +1,6 @@
 import { Zap, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { EventTrigger } from "../../../data/mocks";
+import type { EventTrigger } from "../../data/mocks";
 
 interface TriggerCardProps {
   trigger: EventTrigger;

@@ -739,9 +739,9 @@ export const PromptInput = ({
             url: await convertBlobUrlToDataUrl(url),
           };
         }
-        return item;
+        return { ...item, url: url || "" };
       })
-    ).then((convertedFiles: FileUIPart[]) => {
+    ).then((convertedFiles) => {
       try {
         const result = onSubmit({ text, files: convertedFiles }, event);
 

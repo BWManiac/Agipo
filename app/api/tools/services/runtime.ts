@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { pathToFileURL } from "url";
-import { tool } from "ai";
+import { tool, type Tool } from "ai";
 import { z } from "zod";
 import type { ToolDefinition } from "@/_tables/types";
 import { getComposioClient, getToolAction } from "@/app/api/connections/services/composio";
@@ -139,7 +139,7 @@ async function convertComposioToolToDefinition(
     name: composioTool.name || toolId,
     description: composioTool.description || `Composio integration tool: ${toolId}`,
     runtime: "composio",
-    run: vercelTool,
+    run: vercelTool as Tool<unknown, unknown>,
   };
 }
 
@@ -171,7 +171,7 @@ function convertComposioSchemaToZod(parameters: Record<string, any>): z.ZodObjec
         zodType = z.array(z.any());
         break;
       case "object":
-        zodType = z.record(z.any());
+        zodType = z.record(z.string(), z.any());
         break;
       default:
         zodType = z.any();

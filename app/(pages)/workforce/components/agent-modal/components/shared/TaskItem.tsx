@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Clock, CheckCircle2, XCircle, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import type { Task } from "../../../data/mocks";
+import type { Task } from "../../data/mocks";
 
 interface TaskItemProps {
   task: Task;
