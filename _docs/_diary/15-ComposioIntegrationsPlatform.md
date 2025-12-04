@@ -123,11 +123,11 @@ The second parameter is `authConfigId`, NOT `appName`. We were passing "gmail" w
 
 | File | Action | Lines | Description |
 |------|--------|-------|-------------|
-| `app/api/integrations/services/composio.ts` | Modified | 123 | Added `listAuthConfigs()`, fixed `initiateConnection()` param name |
-| `app/api/integrations/auth-configs/route.ts` | **Created** | 22 | New GET endpoint for listing auth configs |
-| `app/api/integrations/connect/route.ts` | Modified | 58 | Changed `appName` → `authConfigId` in request body |
-| `app/api/integrations/list/route.ts` | Unchanged | 50 | Already correctly using `connectedAccounts.list()` |
-| `app/api/integrations/callback/route.ts` | Unchanged | 65 | Already correctly handling OAuth redirects |
+| `app/api/connections/services/composio.ts` | Modified | 123 | Added `listAuthConfigs()`, fixed `initiateConnection()` param name |
+| `app/api/connections/auth-configs/route.ts` | **Created** | 22 | New GET endpoint for listing auth configs |
+| `app/api/connections/connect/route.ts` | Modified | 58 | Changed `appName` → `authConfigId` in request body |
+| `app/api/connections/list/route.ts` | Unchanged | 50 | Already correctly using `connectedAccounts.list()` |
+| `app/api/connections/callback/route.ts` | Unchanged | 65 | Already correctly handling OAuth redirects |
 
 #### 4.1.1 Service Layer Changes
 
@@ -172,18 +172,18 @@ export async function initiateConnection(
 
 | File | Action | Lines | Description |
 |------|--------|-------|-------------|
-| `app/(pages)/profile/hooks/useIntegrations.ts` | **Rewritten** | 161 | Fetches auth configs + connected accounts, merges data |
-| `app/(pages)/profile/components/integrations/IntegrationTable.tsx` | **Rewritten** | 154 | Displays auth configs with connection status |
-| `app/(pages)/profile/components/integrations/AddConnectionDialog.tsx` | **Rewritten** | 141 | Shows selectable list of auth configs |
-| `app/(pages)/profile/components/integrations/IntegrationSettingsDialog.tsx` | Modified | 184 | Updated to use new hook shape |
-| `app/(pages)/profile/components/integrations/ConnectionsSection.tsx` | Unchanged | 150 | Wrapper component, no logic changes |
+| `app/(pages)/profile/hooks/useConnections.ts` | **Rewritten** | 161 | Fetches auth configs + connected accounts, merges data |
+| `app/(pages)/profile/components/connections/ConnectionsTable.tsx` | **Rewritten** | 154 | Displays auth configs with connection status |
+| `app/(pages)/profile/components/connections/AddConnectionView.tsx` | **Rewritten** | 141 | Shows selectable list of auth configs |
+| `app/(pages)/profile/components/connections/ConnectionsDialog.tsx` | Modified | 184 | Updated to use new hook shape |
+| `app/(pages)/profile/components/connections/ConnectionsSection.tsx` | Unchanged | 150 | Wrapper component, no logic changes |
 
 #### 4.2.1 Hook Architecture
 
 **Before (broken):**
 ```typescript
 // Only fetched connected accounts
-const response = await fetch("/api/integrations/list?userId=...");
+const response = await fetch("/api/connections/list?userId=...");
 // Then tried to display them, but nothing was connected
 // because initiateConnection() was failing
 ```
@@ -192,8 +192,8 @@ const response = await fetch("/api/integrations/list?userId=...");
 ```typescript
 // Fetch BOTH auth configs and connected accounts
 const [authConfigsRes, connectionsRes] = await Promise.all([
-  fetch("/api/integrations/auth-configs"),
-  fetch("/api/integrations/list?userId=..."),
+  fetch("/api/connections/auth-configs"),
+  fetch("/api/connections/list?userId=..."),
 ]);
 
 // Merge: enrich auth configs with connection status
@@ -212,12 +212,12 @@ const enrichedConfigs = authConfigs.map(config => {
 
 | File | Action | Lines | Description |
 |------|--------|-------|-------------|
-| `app/api/integrations/README.md` | **Created** | 176 | Overview of entire integrations module |
-| `app/api/integrations/auth-configs/README.md` | **Created** | 81 | Auth configs endpoint documentation |
-| `app/api/integrations/callback/README.md` | **Created** | 75 | OAuth callback documentation |
-| `app/api/integrations/connect/README.md` | **Created** | 95 | Connect endpoint documentation |
-| `app/api/integrations/list/README.md` | **Created** | 72 | List endpoint documentation |
-| `app/api/integrations/services/README.md` | **Created** | 95 | Service layer documentation |
+| `app/api/connections/README.md` | **Created** | 176 | Overview of entire connections module |
+| `app/api/connections/auth-configs/README.md` | **Created** | 81 | Auth configs endpoint documentation |
+| `app/api/connections/callback/README.md` | **Created** | 75 | OAuth callback documentation |
+| `app/api/connections/connect/README.md` | **Created** | 95 | Connect endpoint documentation |
+| `app/api/connections/list/README.md` | **Created** | 72 | List endpoint documentation |
+| `app/api/connections/services/README.md` | **Created** | 95 | Service layer documentation |
 | `_docs/_tasks/7-integrations-spike.md` | **Created** | 221 | Research spike documentation |
 
 ---
@@ -347,12 +347,12 @@ Found in `node_modules/@composio/core/dist/index.d.ts`:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                              FRONTEND                                    │
 │  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐   │
-│  │ ConnectionsSection│───▶│IntegrationSettings│───▶│AddConnectionDialog│ │
+│  │ ConnectionsSection│───▶│ConnectionsDialog  │───▶│AddConnectionView  │ │
 │  │ (Profile Page)   │    │     Dialog       │    │                  │   │
 │  └──────────────────┘    └────────┬─────────┘    └────────┬─────────┘   │
 │                                   │                        │             │
 │                          ┌────────▼────────────────────────▼───────┐    │
-│                          │          useIntegrations Hook            │    │
+│                          │          useConnections Hook             │    │
 │                          │  - fetchData()                          │    │
 │                          │  - initiateConnection()                 │    │
 │                          │  - authConfigs[], connectedAccounts[]   │    │
@@ -503,7 +503,7 @@ We refactored to use **view switching within the same container**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                   IntegrationSettingsDialog                      │
+│                   ConnectionsDialog                              │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  selectedConfig === null ?                                 │  │
 │  │    → Show IntegrationTable (list view)                     │  │
@@ -523,7 +523,7 @@ We refactored to use **view switching within the same container**:
 |------|--------|-------------|
 | `IntegrationDetailView.tsx` | **Created** | Full-container detail view with back button |
 | `IntegrationDetailModal.tsx` | **Deleted** | Replaced by view-based approach |
-| `IntegrationSettingsDialog.tsx` | **Modified** | Added view state, conditional rendering |
+| `ConnectionsDialog.tsx` | **Modified** | Added view state, conditional rendering |
 | `IntegrationTable.tsx` | **Modified** | Added row click handler |
 
 ### 13.4 Key Implementation Details
@@ -562,9 +562,9 @@ Each integration has **tools** (actions the agent can take) and **triggers** (ev
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/integrations/toolkits/[slug]` | GET | Get toolkit details (name, logo, description) |
-| `/api/integrations/toolkits/[slug]/tools` | GET | List available tools for toolkit |
-| `/api/integrations/toolkits/[slug]/triggers` | GET | List available triggers for toolkit |
+| `/api/connections/toolkits/[slug]` | GET | Get toolkit details (name, logo, description) |
+| `/api/connections/toolkits/[slug]/tools` | GET | List available tools for toolkit |
+| `/api/connections/toolkits/[slug]/triggers` | GET | List available triggers for toolkit |
 
 ### 14.3 Service Layer Additions
 
@@ -720,7 +720,7 @@ For MVP, Option A is acceptable. Most organizations won't have 100+ integrations
 │           │                                                                  │
 │           ▼                                                                  │
 │  ┌────────────────────────────────────────────────────────────────────┐     │
-│  │              IntegrationSettingsDialog                              │     │
+│  │              ConnectionsDialog                                      │     │
 │  │  ┌─────────────────────────────────────────────────────────────┐   │     │
 │  │  │ VIEW STATE: selectedConfig === null ?                        │   │     │
 │  │  │                                                              │   │     │
@@ -736,7 +736,7 @@ For MVP, Option A is acceptable. Most organizations won't have 100+ integrations
 │  └────────────────────────────────────────────────────────────────────┘     │
 │                                                                              │
 │  ┌────────────────────────────────────────────────────────────────────┐     │
-│  │                     useIntegrations Hook                            │     │
+│  │                     useConnections Hook                             │     │
 │  │  - fetchData() → /auth-configs + /list                             │     │
 │  │  - initiateConnection() → /connect                                 │     │
 │  │  - getToolkitDetails() → /toolkits/[slug]                          │     │
@@ -749,7 +749,7 @@ For MVP, Option A is acceptable. Most organizations won't have 100+ integrations
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                              BACKEND API                                      │
 │                                                                              │
-│  /api/integrations/                                                          │
+│  /api/connections/                                                          │
 │  ├── auth-configs/      GET    List available auth configs (limit: 100)      │
 │  ├── list/              GET    List user's connected accounts                │
 │  ├── connect/           POST   Initiate OAuth flow                           │
@@ -795,7 +795,7 @@ For MVP, Option A is acceptable. Most organizations won't have 100+ integrations
 | `toolkits/[slug]/triggers/route.ts` | Created | GET triggers for toolkit |
 | `IntegrationDetailView.tsx` | Created | Full-container detail view |
 | `IntegrationDetailModal.tsx` | Deleted | Replaced by view approach |
-| `IntegrationSettingsDialog.tsx` | Modified | View switching logic |
+| `ConnectionsDialog.tsx` | Modified | View switching logic |
 | `IntegrationTable.tsx` | Modified | Row click handler |
 
 ### 18.2 Cumulative Totals
@@ -806,7 +806,7 @@ For MVP, Option A is acceptable. Most organizations won't have 100+ integrations
 
 **Frontend:**
 - Components: 5 (unchanged count, but IntegrationDetailModal → IntegrationDetailView)
-- Hooks: 1 (useIntegrations, expanded)
+- Hooks: 1 (useConnections, expanded)
 
 **Documentation:**
 - READMEs: 6

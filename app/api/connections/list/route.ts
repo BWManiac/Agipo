@@ -16,7 +16,7 @@ export async function GET() {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    console.log(`[integrations/list] Listing connections for user: ${userId}`);
+    console.log(`[connections/list] Listing connections for user: ${userId}`);
 
     const connections = await listConnections(userId);
 
@@ -31,7 +31,7 @@ export async function GET() {
 
     return NextResponse.json(formattedConnections);
   } catch (error) {
-    console.error("[integrations/list] Error:", error);
+    console.error("[connections/list] Error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to list connections";
     return NextResponse.json(

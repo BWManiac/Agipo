@@ -12,7 +12,7 @@ export async function GET() {
     const authConfigs = await listAuthConfigs();
     return NextResponse.json(authConfigs);
   } catch (error) {
-    console.error("[integrations/auth-configs] Error:", error);
+    console.error("[connections/auth-configs] Error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to list auth configs";
     return NextResponse.json({ message: errorMessage }, { status: 500 });

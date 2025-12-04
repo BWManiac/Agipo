@@ -31,8 +31,8 @@ export function ConnectionDetailView({ authConfig, onBack, onConnect }: Connecti
     const fetchData = async () => {
       try {
         const [toolsRes, triggersRes] = await Promise.all([
-          fetch(`/api/integrations/toolkits/${toolkitSlug}/tools`),
-          fetch(`/api/integrations/toolkits/${toolkitSlug}/triggers`),
+          fetch(`/api/connections/toolkits/${toolkitSlug}/tools`),
+          fetch(`/api/connections/toolkits/${toolkitSlug}/triggers`),
         ]);
         
         if (cancelled) return;

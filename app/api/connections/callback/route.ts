@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     const errorDescription = searchParams.get("error_description");
     
     if (error) {
-      console.error("[integrations/callback] OAuth error:", error, errorDescription);
+      console.error("[connections/callback] OAuth error:", error, errorDescription);
       
       // Redirect to profile with error state
       const redirectUrl = new URL("/profile", request.url);
@@ -40,18 +40,18 @@ export async function GET(request: Request) {
     // Log success for debugging
     const code = searchParams.get("code");
     const state = searchParams.get("state");
-    console.log("[integrations/callback] OAuth success:", { 
+    console.log("[connections/callback] OAuth success:", { 
       hasCode: !!code, 
       hasState: !!state 
     });
     
     // Redirect to profile with success action to auto-open the integrations dialog
     const redirectUrl = new URL("/profile", request.url);
-    redirectUrl.searchParams.set("action", "open-integrations");
+    redirectUrl.searchParams.set("action", "open-connections");
     
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
-    console.error("[integrations/callback] Error processing callback:", err);
+    console.error("[connections/callback] Error processing callback:", err);
     
     // Redirect to profile with generic error
     const redirectUrl = new URL("/profile", request.url);

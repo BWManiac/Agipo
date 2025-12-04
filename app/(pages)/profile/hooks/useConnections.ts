@@ -72,8 +72,8 @@ export function useConnections() {
 
     try {
       const [authConfigsRes, connectionsRes] = await Promise.all([
-        fetch("/api/integrations/auth-configs"),
-        fetch("/api/integrations/list"),
+        fetch("/api/connections/auth-configs"),
+        fetch("/api/connections/list"),
       ]);
 
       if (!authConfigsRes.ok) {
@@ -157,12 +157,12 @@ export function useConnections() {
 
   const initiateConnection = useCallback(async (authConfigId: string): Promise<string | null> => {
     try {
-      const response = await fetch("/api/integrations/connect", {
+      const response = await fetch("/api/connections/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           authConfigId,
-          redirectUri: `${window.location.origin}/api/integrations/callback`,
+          redirectUri: `${window.location.origin}/api/connections/callback`,
         }),
       });
 
@@ -182,7 +182,7 @@ export function useConnections() {
 
   const disconnectAccount = useCallback(async (connectionId: string): Promise<boolean> => {
     try {
-      const response = await fetch("/api/integrations/disconnect", {
+      const response = await fetch("/api/connections/disconnect", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ connectionId }),

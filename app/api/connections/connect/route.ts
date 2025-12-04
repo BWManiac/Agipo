@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`[integrations/connect] Initiating connection for user: ${userId}, authConfig: ${authConfigId}`);
+    console.log(`[connections/connect] Initiating connection for user: ${userId}, authConfig: ${authConfigId}`);
 
     const connection = await initiateConnection(userId, authConfigId, redirectUri);
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       connectionStatus: connection.status,
     });
   } catch (error) {
-    console.error("[integrations/connect] Error:", error);
+    console.error("[connections/connect] Error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to initiate connection";
     return NextResponse.json(

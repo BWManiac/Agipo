@@ -52,10 +52,10 @@ export function ConnectionsSection() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const searchParams = useSearchParams();
 
-  // Auto-open dialog if action=open-integrations query param is present
+  // Auto-open dialog if action=open-connections query param is present
   useEffect(() => {
     const action = searchParams.get("action");
-    if (action === "open-integrations") {
+    if (action === "open-connections") {
       setDialogOpen(true);
       // Clean up the URL without triggering a navigation
       const url = new URL(window.location.href);

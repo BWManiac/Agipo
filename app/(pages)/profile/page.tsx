@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { ConnectionsSection } from "./components/integrations/ConnectionsSection";
+import { ConnectionsSection } from "./components/connections/ConnectionsSection";
 
 const snapshotChips = [
   "Industry: B2B SaaS",

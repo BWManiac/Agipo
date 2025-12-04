@@ -25,13 +25,13 @@ export async function DELETE(request: Request) {
       );
     }
 
-    console.log(`[integrations/disconnect] Disconnecting ${connectionId} for user: ${userId}`);
+    console.log(`[connections/disconnect] Disconnecting ${connectionId} for user: ${userId}`);
 
     await disconnectAccount(connectionId);
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[integrations/disconnect] Error:", error);
+    console.error("[connections/disconnect] Error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Failed to disconnect";
     return NextResponse.json({ message: errorMessage }, { status: 500 });

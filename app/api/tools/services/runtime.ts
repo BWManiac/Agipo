@@ -4,7 +4,7 @@ import { pathToFileURL } from "url";
 import { tool } from "ai";
 import { z } from "zod";
 import type { ToolDefinition } from "@/_tables/types";
-import { getComposioClient, getToolAction } from "@/app/api/integrations/services/composio";
+import { getComposioClient, getToolAction } from "@/app/api/connections/services/composio";
 
 const TOOLS_DIR = path.join(process.cwd(), "_tables", "tools");
 const TOOL_FILENAME = "tool.js";
