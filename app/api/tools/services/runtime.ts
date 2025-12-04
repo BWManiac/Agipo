@@ -116,7 +116,18 @@ async function convertComposioToolToDefinition(
   userId: string
 ): Promise<ToolDefinition> {
   // Extract schema from Composio tool
-  const parameters = composioTool.parameters || {};
+  // tools.get() returns { function: { parameters: {...} } }
+  // getRawComposioTools() returns { inputParameters: {...} }
+  type ComposioToolShape = {
+    function?: { parameters?: Record<string, unknown> };
+    inputParameters?: Record<string, unknown>;
+    parameters?: Record<string, unknown>;
+    name?: string;
+    slug?: string;
+    description?: string;
+  };
+  const typedTool = composioTool as ComposioToolShape;
+  const parameters = typedTool.function?.parameters || typedTool.inputParameters || typedTool.parameters || {};
   
   // Convert Composio parameters to Zod schema
   const zodSchema = convertComposioSchemaToZod(parameters);
@@ -156,33 +167,57 @@ async function convertComposioToolToDefinition(
   };
 }
 
-// Type for Composio parameter definition
-type ComposioParam = {
+// Type for JSON Schema property definition (Composio uses JSON Schema)
+type JsonSchemaProperty = {
   type?: string;
   description?: string;
-  required?: boolean;
-  schema?: {
-    type?: string;
-    description?: string;
-    required?: boolean;
-  };
+  default?: unknown;
+  enum?: unknown[];
+  items?: JsonSchemaProperty;
+  properties?: Record<string, JsonSchemaProperty>;
+};
+
+// Type for Composio parameter schema (JSON Schema format)
+type ComposioParameterSchema = {
+  type?: string;
+  properties?: Record<string, JsonSchemaProperty>;
+  required?: string[];
+  description?: string;
 };
 
 /**
- * Converts Composio parameter schema to Zod schema.
- * This is a simplified converter - Composio schemas may be more complex.
+ * Converts Composio parameter schema (JSON Schema) to Zod schema.
+ * Composio tools use JSON Schema format with { type: "object", properties: {...}, required: [...] }
  */
 function convertComposioSchemaToZod(parameters: Record<string, unknown>): z.ZodObject<Record<string, z.ZodTypeAny>> {
   const zodShape: Record<string, z.ZodTypeAny> = {};
   
-  for (const [key, paramValue] of Object.entries(parameters)) {
-    const param = paramValue as ComposioParam;
-    const paramType = param.type || param.schema?.type || "string";
-    const description = param.description || param.schema?.description;
+  // Composio returns JSON Schema format
+  const schema = parameters as ComposioParameterSchema;
+  const properties = schema.properties || {};
+  const requiredFields = schema.required || [];
+  
+  console.log(`[Runtime] Converting schema - properties: ${Object.keys(properties).join(', ') || 'none'}, required: ${requiredFields.join(', ') || 'none'}`);
+  
+  // If no properties but parameters has keys, treat parameters as the properties directly (fallback)
+  const propsToIterate = Object.keys(properties).length > 0 
+    ? properties 
+    : (parameters as Record<string, JsonSchemaProperty>);
+  
+  for (const [key, propValue] of Object.entries(propsToIterate)) {
+    // Skip JSON Schema meta fields if iterating over raw parameters
+    if (['type', 'properties', 'required', 'description', 'additionalProperties'].includes(key)) {
+      continue;
+    }
+    
+    const prop = propValue as JsonSchemaProperty;
+    const propType = prop.type || "string";
+    const description = prop.description;
+    const isRequired = requiredFields.includes(key);
     
     let zodType: z.ZodTypeAny;
     
-    switch (paramType.toLowerCase()) {
+    switch (propType.toLowerCase()) {
       case "string":
         zodType = z.string();
         break;
@@ -207,11 +242,18 @@ function convertComposioSchemaToZod(parameters: Record<string, unknown>): z.ZodO
       zodType = zodType.describe(description);
     }
     
-    if (param.required === false || param.schema?.required === false) {
+    // Mark as optional if NOT in required array
+    if (!isRequired) {
       zodType = zodType.optional();
     }
     
     zodShape[key] = zodType;
+  }
+  
+  // If we ended up with an empty schema, add a passthrough to allow any input
+  if (Object.keys(zodShape).length === 0) {
+    console.warn('[Runtime] Empty schema generated, using passthrough');
+    return z.object({}).passthrough();
   }
   
   return z.object(zodShape);
@@ -275,7 +317,13 @@ export async function getConnectionToolExecutable(
     }
 
     // Extract schema from Composio tool
-    const parameters = (composioTool as { parameters?: Record<string, unknown> }).parameters || {};
+    // Composio SDK returns { type: "function", function: { parameters: {...} } }
+    type ComposioToolShape = {
+      function?: { parameters?: Record<string, unknown> };
+      parameters?: Record<string, unknown>;
+    };
+    const typedTool = composioTool as ComposioToolShape;
+    const parameters = typedTool.function?.parameters || typedTool.parameters || {};
     const zodSchema = convertComposioSchemaToZod(parameters);
     
     const toolDescription = 

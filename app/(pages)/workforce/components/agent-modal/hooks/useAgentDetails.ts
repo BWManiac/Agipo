@@ -34,11 +34,11 @@ export function useAgentDetails(agent: AgentConfig | null) {
         // Process custom tools
         if (toolsResponse.ok) {
           const allTools = (await toolsResponse.json()) as WorkflowSummary[];
-          const assignedTools = agent.toolIds
-            .map(normalizeToolId)
-            .map(id => allTools.find(t => t.id === id))
-            .filter((t): t is WorkflowSummary => t !== undefined);
-          setTools(assignedTools);
+        const assignedTools = agent.toolIds
+          .map(normalizeToolId)
+          .map(id => allTools.find(t => t.id === id))
+          .filter((t): t is WorkflowSummary => t !== undefined);
+        setTools(assignedTools);
         } else {
           console.error("[useAgentDetails] Failed to fetch tools");
           setTools([]);

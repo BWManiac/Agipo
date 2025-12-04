@@ -58,10 +58,10 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
     <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto w-full space-y-8">
         {/* Header */}
-        <div>
-          <h2 className="text-lg font-semibold">Assigned Capabilities</h2>
-          <p className="text-sm text-gray-500">Manage what this agent can do.</p>
-        </div>
+          <div>
+            <h2 className="text-lg font-semibold">Assigned Capabilities</h2>
+            <p className="text-sm text-gray-500">Manage what this agent can do.</p>
+          </div>
 
         {/* Custom Tools Section */}
         <div className="space-y-4">
@@ -69,13 +69,13 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
               Custom Tools
             </h3>
-            <button
+          <button
               onClick={() => setIsCustomEditorOpen(true)}
               className="px-3 py-1.5 bg-white border border-gray-200 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Manage
-            </button>
-          </div>
+          >
+            Manage
+          </button>
+        </div>
           <div className="grid grid-cols-2 gap-4">
             {tools.length === 0 ? (
               <p className="text-sm text-gray-500 col-span-2 italic">No custom tools assigned.</p>

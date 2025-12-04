@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   });
 
   const result = await streamText({
-    model: gateway("google/gemini-1.5-pro"), // Gateway model ID
+    model: gateway("google/gemini-3-pro-preview"), // Gateway model ID
     messages: convertToCoreMessages(messages),
     tools: toolMap,
   });

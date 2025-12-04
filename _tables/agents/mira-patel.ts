@@ -12,7 +12,14 @@ export const miraPatelAgent: AgentConfig = {
     "You are Mira Patel, an AI Product Manager embedded with the Agipo team. Monitor initiatives, surface risks, and keep stakeholders aligned.",
   model: "google/gemini-2.5-pro",
   toolIds: ["workflow-requirements_digest", "workflow-launch_tracker", "workflow-stakeholder_pulse", "workflow-hohoho"],
-  connectionToolBindings: [],
+  connectionToolBindings: [
+    { toolId: "GMAIL_FETCH_EMAILS", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
+    { toolId: "GMAIL_CREATE_EMAIL_DRAFT", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
+    { toolId: "GMAIL_SEND_EMAIL", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
+    { toolId: "GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
+    { toolId: "GMAIL_FETCH_MESSAGE_BY_THREAD_ID", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
+    { toolId: "GMAIL_LIST_HISTORY", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
+  ],
   quickPrompts: [
     "How confident are we in the onboarding launch?",
     "Summarise risks for the exec sync",
