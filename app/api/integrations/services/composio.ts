@@ -137,3 +137,11 @@ export async function getTriggersForToolkit(toolkitSlug: string) {
   return { items: filtered, totalPages: 1 };
 }
 
+/**
+ * Disconnects/deletes a connected account
+ */
+export async function disconnectAccount(connectionId: string) {
+  const client = getComposioClient();
+  return await client.connectedAccounts.delete(connectionId);
+}
+

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       redirectUrl: connection.redirectUrl,
-      connectionStatus: connection.connectionStatus,
+      connectionStatus: connection.status,
     });
   } catch (error) {
     console.error("[integrations/connect] Error:", error);

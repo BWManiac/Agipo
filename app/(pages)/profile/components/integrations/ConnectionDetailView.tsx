@@ -3,18 +3,18 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import type { AuthConfig } from "../../hooks/useIntegrations";
+import type { AuthConfig } from "../../hooks/useConnections";
 
 type Tool = { slug: string; name: string; description?: string };
 type Trigger = { slug: string; name: string; description?: string };
 
-type IntegrationDetailViewProps = {
+type ConnectionDetailViewProps = {
   authConfig: AuthConfig;
   onBack: () => void;
   onConnect?: (authConfigId: string) => void;
 };
 
-export function IntegrationDetailView({ authConfig, onBack, onConnect }: IntegrationDetailViewProps) {
+export function ConnectionDetailView({ authConfig, onBack, onConnect }: ConnectionDetailViewProps) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [triggers, setTriggers] = useState<Trigger[]>([]);
   const [isLoading, setIsLoading] = useState(false);

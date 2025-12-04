@@ -22,8 +22,9 @@ export async function GET() {
 
     const formattedConnections = connections.items.map((item) => ({
       id: item.id,
-      appName: item.authConfigId || item.appUniqueId || "unknown",
-      status: item.connectionStatus || "unknown",
+      authConfigId: item.authConfig?.id || null,
+      toolkitSlug: item.toolkit?.slug || "unknown",
+      status: item.status || "unknown",
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));

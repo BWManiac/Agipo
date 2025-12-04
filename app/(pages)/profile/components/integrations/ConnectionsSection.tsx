@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { IntegrationSettingsDialog } from "./IntegrationSettingsDialog";
+import { ConnectionsDialog } from "./ConnectionsDialog";
 
 const mockConnections = [
   {
@@ -142,7 +142,7 @@ export function ConnectionsSection() {
         </div>
       </section>
 
-      <IntegrationSettingsDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      <ConnectionsDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </>
   );
 }
