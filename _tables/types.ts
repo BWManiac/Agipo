@@ -3,6 +3,16 @@ import type { Node, Edge } from "@xyflow/react";
 
 export type AgentStatus = "active" | "paused" | "attention";
 
+/**
+ * Represents a binding between an agent and a Composio connection tool.
+ * This allows agents to use tools from connected accounts (Gmail, Slack, etc.)
+ */
+export type ConnectionToolBinding = {
+  toolId: string;        // e.g., "GMAIL_SEND_EMAIL"
+  connectionId: string;  // e.g., "ca_abc123"
+  toolkitSlug: string;   // e.g., "gmail"
+};
+
 export type AgentConfig = {
   id: string;
   name: string;
@@ -14,6 +24,7 @@ export type AgentConfig = {
   model: string;
   toolIds: string[];
   maxSteps?: number; // Optional: controls stopWhen for agent loop
+  connectionToolBindings?: ConnectionToolBinding[]; // Optional: tools from connected accounts
   quickPrompts: string[];
   objectives: string[];
   guardrails: string[];

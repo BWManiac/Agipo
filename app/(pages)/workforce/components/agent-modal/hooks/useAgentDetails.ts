@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { AgentConfig, WorkflowSummary } from "@/_tables/types";
+import type { AgentConfig, WorkflowSummary, ConnectionToolBinding } from "@/_tables/types";
 import { MOCK_TASKS, MOCK_JOBS, MOCK_TRIGGERS, MOCK_RECORDS, MOCK_WORKFLOWS } from "../data/mocks";
 
 /**
@@ -11,44 +11,61 @@ export const normalizeToolId = (id: string): string => {
 
 export function useAgentDetails(agent: AgentConfig | null) {
   const [tools, setTools] = useState<WorkflowSummary[]>([]);
+  const [connectionBindings, setConnectionBindings] = useState<ConnectionToolBinding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!agent) {
       setTools([]);
+      setConnectionBindings([]);
       setIsLoading(false);
       return;
     }
 
-    const fetchTools = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch all available tools
-        const response = await fetch("/api/tools/list");
-        if (!response.ok) throw new Error("Failed to fetch tools");
-        
-        const allTools = (await response.json()) as WorkflowSummary[];
-        
-        // Filter to only tools assigned to this agent
-        const assignedTools = agent.toolIds
-          .map(normalizeToolId)
-          .map(id => allTools.find(t => t.id === id))
-          .filter((t): t is WorkflowSummary => t !== undefined);
+        // Fetch custom tools and connection bindings in parallel
+        const [toolsResponse, bindingsResponse] = await Promise.all([
+          fetch("/api/tools/list"),
+          fetch(`/api/workforce/${agent.id}/tools/connection`),
+        ]);
 
-        setTools(assignedTools);
+        // Process custom tools
+        if (toolsResponse.ok) {
+          const allTools = (await toolsResponse.json()) as WorkflowSummary[];
+          const assignedTools = agent.toolIds
+            .map(normalizeToolId)
+            .map(id => allTools.find(t => t.id === id))
+            .filter((t): t is WorkflowSummary => t !== undefined);
+          setTools(assignedTools);
+        } else {
+          console.error("[useAgentDetails] Failed to fetch tools");
+          setTools([]);
+        }
+
+        // Process connection bindings
+        if (bindingsResponse.ok) {
+          const bindingsData = await bindingsResponse.json();
+          setConnectionBindings(bindingsData.bindings || []);
+        } else {
+          setConnectionBindings([]);
+        }
       } catch (error) {
-        console.error("[useAgentDetails] Error loading tools:", error);
+        console.error("[useAgentDetails] Error loading data:", error);
         setTools([]);
+        setConnectionBindings([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchTools();
+    fetchData();
   }, [agent]);
 
   return {
     tools,
+    connectionBindings,
     workflows: MOCK_WORKFLOWS,
     tasks: MOCK_TASKS,
     jobs: MOCK_JOBS,

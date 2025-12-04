@@ -3,7 +3,7 @@ import path from "path";
 import { pathToFileURL } from "url";
 import { tool, type Tool } from "ai";
 import { z } from "zod";
-import type { ToolDefinition } from "@/_tables/types";
+import type { ToolDefinition, ConnectionToolBinding } from "@/_tables/types";
 import { getComposioClient, getToolAction } from "@/app/api/connections/services/composio";
 
 const TOOLS_DIR = path.join(process.cwd(), "_tables", "tools");
@@ -37,8 +37,8 @@ export async function getExecutableTools(): Promise<ToolDefinition[]> {
         const fileUrl = pathToFileURL(filePath).href;
         console.log(`[Runtime] Attempting to load tool ${entry.name} from ${fileUrl}`);
         
-        const module = await import(fileUrl);
-        console.log(`[Runtime] Successfully imported module for ${entry.name}, exports:`, Object.keys(module));
+        const loadedModule = await import(fileUrl);
+        console.log(`[Runtime] Successfully imported module for ${entry.name}, exports:`, Object.keys(loadedModule));
 
         // Expecting export name convention: "workflowTestToolDefinition"
         // CamelCase logic: workflow-test -> workflowTest
@@ -46,13 +46,13 @@ export async function getExecutableTools(): Promise<ToolDefinition[]> {
         const exportName = `${camelId}ToolDefinition`;
         
         console.log(`[Runtime] Looking for export: ${exportName} (from toolId: ${toolId})`);
-        const def = module[exportName];
+        const def = loadedModule[exportName];
 
         if (def && def.id && def.run) {
           console.log(`[Runtime] Successfully loaded tool ${entry.name} with id: ${def.id}`);
           tools.push(def as ToolDefinition);
         } else {
-          console.warn(`[Runtime] Tool ${entry.name} missing export ${exportName} or invalid structure. Available exports:`, Object.keys(module));
+          console.warn(`[Runtime] Tool ${entry.name} missing export ${exportName} or invalid structure. Available exports:`, Object.keys(loadedModule));
           if (def) {
             console.warn(`[Runtime] Export found but invalid:`, { hasId: !!def.id, hasRun: !!def.run });
           }
@@ -97,12 +97,21 @@ function extractComposioActionName(id: string): string {
     .toUpperCase();
 }
 
+// Type for Composio tool structure
+type ComposioToolShape = {
+  name?: string;
+  slug?: string;
+  displayName?: string;
+  description?: string;
+  parameters?: Record<string, unknown>;
+};
+
 /**
  * Converts a Composio tool to a Vercel AI SDK ToolDefinition.
  * This wraps the Composio tool execution in the standard tool() format.
  */
 async function convertComposioToolToDefinition(
-  composioTool: any,
+  composioTool: ComposioToolShape,
   toolId: string,
   userId: string
 ): Promise<ToolDefinition> {
@@ -122,10 +131,14 @@ async function convertComposioToolToDefinition(
     inputSchema: zodSchema,
     execute: async (input: Record<string, unknown>) => {
       // Execute via Composio SDK
-      // Composio SDK: tools.execute(userId, actionName, params)
+      // Composio SDK: tools.execute(slug, { userId, arguments, ... })
       const client = getComposioClient();
       try {
-        const result = await client.tools.execute(userId, toolName, input);
+        const result = await client.tools.execute(toolName, {
+          userId,
+          arguments: input,
+          dangerouslySkipVersionCheck: true, // For MVP, skip version check
+        });
         return result;
       } catch (error) {
         console.error(`[Runtime] Composio tool execution failed for ${toolId}:`, error);
@@ -143,14 +156,27 @@ async function convertComposioToolToDefinition(
   };
 }
 
+// Type for Composio parameter definition
+type ComposioParam = {
+  type?: string;
+  description?: string;
+  required?: boolean;
+  schema?: {
+    type?: string;
+    description?: string;
+    required?: boolean;
+  };
+};
+
 /**
  * Converts Composio parameter schema to Zod schema.
  * This is a simplified converter - Composio schemas may be more complex.
  */
-function convertComposioSchemaToZod(parameters: Record<string, any>): z.ZodObject<any> {
+function convertComposioSchemaToZod(parameters: Record<string, unknown>): z.ZodObject<Record<string, z.ZodTypeAny>> {
   const zodShape: Record<string, z.ZodTypeAny> = {};
   
-  for (const [key, param] of Object.entries(parameters)) {
+  for (const [key, paramValue] of Object.entries(parameters)) {
+    const param = paramValue as ComposioParam;
     const paramType = param.type || param.schema?.type || "string";
     const description = param.description || param.schema?.description;
     
@@ -223,5 +249,75 @@ export async function getExecutableToolById(
   // Fall back to local tools
   const tools = await getExecutableTools();
   return tools.find((t) => t.id === id);
+}
+
+/**
+ * Gets an executable tool for a connection tool binding.
+ * Uses the specific connectionId to ensure the tool uses the correct account.
+ * @param userId - The authenticated user's ID
+ * @param binding - The connection tool binding with toolId, connectionId, and toolkitSlug
+ */
+export async function getConnectionToolExecutable(
+  userId: string,
+  binding: ConnectionToolBinding
+): Promise<ToolDefinition | undefined> {
+  try {
+    console.log(`[Runtime] Loading connection tool: ${binding.toolId} for connection: ${binding.connectionId}`);
+    
+    const client = getComposioClient();
+    
+    // Get the tool definition from Composio
+    const composioTool = await getToolAction(userId, binding.toolId);
+    
+    if (!composioTool) {
+      console.warn(`[Runtime] Connection tool not found: ${binding.toolId}`);
+      return undefined;
+    }
+
+    // Extract schema from Composio tool
+    const parameters = (composioTool as { parameters?: Record<string, unknown> }).parameters || {};
+    const zodSchema = convertComposioSchemaToZod(parameters);
+    
+    const toolDescription = 
+      (composioTool as { description?: string }).description || 
+      (composioTool as { name?: string }).name || 
+      `${binding.toolkitSlug} tool: ${binding.toolId}`;
+    
+    // Create Vercel AI SDK tool wrapper with the specific connection
+    const vercelTool = tool({
+      description: toolDescription,
+      inputSchema: zodSchema,
+      execute: async (input: Record<string, unknown>) => {
+        console.log(`[Runtime] Executing connection tool: ${binding.toolId} with connection: ${binding.connectionId}`);
+        
+        try {
+          // Execute via Composio SDK with specific connection ID
+          const result = await client.tools.execute(binding.toolId, {
+            userId,
+            arguments: input,
+            connectedAccountId: binding.connectionId,
+            dangerouslySkipVersionCheck: true, // For MVP, skip version check
+          });
+          return result;
+        } catch (error) {
+          console.error(`[Runtime] Connection tool execution failed for ${binding.toolId}:`, error);
+          throw error;
+        }
+      },
+    });
+
+    console.log(`[Runtime] Successfully loaded connection tool: ${binding.toolId}`);
+    
+    return {
+      id: binding.toolId,
+      name: (composioTool as { name?: string }).name || binding.toolId,
+      description: toolDescription,
+      runtime: "composio",
+      run: vercelTool as Tool<unknown, unknown>,
+    };
+  } catch (error) {
+    console.error(`[Runtime] Failed to load connection tool ${binding.toolId}:`, error);
+    return undefined;
+  }
 }
 

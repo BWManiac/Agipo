@@ -5,8 +5,9 @@ import {
   type Tool,
 } from "ai";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { getAgentById } from "@/_tables/agents";
-import { getExecutableToolById } from "@/app/api/tools/services";
+import { getExecutableToolById, getConnectionToolExecutable } from "@/app/api/tools/services";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -23,6 +24,12 @@ export async function POST(
   routeContext: { params: Promise<{ agentId: string }> }
 ) {
   try {
+    // Get authenticated user
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const payload = (await request.json()) as IncomingPayload;
     const { messages, context } = payload;
     const { agentId } = await routeContext.params;
@@ -42,16 +49,29 @@ export async function POST(
 
     console.log(`[workforce/agent] Loading agent: ${requestedAgentId}`);
     console.log(`[workforce/agent] Model: ${agent.model}, ToolIds: [${agent.toolIds.join(", ")}]`);
+    console.log(`[workforce/agent] ConnectionToolBindings: ${agent.connectionToolBindings?.length || 0}`);
 
-    // Build tool map dynamically from agent's toolIds.
+    // Build tool map dynamically from agent's toolIds (custom tools)
     const toolMap: Record<string, Tool<unknown, unknown>> = {};
     for (const toolId of agent.toolIds) {
       const toolDef = await getExecutableToolById(toolId);
       if (!toolDef) {
-        console.warn(`[workforce/agent] Tool not found: ${toolId}; skipping.`);
+        console.warn(`[workforce/agent] Custom tool not found: ${toolId}; skipping.`);
         continue;
       }
       toolMap[toolId] = toolDef.run;
+    }
+
+    // Build tool map for connection tools
+    const connectionBindings = agent.connectionToolBindings || [];
+    for (const binding of connectionBindings) {
+      const toolDef = await getConnectionToolExecutable(userId, binding);
+      if (!toolDef) {
+        console.warn(`[workforce/agent] Connection tool not found: ${binding.toolId}; skipping.`);
+        continue;
+      }
+      // Use the tool ID as the key so the agent can call it
+      toolMap[binding.toolId] = toolDef.run;
     }
 
     // Instantiate agent dynamically with registry config.

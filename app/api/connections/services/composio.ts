@@ -145,3 +145,21 @@ export async function disconnectAccount(connectionId: string) {
   return await client.connectedAccounts.delete(connectionId);
 }
 
+/**
+ * Gets tools available for a specific connection.
+ * Uses the toolkit slug to fetch available tools.
+ * @param toolkitSlug - The toolkit slug (e.g., "gmail", "slack")
+ * @returns List of tools with id, name, and description
+ */
+export async function getToolsForConnection(toolkitSlug: string) {
+  const client = getComposioClient();
+  const tools = await client.tools.getRawComposioTools({ toolkits: [toolkitSlug], limit: 100 });
+  
+  // Map to a simpler structure - use slug (action name) as id for execution
+  return (tools || []).map((tool: { slug?: string; name?: string; displayName?: string; description?: string }) => ({
+    id: tool.slug || tool.name || "",
+    name: tool.displayName || tool.name || "",
+    description: tool.description || "",
+  }));
+}
+

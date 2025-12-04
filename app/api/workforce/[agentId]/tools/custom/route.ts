@@ -2,21 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAgentCustomTools, updateAgentTools } from "@/app/api/workforce/services";
 
-/**
- * Legacy route for backwards compatibility.
- * New code should use:
- * - GET/POST /api/workforce/[agentId]/tools/custom for custom tools
- * - GET/POST /api/workforce/[agentId]/tools/connection for connection tools
- */
+export const runtime = "nodejs";
 
 const UpdateToolsSchema = z.object({
   toolIds: z.array(z.string()),
 });
 
 /**
- * GET /api/workforce/[agentId]/tools
- * Returns the custom tool IDs assigned to the agent.
- * @deprecated Use GET /api/workforce/[agentId]/tools/custom instead.
+ * GET /api/workforce/[agentId]/tools/custom
+ * Returns the custom tool IDs currently assigned to the agent.
  */
 export async function GET(
   request: NextRequest,
@@ -27,7 +21,7 @@ export async function GET(
     const toolIds = getAgentCustomTools(agentId);
     return NextResponse.json({ toolIds });
   } catch (error) {
-    console.error("[agents/tools] GET Error:", error);
+    console.error("[tools/custom] GET Error:", error);
     return NextResponse.json(
       { error: "Failed to retrieve agent tools" },
       { status: 500 }
@@ -36,9 +30,8 @@ export async function GET(
 }
 
 /**
- * POST /api/workforce/[agentId]/tools
+ * POST /api/workforce/[agentId]/tools/custom
  * Updates the custom tool IDs assigned to the agent.
- * @deprecated Use POST /api/workforce/[agentId]/tools/custom instead.
  */
 export async function POST(
   request: NextRequest,
@@ -53,10 +46,11 @@ export async function POST(
 
     return NextResponse.json({ success: true, toolIds });
   } catch (error) {
-    console.error("[agents/tools] POST Error:", error);
+    console.error("[tools/custom] POST Error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to update agent tools" },
       { status: 500 }
     );
   }
 }
+
