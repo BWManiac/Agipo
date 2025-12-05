@@ -1,9 +1,6 @@
-import {
-  Experimental_Agent as Agent,
-  stepCountIs,
-  validateUIMessages,
-  type Tool,
-} from "ai";
+import { Agent } from "@mastra/core/agent";
+import { createGateway } from "@ai-sdk/gateway";
+import type { Tool } from "ai";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getAgentById } from "@/_tables/agents";
@@ -17,6 +14,14 @@ type IncomingPayload = {
   agentId?: string;
   agentName?: string;
   context?: string;
+};
+
+// Message type for incoming messages from the frontend
+type IncomingMessage = {
+  id?: string;
+  role: "user" | "assistant" | "system";
+  content?: string;
+  parts?: Array<{ type: string; text?: string }>;
 };
 
 export async function POST(
@@ -40,20 +45,20 @@ export async function POST(
 
     // Load agent from registry
     const requestedAgentId = agentId ?? "pm";
-    const agent = getAgentById(requestedAgentId);
+    const agentConfig = getAgentById(requestedAgentId);
     
-    if (!agent) {
+    if (!agentConfig) {
       console.error(`[workforce/agent] Agent not found: ${requestedAgentId}`);
       return NextResponse.json({ message: "Agent not found" }, { status: 404 });
     }
 
     console.log(`[workforce/agent] Loading agent: ${requestedAgentId}`);
-    console.log(`[workforce/agent] Model: ${agent.model}, ToolIds: [${agent.toolIds.join(", ")}]`);
-    console.log(`[workforce/agent] ConnectionToolBindings: ${agent.connectionToolBindings?.length || 0}`);
+    console.log(`[workforce/agent] Model: ${agentConfig.model}, ToolIds: [${agentConfig.toolIds.join(", ")}]`);
+    console.log(`[workforce/agent] ConnectionToolBindings: ${agentConfig.connectionToolBindings?.length || 0}`);
 
     // Build tool map dynamically from agent's toolIds (custom tools)
     const toolMap: Record<string, Tool<unknown, unknown>> = {};
-    for (const toolId of agent.toolIds) {
+    for (const toolId of agentConfig.toolIds) {
       const toolDef = await getExecutableToolById(toolId);
       if (!toolDef) {
         console.warn(`[workforce/agent] Custom tool not found: ${toolId}; skipping.`);
@@ -63,7 +68,7 @@ export async function POST(
     }
 
     // Build tool map for connection tools
-    const connectionBindings = agent.connectionToolBindings || [];
+    const connectionBindings = agentConfig.connectionToolBindings || [];
     for (const binding of connectionBindings) {
       const toolDef = await getConnectionToolExecutable(userId, binding);
       if (!toolDef) {
@@ -74,48 +79,71 @@ export async function POST(
       toolMap[binding.toolId] = toolDef.run;
     }
 
-    // Instantiate agent dynamically with registry config.
+    // Create gateway for model routing
+    const gateway = createGateway({
+      apiKey: process.env.AI_GATEWAY_API_KEY,
+    });
+
+    // Instantiate Mastra agent dynamically with registry config
     const dynamicAgent = new Agent({
-      model: agent.model,
-      system: agent.systemPrompt,
-      tools: toolMap,
-      stopWhen: stepCountIs(agent.maxSteps ?? 3),
-    });
-
-    type AgentMessage = Parameters<typeof dynamicAgent.respond>[0]["messages"][number];
-    const validated = await validateUIMessages<AgentMessage>({
-      messages,
+      name: agentConfig.id,
+      instructions: agentConfig.systemPrompt,
+      model: gateway(agentConfig.model),
       tools: toolMap,
     });
 
-    // Optionally prepend additional context as a system message.
-    const augmented: AgentMessage[] = [
-      ...(context
-        ? ([
-            {
-              role: "system",
-              parts: [
-                {
-                  type: "text",
-                  text: `Additional context for this session:\n${context}`,
-                },
-              ],
-            } as AgentMessage,
-          ] as AgentMessage[])
-        : []),
-      ...validated,
-    ];
+    // Format messages for Mastra
+    // The frontend sends messages in UI format (with parts array or content)
+    const incomingMessages = messages as IncomingMessage[];
+    const formattedMessages: Array<{ role: "user" | "assistant" | "system"; content: string }> = [];
 
-    console.log("[workforce/agent] messages:", validated.length);
+    // Add context as system message if provided
+    if (context) {
+      formattedMessages.push({
+        role: "system",
+        content: `Additional context for this session:\n${context}`,
+      });
+    }
+
+    // Convert incoming messages to simple role/content format
+    for (const msg of incomingMessages) {
+      let content = "";
+      
+      // Handle both content string and parts array format
+      if (typeof msg.content === "string") {
+        content = msg.content;
+      } else if (msg.parts && Array.isArray(msg.parts)) {
+        content = msg.parts
+          .filter((part) => part.type === "text" && part.text)
+          .map((part) => part.text)
+          .join("\n");
+      }
+
+      if (content) {
+        formattedMessages.push({
+          role: msg.role,
+          content,
+        });
+      }
+    }
+
+    console.log("[workforce/agent] messages:", formattedMessages.length);
     console.log(`[workforce/agent] Tools available: ${Object.keys(toolMap).length > 0 ? Object.keys(toolMap).join(", ") : "none"}`);
     
-    const response = await dynamicAgent.respond({ messages: augmented });
-    console.log("[workforce/agent] response sent");
-    return response;
+    // Stream response using Mastra agent with AI SDK compatible format
+    const result = await dynamicAgent.stream(
+      formattedMessages as unknown as Parameters<typeof dynamicAgent.stream>[0], 
+      {
+        maxSteps: agentConfig.maxSteps ?? 5,
+        format: 'aisdk',
+      }
+    );
+
+    console.log("[workforce/agent] streaming response");
+    
+    return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("[workforce/agent] error:", error);
     return NextResponse.json({ message: "Agent failed to respond." }, { status: 500 });
   }
 }
-
-
