@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Tab - Memory Feature Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-btn.active { color: black; border-bottom-color: black; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8 flex flex-col items-center justify-start min-h-screen gap-12">
+
+    <!-- HEADER TABS SHOWING KNOWLEDGE TAB -->
+    <div class="space-y-4 w-full max-w-4xl">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Header with Knowledge Tab</h2>
+        <div class="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+            <!-- Header -->
+            <div class="h-16 border-b border-gray-100 flex items-center px-6 justify-between bg-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center text-base shadow-sm">🧭</div>
+                    <div>
+                        <h1 class="text-sm font-bold text-gray-900">Mira Patel</h1>
+                        <p class="text-xs text-gray-500">Product Manager • Active</p>
+                    </div>
+                </div>
+                <div class="flex gap-6 text-sm font-medium text-gray-500 h-full items-end">
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Overview</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Chat</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Tasks</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Planner</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Records</button>
+                    <!-- NEW: Knowledge Tab (Active) -->
+                    <button class="tab-btn active text-black border-b-2 border-black pb-4 -mb-[1px] px-1 transition-colors flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        Knowledge
+                    </button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Capabilities</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Config</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATE 1: Knowledge Tab with Data -->
+    <div class="space-y-4 w-full max-w-4xl">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">State: With Knowledge</h2>
+        <div class="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+            <div class="bg-gray-50 p-8">
+                <div class="max-w-2xl mx-auto space-y-6">
+                    
+                    <!-- Page Header -->
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900">What Mira Knows About You</h2>
+                            <p class="text-sm text-gray-500">Information remembered across conversations</p>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Last updated 2 hours ago
+                        </div>
+                    </div>
+
+                    <!-- Communication Preferences Section -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-sm">Communication Preferences</h3>
+                                <p class="text-xs text-gray-500">How you like to receive information</p>
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                                <span class="text-sm text-gray-600">Response Style</span>
+                                <span class="text-sm font-medium text-gray-900 bg-gray-100 px-2 py-0.5 rounded">Technical</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-50">
+                                <span class="text-sm text-gray-600">Preferred Length</span>
+                                <span class="text-sm font-medium text-gray-900 bg-gray-100 px-2 py-0.5 rounded">Concise</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-sm text-gray-600">Format Preference</span>
+                                <span class="text-sm font-medium text-gray-900 bg-gray-100 px-2 py-0.5 rounded">Bullet Points</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Projects Section -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-sm">Active Projects</h3>
+                                <p class="text-xs text-gray-500">Projects we're currently working on together</p>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-100">
+                            <div class="p-4 flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Self-Service Onboarding</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">Focus on reducing friction in signup flow</p>
+                                </div>
+                                <span class="text-xs font-medium bg-yellow-50 text-yellow-700 px-2 py-1 rounded">Active</span>
+                            </div>
+                            <div class="p-4 flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Admin Dashboard Performance</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">Addressing latency issues raised by CTO</p>
+                                </div>
+                                <span class="text-xs font-medium bg-red-50 text-red-700 px-2 py-1 rounded">Blocked</span>
+                            </div>
+                            <div class="p-4 flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Q4 Roadmap Planning</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">Prioritizing features for next quarter</p>
+                                </div>
+                                <span class="text-xs font-medium bg-green-50 text-green-700 px-2 py-1 rounded">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Context Section -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                            <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-sm">Key Context</h3>
+                                <p class="text-xs text-gray-500">Important things to remember</p>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-sm text-gray-700">
+                                    <span class="text-amber-500 mt-0.5">•</span>
+                                    You're the lead PM for the PLG initiative
+                                </li>
+                                <li class="flex items-start gap-2 text-sm text-gray-700">
+                                    <span class="text-amber-500 mt-0.5">•</span>
+                                    Reports to Sarah Chen (CTO) for technical decisions
+                                </li>
+                                <li class="flex items-start gap-2 text-sm text-gray-700">
+                                    <span class="text-amber-500 mt-0.5">•</span>
+                                    Prefers async updates over meetings when possible
+                                </li>
+                                <li class="flex items-start gap-2 text-sm text-gray-700">
+                                    <span class="text-amber-500 mt-0.5">•</span>
+                                    Enterprise release schedule must be respected
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Recent Decisions Section -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center text-green-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-sm">Recent Decisions</h3>
+                                <p class="text-xs text-gray-500">Decisions made in our conversations</p>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-100">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-1">
+                                    <p class="text-sm font-medium text-gray-900">Approved SMS verification delay</p>
+                                    <span class="text-xs text-gray-500">Dec 3</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Extended onboarding schedule by 1 sprint to include SMS verification</p>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-1">
+                                    <p class="text-sm font-medium text-gray-900">Created Technical Debt ticket</p>
+                                    <span class="text-xs text-gray-500">Dec 2</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Added PROD-1042 to roadmap based on stakeholder feedback</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clear Memory Action -->
+                    <div class="flex justify-center pt-4">
+                        <button class="text-xs text-gray-500 hover:text-red-600 transition-colors flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Clear all memory
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATE 2: Empty Knowledge State -->
+    <div class="space-y-4 w-full max-w-4xl">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">State: Empty (No Knowledge Yet)</h2>
+        <div class="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+            <div class="bg-gray-50 p-8">
+                <div class="max-w-2xl mx-auto">
+                    
+                    <!-- Page Header -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-semibold text-gray-900">What Mira Knows About You</h2>
+                        <p class="text-sm text-gray-500">Information remembered across conversations</p>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-2">No Knowledge Yet</h3>
+                        <p class="text-sm text-gray-500 max-w-sm mx-auto mb-6">
+                            As you chat with Mira, she'll learn your preferences and remember important context about your projects.
+                        </p>
+                        <div class="flex flex-col items-center gap-3">
+                            <button class="px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                                Start a Conversation
+                            </button>
+                            <p class="text-xs text-gray-400">
+                                Try telling Mira about your communication preferences or current projects
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

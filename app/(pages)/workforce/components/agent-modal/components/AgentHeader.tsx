@@ -20,6 +20,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "tasks", label: "Tasks" },
   { id: "planner", label: "Planner" },
   { id: "records", label: "Records" },
+  { id: "knowledge", label: "Knowledge" },
   { id: "capabilities", label: "Capabilities" },
   { id: "config", label: "Config" },
 ];

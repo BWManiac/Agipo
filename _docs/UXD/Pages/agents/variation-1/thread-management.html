@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thread Management - Memory Feature Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-btn.active { color: black; border-bottom-color: black; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8 flex flex-col items-center justify-start min-h-screen gap-12">
+
+    <!-- FULL CHAT VIEW WITH THREAD MANAGEMENT -->
+    <div class="space-y-4 w-full max-w-5xl">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Full Chat View with Thread Management</h2>
+        
+        <div class="w-full h-[700px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 relative">
+            
+            <!-- Header -->
+            <div class="h-16 border-b border-gray-100 flex items-center px-6 justify-between bg-white shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center text-base shadow-sm">🧭</div>
+                    <div>
+                        <h1 class="text-sm font-bold text-gray-900">Mira Patel</h1>
+                        <p class="text-xs text-gray-500">Product Manager • Active</p>
+                    </div>
+                </div>
+                <div class="flex gap-6 text-sm font-medium text-gray-500 h-full items-end">
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Overview</button>
+                    <button class="tab-btn active text-black border-b-2 border-black pb-4 -mb-[1px] px-1 transition-colors">Chat</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Tasks</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Planner</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Records</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        Knowledge
+                    </button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Capabilities</button>
+                    <button class="border-b-2 border-transparent pb-4 -mb-[1px] px-1 hover:text-black transition-colors">Config</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Content -->
+            <div class="flex-1 flex overflow-hidden">
+                
+                <!-- Sidebar: Threads (Left) -->
+                <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col overflow-y-auto shrink-0">
+                    <div class="p-4 space-y-4">
+                        
+                        <!-- New Chat Button -->
+                        <button class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            New Conversation
+                        </button>
+
+                        <!-- Current Focus (Optional - can be hidden) -->
+                        <div class="space-y-2">
+                            <h3 class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Current Focus</h3>
+                            <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-xs font-medium text-gray-700">Synthesising Feedback</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500">Reading "QBR Recordings" table to extract themes.</p>
+                            </div>
+                        </div>
+
+                        <!-- Recent Conversations -->
+                        <div class="space-y-2">
+                            <h3 class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Recent Conversations</h3>
+                            <ul class="space-y-1">
+                                <!-- Active Thread -->
+                                <li class="group relative">
+                                    <div class="flex items-start gap-2 text-xs bg-blue-50 border border-blue-200 p-2.5 rounded-lg cursor-pointer">
+                                        <svg class="w-3.5 h-3.5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                        </svg>
+                                        <div class="flex-1 min-w-0">
+                                            <span class="font-medium text-blue-800 block truncate">Admin Dashboard Latency</span>
+                                            <span class="text-[10px] text-blue-600">2 hours ago</span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <!-- Inactive Threads -->
+                                <li class="group relative">
+                                    <div class="flex items-start gap-2 text-xs bg-white border border-gray-200 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                        <svg class="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                        </svg>
+                                        <div class="flex-1 min-w-0">
+                                            <span class="font-medium text-gray-700 block truncate">Onboarding Launch Plan</span>
+                                            <span class="text-[10px] text-gray-500">Yesterday</span>
+                                        </div>
+                                        <button class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </li>
+
+                                <li class="group relative">
+                                    <div class="flex items-start gap-2 text-xs bg-white border border-gray-200 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                        <svg class="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                        </svg>
+                                        <div class="flex-1 min-w-0">
+                                            <span class="font-medium text-gray-700 block truncate">Daily Standup (Oct 24)</span>
+                                            <span class="text-[10px] text-gray-500">3 days ago</span>
+                                        </div>
+                                        <button class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Area (Center) -->
+                <div class="flex-1 flex flex-col bg-white">
+                    
+                    <!-- Thread Title Header (NEW) -->
+                    <div class="px-6 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                            </svg>
+                            <h3 class="text-sm font-medium text-gray-900">Admin Dashboard Latency</h3>
+                            <span class="text-xs text-gray-400">• Started 2 hours ago</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                Rename
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <div class="flex-1 p-6 space-y-6 overflow-y-auto scroll-smooth">
+                        <div class="flex justify-center">
+                            <span class="text-[10px] text-gray-400 bg-gray-50 px-2 py-1 rounded">Today, 9:41 AM</span>
+                        </div>
+                        
+                        <!-- Agent Message -->
+                        <div class="flex gap-4 max-w-3xl">
+                            <div class="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center text-sm mt-1">🧭</div>
+                            <div class="space-y-2">
+                                <div class="text-sm text-gray-800 leading-relaxed">
+                                    I've analysed the last 14 entries in the <strong>Stakeholder Interviews</strong> table. There is a recurring concern about the "Admin Dashboard" latency.
+                                </div>
+                                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 max-w-md">
+                                    <div class="flex items-start gap-3">
+                                        <div class="p-1.5 bg-blue-100 rounded text-blue-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold text-blue-900">Suggested Action</p>
+                                            <p class="text-xs text-blue-800 mt-0.5">Create a "Technical Debt" ticket in the roadmap.</p>
+                                            <div class="flex gap-2 mt-2">
+                                                <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded font-medium hover:bg-blue-700 transition-colors">Approve</button>
+                                                <button class="px-3 py-1 bg-white border border-blue-200 text-blue-600 text-xs rounded font-medium hover:bg-blue-50 transition-colors">Edit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Message -->
+                        <div class="flex gap-4 flex-row-reverse max-w-3xl ml-auto">
+                            <div class="w-8 h-8 bg-gray-900 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs mt-1">ME</div>
+                            <div class="bg-gray-100 text-gray-900 p-3 px-4 rounded-2xl rounded-tr-none text-sm">
+                                Yes, go ahead and create that ticket. Also, can you summarize the main concerns?
+                            </div>
+                        </div>
+
+                        <!-- Agent Response -->
+                        <div class="flex gap-4 max-w-3xl">
+                            <div class="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center text-sm mt-1">🧭</div>
+                            <div class="space-y-2">
+                                <div class="text-sm text-gray-800 leading-relaxed">
+                                    Done! I've created ticket <strong>PROD-1042</strong>. Here's a summary of the main concerns:
+                                    <ul class="mt-2 space-y-1 list-disc list-inside text-gray-600">
+                                        <li>Page load times exceeding 3s on dashboard</li>
+                                        <li>Filtering operations feel sluggish</li>
+                                        <li>Data refresh takes too long</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input -->
+                    <div class="p-4 border-t border-gray-100">
+                        <div class="relative bg-white border border-gray-200 rounded-xl shadow-sm focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-500 transition-all">
+                            <textarea class="w-full p-3 pr-12 text-sm bg-transparent focus:outline-none resize-none h-14" placeholder="Message Mira..."></textarea>
+                            <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                                <button class="p-1.5 bg-black text-white rounded hover:bg-gray-800 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NEW CONVERSATION STATE -->
+    <div class="space-y-4 w-full max-w-5xl">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">State: New Conversation (Empty Chat)</h2>
+        
+        <div class="w-full h-[500px] bg-white rounded-2xl shadow-lg flex overflow-hidden border border-gray-200">
+            
+            <!-- Sidebar -->
+            <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col overflow-y-auto shrink-0">
+                <div class="p-4 space-y-4">
+                    <button class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-black text-white text-xs font-medium rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        New Conversation
+                    </button>
+
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Recent Conversations</h3>
+                        <ul class="space-y-1">
+                            <!-- NEW thread (current, unsaved) -->
+                            <li class="group relative">
+                                <div class="flex items-start gap-2 text-xs bg-blue-50 border border-blue-200 p-2.5 rounded-lg cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="font-medium text-blue-800 block truncate">New Conversation</span>
+                                        <span class="text-[10px] text-blue-600">Just now</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="group relative">
+                                <div class="flex items-start gap-2 text-xs bg-white border border-gray-200 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                    <svg class="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                    </svg>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="font-medium text-gray-700 block truncate">Admin Dashboard Latency</span>
+                                        <span class="text-[10px] text-gray-500">2 hours ago</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area (Empty) -->
+            <div class="flex-1 flex flex-col bg-white">
+                
+                <!-- Thread Title Header (New conversation) -->
+                <div class="px-6 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <h3 class="text-sm font-medium text-gray-500 italic">New Conversation</h3>
+                        <span class="text-xs text-gray-400">• Title will be set from first message</span>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="flex-1 flex flex-col items-center justify-center p-8">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <span class="text-2xl">🧭</span>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-900 mb-2">Start a conversation with Mira</h3>
+                    <p class="text-sm text-gray-500 text-center max-w-sm mb-6">
+                        Ask questions, request updates, or assign tasks. Mira will remember context from previous conversations.
+                    </p>
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full transition-colors">
+                            How confident are we in the onboarding launch?
+                        </button>
+                        <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full transition-colors">
+                            Summarise risks for the exec sync
+                        </button>
+                        <button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full transition-colors">
+                            Draft stakeholder update
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div class="p-4 border-t border-gray-100">
+                    <div class="relative bg-white border border-gray-200 rounded-xl shadow-sm focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-500 transition-all">
+                        <textarea class="w-full p-3 pr-12 text-sm bg-transparent focus:outline-none resize-none h-14" placeholder="Message Mira..."></textarea>
+                        <div class="absolute bottom-2 right-2 flex items-center gap-1">
+                            <button class="p-1.5 bg-black text-white rounded hover:bg-gray-800 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING PREVIOUS CONVERSATION -->
+    <div class="space-y-4 w-full max-w-5xl">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider">State: Loading Previous Conversation</h2>
+        
+        <div class="w-full h-[400px] bg-white rounded-2xl shadow-lg flex overflow-hidden border border-gray-200">
+            
+            <!-- Sidebar (simplified) -->
+            <div class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col overflow-y-auto shrink-0">
+                <div class="p-4 space-y-4">
+                    <button class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-black text-white text-xs font-medium rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        New Conversation
+                    </button>
+
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Recent Conversations</h3>
+                        <ul class="space-y-1">
+                            <!-- Loading thread (being loaded) -->
+                            <li class="group relative">
+                                <div class="flex items-start gap-2 text-xs bg-blue-50 border border-blue-200 p-2.5 rounded-lg cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 text-blue-500 mt-0.5 shrink-0 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="font-medium text-blue-800 block truncate">Onboarding Launch Plan</span>
+                                        <span class="text-[10px] text-blue-600">Loading...</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area (Loading) -->
+            <div class="flex-1 flex flex-col bg-white">
+                
+                <!-- Thread Title Header -->
+                <div class="px-6 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                        </svg>
+                        <h3 class="text-sm font-medium text-gray-900">Onboarding Launch Plan</h3>
+                        <span class="text-xs text-gray-400">• Yesterday</span>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="flex-1 flex flex-col items-center justify-center p-8">
+                    <div class="w-8 h-8 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin mb-4"></div>
+                    <p class="text-sm text-gray-500">Loading conversation...</p>
+                </div>
+
+                <!-- Input (disabled during load) -->
+                <div class="p-4 border-t border-gray-100">
+                    <div class="relative bg-gray-50 border border-gray-200 rounded-xl opacity-50">
+                        <textarea class="w-full p-3 pr-12 text-sm bg-transparent focus:outline-none resize-none h-14" placeholder="Message Mira..." disabled></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

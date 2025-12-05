@@ -25,6 +25,7 @@ Agipo is a visual workflow automation platform that empowers knowledge workers t
 
 ### Key Dependencies
 - **Mastra** (`@mastra/core`) - AI agent framework (built on Vercel AI SDK)
+- **Mastra Memory** (`@mastra/memory`, `@mastra/libsql`) - Conversation persistence and working memory
 - **Vercel AI SDK** (`ai`, `@ai-sdk/react`, `@ai-sdk/gateway`) - AI orchestration primitives
 - **Composio** (`@composio/core`, `@composio/vercel`) - Third-party integrations platform
 - **Clerk** (`@clerk/nextjs`) - Authentication

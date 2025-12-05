@@ -11,6 +11,7 @@ import { TasksTab } from "./components/tabs/TasksTab";
 import { PlannerTab } from "./components/tabs/PlannerTab";
 import { RecordsTab } from "./components/tabs/RecordsTab";
 import { ConfigTab } from "./components/tabs/ConfigTab";
+import { KnowledgeTab } from "./components/tabs/KnowledgeTab";
 
 export type AgentModalProps = {
   agent: AgentConfig | null;
@@ -18,7 +19,7 @@ export type AgentModalProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-export type TabId = "overview" | "chat" | "tasks" | "planner" | "records" | "capabilities" | "config";
+export type TabId = "overview" | "chat" | "tasks" | "planner" | "records" | "knowledge" | "capabilities" | "config";
 
 export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
@@ -37,6 +38,8 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
         return <PlannerTab agent={agent} />;
       case "records":
         return <RecordsTab agent={agent} />;
+      case "knowledge":
+        return <KnowledgeTab agent={agent} />;
       case "capabilities":
         return <CapabilitiesTab agent={agent} />;
       case "config":

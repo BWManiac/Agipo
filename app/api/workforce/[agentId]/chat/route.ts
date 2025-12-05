@@ -1,10 +1,11 @@
 import { Agent } from "@mastra/core/agent";
 import { createGateway } from "@ai-sdk/gateway";
-import type { Tool } from "ai";
+import { generateId, type Tool } from "ai";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getAgentById } from "@/_tables/agents";
 import { getExecutableToolById, getConnectionToolExecutable } from "@/app/api/tools/services";
+import { getAgentMemory } from "./services/memory";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -14,6 +15,7 @@ type IncomingPayload = {
   agentId?: string;
   agentName?: string;
   context?: string;
+  threadId?: string; // Conversation thread ID for memory persistence
 };
 
 // Message type for incoming messages from the frontend
@@ -36,8 +38,11 @@ export async function POST(
     }
 
     const payload = (await request.json()) as IncomingPayload;
-    const { messages, context } = payload;
+    const { messages, context, threadId: incomingThreadId } = payload;
     const { agentId } = await routeContext.params;
+
+    // Generate or use existing threadId for conversation persistence
+    const threadId = incomingThreadId || generateId();
 
     if (!messages) {
       return NextResponse.json({ message: "Missing messages array." }, { status: 400 });
@@ -90,6 +95,7 @@ export async function POST(
       instructions: agentConfig.systemPrompt,
       model: gateway(agentConfig.model),
       tools: toolMap,
+      memory: getAgentMemory(agentId), // Per-agent memory persistence
     });
 
     // Format messages for Mastra
@@ -129,6 +135,7 @@ export async function POST(
 
     console.log("[workforce/agent] messages:", formattedMessages.length);
     console.log(`[workforce/agent] Tools available: ${Object.keys(toolMap).length > 0 ? Object.keys(toolMap).join(", ") : "none"}`);
+    console.log(`[workforce/agent] threadId: ${threadId}, resourceId: ${userId}`);
     
     // Stream response using Mastra agent with AI SDK compatible format
     const result = await dynamicAgent.stream(
@@ -136,12 +143,17 @@ export async function POST(
       {
         maxSteps: agentConfig.maxSteps ?? 5,
         format: 'aisdk',
+        threadId,           // Conversation thread for memory
+        resourceId: userId, // User ID from Clerk for user-scoped memory
       }
     );
 
     console.log("[workforce/agent] streaming response");
     
-    return result.toUIMessageStreamResponse();
+    // Return streaming response with threadId in header for frontend to store
+    const response = result.toUIMessageStreamResponse();
+    response.headers.set("X-Thread-Id", threadId);
+    return response;
   } catch (error) {
     console.error("[workforce/agent] error:", error);
     return NextResponse.json({ message: "Agent failed to respond." }, { status: 500 });
