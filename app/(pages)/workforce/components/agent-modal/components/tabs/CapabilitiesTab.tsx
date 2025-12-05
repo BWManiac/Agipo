@@ -7,7 +7,7 @@ import { ToolCard } from "../shared/ToolCard";
 import { WorkflowCard } from "../shared/WorkflowCard";
 import { ConnectionToolCard } from "../shared/ConnectionToolCard";
 import { ToolEditor } from "../../../ToolEditor";
-import { ConnectionToolEditor } from "../../../ConnectionToolEditor";
+import { ConnectionToolEditorPanel } from "../../../ConnectionToolEditorPanel";
 import { Link2 } from "lucide-react";
 import Link from "next/link";
 
@@ -15,10 +15,12 @@ interface CapabilitiesTabProps {
   agent: AgentConfig;
 }
 
+type ViewState = "list" | "connection-editor";
+
 export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
   const { tools, connectionBindings, workflows, isLoading } = useAgentDetails(agent);
   const [isCustomEditorOpen, setIsCustomEditorOpen] = useState(false);
-  const [isConnectionEditorOpen, setIsConnectionEditorOpen] = useState(false);
+  const [view, setView] = useState<ViewState>("list");
 
   const handleSaveCustomTools = async (toolIds: string[]) => {
     const response = await fetch(`/api/workforce/${agent.id}/tools/custom`, {
@@ -54,6 +56,18 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
     return <div className="p-8 text-center text-gray-500">Loading capabilities...</div>;
   }
 
+  // Connection Tool Editor - Full panel view
+  if (view === "connection-editor") {
+    return (
+      <ConnectionToolEditorPanel
+        agent={agent}
+        onBack={() => setView("list")}
+        onSave={handleSaveConnectionTools}
+      />
+    );
+  }
+
+  // Default list view
   return (
     <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto w-full space-y-8">
@@ -92,7 +106,7 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
               Connection Tools
             </h3>
             <button
-              onClick={() => setIsConnectionEditorOpen(true)}
+              onClick={() => setView("connection-editor")}
               className="px-3 py-1.5 bg-white border border-gray-200 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors"
             >
               Manage
@@ -143,20 +157,12 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
         </div>
       </div>
 
-      {/* Custom Tools Editor Dialog */}
+      {/* Custom Tools Editor Dialog - keeping as modal for now */}
       <ToolEditor
         agent={agent}
         open={isCustomEditorOpen}
         onOpenChange={setIsCustomEditorOpen}
         onSave={handleSaveCustomTools}
-      />
-
-      {/* Connection Tools Editor Dialog */}
-      <ConnectionToolEditor
-        agent={agent}
-        open={isConnectionEditorOpen}
-        onOpenChange={setIsConnectionEditorOpen}
-        onSave={handleSaveConnectionTools}
       />
     </div>
   );
