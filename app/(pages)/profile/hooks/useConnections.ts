@@ -155,6 +155,9 @@ export function useConnections() {
     }
   }, []);
 
+  /**
+   * Initiates OAuth connection - returns redirect URL
+   */
   const initiateConnection = useCallback(async (authConfigId: string): Promise<string | null> => {
     try {
       const response = await fetch("/api/connections/connect", {
@@ -179,6 +182,38 @@ export function useConnections() {
       return null;
     }
   }, []);
+
+  /**
+   * Initiates API key connection - immediate, no redirect
+   */
+  const initiateApiKeyConnection = useCallback(async (authConfigId: string, apiKey: string): Promise<boolean> => {
+    try {
+      const response = await fetch("/api/connections/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ authConfigId, apiKey }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to connect");
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.status === "ACTIVE") {
+        // Refresh the connections list
+        await fetchData();
+        return true;
+      }
+      
+      return false;
+    } catch (err) {
+      console.error("[useConnections] Error with API key connection:", err);
+      setError(err instanceof Error ? err.message : "Failed to connect");
+      return false;
+    }
+  }, [fetchData]);
 
   const disconnectAccount = useCallback(async (connectionId: string): Promise<boolean> => {
     try {
@@ -211,6 +246,7 @@ export function useConnections() {
     fetchData,
     refetch: fetchData,
     initiateConnection,
+    initiateApiKeyConnection,
     disconnectAccount,
   };
 }

@@ -1,95 +1,482 @@
-# Feature: Workflow as Code (Transpilation)
+# Feature: Workflow as Code (The Transpilation Pipeline)
 
-## 1. Overview
+**Status:** Active (Migrating to Mastra)  
+**Date:** December 5, 2025  
+**Owner:** Engineering  
+**Dependencies:** `06-Tools-vs-Workflows`, `04-Integrations-Platform`
 
-This document outlines the architecture for transforming user-created visual workflows into portable, executable "Tools". The primary goal is to decouple a workflow's logic from the client-side application state, enabling workflows to be saved, versioned, and executed by independent AI agents or other server-side processes.
+---
 
-This moves the project from a browser-based execution model to a more robust, scalable architecture where the `workflow-generator` acts as an IDE for producing real code.
+## 1. Executive Summary
 
-## 2. Core Requirements
+This document outlines the architecture for transforming user-created visual workflows into portable, executable code. The goal is to decouple workflow logic from the client-side application, enabling workflows to be saved, versioned, and executed by AI agents or server-side processes.
 
-- **Workflow Transpilation:** Convert an entire visual workflow (nodes and edges) into a self-contained, executable Node.js script.
-- **Single-Node Transpilation:** Allow any individual node to be saved as its own simple, executable tool.
-- **Portability:** The generated tool must be runnable in any standard Node.js environment (e.g., a serverless function, Docker container, or Vercel Agent sandbox) with no dependencies on the AGIPO client application.
-- **Dependency Management:** The process must automatically detect `npm` package dependencies within the user's code and bundle a corresponding `package.json`.
-- **Persistence:** The resulting tool bundle must be saved to a persistent storage layer (e.g., Supabase).
+### Key Evolution: Mastra Integration
 
-## 3. Architectural Design: The Transpilation Pipeline
+With our migration to **Mastra** (see Task 9), we are evolving from a custom transpilation pipeline to one that generates **Mastra-native workflows**. This provides:
 
-The core of this feature is a "transpiler" service that orchestrates the conversion from a visual graph to an executable code bundle.
+- **Standard primitives**: `createWorkflow()`, `createStep()`, control flow methods
+- **Built-in features**: Parallel execution, branching, human-in-the-loop
+- **AI SDK compatibility**: Workflows can be called as tools by agents
+- **Observability**: Built-in tracing and debugging
 
-### 3.1. Input: The Workflow Graph
+---
 
-The transpiler will take the `nodes` and `edges` arrays from the Zustand store as its primary input.
+## 2. Architecture: The Transpilation Pipeline
 
-- `nodes`: Contains the code, position, and other metadata for each step.
-- `edges`: Defines the connections and data flow between nodes.
+### 2.1 Overview
 
-### 3.2. Step 1: Graph Analysis (Topological Sort)
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        VISUAL WORKFLOW BUILDER                           │
+│                                                                          │
+│   ┌─────┐    ┌─────┐    ┌─────────┐    ┌─────┐                          │
+│   │Node │ →  │Node │ →  │Parallel │ →  │Node │                          │
+│   │  A  │    │  B  │    │ C + D   │    │  E  │                          │
+│   └─────┘    └─────┘    └─────────┘    └─────┘                          │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ Transpile
+                                    ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                          GENERATED CODE                                   │
+│                                                                          │
+│   const workflow = createWorkflow({ id: "my-workflow", ... })           │
+│     .then(stepA)                                                        │
+│     .then(stepB)                                                        │
+│     .parallel([stepC, stepD])                                           │
+│     .then(stepE)                                                        │
+│     .commit();                                                          │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ Execute
+                                    ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        EXECUTION RUNTIME                                  │
+│                                                                          │
+│   Agent calls workflow → Mastra orchestrates steps → Result returned    │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+```
 
-To handle workflows with multiple paths and dependencies, the first step is to perform a topological sort on the graph of nodes and edges. This produces a linear execution order that respects all defined dependencies, ensuring that upstream nodes run before downstream nodes.
+### 2.2 Input: The Visual Graph
 
-*For the MVP, we can focus on simple, linear workflows, where the execution order can be determined by traversing the edges from a source node.*
+The transpiler consumes the workflow graph from the visual builder:
 
-### 3.3. Step 2: Code & Dependency Analysis
+```typescript
+interface WorkflowGraph {
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+  metadata: {
+    id: string;
+    name: string;
+    description: string;
+    inputSchema: z.ZodSchema;
+    outputSchema: z.ZodSchema;
+  };
+}
 
-The transpiler will iterate through each node in the sorted list and perform two actions:
+interface WorkflowNode {
+  id: string;
+  type: "tool" | "branch" | "parallel" | "loop" | "wait";
+  data: {
+    // For tool nodes
+    toolId?: string;
+    parameters?: Record<string, any>;
+    
+    // For branch nodes
+    condition?: string;
+    branches?: { condition: string; targetNodeId: string }[];
+    
+    // For parallel nodes
+    parallelNodeIds?: string[];
+    
+    // For loop nodes
+    loopCondition?: string;
+    
+    // For wait nodes
+    waitType?: "sleep" | "event" | "approval";
+    waitConfig?: any;
+  };
+}
 
-1.  **Extract Code:** The raw JavaScript/TypeScript code from the node's data is retrieved.
-2.  **Extract Dependencies:** A service will parse the code (e.g., using a regular expression to find `require(...)` or `import ... from '...'`) to identify all unique npm package dependencies.
+interface WorkflowEdge {
+  id: string;
+  source: string;
+  target: string;
+  data?: {
+    dataMapping?: Record<string, string>; // Map output → input
+  };
+}
+```
 
-### 3.4. Step 3: Code Generation (`run.js`)
+### 2.3 Transpilation Steps
 
-This is the central step. The transpiler will generate a single `run.js` file.
+#### Step 1: Graph Analysis (Topological Sort)
 
-- **For a full workflow:** This script will re-create the `stdin`/`stdout` piping logic from the original MVP. It will write each node's code to a temporary file (`/tmp/node-1.js`, `/tmp/node-2.js`, etc.) and then construct a shell command to execute the chain (e.g., `node /tmp/node-1.js | node /tmp/node-2.js`).
-- **For a single node:** The script is much simpler. It will contain only that node's code and execute it directly.
+The transpiler performs a topological sort to determine execution order while respecting dependencies.
 
-### 3.5. Step 4: Bundle Creation
+```typescript
+function analyzeGraph(graph: WorkflowGraph): ExecutionPlan {
+  // 1. Find entry nodes (no incoming edges)
+  // 2. Topological sort
+  // 3. Identify parallel groups (multiple outgoing from same node)
+  // 4. Identify branches (conditional edges)
+  return { steps: [...], controlFlow: [...] };
+}
+```
 
-The final output is a "Tool Bundle," which is a collection of files:
+#### Step 2: Code Generation
 
-1.  **`package.json`**: Contains a `dependencies` block listing all the unique packages discovered in Step 2.
-2.  **`run.js`**: The executable script generated in Step 3.
-3.  **`agipo.json` (Manifest File)**: A metadata file containing information about the tool, such as:
-    - `name`: A human-readable name for the tool.
-    - `description`: A summary of what the tool does.
-    - `version`: Version number (e.g., 1.0.0).
-    - `workflowId`: The ID of the source workflow in AGIPO.
+Generate Mastra-compatible workflow code:
 
-### 3.6. Step 5: Persistence
+```typescript
+function generateWorkflowCode(plan: ExecutionPlan): string {
+  const imports = generateImports(plan);
+  const steps = generateSteps(plan);
+  const workflow = generateWorkflowChain(plan);
+  
+  return `
+${imports}
 
-The generated Tool Bundle will be stored in a database. For example, using Supabase, we could:
-1. Create a `tools` table to store the metadata from `agipo.json`.
-2. Store the bundle itself (e.g., as a `.zip` archive) in Supabase Storage, linking it to the corresponding row in the `tools` table.
+${steps}
 
-## 4. Agent Execution Flow
+${workflow}
+  `.trim();
+}
+```
 
-Once a tool is saved, an AI agent can execute it with the following decoupled process:
+**Example Generated Code:**
 
-1.  **Fetch:** The agent queries the `tools` table and downloads the associated Tool Bundle from storage.
-2.  **Prepare Environment:** The agent unzips the bundle into a temporary, isolated execution environment (like a temporary folder on a server).
-3.  **Install Dependencies:** It runs `npm install` within that directory. This will install all dependencies listed in the `package.json` into a local `node_modules` folder.
-4.  **Execute:** It runs `node run.js`.
-5.  **Capture Output:** The agent captures any `stdout` as the successful result and `stderr` as any potential error.
+```typescript
+import { createWorkflow, createStep } from "@mastra/core/workflows";
+import { z } from "zod";
+import { scrapeJobTool, getResumeTool, generateTailoredTool } from "./tools";
 
-## 5. New Components & Services
+// Step definitions
+const scrapeStep = createStep({
+  id: "scrape-job",
+  inputSchema: z.object({ url: z.string() }),
+  outputSchema: z.object({ 
+    title: z.string(), 
+    requirements: z.array(z.string()) 
+  }),
+  execute: async ({ inputData, mapiClient }) => {
+    return await scrapeJobTool.execute(inputData);
+  },
+});
 
-Implementing this feature will require creating several new components:
+const getResumeStep = createStep({
+  id: "get-resume",
+  inputSchema: z.object({ userId: z.string() }),
+  outputSchema: z.object({ resume: z.object({...}) }),
+  execute: async ({ inputData, mapiClient }) => {
+    return await getResumeTool.execute(inputData);
+  },
+});
 
-- **`WorkflowTranspilerService`**: A new service class responsible for the core logic described in Section 3.
-    - `transpileWorkflow(nodes, edges): Promise<ToolBundle>`
-    - `transpileNode(node): Promise<ToolBundle>`
-- **`DependencyAnalysisService`**: A helper service to parse code and extract dependencies.
-- **New Store Actions (in `workflowSlice.ts`)**:
-    - `saveWorkflowAsTool(): Promise<void>`
-    - `saveNodeAsTool(nodeId): Promise<void>`
-- **New API Endpoint (`/api/tools`)**: A backend route to handle the creation and storage of tools, protecting database credentials.
+const generateStep = createStep({
+  id: "generate-tailored",
+  inputSchema: z.object({
+    resume: z.object({...}),
+    requirements: z.array(z.string()),
+  }),
+  outputSchema: z.object({ tailoredResume: z.string() }),
+  execute: async ({ inputData, mapiClient }) => {
+    return await generateTailoredTool.execute(inputData);
+  },
+});
 
-## 6. Risks & Future Considerations
+// Workflow definition
+export const tailorResumeWorkflow = createWorkflow({
+  id: "tailor-resume",
+  inputSchema: z.object({
+    jobUrl: z.string().url(),
+    userId: z.string(),
+  }),
+  outputSchema: z.object({
+    tailoredResume: z.string(),
+  }),
+})
+  .then(scrapeStep)
+  .then(getResumeStep)
+  .then(generateStep)
+  .commit();
+```
 
-- **Complex Topologies:** The initial `stdin`/`stdout` piping model only supports linear workflows. Handling branching (`if/else` logic) or merging of data streams will require a more advanced `run.js` script, which might act as an orchestrator, conditionally executing different node scripts and managing data flow with temporary files instead of just pipes.
-- **Robust Dependency Parsing:** A regex-based approach is sufficient for an MVP but may fail on more complex import syntax (e.g., dynamic imports, aliases). A more robust solution might involve using a proper JavaScript parser like Acorn or Babel.
-- **Input/Output Contracts:** The current model assumes data is passed via `stdin`/`stdout`. For agents to reliably use these tools, we will need to define explicit input/output schemas (e.g., expecting JSON on `stdin` and guaranteeing JSON on `stdout`). The `spec` layer of a node will be critical here.
+#### Step 3: Bundle Creation
 
-This document provides a comprehensive starting point. The next step is to begin implementing the core services, starting with the `WorkflowTranspilerService`.
+The transpiler produces a bundle:
+
+```
+_tables/workflows/[workflowId]/
+├── workflow.json      # Metadata (id, name, description, schemas)
+├── workflow.ts        # Generated Mastra workflow code
+├── steps/             # Individual step definitions
+│   ├── scrape.ts
+│   ├── get-resume.ts
+│   └── generate.ts
+└── package.json       # Dependencies (mastra, zod, etc.)
+```
+
+---
+
+## 3. Control Flow Mapping
+
+### Visual to Code Mapping
+
+| Visual Element | Mastra Method | Description |
+|----------------|---------------|-------------|
+| Linear edge | `.then(step)` | Sequential execution |
+| Fork (multiple targets) | `.parallel([steps])` | Parallel execution |
+| Diamond (condition) | `.branch({ ... })` | Conditional branching |
+| Loop arrow | `.dowhile(step, cond)` | Loop while true |
+| Clock icon | `.sleep(duration)` | Time delay |
+| Hand icon | `.waitForEvent()` | Human-in-the-loop |
+
+### Example: Branch Node
+
+**Visual:**
+```
+       ┌─→ [Send Email] (score > 80)
+[Match]│
+       └─→ [Archive]    (score ≤ 80)
+```
+
+**Generated:**
+```typescript
+.branch({
+  condition: (ctx) => ctx.score > 80,
+  branches: [
+    { condition: (ctx) => ctx.score > 80, workflow: sendEmailBranch },
+    { condition: (ctx) => ctx.score <= 80, workflow: archiveBranch },
+  ],
+})
+```
+
+### Example: Parallel Node
+
+**Visual:**
+```
+           ┌─→ [Calculate Match Score]
+[Get Data]─┤
+           └─→ [Generate Summary]
+                      ↓
+               [Combine Results]
+```
+
+**Generated:**
+```typescript
+.then(getDataStep)
+.parallel([calculateMatchStep, generateSummaryStep])
+.then(combineResultsStep)
+```
+
+---
+
+## 4. Tool Integration
+
+### 4.1 Tool Types in Workflows
+
+Workflows can compose three types of tools:
+
+| Tool Type | Source | Integration |
+|-----------|--------|-------------|
+| **Custom** | User-created in Tool Builder | Direct import |
+| **Composio** | Connected integrations | Dynamic injection |
+| **Browser** | Stagehand primitives | Browserbase client |
+
+### 4.2 Tool Node Configuration
+
+When a tool is dragged onto the canvas:
+
+```typescript
+interface ToolNodeData {
+  toolId: string;
+  toolType: "custom" | "composio" | "browser";
+  
+  // Parameter bindings
+  parameters: {
+    [paramName: string]: {
+      source: "static" | "input" | "previous_step";
+      value: any;                    // For static
+      inputPath?: string;            // For input
+      stepId?: string;               // For previous_step
+      outputPath?: string;           // For previous_step
+    };
+  };
+  
+  // For Composio tools
+  connectionRef?: "dynamic" | string;  // Dynamic = use agent's connection
+}
+```
+
+---
+
+## 5. Execution Runtime
+
+### 5.1 Agent Execution
+
+Agents can execute workflows as capabilities:
+
+```typescript
+// In agent definition
+const agent = new Agent({
+  name: "Resume Agent",
+  tools: [
+    // Direct tools
+    scrapeJobTool,
+    calculateMatchTool,
+    
+    // Workflows exposed as tools
+    tailorResumeWorkflow.asTool(),
+  ],
+});
+
+// Agent decides to use workflow
+// "I need to tailor your resume for this job"
+const result = await agent.stream([
+  { role: "user", content: "Tailor my resume for https://linkedin.com/job/123" }
+]);
+```
+
+### 5.2 Direct Execution
+
+Workflows can also be executed directly:
+
+```typescript
+const run = await tailorResumeWorkflow.createRunAsync({
+  input: {
+    jobUrl: "https://linkedin.com/job/123",
+    userId: "user_abc",
+  },
+});
+
+// Poll for completion
+const result = await run.waitForCompletion();
+```
+
+### 5.3 Human-in-the-Loop
+
+For workflows requiring approval:
+
+```typescript
+const reviewWorkflow = createWorkflow({ ... })
+  .then(generateDraftStep)
+  .waitForEvent("approval", {
+    timeout: "24h",
+    payload: (ctx) => ({ draft: ctx.draft }),
+  })
+  .then(publishStep)
+  .commit();
+
+// Frontend listens for approval requests
+// User approves/rejects
+// Workflow resumes
+```
+
+---
+
+## 6. Implementation Components
+
+### 6.1 Services
+
+| Service | Responsibility |
+|---------|----------------|
+| `WorkflowTranspilerService` | Convert graph → Mastra code |
+| `StepGeneratorService` | Generate individual step code |
+| `DependencyAnalyzer` | Detect required imports |
+| `WorkflowRegistryService` | Store/retrieve workflows |
+| `WorkflowExecutionService` | Run workflows |
+
+### 6.2 API Routes
+
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/workflows` | GET | List user's workflows |
+| `/api/workflows` | POST | Create new workflow |
+| `/api/workflows/[id]` | GET | Get workflow definition |
+| `/api/workflows/[id]` | PUT | Update workflow |
+| `/api/workflows/[id]/transpile` | POST | Transpile to code |
+| `/api/workflows/[id]/execute` | POST | Execute workflow |
+| `/api/workflows/[id]/runs` | GET | List executions |
+| `/api/workflows/[id]/runs/[runId]` | GET | Get execution details |
+
+### 6.3 Storage Structure
+
+```
+_tables/
+├── workflows/
+│   ├── tailor-resume/
+│   │   ├── workflow.json      # Visual definition
+│   │   ├── workflow.ts        # Generated code
+│   │   └── metadata.json      # Id, name, description
+│   └── apply-to-job/
+│       └── ...
+└── tools/
+    ├── scrape-job/
+    │   ├── tool.json          # Definition
+    │   └── tool.ts            # Code
+    └── ...
+```
+
+---
+
+## 7. Migration from Legacy Transpiler
+
+### Current State (Pre-Mastra)
+- Generates `run.js` with stdin/stdout piping
+- Linear execution only
+- No native parallelism or branching
+- Manual state management
+
+### Target State (Mastra)
+- Generates `createWorkflow()` chain
+- Full control flow support
+- Built-in state management
+- AI SDK compatibility
+
+### Migration Path
+
+1. **Phase 1**: Keep existing transpiler for legacy workflows
+2. **Phase 2**: Add Mastra transpiler as alternative
+3. **Phase 3**: Migrate existing workflows to Mastra format
+4. **Phase 4**: Deprecate legacy transpiler
+
+---
+
+## 8. Risks & Considerations
+
+### 8.1 Complexity
+- **Risk**: Complex visual graphs may produce unreadable code
+- **Mitigation**: Limit graph depth, provide "simplify" suggestions
+
+### 8.2 Debugging
+- **Risk**: Hard to debug transpiled code
+- **Mitigation**: Source maps, step-through execution in UI
+
+### 8.3 Version Drift
+- **Risk**: Visual graph and code get out of sync
+- **Mitigation**: Always re-transpile, code is never manually edited
+
+---
+
+## 9. Success Metrics
+
+| Metric | Target | Description |
+|--------|--------|-------------|
+| Transpilation success rate | > 99% | Valid graphs produce valid code |
+| Execution success rate | > 95% | Workflows complete without error |
+| Time to first workflow | < 10 min | New users create working workflow |
+| Workflow reuse | > 50% | Workflows are called by agents |
+
+---
+
+## 10. References
+
+- [Mastra Workflows Overview](https://mastra.ai/docs/workflows/overview)
+- [Mastra Workflow Methods](https://mastra.ai/reference/workflows/workflow-methods/parallel)
+- Internal: `06-Tools-vs-Workflows.md`, `04-Integrations-Platform.md`
+- Task: `_docs/_tasks/10-platform-evolution.md`

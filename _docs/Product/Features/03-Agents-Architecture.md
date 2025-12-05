@@ -1,165 +1,433 @@
 # Feature: Agents (The Workforce Operating System)
 
-**Status:** Planning (High-Fidelity Mockup Complete)
-**Date:** November 30, 2025
+**Status:** Active (Mastra Migration Complete - Phase 1)  
+**Date:** December 5, 2025  
+**Owner:** Engineering  
+**Dependencies:** `06-Tools-vs-Workflows`, `04-Integrations-Platform`
 
 ---
 
 ## 1. Philosophy: The Workforce OS
 
-We are transitioning Agipo from a "Chatbot Platform" to a **Workforce Operating System**. In this paradigm, an Agent is not a transient LLM session but a persistent **Digital Employee**.
+We are building Agipo as a **Workforce Operating System**. In this paradigm, an Agent is not a transient LLM session but a persistent **Digital Employee**.
 
-This shift requires us to treat Agents with the same structural rigor as human employees. They are not just "prompted"; they are **Hired**, **Onboarded**, **Managed**, and **Evaluated**.
+This shift requires treating Agents with the same structural rigor as human employees. They are not just "prompted"; they are **Hired**, **Onboarded**, **Managed**, and **Evaluated**.
 
 ### The Employee Metaphor
+
 | Human Employee | Agipo Agent |
-| :--- | :--- |
+|:---|:---|
 | **Role & Resume** | **Identity & Config** (System Prompt, Model, Persona) |
-| **Knowledge Base** | **Memory** (Sessions, Records, Context) |
-| **Skills & Access** | **Capabilities** (Tools, Workflows, Permissions) |
+| **Knowledge Base** | **Memory** (Conversations, Working Memory, Records) |
+| **Skills & Access** | **Capabilities** (Tools, Workflows, Integrations) |
 | **Calendar** | **Planner** (Scheduled Jobs, Event Triggers) |
 | **OKRs / KPIs** | **Directives** (Objectives, Guardrails) |
 | **Performance Review** | **Feedback Loop** (Task Evaluation, Optimization) |
 
 ---
 
-## 2. Core Primitives
+## 2. Technical Foundation: Mastra
 
-The Agent architecture is built upon six foundational primitives. These are the atomic units of the Workforce OS.
+As of Task 9, Agipo agents are powered by **[Mastra](https://mastra.ai)**, a TypeScript-native framework built on the Vercel AI SDK.
 
-### 2.1 Identity (Who)
-The static definition of the agent.
-*   **Persona:** Name, Avatar, Role (e.g., "Mira Patel, Product Manager").
-*   **Configuration:** The underlying LLM (e.g., Gemini 2.5 Pro), Temperature, and System Prompt.
-*   **Variables:** User-defined environment variables (e.g., `TONE="Professional"`, `MAX_BUDGET=500`) that modulate behavior without code changes.
+### Why Mastra?
 
-### 2.2 Memory (What they Know)
-The stateful context the agent accesses.
-*   **Sessions (Short-term):** The active chat history. Agents must remember the immediate conversation.
-*   **Records (Long-term):** Structured access to the **Records Domain**. Agents are assigned read/write permissions to specific Tables (e.g., "Leads", "Jira Tickets"). This is their "Hard Drive."
-*   **Context (Ambient):** The "Right Now". Agents must be aware of the current date, time, and the specific task they are executing.
+| Capability | Benefit |
+|------------|---------|
+| **Agent Class** | Standard primitives for agent definition |
+| **Memory API** | Built-in conversation persistence & working memory |
+| **Workflow System** | Native support for complex tool orchestration |
+| **AI SDK Compatibility** | Works with existing `@ai-sdk/react` frontend |
+| **Tool Format** | Compatible with existing Composio integration |
 
-### 2.3 Capabilities (What they Do)
-The executable logic assigned to the agent.
-*   **Tools (Atomic):** Single-purpose functions (e.g., `send_email`, `query_postgres`). These are often wrappers around external APIs.
-*   **Workflows (Compound):** Deterministic, multi-step processes authored in the Workflow Editor (e.g., "Draft Release Notes" = `query_jira` -> `summarize` -> `format_markdown`).
-*   *Key Distinction:* Tools are capabilities; Workflows are *standard operating procedures* (SOPs).
+### Agent Instantiation
 
-### 2.4 Planner (When they Act)
-The temporal dimension of the agent. Agents don't just react; they initiate.
-*   **Scheduled Jobs:** Time-based execution.
-    *   *Conversational:* "Wake up at 9 AM and message me a briefing."
-    *   *Headless:* "Run the 'Sync CRM' workflow every Friday at 5 PM."
-*   **Event Triggers:** Data-driven execution.
-    *   *Logic:* `WHEN RecordAdded(Table='Support Tickets', Priority='P1') THEN Run(Workflow='Alert Team')`
-
-### 2.5 Directives (Why they Act)
-The high-level guidance system.
-*   **Objectives:** Positive constraints. What success looks like (e.g., "Increase user retention", "Keep responses concise").
-*   **Guardrails:** Negative constraints. What is forbidden (e.g., "Never approve budget > $1k", "Do not use emojis in external emails").
-
-### 2.6 Feedback (How they Improve)
-The optimization loop.
-*   **Task Review:** Users can view the input/output of any execution (Tool or Workflow).
-*   **Correction:** Users provide specific feedback on a task.
-    *   *Logic Feedback:* "The workflow failed because the date format was wrong." (Leads to editing the Workflow).
-    *   *Context Feedback:* "You missed the nuance of this ticket." (Leads to refining the System Prompt).
-
----
-
-## 3. UX Architecture: The Assistant View
-
-The Agent interaction model is centralized in a unified "Agent Modal," designed to feel like a Manager's Dashboard. It is divided into **7 Functional Tabs**.
-
-### Tab 1: Overview (The Landing Page)
-*   **Purpose:** Instant situational awareness. "Is this agent working? Do they need me?"
-*   **Components:**
-    *   **Current Status:** Real-time pulse of active tasks (e.g., "Synthesising Feedback - Step 2/4").
-    *   **Needs Attention:** Blockers (missing credentials) and Approval Requests (human-in-the-loop gates).
-    *   **Recent Highlights:** Summary of the last 3 significant actions.
-    *   **Quick Actions:** One-click access to start a chat or run common workflows ("Run Standup").
-
-### Tab 2: Chat (The Interface)
-*   **Purpose:** Natural language collaboration and delegation.
-*   **Components:**
-    *   **Main Stream:** The conversation history. Supports rich UI widgets (e.g., "Approval Cards" embedded in chat).
-    *   **Context Sidebar:** "Recent Conversations" list to jump between topics, mirroring a human's memory of past threads.
-
-### Tab 3: Tasks (The History)
-*   **Purpose:** Auditability and improvement. "What did you do, and did you do it right?"
-*   **Components:**
-    *   **Execution Log:** Chronological list of all Tool Calls and Workflow Runs.
-    *   **Detail View:** Collapsible cards showing Input arguments and Output results (JSON).
-    *   **Feedback Loop:** "Give Feedback" button opening a flow to critique logic or prompt.
-
-### Tab 4: Planner (The Schedule)
-*   **Purpose:** Automation management. "What will you do next?"
-*   **Components:**
-    *   **Scheduled Jobs:** Cards showing recurring tasks (Time + Action). Distinguishes between "Conversational" (starts a chat) and "Silent" (runs background workflow) jobs.
-    *   **Event Triggers:** Cards showing logic-based triggers (When X, Then Y). Includes "Test Run" buttons for debugging.
-
-### Tab 5: Records (The Memory)
-*   **Purpose:** Data transparency. "What do you know?"
-*   **Components:**
-    *   **Assigned Tables:** List of Tables this agent can access.
-    *   **Data Grid:** Read-only preview of the actual data rows (e.g., "Stakeholder Interviews").
-    *   **Permissions:** Indicators of Read vs. Read/Write access.
-
-### Tab 6: Capabilities (The Toolbox)
-*   **Purpose:** Skill management. "What are you trained to do?"
-*   **Components:**
-    *   **Tools List:** Grid of atomic capabilities (e.g., "Jira Integration").
-    *   **Workflows List:** Grid of compound SOPs (e.g., "Weekly Report").
-    *   **Management:** Interface to assign/unassign capabilities from the global registry.
-
-### Tab 7: Config (The Brain)
-*   **Purpose:** Deep behavior tuning. "Who are you?"
-*   **Components:**
-    *   **Objectives & Guardrails:** Free-text fields to define high-level goals.
-    *   **Variables:** Dropdowns/Inputs for `Tone`, `Output Length`, etc.
-    *   **System Definition:** Raw editor for System Prompt and Model selection.
-
----
-
-## 4. Technical Implementation Strategy
-
-### Data Models
-To support this robust UI, our data structures (`_tables/agents/*.ts`) need to evolve.
-
-**AgentConfig Schema (Draft):**
 ```typescript
-type AgentConfig = {
+import { Agent } from "@mastra/core/agent";
+import { getAgentMemory } from "./services/memory";
+
+// Dynamic agent creation from config
+const agent = new Agent({
+  name: config.name,
+  instructions: buildSystemPrompt(config),
+  model: aiGateway(config.model),
+  tools: await loadAgentTools(config),
+  memory: getAgentMemory(config.id),
+});
+
+// Stream conversation with memory
+const response = await agent.stream(messages, {
+  threadId,
+  resourceId: userId,
+});
+```
+
+---
+
+## 3. Core Primitives
+
+The Agent architecture is built upon six foundational primitives—the atomic units of the Workforce OS.
+
+### 3.1 Identity (Who)
+
+The static definition of the agent.
+
+| Component | Description | Storage |
+|-----------|-------------|---------|
+| **Persona** | Name, Avatar, Role | `_tables/agents/[id].ts` |
+| **Model** | LLM provider and model | `config.model` |
+| **System Prompt** | Base instructions | `config.systemPrompt` |
+| **Variables** | User-defined env vars | `config.variables` |
+
+```typescript
+interface AgentIdentity {
   id: string;
-  identity: {
-    name: string;
-    role: string;
-    avatar: string;
-  };
-  config: {
-    model: string;
-    systemPrompt: string;
-    variables: Record<string, string>; // e.g. { tone: "Professional" }
-  };
-  directives: {
+  name: string;           // "Mira Patel"
+  role: string;           // "Product Manager"
+  avatar: string;         // Emoji or image URL
+  model: string;          // "google:gemini-2.5-pro"
+  systemPrompt: string;   // Base instructions
+  variables: Record<string, string>;
+}
+```
+
+### 3.2 Memory (What They Know) — ✅ Implemented
+
+The stateful context the agent accesses. Powered by **Mastra Memory API**.
+
+| Memory Type | Scope | Purpose | Status |
+|-------------|-------|---------|--------|
+| **Conversations** | Per-thread | Recent message history | ✅ Implemented |
+| **Working Memory** | Per-user | Structured knowledge about user | ✅ Implemented |
+| **Semantic Recall** | Per-user | Vector search for relevant context | 🔜 Phase 9.1f |
+| **Records** | Per-agent | Structured data access | 🔜 Phase 10 |
+
+**Implementation Details:**
+
+```typescript
+// Storage: SQLite per agent
+// Location: _tables/agents/[agentId]/memory.db
+
+const memory = new Memory({
+  storage: new LibSQLStore({
+    url: `file:_tables/agents/${agentId}/memory.db`,
+  }),
+  options: {
+    lastMessages: 10,              // Keep 10 messages in context
+    workingMemory: {
+      enabled: true,
+      scope: "resource",           // Per-user
+      schema: workingMemorySchema, // Zod schema
+    },
+    threads: {
+      generateTitle: true,         // Auto-title from first message
+    },
+  },
+});
+```
+
+**Working Memory Schema:**
+
+```typescript
+const workingMemorySchema = z.object({
+  communicationPreferences: z.object({
+    style: z.enum(["formal", "casual", "technical"]).optional(),
+    responseLength: z.enum(["concise", "detailed"]).optional(),
+    formatPreference: z.enum(["paragraphs", "bullets", "mixed"]).optional(),
+  }).optional(),
+  
+  activeProjects: z.array(z.object({
+    name: z.string(),
+    status: z.enum(["active", "blocked", "completed"]).optional(),
+    notes: z.string().optional(),
+  })).optional(),
+  
+  keyContext: z.array(z.string()).optional(),
+  
+  recentDecisions: z.array(z.object({
+    decision: z.string(),
+    date: z.string().optional(),
+  })).optional(),
+});
+```
+
+### 3.3 Capabilities (What They Do) — ✅ Partial
+
+The executable logic assigned to the agent.
+
+| Capability Type | Description | Status |
+|-----------------|-------------|--------|
+| **Composio Tools** | Third-party integrations | ✅ Implemented |
+| **Custom Tools** | User-created code | 🔧 Needs refactor |
+| **Workflows** | Multi-step orchestrations | 🔜 Task 10 |
+| **Browser Tools** | Web automation | 🔜 Task 10 |
+
+**See:** `06-Tools-vs-Workflows.md` for detailed distinction.
+
+```typescript
+interface AgentCapabilities {
+  // Atomic tools
+  toolIds: string[];              // Custom tool IDs
+  connectionToolBindings: Array<{
+    toolName: string;             // e.g., "GMAIL_SEND_EMAIL"
+    connectionId: string;
+  }>;
+  
+  // Composed workflows
+  workflowIds: string[];
+}
+```
+
+### 3.4 Planner (When They Act)
+
+The temporal dimension of the agent. Agents don't just react; they initiate.
+
+| Trigger Type | Description | Status |
+|--------------|-------------|--------|
+| **Scheduled Jobs** | Time-based execution | 🔜 Future |
+| **Event Triggers** | Data-driven execution | 🔜 Future |
+
+```typescript
+interface AgentPlanner {
+  jobs: Array<{
+    id: string;
+    schedule: string;           // Cron expression
+    action: "chat" | "workflow";
+    config: any;
+  }>;
+  triggers: Array<{
+    id: string;
+    event: string;              // e.g., "gmail.new_email"
+    condition?: Record<string, any>;
+    action: "chat" | "workflow";
+    config: any;
+  }>;
+}
+```
+
+### 3.5 Directives (Why They Act)
+
+The high-level guidance system.
+
+| Directive Type | Purpose | Example |
+|----------------|---------|---------|
+| **Objectives** | Positive constraints | "Keep responses concise" |
+| **Guardrails** | Negative constraints | "Never share PII" |
+
+```typescript
+interface AgentDirectives {
+  objectives: string[];   // What success looks like
+  guardrails: string[];   // What is forbidden
+}
+```
+
+### 3.6 Feedback (How They Improve)
+
+The optimization loop.
+
+| Feedback Type | Description | Status |
+|---------------|-------------|--------|
+| **Task Review** | Input/output inspection | 🔜 Future |
+| **Correction** | User-provided refinement | 🔜 Future |
+| **Evaluation** | Automated quality scoring | 🔜 Future |
+
+---
+
+## 4. UX Architecture: The Agent Modal
+
+The Agent interaction model is centralized in a unified modal, designed as a Manager's Dashboard.
+
+### Tab Structure
+
+| Tab | Purpose | Status |
+|-----|---------|--------|
+| **Overview** | Quick status and recent activity | ✅ Implemented |
+| **Chat** | Conversation interface with thread management | ✅ Implemented |
+| **Tasks** | Execution history and audit | 🔜 Future |
+| **Planner** | Scheduled jobs and triggers | 🔜 Future |
+| **Records** | Assigned data tables | 🔜 Future |
+| **Knowledge** | Working memory display | ✅ Implemented |
+| **Capabilities** | Tools and workflows | 🔜 Needs update |
+| **Config** | Identity and directives | ✅ Implemented |
+
+### Chat Tab Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          CHAT TAB                                        │
+│                                                                          │
+│  ┌──────────────┐  ┌──────────────────────────────────────────────────┐ │
+│  │   THREADS    │  │              CONVERSATION AREA                   │ │
+│  │   SIDEBAR    │  │                                                  │ │
+│  │              │  │  ┌─────────────────────────────────────────────┐ │ │
+│  │ + New        │  │  │            THREAD HEADER                    │ │ │
+│  │              │  │  │  "Discussing Q4 roadmap..."         [Edit]  │ │ │
+│  │ • Thread 1   │  │  └─────────────────────────────────────────────┘ │ │
+│  │   Thread 2   │  │                                                  │ │
+│  │   Thread 3   │  │  ┌─────────────────────────────────────────────┐ │ │
+│  │              │  │  │            MESSAGES                         │ │ │
+│  │              │  │  │  🧑 User: "What's the status?"              │ │ │
+│  │              │  │  │  🤖 Agent: "Here's the update..."           │ │ │
+│  │              │  │  └─────────────────────────────────────────────┘ │ │
+│  │              │  │                                                  │ │
+│  │              │  │  ┌─────────────────────────────────────────────┐ │ │
+│  │              │  │  │            INPUT                            │ │ │
+│  │              │  │  │  [Message Mira...]                   [Send] │ │ │
+│  └──────────────┘  │  └─────────────────────────────────────────────┘ │ │
+│                    └──────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Components:**
+- `ThreadSidebar` - Lists conversations, new/delete actions
+- `ThreadHeader` - Shows/edits thread title
+- `ChatArea` - Messages display using AI Elements
+- `useChatMemory` - Hook integrating useChat with Mastra memory
+
+### Knowledge Tab Architecture
+
+Displays the agent's working memory in a structured format:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        KNOWLEDGE TAB                                     │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐ │
+│  │  Communication Preferences                                          │ │
+│  │  ├─ Style: Technical                                               │ │
+│  │  ├─ Length: Detailed                                               │ │
+│  │  └─ Format: Bullets                                                │ │
+│  └─────────────────────────────────────────────────────────────────────┘ │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐ │
+│  │  Active Projects                                                    │ │
+│  │  ├─ Resume Agent MVP (Active)                                      │ │
+│  │  └─ Mastra Migration (Completed)                                   │ │
+│  └─────────────────────────────────────────────────────────────────────┘ │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────┐ │
+│  │  Key Context                                                        │ │
+│  │  • User prefers TypeScript over JavaScript                         │ │
+│  │  • Working on job application platform                             │ │
+│  └─────────────────────────────────────────────────────────────────────┘ │
+│                                                                          │
+│                                           [Clear All Memory]            │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. Data Model: AgentConfig
+
+```typescript
+// _tables/types.ts
+export interface AgentConfig {
+  // Identity
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  status: "active" | "paused" | "draft";
+  highlight?: string;           // Greeting/intro message
+  
+  // Model Configuration
+  model: string;                // "google:gemini-2.5-pro"
+  systemPrompt?: string;
+  variables?: Record<string, string>;
+  
+  // Capabilities
+  toolIds: string[];            // Custom tool IDs
+  connectionToolBindings: ConnectionToolBinding[];
+  workflowIds?: string[];
+  
+  // Directives
+  directives?: {
     objectives: string[];
     guardrails: string[];
   };
-  capabilities: {
-    toolIds: string[];     // Atomic tools
-    workflowIds: string[]; // Compound workflows
-  };
-  planner: {
+  
+  // Planner (Future)
+  planner?: {
     jobs: ScheduledJob[];
     triggers: EventTrigger[];
   };
-  memory: {
-    tableIds: string[];    // Assigned records
+  
+  // Memory (Future)
+  memory?: {
+    tableIds: string[];         // Assigned records
   };
-};
+}
+
+export interface ConnectionToolBinding {
+  toolName: string;             // e.g., "GMAIL_SEND_EMAIL"
+  connectionId: string;         // Composio connection ID
+  description?: string;
+}
 ```
 
-### Execution Engine
-*   **Chat:** Powered by Vercel AI SDK.
-*   **Planner:** Requires a lightweight scheduler (e.g., `node-cron` or a DB-backed queue) to fire events.
-*   **Records:** Powered by our `polars` service layer.
-*   **Feedback:** New `feedback` table in Records domain to store user critiques associated with specific `runIds`.
+---
+
+## 6. API Architecture
+
+### Chat API
+
+```
+POST /api/workforce/[agentId]/chat
+Body: { messages, threadId?, context? }
+Response: Streaming AI SDK response
+Headers: X-Thread-Id (for new threads)
+```
+
+### Thread Management APIs
+
+```
+GET    /api/workforce/[agentId]/threads         # List threads
+POST   /api/workforce/[agentId]/threads         # Create thread
+GET    /api/workforce/[agentId]/threads/[id]    # Get thread + messages
+PATCH  /api/workforce/[agentId]/threads/[id]    # Rename thread
+DELETE /api/workforce/[agentId]/threads/[id]    # Delete thread
+```
+
+### Knowledge API
+
+```
+GET    /api/workforce/[agentId]/knowledge       # Get working memory
+DELETE /api/workforce/[agentId]/knowledge       # Clear working memory
+```
+
+---
+
+## 7. Implementation Status
+
+### Completed (Task 9.1)
+
+- ✅ Mastra Agent integration
+- ✅ Composio tools working
+- ✅ Memory persistence (LibSQL)
+- ✅ Thread management UI
+- ✅ Working memory display (Knowledge tab)
+- ✅ Thread CRUD APIs
+
+### In Progress (Task 10)
+
+- 🔧 Tool Builder refactor
+- 🔧 Workflow Builder alignment
+- 🔧 Browser automation spike
+
+### Future
+
+- 📋 Records integration (agent access to tables)
+- 📋 Planner (scheduled jobs, triggers)
+- 📋 Feedback loop (task review, correction)
+- 📋 Semantic recall (vector search)
+
+---
+
+## 8. References
+
+- Task 9: Mastra Migration (`_docs/_tasks/9-mastra-migration.md`)
+- Task 9.1: Memory Integration (`_docs/_tasks/9.1-mastra-memory-integration.md`)
+- Task 10: Platform Evolution (`_docs/_tasks/10-platform-evolution.md`)
+- Diary 18: Memory Integration (`_docs/_diary/18-MastraMemoryIntegration.md`)
+- [Mastra Documentation](https://mastra.ai/docs)
+- [Mastra Memory API](https://mastra.ai/docs/memory/overview)

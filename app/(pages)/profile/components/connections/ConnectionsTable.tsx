@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Table,
@@ -136,10 +136,9 @@ export function ConnectionsTable({
         </TableHeader>
         <TableBody className="bg-white divide-y divide-slate-200">
           {connectionGroups.map((group) => (
-            <>
+            <Fragment key={`group-${group.toolkit.slug}`}>
               {/* Group Header */}
               <TableRow
-                key={`group-${group.toolkit.slug}`}
                 className="bg-slate-50/50 cursor-pointer hover:bg-slate-100/50"
                 onClick={() => {
                   const firstConn = group.connections[0];
@@ -223,7 +222,7 @@ export function ConnectionsTable({
                   </TableRow>
                 );
               })}
-            </>
+            </Fragment>
           ))}
         </TableBody>
       </Table>

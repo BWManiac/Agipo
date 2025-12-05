@@ -138,6 +138,36 @@ export async function getTriggersForToolkit(toolkitSlug: string) {
 }
 
 /**
+ * Initiates an API key connection (no redirect, immediate).
+ * @param userId - The Agipo user ID
+ * @param authConfigId - The Composio auth config ID
+ * @param apiKey - The user's API key for the service
+ * @returns Connection object with status (should be ACTIVE immediately)
+ */
+export async function initiateApiKeyConnection(
+  userId: string,
+  authConfigId: string,
+  apiKey: string
+) {
+  const client = getComposioClient();
+  
+  const connection = await client.connectedAccounts.initiate(
+    userId,
+    authConfigId,
+    {
+      config: {
+        authScheme: "API_KEY" as const,
+        val: {
+          generic_api_key: apiKey,
+        },
+      },
+    }
+  );
+
+  return connection;
+}
+
+/**
  * Disconnects/deletes a connected account
  */
 export async function disconnectAccount(connectionId: string) {

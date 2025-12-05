@@ -5,20 +5,24 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft } from "lucide-react";
 import type { AuthConfig } from "../../hooks/useConnections";
 import { ConnectionDetailView } from "./ConnectionDetailView";
+import { ApiKeyModal } from "./ApiKeyModal";
 
 type AddConnectionViewProps = {
   authConfigs: AuthConfig[];
   onBack: () => void;
   onConnect: (authConfigId: string) => Promise<string | null>;
+  onConnectApiKey: (authConfigId: string, apiKey: string) => Promise<boolean>;
 };
 
 export function AddConnectionView({
   authConfigs,
   onBack,
   onConnect,
+  onConnectApiKey,
 }: AddConnectionViewProps) {
   const [selectedConfig, setSelectedConfig] = useState<AuthConfig | null>(null);
   const [searchFilter, setSearchFilter] = useState("");
+  const [apiKeyModalConfig, setApiKeyModalConfig] = useState<AuthConfig | null>(null);
 
   // Filter to only unconnected auth configs
   const availableConfigs = authConfigs.filter((c) => !c.isConnected);
@@ -35,6 +39,25 @@ export function AddConnectionView({
     if (redirectUrl) {
       window.location.href = redirectUrl;
     }
+  };
+
+  const handleCardClick = (config: AuthConfig) => {
+    // For API_KEY auth, show the modal instead of detail view
+    if (config.authScheme === "API_KEY") {
+      setApiKeyModalConfig(config);
+    } else {
+      setSelectedConfig(config);
+    }
+  };
+
+  const handleApiKeyConnect = async (authConfigId: string, apiKey: string): Promise<boolean> => {
+    const success = await onConnectApiKey(authConfigId, apiKey);
+    if (success) {
+      // Close modal and go back to connections list
+      setApiKeyModalConfig(null);
+      onBack();
+    }
+    return success;
   };
 
   // If an integration is selected, show its detail view
@@ -100,7 +123,7 @@ export function AddConnectionView({
               <button
                 key={config.id}
                 type="button"
-                onClick={() => setSelectedConfig(config)}
+                onClick={() => handleCardClick(config)}
                 className="flex items-center gap-3 p-4 rounded-lg border border-slate-200 bg-white text-left transition-all hover:border-indigo-300 hover:shadow-sm"
               >
                 {config.toolkit?.logo ? (
@@ -123,6 +146,14 @@ export function AddConnectionView({
           </div>
         )}
       </div>
+
+      {/* API Key Modal */}
+      <ApiKeyModal
+        authConfig={apiKeyModalConfig}
+        open={!!apiKeyModalConfig}
+        onOpenChange={(open) => !open && setApiKeyModalConfig(null)}
+        onConnect={handleApiKeyConnect}
+      />
     </div>
   );
 }

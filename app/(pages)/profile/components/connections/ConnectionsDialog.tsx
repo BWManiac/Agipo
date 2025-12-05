@@ -54,7 +54,7 @@ function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) 
 }
 
 export function ConnectionsDialog({ open, onOpenChange }: ConnectionsDialogProps) {
-  const { authConfigs, connectionGroups, stats, isLoading, error, fetchData, refetch, initiateConnection, disconnectAccount } = useConnections();
+  const { authConfigs, connectionGroups, stats, isLoading, error, fetchData, refetch, initiateConnection, initiateApiKeyConnection, disconnectAccount } = useConnections();
   const [view, setView] = useState<ViewState>("list");
   const [searchFilter, setSearchFilter] = useState("");
   const [selectedConfig, setSelectedConfig] = useState<AuthConfig | null>(null);
@@ -123,6 +123,7 @@ export function ConnectionsDialog({ open, onOpenChange }: ConnectionsDialogProps
             authConfigs={authConfigs}
             onBack={() => setView("list")}
             onConnect={handleConnect}
+            onConnectApiKey={initiateApiKeyConnection}
           />
         ) : (
           <div className="flex-1 flex flex-col overflow-hidden p-6">

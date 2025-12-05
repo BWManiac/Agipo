@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { initiateConnection } from "../services/composio";
+import { initiateConnection, initiateApiKeyConnection } from "../services/composio";
 
 export const runtime = "nodejs";
 
 type ConnectRequest = {
   authConfigId: string;
   redirectUri?: string;
+  // For API key connections (no redirect)
+  apiKey?: string;
 };
 
 /**
- * POST /api/integrations/connect
- * Initiates OAuth connection flow for the authenticated user.
+ * POST /api/connections/connect
+ * Initiates connection flow for the authenticated user.
+ * - If apiKey is provided: Creates API key connection immediately
+ * - If no apiKey: Initiates OAuth flow with redirect
  */
 export async function POST(request: Request) {
   try {
@@ -22,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as ConnectRequest;
-    const { authConfigId, redirectUri } = body;
+    const { authConfigId, redirectUri, apiKey } = body;
 
     if (!authConfigId || typeof authConfigId !== "string") {
       return NextResponse.json(
@@ -31,7 +35,21 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`[connections/connect] Initiating connection for user: ${userId}, authConfig: ${authConfigId}`);
+    // API Key flow - immediate connection, no redirect
+    if (apiKey) {
+      console.log(`[connections/connect] API key connection for user: ${userId}, authConfig: ${authConfigId}`);
+      
+      const connection = await initiateApiKeyConnection(userId, authConfigId, apiKey);
+      
+      return NextResponse.json({
+        success: true,
+        connectionId: connection.id,
+        status: connection.status,
+      });
+    }
+
+    // OAuth flow - redirect to provider
+    console.log(`[connections/connect] OAuth connection for user: ${userId}, authConfig: ${authConfigId}`);
 
     const connection = await initiateConnection(userId, authConfigId, redirectUri);
 
