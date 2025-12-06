@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Editor - UXD Variations (Flight B)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .card-hover { transition: all 0.2s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <a href="../" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-lg font-semibold text-gray-900">Workflow Editor <span class="text-blue-600">(Flight B)</span></h1>
+                        <p class="text-sm text-gray-500">UXD Mockup Variations</p>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-400">
+                    Phase 1 • December 2025
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 py-8">
+        
+        <!-- Introduction -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h2 class="text-base font-semibold text-gray-900 mb-2">Design Objective</h2>
+                <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                    Three distinct approaches to the workflow editor UI, each demonstrating all P0 product requirements 
+                    while differing in <strong>information hierarchy</strong>. All variations share the same 
+                    shadcn/ui + AI Elements design language.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-1: Tool Palette</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-2: I/O Schema</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-3: Type Validation</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-4: Connections</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-5: Configs</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-8: Runtime Inputs</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-9: Data Mapping</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-10: Test Suite</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">PR-11: Error States</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Variations Grid -->
+        <section class="grid md:grid-cols-3 gap-6">
+            
+            <!-- Variation 1: Panels-First -->
+            <a href="variation-1/index.html" class="block">
+                <article class="bg-white rounded-xl border border-gray-200 overflow-hidden card-hover">
+                    <!-- Preview Area -->
+                    <div class="h-48 bg-gradient-to-br from-gray-100 to-gray-50 border-b border-gray-200 p-4 flex items-center justify-center">
+                        <!-- Mini Layout Preview -->
+                        <div class="w-full h-full bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden flex">
+                            <div class="w-12 bg-gray-50 border-r border-gray-200"></div>
+                            <div class="flex-1 bg-gray-100 flex items-center justify-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-6 bg-white rounded border border-gray-300"></div>
+                                    <div class="text-gray-400 text-xs">→</div>
+                                    <div class="w-8 h-6 bg-white rounded border border-gray-300"></div>
+                                </div>
+                            </div>
+                            <div class="w-16 bg-gray-50 border-l border-gray-200 p-1">
+                                <div class="h-2 bg-gray-200 rounded mb-1"></div>
+                                <div class="h-2 bg-gray-200 rounded mb-1"></div>
+                                <div class="h-2 bg-gray-200 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Content -->
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-gray-900">Panels-First</h3>
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">Prescribed</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">
+                            Right panels are prominent with tabbed navigation. Canvas serves as the central workspace.
+                        </p>
+                        <div class="text-xs text-gray-400">
+                            Chat + Canvas + Panels (Tabs)
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Variation 2: Canvas-First -->
+            <a href="variation-2/index.html" class="block">
+                <article class="bg-white rounded-xl border border-gray-200 overflow-hidden card-hover">
+                    <!-- Preview Area -->
+                    <div class="h-48 bg-gradient-to-br from-gray-100 to-gray-50 border-b border-gray-200 p-4 flex items-center justify-center">
+                        <!-- Mini Layout Preview -->
+                        <div class="w-full h-full bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden relative">
+                            <div class="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-7 bg-white rounded border border-gray-300 shadow-sm"></div>
+                                    <div class="text-gray-400 text-xs">→</div>
+                                    <div class="w-10 h-7 bg-white rounded border border-gray-300 shadow-sm"></div>
+                                    <div class="text-gray-400 text-xs">→</div>
+                                    <div class="w-10 h-7 bg-white rounded border border-gray-300 shadow-sm"></div>
+                                </div>
+                            </div>
+                            <!-- Floating elements -->
+                            <div class="absolute bottom-2 left-2 w-8 h-12 bg-white rounded border border-gray-300 shadow-md"></div>
+                            <div class="absolute bottom-2 right-2 w-10 h-14 bg-white rounded border border-gray-300 shadow-md"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Content -->
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-gray-900">Canvas-First</h3>
+                            <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded">Alternative</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">
+                            Canvas dominates the view. Floating panels appear on hover/selection. Modal dialogs for configuration.
+                        </p>
+                        <div class="text-xs text-gray-400">
+                            Dominant Canvas + Floating UI
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Variation 3: Progressive Disclosure -->
+            <a href="variation-3/index.html" class="block">
+                <article class="bg-white rounded-xl border border-gray-200 overflow-hidden card-hover">
+                    <!-- Preview Area -->
+                    <div class="h-48 bg-gradient-to-br from-gray-100 to-gray-50 border-b border-gray-200 p-4 flex items-center justify-center">
+                        <!-- Mini Layout Preview -->
+                        <div class="w-full h-full bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden p-3 flex flex-col gap-2">
+                            <!-- Linear steps - HORIZONTAL -->
+                            <div class="flex-1 bg-gray-50 rounded border border-gray-200 flex items-center justify-center gap-2 px-2">
+                                <div class="flex items-center gap-1">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500 text-white text-[8px] flex items-center justify-center">1</div>
+                                    <div class="w-12 h-5 bg-white rounded border border-gray-300"></div>
+                                </div>
+                                <div class="text-gray-300 text-xs">→</div>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500 text-white text-[8px] flex items-center justify-center">2</div>
+                                    <div class="w-12 h-5 bg-white rounded border border-gray-300"></div>
+                                </div>
+                                <div class="text-gray-300 text-xs">→</div>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500 text-white text-[8px] flex items-center justify-center">3</div>
+                                    <div class="w-12 h-5 bg-white rounded border border-gray-300"></div>
+                                </div>
+                            </div>
+                            <!-- Requirements bar -->
+                            <div class="h-4 bg-gray-100 rounded border border-gray-200 flex items-center px-2 gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                <div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Content -->
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-gray-900">Progressive Disclosure</h3>
+                            <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-medium rounded">Simplified</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">
+                            <strong>Horizontal</strong> timeline view. Minimal by default, complexity revealed via wizard-style interactions.
+                        </p>
+                        <div class="text-xs text-gray-400">
+                            Horizontal Timeline + Inline Expansion
+                        </div>
+                    </div>
+                </article>
+            </a>
+            
+        </section>
+
+        <!-- Design System Reference -->
+        <section class="mt-12">
+            <div class="bg-gray-900 rounded-xl p-6 text-white">
+                <h2 class="text-base font-semibold mb-4">Design System Reference</h2>
+                <div class="grid md:grid-cols-4 gap-6 text-sm">
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-2">Cards/Nodes</h3>
+                        <code class="text-green-400 text-xs">bg-white rounded-xl border border-gray-200 shadow-sm</code>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-2">Headers</h3>
+                        <code class="text-green-400 text-xs">bg-gray-50 border-b p-3</code>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-2">Typography</h3>
+                        <code class="text-green-400 text-xs">text-gray-900 / 500 / 400</code>
+                    </div>
+                    <div>
+                        <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-2">Accents</h3>
+                        <div class="flex gap-2 mt-1">
+                            <span class="w-4 h-4 rounded bg-blue-500"></span>
+                            <span class="w-4 h-4 rounded bg-green-500"></span>
+                            <span class="w-4 h-4 rounded bg-red-500"></span>
+                            <span class="w-4 h-4 rounded bg-yellow-500"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flight B vs Flight A -->
+        <section class="mt-8">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <h3 class="font-medium text-blue-900 mb-2">Flight B Key Differences</h3>
+                <ul class="text-sm text-blue-800 space-y-1">
+                    <li>• <strong>Variation 2:</strong> Light canvas with dot grid (vs Flight A's dark canvas with glassmorphism)</li>
+                    <li>• <strong>Variation 3:</strong> Horizontal timeline scroll view (vs Flight A's vertical two-column timeline)</li>
+                    <li>• Overall lighter, more traditional UI approach</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 mt-12">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <p class="text-xs text-gray-400 text-center">
+                Agipo Workflow Editor • UXD Phase 1 • Flight B • Based on shadcn/ui + AI Elements
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
+

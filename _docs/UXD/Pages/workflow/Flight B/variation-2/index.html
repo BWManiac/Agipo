@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Editor - Variation 2: Canvas-First (Flight B)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-in-left { animation: slideInLeft 0.2s ease-out; }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .animate-slide-in-right { animation: slideInRight 0.2s ease-out; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        
+        /* Custom scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        
+        /* Canvas grid pattern - LIGHT (Flight B differentiator) */
+        .canvas-grid {
+            background-image: 
+                radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        /* Node connection handles */
+        .handle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #3b82f6;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.15s ease;
+        }
+        .handle:hover {
+            transform: translateY(-50%) scale(1.3);
+            background: #3b82f6;
+        }
+        .handle-left { left: -6px; }
+        .handle-right { right: -6px; }
+        
+        /* Edge line */
+        .edge-line {
+            stroke: #3b82f6;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        /* Modal backdrop */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        /* Floating panel shadow */
+        .floating-panel {
+            box-shadow: 0 20px 40px -8px rgba(0,0,0,0.2), 0 8px 16px -4px rgba(0,0,0,0.1);
+        }
+        
+        /* Connection badge */
+        .connection-badge {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- ============================================== -->
+    <!-- STATE 1: DEFAULT - CLEAN CANVAS               -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 1: Default (Clean Canvas - Light Theme)
+        </div>
+        
+        <div class="h-[700px] flex flex-col bg-white border border-gray-300 shadow-xl">
+            
+            <!-- Minimal Top Bar -->
+            <header class="h-12 border-b border-gray-200 bg-white flex items-center justify-between px-4 shrink-0">
+                <div class="flex items-center gap-3">
+                    <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <input type="text" value="Job Application Workflow" class="text-sm font-semibold text-gray-900 bg-transparent border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 -mx-1" />
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Connections badge indicator -->
+                    <div class="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-lg text-xs">
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span class="text-gray-600">2 connected</span>
+                        <span class="w-2 h-2 bg-yellow-500 rounded-full ml-1"></span>
+                        <span class="text-gray-600">1 needed</span>
+                    </div>
+                    <div class="w-px h-6 bg-gray-200"></div>
+                    <button class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Settings
+                    </button>
+                    <button class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Test
+                    </button>
+                    <button class="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        Save
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Full Canvas Area - LIGHT BACKGROUND (Flight B) -->
+            <main class="flex-1 canvas-grid relative overflow-hidden bg-gray-50">
+                
+                <!-- SVG for edges -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 0;">
+                    <!-- Edge from Node A to Node B -->
+                    <path d="M 320 300 C 400 300, 450 300, 530 300" class="edge-line" />
+                    <!-- Edge from Node B to Node C -->
+                    <path d="M 790 300 C 870 300, 920 300, 1000 300" class="edge-line" />
+                </svg>
+                
+                <!-- Node 1: Scrape Job -->
+                <div class="absolute bg-white rounded-xl border border-gray-200 shadow-md w-56 transition-all hover:shadow-lg hover:border-gray-300" style="left: 80px; top: 220px; z-index: 1;">
+                    <div class="handle handle-right"></div>
+                    
+                    <div class="p-3 border-b bg-gray-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🔍</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Scrape Job</div>
+                                <div class="text-xs text-gray-500">firecrawl</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 text-xs">
+                        <div class="flex justify-between text-gray-500 mb-1">
+                            <span>1 input</span>
+                            <span>3 outputs</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Connection badge - PR-4 indicator -->
+                    <div class="connection-badge">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 border border-green-200 rounded-full text-[10px] text-green-700">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                            Connected
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Node 2: Generate Resume -->
+                <div class="absolute bg-white rounded-xl border border-gray-200 shadow-md w-56 transition-all hover:shadow-lg hover:border-gray-300" style="left: 540px; top: 220px; z-index: 1;">
+                    <div class="handle handle-left"></div>
+                    <div class="handle handle-right"></div>
+                    
+                    <div class="p-3 border-b bg-gray-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">📝</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Generate Resume</div>
+                                <div class="text-xs text-gray-500">openai</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 text-xs">
+                        <div class="flex justify-between text-gray-500 mb-1">
+                            <span>4 inputs</span>
+                            <span>1 output</span>
+                        </div>
+                    </div>
+                    
+                    <div class="connection-badge">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 border border-green-200 rounded-full text-[10px] text-green-700">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                            Connected
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Node 3: Send Email -->
+                <div class="absolute bg-white rounded-xl border border-gray-200 shadow-md w-56 transition-all hover:shadow-lg hover:border-gray-300" style="left: 1000px; top: 220px; z-index: 1;">
+                    <div class="handle handle-left"></div>
+                    
+                    <div class="p-3 border-b bg-gray-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">📧</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Send Email</div>
+                                <div class="text-xs text-gray-500">gmail</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 text-xs">
+                        <div class="flex justify-between text-gray-500 mb-1">
+                            <span>3 inputs</span>
+                            <span>1 output</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Not connected badge -->
+                    <div class="connection-badge">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-100 border border-yellow-200 rounded-full text-[10px] text-yellow-700">
+                            <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
+                            Needs auth
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Floating Chat Button -->
+                <button class="absolute bottom-6 left-6 w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-105 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                    </svg>
+                </button>
+                
+                <!-- Canvas controls -->
+                <div class="absolute bottom-6 right-6 flex items-center gap-2">
+                    <div class="bg-white rounded-lg border border-gray-200 shadow-sm flex items-center">
+                        <button class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-l-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                            </svg>
+                        </button>
+                        <span class="px-2 text-xs text-gray-600 border-x border-gray-200">100%</span>
+                        <button class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-r-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Add node hint -->
+                <div class="absolute top-4 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-full shadow-lg">
+                    Click canvas edge to add node
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 2: NODE SELECTED (INSPECTOR VISIBLE)    -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 2: Node Selected (Floating Inspector - PR-2, PR-9)
+        </div>
+        
+        <div class="h-[600px] flex flex-col bg-white border border-gray-300 shadow-xl">
+            <header class="h-12 border-b border-gray-200 bg-white flex items-center justify-between px-4 shrink-0">
+                <div class="flex items-center gap-3">
+                    <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <input type="text" value="Job Application Workflow" class="text-sm font-semibold text-gray-900 bg-transparent border-0 focus:outline-none" />
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg">Test</button>
+                    <button class="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg">Save</button>
+                </div>
+            </header>
+            
+            <main class="flex-1 canvas-grid bg-gray-50 relative overflow-hidden">
+                
+                <!-- SVG for edges -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 0;">
+                    <path d="M 296 220 C 350 220, 400 220, 454 220" class="edge-line" stroke-width="3" />
+                </svg>
+                
+                <!-- Node 1 -->
+                <div class="absolute bg-white rounded-xl border border-gray-200 shadow-md w-56" style="left: 60px; top: 140px; z-index: 1;">
+                    <div class="handle handle-right"></div>
+                    <div class="p-3 border-b bg-gray-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🔍</span>
+                            <div>
+                                <div class="font-medium text-sm">Scrape Job</div>
+                                <div class="text-xs text-gray-500">firecrawl</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 text-xs space-y-1">
+                        <div class="text-gray-400 uppercase text-[10px]">Output</div>
+                        <div class="text-gray-600">title, company, requirements</div>
+                    </div>
+                </div>
+                
+                <!-- Node 2 (Selected) -->
+                <div class="absolute bg-white rounded-xl border-2 border-blue-500 shadow-xl w-56" style="left: 460px; top: 140px; z-index: 2;">
+                    <div class="handle handle-left" style="border-color: #3b82f6; background: #3b82f6;"></div>
+                    <div class="handle handle-right"></div>
+                    <div class="p-3 border-b bg-blue-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">📝</span>
+                            <div>
+                                <div class="font-medium text-sm">Generate Resume</div>
+                                <div class="text-xs text-blue-600">openai</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 text-xs space-y-1">
+                        <div class="text-gray-400 uppercase text-[10px]">Input</div>
+                        <div class="text-gray-600">jobTitle, companyName, targetSkills, baseResume</div>
+                    </div>
+                </div>
+                
+                <!-- Floating Inspector Panel (Right) -->
+                <div class="absolute right-4 top-4 w-80 bg-white rounded-xl border border-gray-200 floating-panel animate-slide-in-right" style="z-index: 10;">
+                    <div class="p-3 border-b border-gray-200 flex items-center justify-between bg-blue-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span>📝</span>
+                            <span class="font-medium text-sm">Generate Resume</span>
+                        </div>
+                        <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-3 custom-scroll max-h-[400px] overflow-y-auto">
+                        <!-- Input Schema - PR-2 -->
+                        <div class="mb-4">
+                            <div class="text-xs text-gray-400 uppercase font-medium mb-2">Input Schema</div>
+                            <div class="space-y-2">
+                                <div class="p-2.5 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <span class="font-medium text-sm text-gray-900">jobTitle</span>
+                                        <span class="text-xs text-gray-400 font-mono">string</span>
+                                    </div>
+                                    <select class="w-full text-xs border border-gray-200 rounded px-2 py-1.5 bg-white">
+                                        <option selected>← Scrape Job → title</option>
+                                        <option>← Scrape Job → company</option>
+                                        <option>← Runtime Input</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="p-2.5 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <span class="font-medium text-sm text-gray-900">companyName</span>
+                                        <span class="text-xs text-gray-400 font-mono">string</span>
+                                    </div>
+                                    <select class="w-full text-xs border border-gray-200 rounded px-2 py-1.5 bg-white">
+                                        <option>← Scrape Job → title</option>
+                                        <option selected>← Scrape Job → company</option>
+                                        <option>← Runtime Input</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="p-2.5 bg-purple-50 rounded-lg border border-purple-200">
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <span class="font-medium text-sm text-gray-900">baseResume</span>
+                                        <span class="text-xs text-purple-600 font-mono">$input</span>
+                                    </div>
+                                    <div class="text-xs text-purple-600">Runtime input: $baseResume</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Type validation - PR-3 -->
+                        <div class="p-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            All types valid
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 3: TEST MODAL OPEN                      -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 3: Test Modal Open (PR-10: Test Suite, PR-8: Runtime Inputs)
+        </div>
+        
+        <div class="h-[600px] bg-gray-900/50 border border-gray-300 flex items-center justify-center modal-backdrop">
+            <!-- Test Modal -->
+            <div class="bg-white rounded-xl shadow-2xl w-[650px] max-h-[90%] overflow-hidden animate-fade-in">
+                <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Test Workflow</h3>
+                        <p class="text-sm text-gray-500">Run with sample inputs</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600 p-1.5 rounded hover:bg-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="p-4 grid grid-cols-2 gap-6">
+                    <!-- Left: Runtime Inputs -->
+                    <div>
+                        <div class="text-xs text-gray-400 uppercase font-medium mb-3">Runtime Inputs</div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs font-medium text-gray-700 mb-1 block">
+                                    <span class="text-purple-500">$</span> url
+                                </label>
+                                <input type="text" value="https://jobs.example.com/senior-engineer" class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-gray-700 mb-1 block">
+                                    <span class="text-purple-500">$</span> baseResume
+                                </label>
+                                <textarea rows="4" class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">John Doe
+Senior Software Engineer
+5 years experience...</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Saved Tests & Connections -->
+                    <div>
+                        <!-- Saved Tests -->
+                        <div class="mb-4">
+                            <div class="text-xs text-gray-400 uppercase font-medium mb-2">Saved Tests</div>
+                            <div class="space-y-1">
+                                <button class="w-full p-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between text-left">
+                                    <span class="text-sm font-medium">Basic job flow</span>
+                                    <span class="text-xs text-blue-600">Load</span>
+                                </button>
+                                <button class="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between text-left hover:bg-gray-100">
+                                    <span class="text-sm text-gray-700">Edge case</span>
+                                    <span class="text-xs text-gray-500">Load</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Connection Status -->
+                        <div>
+                            <div class="text-xs text-gray-400 uppercase font-medium mb-2">Connections</div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2 text-sm p-2 bg-gray-50 rounded-lg">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    <span class="text-gray-700">Firecrawl</span>
+                                    <span class="text-green-600 text-xs ml-auto">Ready</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm p-2 bg-gray-50 rounded-lg">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    <span class="text-gray-700">OpenAI</span>
+                                    <span class="text-green-600 text-xs ml-auto">Ready</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm p-2 bg-yellow-50 rounded-lg">
+                                    <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                                    <span class="text-gray-700">Gmail</span>
+                                    <button class="text-blue-600 text-xs ml-auto hover:underline">Connect</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t border-gray-200 flex items-center justify-end gap-2 bg-gray-50">
+                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button class="px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Run Test
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 4: ERROR STATE                          -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 4: Error State (PR-11)
+        </div>
+        
+        <div class="h-[450px] flex flex-col bg-white border border-gray-300 shadow-xl">
+            <header class="h-12 border-b border-gray-200 bg-white flex items-center justify-between px-4 shrink-0">
+                <div class="flex items-center gap-3">
+                    <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <input type="text" value="Job Application Workflow" class="text-sm font-semibold text-gray-900 bg-transparent border-0 focus:outline-none" />
+                    <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">Test Failed</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100">
+                        View Error
+                    </button>
+                    <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg">
+                        Retry
+                    </button>
+                </div>
+            </header>
+            
+            <main class="flex-1 canvas-grid bg-gray-50 relative overflow-hidden">
+                <!-- Node with error -->
+                <div class="absolute bg-white rounded-xl border-2 border-red-500 shadow-lg w-56" style="left: 300px; top: 120px; z-index: 2;">
+                    <div class="p-3 border-b bg-red-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">📝</span>
+                            <div>
+                                <div class="font-medium text-sm">Generate Resume</div>
+                                <div class="text-xs text-red-600">Error</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <div class="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                            API Rate limit exceeded
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error toast notification -->
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium text-sm">Test Failed</div>
+                        <div class="text-xs text-red-200">Generate Resume: Rate limit exceeded</div>
+                    </div>
+                    <button class="ml-4 text-red-200 hover:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-6">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-sm text-gray-500">
+                Variation 2: Canvas-First (Flight B) • <a href="../index.html" class="text-blue-600 hover:underline">Back to Index</a>
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
+

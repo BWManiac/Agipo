@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Editor - Variation 1: Panels-First</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-btn.active { color: #111; border-bottom-color: #111; }
+        .panel-tab.active { background: white; border-color: #e5e7eb; border-bottom-color: white; }
+        
+        /* Custom scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        
+        /* Canvas grid pattern */
+        .canvas-grid {
+            background-image: 
+                radial-gradient(circle, #d1d5db 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Node connection handles */
+        .handle {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #3b82f6;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .handle-left { left: -5px; }
+        .handle-right { right: -5px; }
+        
+        /* Edge line */
+        .edge-line {
+            stroke: #3b82f6;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        /* Modal backdrop */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+        
+        /* Pulse animation for running test */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- ============================================== -->
+    <!-- STATE 1: DEFAULT EDITING STATE                -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 1: Default Editing (Tool Palette Tab Active)
+        </div>
+        
+        <div class="h-[700px] flex flex-col bg-white border border-gray-300 shadow-xl">
+            
+            <!-- Top Bar -->
+            <header class="h-14 border-b border-gray-200 bg-white flex items-center justify-between px-4 shrink-0">
+                <div class="flex items-center gap-3">
+                    <button class="text-gray-400 hover:text-gray-600 p-1.5 rounded hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <input type="text" value="Job Application Workflow" class="text-base font-semibold text-gray-900 bg-transparent border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 -mx-1" />
+                        <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-medium rounded">Draft</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Test Dropdown -->
+                    <div class="relative">
+                        <button class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Test
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button class="px-4 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Save
+                    </button>
+                    <button class="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        Publish
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <div class="flex-1 flex overflow-hidden">
+                
+                <!-- Left: Chat Panel -->
+                <aside class="w-60 border-r border-gray-200 bg-gray-50 flex flex-col shrink-0">
+                    <div class="p-3 border-b border-gray-200 bg-white">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">AI Assistant</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-3 custom-scroll overflow-y-auto">
+                        <div class="space-y-3">
+                            <!-- Assistant message -->
+                            <div class="bg-white rounded-lg p-3 border border-gray-200 text-sm text-gray-700">
+                                <p>I can help you build this workflow! What would you like to do next?</p>
+                            </div>
+                            <!-- User message -->
+                            <div class="bg-blue-50 rounded-lg p-3 border border-blue-100 text-sm text-blue-900 ml-4">
+                                <p>Add a step to generate a resume</p>
+                            </div>
+                            <!-- Assistant message -->
+                            <div class="bg-white rounded-lg p-3 border border-gray-200 text-sm text-gray-700">
+                                <p>I've added a "Generate Resume" node. You'll need to:</p>
+                                <ol class="list-decimal list-inside mt-2 space-y-1 text-gray-600">
+                                    <li>Connect the job data output</li>
+                                    <li>Configure the template</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chat input -->
+                    <div class="p-3 border-t border-gray-200 bg-white">
+                        <div class="flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-200 p-2">
+                            <input type="text" placeholder="Ask for help..." class="flex-1 bg-transparent text-sm focus:outline-none" />
+                            <button class="text-gray-400 hover:text-blue-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+                
+                <!-- Center: Canvas -->
+                <main class="flex-1 canvas-grid relative overflow-hidden">
+                    <!-- Canvas content with nodes -->
+                    <div class="absolute inset-0 p-8">
+                        
+                        <!-- SVG for edges -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 0;">
+                            <!-- Edge from Scrape Job to Generate Resume -->
+                            <path d="M 296 200 C 350 200, 370 200, 424 200" class="edge-line" />
+                            <!-- Type indicator on edge -->
+                            <g transform="translate(360, 190)">
+                                <rect x="-20" y="-8" width="40" height="16" rx="4" fill="white" stroke="#3b82f6" stroke-width="1" />
+                                <text x="0" y="4" text-anchor="middle" font-size="10" fill="#3b82f6">3 fields</text>
+                            </g>
+                        </svg>
+                        
+                        <!-- Node 1: Scrape Job Listing -->
+                        <div class="absolute bg-white rounded-xl border border-gray-200 shadow-sm w-64" style="left: 40px; top: 120px; z-index: 1;">
+                            <!-- Handle right -->
+                            <div class="handle handle-right"></div>
+                            
+                            <!-- Header -->
+                            <div class="p-3 border-b bg-gray-50 rounded-t-xl">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-lg">🔍</span>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-medium text-sm truncate">Scrape Job Listing</div>
+                                        <div class="text-xs text-gray-500">firecrawl</div>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <button class="text-gray-400 hover:text-gray-600 p-0.5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Content (I/O Schema) - PR-2 -->
+                            <div class="p-3 text-xs space-y-2">
+                                <div>
+                                    <div class="text-gray-400 uppercase text-[10px] font-medium mb-1">Input</div>
+                                    <div class="flex items-center gap-1 text-gray-600">
+                                        <span class="text-purple-500">$</span>
+                                        <span>url</span>
+                                        <span class="text-gray-400 ml-auto">string</span>
+                                    </div>
+                                </div>
+                                <div class="border-t border-gray-100 pt-2">
+                                    <div class="text-gray-400 uppercase text-[10px] font-medium mb-1">Output</div>
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <span>title</span>
+                                            <span class="text-gray-400 ml-auto">string</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <span>company</span>
+                                            <span class="text-gray-400 ml-auto">string</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <span>requirements</span>
+                                            <span class="text-gray-400 ml-auto">string[]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="p-2 border-t bg-gray-50 rounded-b-xl">
+                                <div class="flex items-center gap-1.5 text-xs text-green-600">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                    Ready
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Node 2: Generate Resume -->
+                        <div class="absolute bg-white rounded-xl border-2 border-blue-500 shadow-lg w-64" style="left: 430px; top: 120px; z-index: 1;">
+                            <!-- Handle left -->
+                            <div class="handle handle-left"></div>
+                            <!-- Handle right -->
+                            <div class="handle handle-right"></div>
+                            
+                            <!-- Header -->
+                            <div class="p-3 border-b bg-blue-50 rounded-t-xl">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-lg">📝</span>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-medium text-sm truncate">Generate Resume</div>
+                                        <div class="text-xs text-blue-600">openai</div>
+                                    </div>
+                                    <div class="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-medium rounded">
+                                        Selected
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Content (I/O Schema) -->
+                            <div class="p-3 text-xs space-y-2">
+                                <div>
+                                    <div class="text-gray-400 uppercase text-[10px] font-medium mb-1">Input</div>
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <span class="text-blue-500">←</span>
+                                            <span>jobTitle</span>
+                                            <span class="text-gray-400 ml-auto">string</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <span class="text-blue-500">←</span>
+                                            <span>companyName</span>
+                                            <span class="text-gray-400 ml-auto">string</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <span class="text-blue-500">←</span>
+                                            <span>targetSkills</span>
+                                            <span class="text-gray-400 ml-auto">string[]</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <span class="text-purple-500">$</span>
+                                            <span>baseResume</span>
+                                            <span class="text-gray-400 ml-auto">string</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-gray-100 pt-2">
+                                    <div class="text-gray-400 uppercase text-[10px] font-medium mb-1">Output</div>
+                                    <div class="flex items-center gap-1 text-gray-600">
+                                        <span>tailoredResume</span>
+                                        <span class="text-gray-400 ml-auto">string</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="p-2 border-t bg-gray-50 rounded-b-xl">
+                                <div class="flex items-center gap-1.5 text-xs text-yellow-600">
+                                    <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
+                                    Needs config
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Canvas controls -->
+                        <div class="absolute bottom-4 left-4 flex items-center gap-2">
+                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm flex items-center">
+                                <button class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-l-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                    </svg>
+                                </button>
+                                <span class="px-2 text-xs text-gray-600 border-x border-gray-200">100%</span>
+                                <button class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-r-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button class="p-2 bg-white rounded-lg border border-gray-200 shadow-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </main>
+                
+                <!-- Right: Panels with Tabs -->
+                <aside class="w-80 border-l border-gray-200 bg-white flex flex-col shrink-0">
+                    <!-- Panel Tabs -->
+                    <div class="flex border-b border-gray-200 bg-gray-50 px-1 pt-1 gap-1">
+                        <button class="panel-tab active px-3 py-2 text-xs font-medium rounded-t-lg border border-transparent -mb-px">
+                            Tools
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 rounded-t-lg border border-transparent -mb-px">
+                            Inputs
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 rounded-t-lg border border-transparent -mb-px">
+                            Config
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 rounded-t-lg border border-transparent -mb-px">
+                            Connect
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 rounded-t-lg border border-transparent -mb-px">
+                            Test
+                        </button>
+                    </div>
+                    
+                    <!-- Panel Content: Tool Palette - PR-1 -->
+                    <div class="flex-1 overflow-y-auto custom-scroll p-3">
+                        <!-- Search -->
+                        <div class="mb-3">
+                            <div class="relative">
+                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <input type="text" placeholder="Search tools..." class="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            </div>
+                        </div>
+                        
+                        <!-- Tool Groups -->
+                        <div class="space-y-4">
+                            <!-- Firecrawl Group -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-sm">🔥</span>
+                                    <span class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Firecrawl</span>
+                                    <span class="text-xs text-gray-400">(3)</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                        <span>🔍</span>
+                                        <span>Scrape Page</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>🗺️</span>
+                                        <span>Crawl Site</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>📊</span>
+                                        <span>Extract Data</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- OpenAI Group -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-sm">🤖</span>
+                                    <span class="text-xs font-semibold text-gray-700 uppercase tracking-wider">OpenAI</span>
+                                    <span class="text-xs text-gray-400">(4)</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>💬</span>
+                                        <span>Chat Completion</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>📝</span>
+                                        <span>Generate Text</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>🎨</span>
+                                        <span>Generate Image</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>🔢</span>
+                                        <span>Create Embedding</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Gmail Group -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-sm">📧</span>
+                                    <span class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Gmail</span>
+                                    <span class="text-xs text-gray-400">(3)</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>📤</span>
+                                        <span>Send Email</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>📥</span>
+                                        <span>Read Email</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>🔍</span>
+                                        <span>Search Emails</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- GitHub Group -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-sm">🐙</span>
+                                    <span class="text-xs font-semibold text-gray-700 uppercase tracking-wider">GitHub</span>
+                                    <span class="text-xs text-gray-400">(5)</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>📁</span>
+                                        <span>Create File</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>🔀</span>
+                                        <span>Create PR</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors text-gray-400">
+                                        <span>+ 3 more...</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Browser Group -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-sm">🌐</span>
+                                    <span class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Browser</span>
+                                    <span class="text-xs text-gray-400">(4)</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>🖱️</span>
+                                        <span>Click Element</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors">
+                                        <span>⌨️</span>
+                                        <span>Type Text</span>
+                                    </button>
+                                    <button class="w-full flex items-center gap-2 p-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors text-gray-400">
+                                        <span>+ 2 more...</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 2: INPUTS TAB ACTIVE                    -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 2: Inputs Tab (PR-8: Runtime Inputs)
+        </div>
+        
+        <div class="h-[500px] bg-white border border-gray-300 shadow-xl p-4">
+            <!-- Just showing the panel content -->
+            <div class="max-w-sm mx-auto">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <!-- Panel Tabs -->
+                    <div class="flex border-b border-gray-200 bg-gray-50 px-1 pt-1 gap-1">
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Tools
+                        </button>
+                        <button class="panel-tab active px-3 py-2 text-xs font-medium rounded-t-lg border border-transparent -mb-px bg-white border-gray-200" style="border-bottom-color: white;">
+                            Inputs
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Config
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Connect
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Test
+                        </button>
+                    </div>
+                    
+                    <!-- Inputs Panel Content -->
+                    <div class="p-4 space-y-4">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-3">Runtime inputs are provided by the agent when the workflow runs.</p>
+                        </div>
+                        
+                        <!-- Existing Input -->
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-purple-500 font-mono text-sm">$</span>
+                                    <span class="font-medium text-sm">url</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-red-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Type:</span>
+                                    <select class="text-xs border border-gray-200 rounded px-2 py-1 bg-white">
+                                        <option selected>string</option>
+                                        <option>number</option>
+                                        <option>boolean</option>
+                                        <option>object</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Desc:</span>
+                                    <input type="text" value="URL of the job listing to scrape" class="text-xs border border-gray-200 rounded px-2 py-1 flex-1" />
+                                </div>
+                            </div>
+                            <div class="mt-2 text-xs text-gray-400">
+                                Used in: Scrape Job Listing
+                            </div>
+                        </div>
+                        
+                        <!-- Existing Input 2 -->
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-purple-500 font-mono text-sm">$</span>
+                                    <span class="font-medium text-sm">baseResume</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-red-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Type:</span>
+                                    <select class="text-xs border border-gray-200 rounded px-2 py-1 bg-white">
+                                        <option selected>string</option>
+                                        <option>number</option>
+                                        <option>boolean</option>
+                                        <option>object</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Desc:</span>
+                                    <input type="text" value="User's base resume content" class="text-xs border border-gray-200 rounded px-2 py-1 flex-1" />
+                                </div>
+                            </div>
+                            <div class="mt-2 text-xs text-gray-400">
+                                Used in: Generate Resume
+                            </div>
+                        </div>
+                        
+                        <!-- Add Input Button -->
+                        <button class="w-full p-3 border-2 border-dashed border-gray-200 rounded-lg text-sm text-gray-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Add Runtime Input
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 3: CONFIG TAB ACTIVE                    -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 3: Config Tab (PR-5: Configs)
+        </div>
+        
+        <div class="h-[500px] bg-white border border-gray-300 shadow-xl p-4">
+            <div class="max-w-sm mx-auto">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <!-- Panel Tabs -->
+                    <div class="flex border-b border-gray-200 bg-gray-50 px-1 pt-1 gap-1">
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Tools
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Inputs
+                        </button>
+                        <button class="panel-tab active px-3 py-2 text-xs font-medium rounded-t-lg border border-transparent -mb-px bg-white border-gray-200" style="border-bottom-color: white;">
+                            Config
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Connect
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Test
+                        </button>
+                    </div>
+                    
+                    <!-- Config Panel Content -->
+                    <div class="p-4 space-y-4">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-3">Configs are set once when the workflow is hired/deployed.</p>
+                        </div>
+                        
+                        <!-- Config: Output Format -->
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-amber-500 font-mono text-sm">⚙</span>
+                                    <span class="font-medium text-sm">outputFormat</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-red-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Type:</span>
+                                    <select class="text-xs border border-gray-200 rounded px-2 py-1 bg-white">
+                                        <option selected>enum</option>
+                                        <option>string</option>
+                                        <option>number</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Options:</span>
+                                    <input type="text" value="pdf, docx, markdown" class="text-xs border border-gray-200 rounded px-2 py-1 flex-1" />
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Default:</span>
+                                    <input type="text" value="pdf" class="text-xs border border-gray-200 rounded px-2 py-1 flex-1" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Config: AI Model -->
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-amber-500 font-mono text-sm">⚙</span>
+                                    <span class="font-medium text-sm">aiModel</span>
+                                </div>
+                                <button class="text-gray-400 hover:text-red-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Type:</span>
+                                    <select class="text-xs border border-gray-200 rounded px-2 py-1 bg-white">
+                                        <option selected>enum</option>
+                                        <option>string</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Options:</span>
+                                    <input type="text" value="gpt-4o, gpt-4o-mini, claude-3" class="text-xs border border-gray-200 rounded px-2 py-1 flex-1" />
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 w-12">Default:</span>
+                                    <input type="text" value="gpt-4o-mini" class="text-xs border border-gray-200 rounded px-2 py-1 flex-1" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Add Config Button -->
+                        <button class="w-full p-3 border-2 border-dashed border-gray-200 rounded-lg text-sm text-gray-500 hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Add Config
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 4: CONNECTIONS TAB ACTIVE               -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 4: Connections Tab (PR-4: Connection Requirements)
+        </div>
+        
+        <div class="h-[450px] bg-white border border-gray-300 shadow-xl p-4">
+            <div class="max-w-sm mx-auto">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <!-- Panel Tabs -->
+                    <div class="flex border-b border-gray-200 bg-gray-50 px-1 pt-1 gap-1">
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Tools
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Inputs
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Config
+                        </button>
+                        <button class="panel-tab active px-3 py-2 text-xs font-medium rounded-t-lg border border-transparent -mb-px bg-white border-gray-200" style="border-bottom-color: white;">
+                            Connect
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Test
+                        </button>
+                    </div>
+                    
+                    <!-- Connections Panel Content -->
+                    <div class="p-4 space-y-4">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-3">Integrations required to run this workflow.</p>
+                        </div>
+                        
+                        <!-- Connected: Firecrawl -->
+                        <div class="p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-green-200">
+                                    <span>🔥</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm text-gray-900">Firecrawl</div>
+                                    <div class="text-xs text-green-600">Connected</div>
+                                </div>
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Connected: OpenAI -->
+                        <div class="p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-green-200">
+                                    <span>🤖</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm text-gray-900">OpenAI</div>
+                                    <div class="text-xs text-green-600">Connected</div>
+                                </div>
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Not Connected: Gmail -->
+                        <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-yellow-200">
+                                    <span>📧</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm text-gray-900">Gmail</div>
+                                    <div class="text-xs text-yellow-600">Required • Not connected</div>
+                                </div>
+                                <button class="px-2 py-1 text-xs font-medium text-yellow-700 bg-yellow-100 rounded hover:bg-yellow-200 transition-colors">
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Info box -->
+                        <div class="p-3 bg-blue-50 rounded-lg border border-blue-100 text-xs text-blue-700">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>When this workflow is shared, users will need to connect these integrations before they can run it.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 5: TEST TAB ACTIVE                      -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 5: Test Tab (PR-10: Test Suite)
+        </div>
+        
+        <div class="h-[550px] bg-white border border-gray-300 shadow-xl p-4">
+            <div class="max-w-sm mx-auto">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <!-- Panel Tabs -->
+                    <div class="flex border-b border-gray-200 bg-gray-50 px-1 pt-1 gap-1">
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Tools
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Inputs
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Config
+                        </button>
+                        <button class="panel-tab px-3 py-2 text-xs font-medium text-gray-500 rounded-t-lg border border-transparent -mb-px">
+                            Connect
+                        </button>
+                        <button class="panel-tab active px-3 py-2 text-xs font-medium rounded-t-lg border border-transparent -mb-px bg-white border-gray-200" style="border-bottom-color: white;">
+                            Test
+                        </button>
+                    </div>
+                    
+                    <!-- Test Panel Content -->
+                    <div class="p-4 space-y-4">
+                        <!-- Saved Tests -->
+                        <div>
+                            <div class="text-xs text-gray-400 uppercase font-medium mb-2">Saved Tests</div>
+                            <div class="space-y-1">
+                                <button class="w-full p-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between hover:bg-blue-100 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-5 h-5 bg-blue-100 rounded flex items-center justify-center text-blue-600 text-xs">1</span>
+                                        <span class="text-sm font-medium text-gray-900">Basic job flow</span>
+                                    </div>
+                                    <span class="text-xs text-blue-600 font-medium">Run</span>
+                                </button>
+                                <button class="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between hover:bg-gray-100 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-5 h-5 bg-gray-100 rounded flex items-center justify-center text-gray-500 text-xs">2</span>
+                                        <span class="text-sm text-gray-700">Edge case: missing fields</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500 font-medium">Run</span>
+                                </button>
+                                <button class="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between hover:bg-gray-100 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-5 h-5 bg-gray-100 rounded flex items-center justify-center text-gray-500 text-xs">3</span>
+                                        <span class="text-sm text-gray-700">Long resume content</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500 font-medium">Run</span>
+                                </button>
+                            </div>
+                            <button class="mt-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                New Test
+                            </button>
+                        </div>
+                        
+                        <!-- Last Run Results -->
+                        <div class="border-t border-gray-200 pt-4">
+                            <div class="text-xs text-gray-400 uppercase font-medium mb-2">Last Run: Basic job flow</div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 text-sm">
+                                    <span class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="text-gray-900">Scrape Job Listing</span>
+                                    <span class="text-gray-400 text-xs ml-auto">(0.8s)</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm">
+                                    <span class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="text-gray-900">Generate Resume</span>
+                                    <span class="text-gray-400 text-xs ml-auto">(2.1s)</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 p-2 bg-green-50 rounded-lg text-sm text-green-700 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Passed in 2.9s
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 6: DATA MAPPING MODAL                   -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 6: Data Mapping Modal (PR-9: Data Mapping)
+        </div>
+        
+        <div class="h-[550px] bg-gray-900/50 border border-gray-300 shadow-xl flex items-center justify-center">
+            <!-- Modal -->
+            <div class="bg-white rounded-xl shadow-2xl w-[650px] animate-fade-in">
+                <!-- Header -->
+                <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Configure Data Mapping</h3>
+                        <p class="text-sm text-gray-500">Map outputs from "Scrape Job" to inputs of "Generate Resume"</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Content -->
+                <div class="p-4">
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Source (Output) -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-sm">🔍</span>
+                                <div class="text-xs text-gray-400 uppercase font-medium">From: Scrape Job</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-blue-500">→</span>
+                                        <span class="font-medium">title</span>
+                                    </div>
+                                    <span class="text-blue-600 text-xs font-mono">string</span>
+                                </div>
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-blue-500">→</span>
+                                        <span class="font-medium">company</span>
+                                    </div>
+                                    <span class="text-blue-600 text-xs font-mono">string</span>
+                                </div>
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-blue-500">→</span>
+                                        <span class="font-medium">requirements</span>
+                                    </div>
+                                    <span class="text-blue-600 text-xs font-mono">string[]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Target (Input) -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-sm">📝</span>
+                                <div class="text-xs text-gray-400 uppercase font-medium">To: Generate Resume</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-gray-900">jobTitle</span>
+                                        <span class="text-gray-400 text-xs font-mono">string</span>
+                                    </div>
+                                    <select class="w-full text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">— Select source —</option>
+                                        <option selected>Scrape Job → title</option>
+                                        <option>Scrape Job → company</option>
+                                        <option>Scrape Job → requirements</option>
+                                        <option>Runtime Input → url</option>
+                                    </select>
+                                </div>
+                                <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-gray-900">companyName</span>
+                                        <span class="text-gray-400 text-xs font-mono">string</span>
+                                    </div>
+                                    <select class="w-full text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">— Select source —</option>
+                                        <option>Scrape Job → title</option>
+                                        <option selected>Scrape Job → company</option>
+                                        <option>Scrape Job → requirements</option>
+                                        <option>Runtime Input → url</option>
+                                    </select>
+                                </div>
+                                <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-gray-900">targetSkills</span>
+                                        <span class="text-gray-400 text-xs font-mono">string[]</span>
+                                    </div>
+                                    <select class="w-full text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">— Select source —</option>
+                                        <option>Scrape Job → title</option>
+                                        <option>Scrape Job → company</option>
+                                        <option selected>Scrape Job → requirements</option>
+                                        <option>Runtime Input → url</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Type validation indicator - PR-3 -->
+                    <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div class="flex items-center gap-2 text-sm text-green-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>All types match! 3 of 3 inputs mapped.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="p-4 border-t border-gray-200 flex items-center justify-end gap-2">
+                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        Save Mapping
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 7: TEST RUNNING                         -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 7: Test Running (Step Progress)
+        </div>
+        
+        <div class="h-[400px] bg-white border border-gray-300 shadow-xl p-4">
+            <div class="max-w-sm mx-auto">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-4 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm font-medium text-gray-900">Running: Basic job flow</div>
+                            <button class="text-xs text-red-500 hover:text-red-600">Stop</button>
+                        </div>
+                        
+                        <!-- Progress -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3 text-sm">
+                                <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </span>
+                                <div class="flex-1">
+                                    <div class="text-gray-900">Scrape Job Listing</div>
+                                    <div class="text-xs text-gray-500">Completed in 0.8s</div>
+                                </div>
+                                <span class="text-xs text-green-600">Done</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 text-sm">
+                                <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center animate-pulse-slow">
+                                    <svg class="w-4 h-4 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                </span>
+                                <div class="flex-1">
+                                    <div class="text-gray-900">Generate Resume</div>
+                                    <div class="text-xs text-gray-500">Running... (1.2s)</div>
+                                </div>
+                                <span class="text-xs text-blue-600">In Progress</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress bar -->
+                        <div class="space-y-1">
+                            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500 rounded-full transition-all animate-pulse-slow" style="width: 60%;"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>Step 2 of 2</span>
+                                <span>~1.5s remaining</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- STATE 8: ERROR STATE                          -->
+    <!-- ============================================== -->
+    <section class="mb-16">
+        <div class="bg-gray-200 px-4 py-2 text-sm font-medium text-gray-600 uppercase tracking-wider">
+            State 8: Error State (PR-11: Error Visualization)
+        </div>
+        
+        <div class="h-[450px] flex">
+            <!-- Canvas with error node -->
+            <div class="flex-1 canvas-grid bg-gray-100 border border-gray-300 p-8 relative">
+                <!-- Node with error -->
+                <div class="absolute bg-white rounded-xl border-2 border-red-500 shadow-lg w-64" style="left: 40px; top: 100px;">
+                    <!-- Header -->
+                    <div class="p-3 border-b bg-red-50 rounded-t-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">📝</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Generate Resume</div>
+                                <div class="text-xs text-red-600">openai</div>
+                            </div>
+                            <div class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] font-medium rounded">
+                                Error
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Error content -->
+                    <div class="p-3">
+                        <div class="p-2 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <div class="text-xs font-medium text-red-700">API Error</div>
+                                    <div class="text-xs text-red-600 mt-0.5">Rate limit exceeded. Please wait 60 seconds.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex gap-2">
+                            <button class="flex-1 px-2 py-1.5 text-xs font-medium text-red-700 bg-red-100 rounded hover:bg-red-200 transition-colors">
+                                Retry
+                            </button>
+                            <button class="flex-1 px-2 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
+                                Skip
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="p-2 border-t bg-red-50 rounded-b-xl">
+                        <div class="flex items-center gap-1.5 text-xs text-red-600">
+                            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                            Failed
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Error panel -->
+            <div class="w-80 bg-white border-l border-gray-300 p-4">
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-900 mb-1">Test Failed</h3>
+                    <p class="text-sm text-gray-500">Basic job flow encountered an error</p>
+                </div>
+                
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </span>
+                        <span class="text-gray-900">Scrape Job Listing</span>
+                        <span class="text-gray-400 text-xs ml-auto">(0.8s)</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center">
+                            <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </span>
+                        <span class="text-gray-900">Generate Resume</span>
+                        <span class="text-red-500 text-xs ml-auto">Failed</span>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-sm">
+                    <div class="font-medium text-red-700 mb-1">Error Details</div>
+                    <div class="text-xs text-red-600 font-mono bg-red-100 p-2 rounded">
+                        OpenAI API Error 429:<br/>
+                        Rate limit exceeded for gpt-4o-mini in organization org-xxx on requests per min.
+                    </div>
+                </div>
+                
+                <div class="mt-4 flex gap-2">
+                    <button class="flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        Retry Test
+                    </button>
+                    <button class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        View Logs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-6">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-sm text-gray-500">
+                Variation 1: Panels-First • <a href="../index.html" class="text-blue-600 hover:underline">Back to Index</a>
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
+

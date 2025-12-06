@@ -1,4 +1,4 @@
-# Task [NUMBER]: [FEATURE NAME]
+# Task [NUMBER]: [FEATURE NAME] — Implementation Plan
 
 **Status:** [Planning | In Progress | Complete]  
 **Date:** [Month Year]  
@@ -6,33 +6,38 @@
 
 ---
 
-## Document Philosophy
+## How to Use This Template
 
-This document tells a story that any team member can follow:
+This template defines **how to build** a feature. It's the downstream document in our template system.
 
-1. **Where are we?** (Current State) — Understand the existing system before making changes
-2. **What does success look like?** (Acceptance Criteria + User Flows) — Define the finish line upfront
-3. **What do we need to touch?** (File Impact) — Scope the work concretely  
-4. **How do we get there safely?** (Phased Implementation) — Break work into verifiable milestones
+**Informed by:**
+- **Product Spec** — What we're building (requirements, ACs, user flows)
+- **Research Log** — What we learned about external APIs (primitives to use)
 
-Each phase has its own acceptance criteria so we catch issues early and demonstrate progress incrementally. The document serves as both a **plan** and a **testing checklist**.
+**This document covers:**
+1. **Where are we?** (Current State) — Understand the existing system
+2. **What do we touch?** (File Impact) — Scope the work concretely
+3. **How do we build it?** (Phased Implementation) — Break into verifiable milestones
+
+Each phase has its own acceptance criteria so we catch issues early. This document serves as both a **plan** and a **testing checklist**.
+
+### Prerequisites
+
+Before filling this out:
+- [ ] Product Spec complete (or requirements clear)
+- [ ] Research Log complete (if external APIs involved)
+- [ ] UXD mockups complete (if frontend work)
 
 ### Frontend Work: Design First
 
-**If this task includes frontend changes, create high-fidelity HTML mockups before implementation.**
+**If this task includes frontend changes, UXD mockups should exist before this document.**
 
 Location: `_docs/UXD/Pages/[feature-area]/`
 
-Why:
-- **Reviewable before code** — Catch design issues early
-- **Implementation reference** — Developers match the mockup exactly
-- **Documentation** — Record of intended design vs. what was built
-- **Iteration speed** — Faster to tweak HTML than React components
-
-Include mockups for:
+Mockups should cover:
 - New components (modals, forms, cards)
 - New views or pages
-- Significant UI changes to existing components
+- Significant UI changes
 - Error states and loading states
 
 ---
@@ -236,9 +241,11 @@ type ExampleType = {
 
 ## 9. References
 
-- **[Related Doc 1]:** [Link or path]
-- **[External Resource]:** [URL]
-- **[Previous Task]:** Task [N] - [Name]
+- **Product Spec:** `[N]-[feature-name].md`
+- **Research Log:** `[N].1-[feature]-research.md` (if applicable)
+- **UXD Mockups:** `_docs/UXD/Pages/[feature-area]/`
+- **Previous Task:** Task [N] - [Name]
+- **External Resources:** [URLs]
 
 ---
 
