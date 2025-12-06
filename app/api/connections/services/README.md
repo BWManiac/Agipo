@@ -1,148 +1,118 @@
-# Composio Service
+# Connections Services
 
-**File:** `composio.ts`
-
-## Purpose
-
-Thin wrapper around the Composio SDK. Provides a singleton client and typed functions for all Composio operations used by the API routes.
-
-## Functions
-
-### `getComposioClient()`
-
-Returns a singleton Composio client instance.
-
-```typescript
-const client = getComposioClient();
-```
-
-**Environment Variable:** `COMPOSIO_API_KEY` (required)
+**Domain:** Connections  
+**Last Updated:** December 6, 2025
 
 ---
 
-### `listAuthConfigs()`
+## Overview
 
-Fetches all available auth configurations.
-
-```typescript
-const configs = await listAuthConfigs();
-// Returns: { items: AuthConfig[] }
-```
-
-**Used by:** `/api/integrations/auth-configs`
-
-**SDK Method:** `client.authConfigs.list()`
+This directory contains services for managing Composio connections and integration tools. Connections enable agents to access external services like Gmail, Slack, GitHub, etc.
 
 ---
 
-### `listConnections(userId: string)`
+## File Structure
 
-Fetches connected accounts for a user.
-
-```typescript
-const connections = await listConnections("user_123");
-// Returns: { items: ConnectedAccount[] }
 ```
-
-**Used by:** `/api/integrations/list`
-
-**SDK Method:** `client.connectedAccounts.list({ userIds: [userId] })`
+services/
+├── composio.ts          # Barrel exports (re-exports from below)
+├── client.ts            # Composio client factories
+├── auth.ts              # OAuth and API key connection flows
+├── connections.ts       # List connections and auth configs
+├── tools.ts             # Tool and toolkit fetching
+└── README.md            # This file
+```
 
 ---
 
-### `initiateConnection(userId, authConfigId, redirectUri?)`
-
-Starts an OAuth connection flow.
+## Usage
 
 ```typescript
-const result = await initiateConnection(
-  "user_123",
-  "ac_FpW8_GwXyMBz",
-  "http://localhost:3000/api/integrations/callback"
-);
-// Returns: { redirectUrl: string, connectionStatus: string }
+import { 
+  // Client factories
+  getComposioClient,
+  getComposioVercelClient,
+  
+  // Authentication
+  initiateConnection,
+  initiateApiKeyConnection,
+  disconnectAccount,
+  
+  // Connections
+  listConnections,
+  listAuthConfigs,
+  
+  // Tools
+  getToolsForConnection,
+  getNoAuthToolkits,
+} from "@/app/api/connections/services/composio";
 ```
-
-**Used by:** `/api/integrations/connect`
-
-**SDK Method:** `client.connectedAccounts.initiate(userId, authConfigId, options)`
 
 ---
 
-### `getAvailableTools(userId, toolkits[])`
+## Key Exports
 
-Gets available tools for a user from connected apps.
+### Client (`client.ts`)
 
-```typescript
-const tools = await getAvailableTools("user_123", ["gmail", "github"]);
-```
+| Export | Purpose |
+|--------|---------|
+| `getComposioClient()` | Base Composio client (singleton) |
+| `getComposioMastraClient()` | ⚠️ Deprecated - Mastra provider incompatible |
+| `getComposioVercelClient()` | Vercel AI SDK provider |
 
-**Used by:** Tool execution runtime
+### Authentication (`auth.ts`)
 
-**SDK Method:** `client.tools.get(userId, { toolkits })`
+| Export | Purpose |
+|--------|---------|
+| `initiateConnection(userId, authConfigId, redirectUri?)` | Start OAuth flow |
+| `initiateApiKeyConnection(userId, authConfigId, apiKey)` | Connect with API key |
+| `disconnectAccount(connectionId)` | Remove connection |
+
+### Connections (`connections.ts`)
+
+| Export | Purpose |
+|--------|---------|
+| `listAuthConfigs()` | List available integrations |
+| `listConnections(userId)` | List user's connected accounts |
+
+### Tools (`tools.ts`)
+
+| Export | Purpose |
+|--------|---------|
+| `getAvailableTools(userId, toolkits)` | Get tools for toolkits |
+| `getToolAction(userId, actionName)` | Get single tool by action |
+| `getToolsForConnection(toolkitSlug)` | Get tools for a connection |
+| `getToolkit(slug)` | Get toolkit details |
+| `getTriggersForToolkit(toolkitSlug)` | Get triggers for toolkit |
+| `getNoAuthToolkits()` | Get platform tools (no auth needed) |
 
 ---
 
-### `getToolAction(userId, actionName)`
+## Architecture
 
-Gets a specific tool by its action name.
-
-```typescript
-const tool = await getToolAction("user_123", "GMAIL_SEND_EMAIL");
+```
+Profile Page / Agent Modal
+    │
+    ├── List Connections ───── connections.ts
+    │   └── listAuthConfigs(), listConnections()
+    │
+    ├── Add Connection ─────── auth.ts
+    │   └── initiateConnection(), initiateApiKeyConnection()
+    │
+    └── Manage Tools ────────── tools.ts
+        └── getToolsForConnection(), getNoAuthToolkits()
 ```
 
-**Used by:** Tool execution runtime
+---
 
-**SDK Method:** `client.tools.get(userId, { tools: [actionName] })`
+## Environment Requirements
 
-## Composio SDK Reference
+- `COMPOSIO_API_KEY` - Required for all Composio operations
 
-**Package:** `@composio/core`
+---
 
-**Documentation:**
-- SDK Overview: https://docs.composio.dev/type-script/core-classes/composio
-- API Reference: https://docs.composio.dev/api-reference
+## Related Files
 
-**TypeScript Types:** `node_modules/@composio/core/dist/index.d.ts`
-
-### Key SDK Properties
-
-```typescript
-const composio = new Composio({ apiKey });
-
-composio.authConfigs      // Auth config management
-composio.connectedAccounts // Connection management
-composio.tools            // Tool retrieval and execution
-composio.toolkits         // Toolkit management
-composio.triggers         // Webhook triggers
-```
-
-## Environment Setup
-
-```bash
-# .env.local
-COMPOSIO_API_KEY=your_api_key_here
-```
-
-Get your API key from: https://platform.composio.dev/ → Settings → API Keys
-
-## Error Handling
-
-The service throws errors that are caught by route handlers:
-
-```typescript
-// Common errors
-- "COMPOSIO_API_KEY environment variable is not set"
-- "Auth config not found" (invalid authConfigId)
-- "Connected account not found" (user not connected)
-```
-
-## Future Improvements
-
-- [ ] Add retry logic for transient failures
-- [ ] Add request/response logging
-- [ ] Add caching layer for auth configs
-- [ ] Add connection refresh functionality
-- [ ] Add webhook trigger management
-- [ ] Add tool execution wrapper with logging
-
+- `@/app/api/tools/services/composio-tools.ts` - Tool execution wrappers
+- `@/app/(pages)/profile/components/connections/` - Connections UI
+- `@/app/(pages)/workforce/components/agent-modal/` - Tool assignment UI

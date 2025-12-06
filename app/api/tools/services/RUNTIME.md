@@ -7,10 +7,13 @@
 
 ## Overview
 
-The `runtime.ts` file handles tool loading and execution for Agipo agents. It provides a bridge between:
-- **Custom tools** (loaded from filesystem)
-- **Composio tools** (external integrations via Composio SDK)
-- **Mastra agents** (the execution framework)
+The tools runtime handles tool loading and execution for Agipo agents. Following the December 2025 refactoring, this is now split into:
+
+| File | Purpose |
+|------|---------|
+| `runtime.ts` | Barrel exports + unified `getExecutableToolById()` |
+| `custom-tools.ts` | Filesystem-based custom tool loading |
+| `composio-tools.ts` | Composio schema conversion and execution |
 
 ---
 
@@ -18,20 +21,19 @@ The `runtime.ts` file handles tool loading and execution for Agipo agents. It pr
 
 ### 1. Mastra Context Leak (Critical)
 
-**Problem:** Mastra injects runtime context (`memory`, `threadId`, `resourceId`, `context`, `mastra`, etc.) into tool execution arguments. Composio tools don't expect these and fail with "missing required field" errors.
+**Problem:** Mastra injects runtime context (`memory`, `threadId`, `resourceId`, `context`, `mastra`, etc.) into tool execution arguments. Composio tools don't expect these and fail.
 
-**Workaround:** Lines 345-372 filter out runtime context before passing arguments to Composio:
+**Workaround:** `composio-tools.ts` filters out runtime context before passing to Composio:
 
 ```typescript
-const runtimeContextKeys = ['threadId', 'resourceId', 'memory', 'runId', 'runtimeContext', 'writer', 'tracingContext', 'mastra'];
+const RUNTIME_CONTEXT_KEYS = ['threadId', 'resourceId', 'memory', 'runId', 'runtimeContext', 'writer', 'tracingContext', 'mastra'];
 
-// Mastra wraps actual args in a 'context' object
-if (input.context && typeof input.context === 'object') {
-  // Extract actual tool args from context wrapper
+function extractToolArguments(input: Record<string, unknown>) {
+  // Filter out Mastra keys
 }
 ```
 
-**Root Cause:** Mastra 0.24.x injects context differently than expected. The official `@composio/mastra` provider hasn't been updated to handle this (see below).
+**Root Cause:** Mastra 0.24.x injects context differently than expected.
 
 ---
 
@@ -41,7 +43,7 @@ if (input.context && typeof input.context === 'object') {
 
 **Error:**
 ```
-Error executing step prepare-tools-step: TypeError: Cannot read properties of undefined (reading 'def')
+TypeError: Cannot read properties of undefined (reading 'def')
     at JSONSchemaGenerator.process (zod)
 ```
 
@@ -50,40 +52,32 @@ Error executing step prepare-tools-step: TypeError: Cannot read properties of un
 2. `@composio/vercel` - ❌ Same Zod schema error in Mastra
 3. Manual schema conversion - ✅ Works
 
-**Decision:** Keep manual `convertComposioSchemaToZod()` until Composio updates their provider.
+**Decision:** Keep manual `convertComposioSchemaToZod()` in `composio-tools.ts` until Composio updates.
 
-**Tracking:** Monitor https://github.com/ComposioHQ/composio/releases for `@composio/mastra` updates.
+**Tracking:** Monitor https://github.com/ComposioHQ/composio/releases
 
 ---
 
 ### 3. Large Tool Results
 
-**Problem:** Tools like `BROWSER_TOOL_FETCH_WEBPAGE` can return 50KB+ of HTML content, which:
-- Exceeds reasonable context for the model
-- Causes timeouts
-- Results in poor quality responses
+**Problem:** Tools like `BROWSER_TOOL_FETCH_WEBPAGE` can return 50KB+ content.
 
-**Solution:** Tool results are truncated to 10,000 characters (lines 401-420):
+**Solution:** Results truncated to 10,000 characters in `composio-tools.ts`:
 
 ```typescript
 const TOOL_RESULT_MAX_CHARS = 10000;
-if (data.content.length > TOOL_RESULT_MAX_CHARS) {
-  // Truncate and append notice
-}
 ```
 
 ---
 
 ### 4. Custom Tool Import Failures (Next.js Turbopack)
 
-**Problem:** Dynamic imports fail in Next.js dev mode with Turbopack:
+**Problem:** Dynamic imports fail with Turbopack:
 ```
 Error: Cannot find module as expression is too dynamic
 ```
 
-**Status:** Known issue with Next.js Turbopack. Custom tools from `_tables/tools/` may not load in dev mode. This doesn't affect Composio tools.
-
-**Workaround:** Use `next dev --turbo=false` or wait for Next.js fix.
+**Workaround:** Use `next dev --turbo=false`
 
 ---
 
@@ -96,15 +90,15 @@ Error: Cannot find module as expression is too dynamic
 │                                                                  │
 │  chat/route.ts                                                   │
 │       │                                                          │
-│       ├── getExecutableToolById(id)                              │
-│       │      └── Custom tools from _tables/tools/                │
+│       ├── getExecutableToolById(id)  [runtime.ts]                │
+│       │      └── Delegates to custom-tools.ts or composio-tools  │
 │       │                                                          │
 │       └── getConnectionToolExecutable(userId, binding)           │
-│              │                                                   │
+│              │  [composio-tools.ts]                              │
 │              ├── Fetch schema from Composio                      │
 │              ├── convertComposioSchemaToZod()                    │
 │              ├── Wrap in Vercel AI SDK tool()                    │
-│              └── Add context filtering in execute()              │
+│              └── Add context filtering + truncation              │
 │                                                                  │
 │  Result: Tool map for Mastra Agent                               │
 │                                                                  │
@@ -115,12 +109,32 @@ Error: Cannot find module as expression is too dynamic
 
 ## Key Functions
 
-| Function | Purpose | Lines |
-|----------|---------|-------|
-| `getExecutableTools()` | Load custom tools from filesystem | 17-74 |
-| `getExecutableToolById()` | Get a tool by ID (custom or Composio) | 262-294 |
-| `getConnectionToolExecutable()` | Build Composio tool with connection auth | 302-438 |
-| `convertComposioSchemaToZod()` | Manual JSON Schema → Zod conversion | 192-260 |
+### `runtime.ts` (barrel)
+
+| Export | Delegates To |
+|--------|--------------|
+| `getExecutableTools()` | custom-tools.ts |
+| `getExecutableToolById()` | custom-tools.ts or composio-tools.ts |
+| `getConnectionToolExecutable()` | composio-tools.ts |
+| `clearToolCache()` | custom-tools.ts |
+
+### `custom-tools.ts`
+
+| Function | Purpose |
+|----------|---------|
+| `getExecutableTools()` | Load all custom tools from filesystem |
+| `getCustomToolById(id)` | Get single custom tool |
+| `clearToolCache()` | Invalidate tool cache |
+
+### `composio-tools.ts`
+
+| Function | Purpose |
+|----------|---------|
+| `getConnectionToolExecutable()` | Build Composio tool with auth |
+| `getComposioToolById()` | Legacy ID format support |
+| `convertComposioSchemaToZod()` | JSON Schema → Zod |
+| `extractToolArguments()` | Filter Mastra context |
+| `truncateToolResult()` | Limit result size |
 
 ---
 
@@ -134,27 +148,9 @@ Error: Cannot find module as expression is too dynamic
 ## Future Improvements
 
 1. **Migrate to `@composio/mastra`** when Composio updates for Mastra 0.24.x+
-2. **Remove manual schema conversion** - The provider should handle this
-3. **Add tool result streaming** - For large content, stream chunks instead of truncating
+2. **Remove manual schema conversion** - Provider should handle this
+3. **Add tool result streaming** - Stream chunks instead of truncating
 4. **Fix custom tool imports** - May require Next.js config changes
-
----
-
-## Testing
-
-To verify tools are working:
-
-```bash
-# Check tool loading
-curl -X POST http://localhost:3000/api/workforce/pm/chat \
-  -H "Content-Type: application/json" \
-  -d '{"messages": [{"role": "user", "content": "List my recent emails"}]}'
-
-# Logs to watch for:
-# [Runtime] Loading connection tool: GMAIL_FETCH_EMAILS
-# [Runtime] Extracted args from context wrapper: ...
-# [Runtime] Tool result for GMAIL_FETCH_EMAILS: ...
-```
 
 ---
 
@@ -162,8 +158,8 @@ curl -X POST http://localhost:3000/api/workforce/pm/chat \
 
 | Date | Change |
 |------|--------|
+| 2025-12-06 | **REFACTOR:** Split into custom-tools.ts and composio-tools.ts |
 | 2025-12-06 | Added context filtering for Mastra runtime injection |
 | 2025-12-06 | Added tool result truncation (10K chars) |
 | 2025-12-06 | Documented Composio provider incompatibility |
 | 2025-12-06 | Reverted from `@composio/mastra` to manual conversion |
-

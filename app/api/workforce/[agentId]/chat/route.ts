@@ -1,29 +1,27 @@
-import { Agent } from "@mastra/core/agent";
-import { createGateway } from "@ai-sdk/gateway";
-import { generateId, type Tool } from "ai";
+/**
+ * Agent Chat API Route
+ * 
+ * HTTP handler for agent chat streaming. Business logic is in chat-service.ts.
+ */
+
+import { generateId } from "ai";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getAgentById } from "@/_tables/agents";
-import { getExecutableToolById, getConnectionToolExecutable } from "@/app/api/tools/services";
-import { getAgentMemory } from "./services/memory";
+import { 
+  loadAgentConfig, 
+  buildToolMap, 
+  formatMessages, 
+  createConfiguredAgent,
+  type IncomingMessage 
+} from "./services/chat-service";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 type IncomingPayload = {
   messages?: unknown;
-  agentId?: string;
-  agentName?: string;
   context?: string;
-  threadId?: string; // Conversation thread ID for memory persistence
-};
-
-// Message type for incoming messages from the frontend
-type IncomingMessage = {
-  id?: string;
-  role: "user" | "assistant" | "system";
-  content?: string;
-  parts?: Array<{ type: string; text?: string }>;
+  threadId?: string;
 };
 
 export async function POST(
@@ -31,159 +29,75 @@ export async function POST(
   routeContext: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    // Get authenticated user
+    // 1. Auth
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
+    // 2. Parse payload
     const payload = (await request.json()) as IncomingPayload;
     const { messages, context, threadId: incomingThreadId } = payload;
     const { agentId } = await routeContext.params;
-
-    // Generate or use existing threadId for conversation persistence
     const threadId = incomingThreadId || generateId();
 
     if (!messages) {
       return NextResponse.json({ message: "Missing messages array." }, { status: 400 });
     }
 
-    // Load agent from registry
-    const requestedAgentId = agentId ?? "pm";
-    const agentConfig = getAgentById(requestedAgentId);
-    
+    // 3. Load agent
+    const agentConfig = loadAgentConfig(agentId);
     if (!agentConfig) {
-      console.error(`[workforce/agent] Agent not found: ${requestedAgentId}`);
       return NextResponse.json({ message: "Agent not found" }, { status: 404 });
     }
 
-    console.log(`[workforce/agent] Loading agent: ${requestedAgentId}`);
-    console.log(`[workforce/agent] Model: ${agentConfig.model}, ToolIds: [${agentConfig.toolIds.join(", ")}]`);
-    console.log(`[workforce/agent] ConnectionToolBindings: ${agentConfig.connectionToolBindings?.length || 0}`);
+    // 4. Build tools and format messages
+    const toolMap = await buildToolMap(userId, agentConfig);
+    const formattedMessages = formatMessages(messages as IncomingMessage[], context);
 
-    // Build tool map dynamically from agent's toolIds (custom tools)
-    const toolMap: Record<string, Tool<unknown, unknown>> = {};
-    for (const toolId of agentConfig.toolIds) {
-      const toolDef = await getExecutableToolById(toolId);
-      if (!toolDef) {
-        console.warn(`[workforce/agent] Custom tool not found: ${toolId}; skipping.`);
-        continue;
-      }
-      toolMap[toolId] = toolDef.run;
-    }
-
-    // Build tool map for connection tools
-    const connectionBindings = agentConfig.connectionToolBindings || [];
-    for (const binding of connectionBindings) {
-      const toolDef = await getConnectionToolExecutable(userId, binding);
-      if (!toolDef) {
-        console.warn(`[workforce/agent] Connection tool not found: ${binding.toolId}; skipping.`);
-        continue;
-      }
-      // Use the tool ID as the key so the agent can call it
-      toolMap[binding.toolId] = toolDef.run;
-    }
-
-    // Create gateway for model routing
-    const gateway = createGateway({
-      apiKey: process.env.AI_GATEWAY_API_KEY,
-    });
-
-    // Instantiate Mastra agent dynamically with registry config
-    const dynamicAgent = new Agent({
-      name: agentConfig.id,
-      instructions: agentConfig.systemPrompt,
-      model: gateway(agentConfig.model),
-      tools: toolMap,
-      memory: getAgentMemory(agentId), // Per-agent memory persistence
-    });
-
-    // Format messages for Mastra
-    // The frontend sends messages in UI format (with parts array or content)
-    const incomingMessages = messages as IncomingMessage[];
-    const formattedMessages: Array<{ role: "user" | "assistant" | "system"; content: string }> = [];
-
-    // Add context as system message if provided
-    if (context) {
-      formattedMessages.push({
-        role: "system",
-        content: `Additional context for this session:\n${context}`,
-      });
-    }
-
-    // Convert incoming messages to simple role/content format
-    for (const msg of incomingMessages) {
-      let content = "";
-      
-      // Handle both content string and parts array format
-      if (typeof msg.content === "string") {
-        content = msg.content;
-      } else if (msg.parts && Array.isArray(msg.parts)) {
-        content = msg.parts
-          .filter((part) => part.type === "text" && part.text)
-          .map((part) => part.text)
-          .join("\n");
-      }
-
-      if (content) {
-        formattedMessages.push({
-          role: msg.role,
-          content,
-        });
-      }
-    }
-
-    console.log("[workforce/agent] messages:", formattedMessages.length);
-    console.log(`[workforce/agent] Tools available: ${Object.keys(toolMap).length > 0 ? Object.keys(toolMap).join(", ") : "none"}`);
-    console.log(`[workforce/agent] threadId: ${threadId}, resourceId: ${userId}`);
+    // 5. Create agent and stream
+    const agent = createConfiguredAgent(userId, agentConfig, toolMap);
     
-    // Stream response using Mastra agent with AI SDK compatible format
-    // Wrap in try-catch to ensure user always gets a response
+    console.log(`[Chat] threadId: ${threadId}, resourceId: ${userId}`);
+
     try {
-      const result = await dynamicAgent.stream(
-        formattedMessages as unknown as Parameters<typeof dynamicAgent.stream>[0], 
+      const result = await agent.stream(
+        formattedMessages as unknown as Parameters<typeof agent.stream>[0],
         {
           maxSteps: agentConfig.maxSteps ?? 5,
           format: 'aisdk',
-          threadId,           // Conversation thread for memory
-          resourceId: userId, // User ID from Clerk for user-scoped memory
+          threadId,
+          resourceId: userId,
         }
       );
 
-      console.log("[workforce/agent] streaming response");
-      
-      // Return streaming response with threadId in header for frontend to store
+      console.log("[Chat] Streaming response");
       const response = result.toUIMessageStreamResponse();
       response.headers.set("X-Thread-Id", threadId);
       return response;
     } catch (streamError) {
-      // Handle streaming/agent errors gracefully - always respond to user
-      console.error("[workforce/agent] stream error:", streamError);
+      console.error("[Chat] Stream error:", streamError);
       
       const errorMessage = streamError instanceof Error ? streamError.message : "Unknown error";
       const isTimeout = errorMessage.includes("timeout") || errorMessage.includes("TIMEOUT");
       
-      // Return a user-friendly error message
       const userMessage = isTimeout 
-        ? "I'm sorry, but the request took too long to process. This can happen when fetching large amounts of data. Please try again with a simpler request."
+        ? "I'm sorry, but the request took too long to process. Please try again with a simpler request."
         : "I encountered an issue while processing your request. Please try again.";
-      
-      console.error(`[workforce/agent] Returning error response to user: ${userMessage}`);
       
       return NextResponse.json({ 
         message: userMessage,
         error: errorMessage,
-        threadId, // Include threadId so conversation can continue
-      }, { status: 200 }); // Return 200 so frontend displays the message
+        threadId,
+      }, { status: 200 });
     }
   } catch (error) {
-    console.error("[workforce/agent] error:", error);
+    console.error("[Chat] Error:", error);
     
-    // Even top-level errors should give user a response
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ 
       message: "I'm sorry, something went wrong on my end. Please try again.",
       error: errorMessage,
-    }, { status: 200 }); // Return 200 so frontend can display message
+    }, { status: 200 });
   }
 }
