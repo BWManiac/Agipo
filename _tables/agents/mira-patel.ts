@@ -13,12 +13,14 @@ export const miraPatelAgent: AgentConfig = {
   model: "google/gemini-2.5-pro",
   toolIds: ["workflow-requirements_digest", "workflow-launch_tracker", "workflow-stakeholder_pulse", "workflow-hohoho"],
   connectionToolBindings: [
-    { toolId: "GMAIL_FETCH_EMAILS", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
     { toolId: "GMAIL_CREATE_EMAIL_DRAFT", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
     { toolId: "GMAIL_SEND_EMAIL", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
-    { toolId: "GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
-    { toolId: "GMAIL_FETCH_MESSAGE_BY_THREAD_ID", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
-    { toolId: "GMAIL_LIST_HISTORY", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
+    { toolId: "BROWSER_TOOL_NAVIGATE", connectionId: "", toolkitSlug: "browser_tool" },
+    { toolId: "BROWSER_TOOL_SCREENSHOT_WEBPAGE", connectionId: "", toolkitSlug: "browser_tool" },
+    { toolId: "BROWSER_TOOL_SCROLL", connectionId: "", toolkitSlug: "browser_tool" },
+    { toolId: "BROWSER_TOOL_TAKE_SCREENSHOT", connectionId: "", toolkitSlug: "browser_tool" },
+    { toolId: "BROWSER_TOOL_FETCH_WEBPAGE", connectionId: "", toolkitSlug: "browser_tool" },
+    { toolId: "GMAIL_SEND_DRAFT", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
   ],
   quickPrompts: [
     "How confident are we in the onboarding launch?",

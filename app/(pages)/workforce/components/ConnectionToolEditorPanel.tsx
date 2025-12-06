@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { useConnectionTools, type ConnectionWithTools } from "./agent-modal/hooks/useConnectionTools";
+import { useConnectionTools, type ConnectionWithTools, type PlatformToolkit } from "./agent-modal/hooks/useConnectionTools";
 import type { AgentConfig, ConnectionToolBinding } from "@/_tables/types";
-import { ChevronLeft, ChevronDown, ChevronRight, AlertCircle, Link2 } from "lucide-react";
+import { ChevronLeft, ChevronDown, ChevronRight, AlertCircle, Link2, Zap } from "lucide-react";
 import Link from "next/link";
 
 type ConnectionToolEditorPanelProps = {
@@ -15,6 +15,9 @@ type ConnectionToolEditorPanelProps = {
   onBack: () => void;
   onSave: (bindings: ConnectionToolBinding[]) => Promise<void>;
 };
+
+// Special marker for NO_AUTH platform tools (no connection needed)
+const PLATFORM_TOOL_MARKER = "__platform__";
 
 function bindingKey(connectionId: string, toolId: string): string {
   return `${connectionId}:${toolId}`;
@@ -39,6 +42,7 @@ export function ConnectionToolEditorPanel({
 }: ConnectionToolEditorPanelProps) {
   const {
     availableConnections,
+    platformToolkits,
     assignedBindings,
     isLoading,
     fetchData,
@@ -56,14 +60,18 @@ export function ConnectionToolEditorPanel({
 
   // Initialize selected bindings (toolkits collapsed by default)
   useEffect(() => {
-    if (assignedBindings.length > 0 || availableConnections.length > 0) {
+    if (assignedBindings.length > 0 || availableConnections.length > 0 || platformToolkits.length > 0) {
       const initialSelection = new Set(
-        assignedBindings.map((b) => bindingKey(b.connectionId, b.toolId))
+        assignedBindings.map((b) => {
+          // Platform tools have empty connectionId, use marker
+          const connId = b.connectionId || PLATFORM_TOOL_MARKER;
+          return bindingKey(connId, b.toolId);
+        })
       );
       setSelectedBindings(initialSelection);
       // Keep toolkits collapsed by default - user can expand as needed
     }
-  }, [assignedBindings, availableConnections]);
+  }, [assignedBindings, availableConnections, platformToolkits]);
 
   const toolkitGroups = useMemo(
     () => groupByToolkit(availableConnections),
@@ -108,13 +116,29 @@ export function ConnectionToolEditorPanel({
       const bindings: ConnectionToolBinding[] = [];
       for (const key of selectedBindings) {
         const [connectionId, toolId] = key.split(":");
-        const connection = availableConnections.find((c) => c.connectionId === connectionId);
-        if (connection) {
-          bindings.push({
-            connectionId,
-            toolId,
-            toolkitSlug: connection.toolkitSlug,
-          });
+        
+        // Check if it's a platform tool
+        if (connectionId === PLATFORM_TOOL_MARKER) {
+          const platformToolkit = platformToolkits.find((pt) =>
+            pt.tools.some((t) => t.id === toolId)
+          );
+          if (platformToolkit) {
+            bindings.push({
+              connectionId: "", // Empty for platform tools
+              toolId,
+              toolkitSlug: platformToolkit.slug,
+            });
+          }
+        } else {
+          // Regular connection tool
+          const connection = availableConnections.find((c) => c.connectionId === connectionId);
+          if (connection) {
+            bindings.push({
+              connectionId,
+              toolId,
+              toolkitSlug: connection.toolkitSlug,
+            });
+          }
         }
       }
       await onSave(bindings);
@@ -130,7 +154,7 @@ export function ConnectionToolEditorPanel({
     }
   };
 
-  const hasNoConnections = availableConnections.length === 0 && !isLoading;
+  const hasNoTools = availableConnections.length === 0 && platformToolkits.length === 0 && !isLoading;
 
   // Count selected tools per toolkit for badge
   const getSelectedCount = (connections: ConnectionWithTools[]) => {
@@ -143,6 +167,29 @@ export function ConnectionToolEditorPanel({
       }
     }
     return count;
+  };
+
+  // Count selected tools for platform toolkit
+  const getPlatformSelectedCount = (toolkit: PlatformToolkit) => {
+    let count = 0;
+    for (const tool of toolkit.tools) {
+      if (selectedBindings.has(bindingKey(PLATFORM_TOOL_MARKER, tool.id))) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  // Filter tools for platform toolkit
+  const filterPlatformTools = (tools: PlatformToolkit["tools"]) => {
+    if (!searchQuery) return tools;
+    const query = searchQuery.toLowerCase();
+    return tools.filter(
+      (tool) =>
+        tool.name.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query) ||
+        tool.id.toLowerCase().includes(query)
+    );
   };
 
   return (
@@ -166,7 +213,7 @@ export function ConnectionToolEditorPanel({
       </div>
 
       {/* Search */}
-      {!hasNoConnections && (
+      {!hasNoTools && (
         <div className="px-6 py-4 border-b border-gray-200 bg-white">
           <Input
             placeholder="Search tools..."
@@ -183,7 +230,7 @@ export function ConnectionToolEditorPanel({
           <div className="text-center text-gray-500 py-12">
             Loading connection tools...
           </div>
-        ) : hasNoConnections ? (
+        ) : hasNoTools ? (
           <div className="text-center py-12 max-w-sm mx-auto">
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-gray-100 rounded-full">
@@ -191,7 +238,7 @@ export function ConnectionToolEditorPanel({
               </div>
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No connections available
+              No tools available
             </h3>
             <p className="text-sm text-gray-500 mb-4">
               Connect accounts in Settings to enable connection tools for your agents.
@@ -204,7 +251,93 @@ export function ConnectionToolEditorPanel({
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Platform Tools Section */}
+            {platformToolkits.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-amber-500" />
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Platform Tools
+                  </h3>
+                  <span className="text-xs text-gray-400">(No setup required)</span>
+                </div>
+                <div className="space-y-2">
+                  {platformToolkits.map((toolkit) => {
+                    const isExpanded = expandedToolkits.has(toolkit.slug);
+                    const selectedCount = getPlatformSelectedCount(toolkit);
+                    const filteredTools = filterPlatformTools(toolkit.tools);
+
+                    return (
+                      <div key={toolkit.slug} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
+                        <button
+                          onClick={() => toggleToolkit(toolkit.slug)}
+                          className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            {isExpanded ? (
+                              <ChevronDown className="h-4 w-4 text-gray-400" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-gray-400" />
+                            )}
+                            {toolkit.logo && (
+                              <img src={toolkit.logo} alt="" className="h-5 w-5 rounded" />
+                            )}
+                            <span className="font-medium text-sm">{toolkit.name}</span>
+                            <Badge variant="outline" className="text-xs text-amber-600 border-amber-300 bg-amber-50">
+                              No Auth
+                            </Badge>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {selectedCount} / {toolkit.tools.length} selected
+                          </span>
+                        </button>
+
+                        {isExpanded && filteredTools.length > 0 && (
+                          <div className="border-t border-gray-200 divide-y divide-gray-100">
+                            {filteredTools.map((tool) => {
+                              const key = bindingKey(PLATFORM_TOOL_MARKER, tool.id);
+                              const isSelected = selectedBindings.has(key);
+
+                              return (
+                                <label
+                                  key={tool.id}
+                                  className="flex items-start gap-3 p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                                >
+                                  <Checkbox
+                                    checked={isSelected}
+                                    onCheckedChange={() =>
+                                      handleToggle(PLATFORM_TOOL_MARKER, tool.id)
+                                    }
+                                    className="mt-0.5"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium text-sm">
+                                      {tool.name || tool.id}
+                                    </div>
+                                    <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">
+                                      {tool.description}
+                                    </p>
+                                  </div>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Your Connections Section */}
+            {availableConnections.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Your Connections
+                </h3>
+                <div className="space-y-2">
             {Array.from(toolkitGroups.entries()).map(([toolkitSlug, connections]) => {
               const toolkitName = connections[0]?.toolkitName || toolkitSlug;
               const isExpanded = expandedToolkits.has(toolkitSlug);
@@ -289,12 +422,15 @@ export function ConnectionToolEditorPanel({
                 </div>
               );
             })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Footer */}
-      {!hasNoConnections && (
+      {!hasNoTools && (
         <div className="border-t border-gray-200 px-6 py-4 bg-white flex justify-end gap-3">
           <Button variant="outline" onClick={onBack} disabled={isSaving}>
             Cancel

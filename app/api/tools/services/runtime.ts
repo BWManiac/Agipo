@@ -331,24 +331,115 @@ export async function getConnectionToolExecutable(
       (composioTool as { name?: string }).name || 
       `${binding.toolkitSlug} tool: ${binding.toolId}`;
     
+    // Determine if this is a NO_AUTH platform tool (no connectionId)
+    const isNoAuth = !binding.connectionId;
+    
     // Create Vercel AI SDK tool wrapper with the specific connection
     const vercelTool = tool({
       description: toolDescription,
       inputSchema: zodSchema,
       execute: async (input: Record<string, unknown>) => {
-        console.log(`[Runtime] Executing connection tool: ${binding.toolId} with connection: ${binding.connectionId}`);
+        console.log(`[Runtime] Executing ${isNoAuth ? "platform" : "connection"} tool: ${binding.toolId}`);
+        console.log(`[Runtime] Input arguments:`, JSON.stringify(input, null, 2));
+        
+        // Filter out Mastra runtime context that shouldn't be passed to Composio
+        // These are internal Mastra keys that get injected into tool calls
+        const runtimeContextKeys = ['threadId', 'resourceId', 'memory', 'runId', 'runtimeContext', 'writer', 'tracingContext', 'mastra'];
+        
+        // First, check if actual tool args are nested in a 'context' wrapper
+        // This happens when Mastra wraps the model's tool arguments
+        let toolArgs: Record<string, unknown> = {};
+        
+        if (input.context && typeof input.context === 'object') {
+          // Extract args from the context wrapper
+          const contextObj = input.context as Record<string, unknown>;
+          for (const [key, value] of Object.entries(contextObj)) {
+            if (!runtimeContextKeys.includes(key)) {
+              toolArgs[key] = value;
+            }
+          }
+          console.log(`[Runtime] Extracted args from context wrapper:`, Object.keys(toolArgs).join(', ') || '(none)');
+        }
+        
+        // If no args found in context, try top-level (filtering out runtime keys)
+        if (Object.keys(toolArgs).length === 0) {
+          for (const [key, value] of Object.entries(input)) {
+            if (!runtimeContextKeys.includes(key) && key !== 'context') {
+              toolArgs[key] = value;
+            }
+          }
+          console.log(`[Runtime] Using top-level args:`, Object.keys(toolArgs).join(', ') || '(none)');
+        }
+        
+        console.log(`[Runtime] Final arguments for Composio:`, JSON.stringify(toolArgs, null, 2));
         
         try {
-          // Execute via Composio SDK with specific connection ID
-          const result = await client.tools.execute(binding.toolId, {
+          // Build execute options
+          const executeOptions: {
+            userId: string;
+            arguments: Record<string, unknown>;
+            connectedAccountId?: string;
+            dangerouslySkipVersionCheck?: boolean;
+          } = {
             userId,
-            arguments: input,
-            connectedAccountId: binding.connectionId,
+            arguments: toolArgs,
             dangerouslySkipVersionCheck: true, // For MVP, skip version check
-          });
-          return result;
+          };
+          
+          // Only pass connectedAccountId for authenticated connections (not NO_AUTH)
+          if (!isNoAuth) {
+            executeOptions.connectedAccountId = binding.connectionId;
+          }
+          
+          console.log(`[Runtime] Calling Composio execute with options:`, JSON.stringify({
+            toolId: binding.toolId,
+            userId: executeOptions.userId,
+            connectedAccountId: executeOptions.connectedAccountId || '(none - NO_AUTH)',
+            argumentKeys: Object.keys(toolArgs),
+          }, null, 2));
+          
+          // Execute via Composio SDK
+          const result = await client.tools.execute(binding.toolId, executeOptions);
+          
+          // Truncate large results to prevent overwhelming the model
+          // 10,000 chars is ~2,500 words - enough for useful content without context overflow
+          const TOOL_RESULT_MAX_CHARS = 10000;
+          let processedResult = result;
+          
+          // Handle result truncation for content returned to model
+          if (result && typeof result === 'object' && 'data' in result) {
+            const data = result.data as Record<string, unknown>;
+            if (data && typeof data.content === 'string' && data.content.length > TOOL_RESULT_MAX_CHARS) {
+              const originalLength = data.content.length;
+              processedResult = {
+                ...result,
+                data: {
+                  ...data,
+                  content: data.content.substring(0, TOOL_RESULT_MAX_CHARS) + 
+                    `\n\n[Content truncated from ${originalLength} to ${TOOL_RESULT_MAX_CHARS} characters]`,
+                },
+              };
+              console.log(`[Runtime] Truncated tool result content from ${originalLength} to ${TOOL_RESULT_MAX_CHARS} chars`);
+            }
+          }
+          
+          // Log result (truncate for logging only)
+          const resultStr = typeof processedResult === 'string' ? processedResult : JSON.stringify(processedResult, null, 2);
+          const logTruncated = resultStr.length > 1000 
+            ? resultStr.substring(0, 1000) + `...[log truncated, total ${resultStr.length} chars]` 
+            : resultStr;
+          console.log(`[Runtime] Tool result for ${binding.toolId}:`, logTruncated);
+          
+          return processedResult;
         } catch (error) {
           console.error(`[Runtime] Connection tool execution failed for ${binding.toolId}:`, error);
+          if (error instanceof Error) {
+            console.error(`[Runtime] Error details:`, {
+              name: error.name,
+              message: error.message,
+              stack: error.stack?.split('\n').slice(0, 5).join('\n'),
+            });
+          }
           throw error;
         }
       },

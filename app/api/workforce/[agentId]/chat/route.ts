@@ -8,7 +8,7 @@ import { getExecutableToolById, getConnectionToolExecutable } from "@/app/api/to
 import { getAgentMemory } from "./services/memory";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 type IncomingPayload = {
   messages?: unknown;
@@ -138,24 +138,52 @@ export async function POST(
     console.log(`[workforce/agent] threadId: ${threadId}, resourceId: ${userId}`);
     
     // Stream response using Mastra agent with AI SDK compatible format
-    const result = await dynamicAgent.stream(
-      formattedMessages as unknown as Parameters<typeof dynamicAgent.stream>[0], 
-      {
-        maxSteps: agentConfig.maxSteps ?? 5,
-        format: 'aisdk',
-        threadId,           // Conversation thread for memory
-        resourceId: userId, // User ID from Clerk for user-scoped memory
-      }
-    );
+    // Wrap in try-catch to ensure user always gets a response
+    try {
+      const result = await dynamicAgent.stream(
+        formattedMessages as unknown as Parameters<typeof dynamicAgent.stream>[0], 
+        {
+          maxSteps: agentConfig.maxSteps ?? 5,
+          format: 'aisdk',
+          threadId,           // Conversation thread for memory
+          resourceId: userId, // User ID from Clerk for user-scoped memory
+        }
+      );
 
-    console.log("[workforce/agent] streaming response");
-    
-    // Return streaming response with threadId in header for frontend to store
-    const response = result.toUIMessageStreamResponse();
-    response.headers.set("X-Thread-Id", threadId);
-    return response;
+      console.log("[workforce/agent] streaming response");
+      
+      // Return streaming response with threadId in header for frontend to store
+      const response = result.toUIMessageStreamResponse();
+      response.headers.set("X-Thread-Id", threadId);
+      return response;
+    } catch (streamError) {
+      // Handle streaming/agent errors gracefully - always respond to user
+      console.error("[workforce/agent] stream error:", streamError);
+      
+      const errorMessage = streamError instanceof Error ? streamError.message : "Unknown error";
+      const isTimeout = errorMessage.includes("timeout") || errorMessage.includes("TIMEOUT");
+      
+      // Return a user-friendly error message
+      const userMessage = isTimeout 
+        ? "I'm sorry, but the request took too long to process. This can happen when fetching large amounts of data. Please try again with a simpler request."
+        : "I encountered an issue while processing your request. Please try again.";
+      
+      console.error(`[workforce/agent] Returning error response to user: ${userMessage}`);
+      
+      return NextResponse.json({ 
+        message: userMessage,
+        error: errorMessage,
+        threadId, // Include threadId so conversation can continue
+      }, { status: 200 }); // Return 200 so frontend displays the message
+    }
   } catch (error) {
     console.error("[workforce/agent] error:", error);
-    return NextResponse.json({ message: "Agent failed to respond." }, { status: 500 });
+    
+    // Even top-level errors should give user a response
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ 
+      message: "I'm sorry, something went wrong on my end. Please try again.",
+      error: errorMessage,
+    }, { status: 200 }); // Return 200 so frontend can display message
   }
 }

@@ -4,6 +4,7 @@ import {
   listConnections,
   listAuthConfigs,
   getToolsForConnection,
+  getNoAuthToolkits,
 } from "@/app/api/connections/services/composio";
 
 export const runtime = "nodejs";
@@ -94,7 +95,13 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json({ connections: result });
+    // Get NO_AUTH platform toolkits
+    const platformToolkits = await getNoAuthToolkits();
+
+    return NextResponse.json({ 
+      connections: result,
+      platformToolkits,
+    });
   } catch (error) {
     console.error("[tools/connection/available] Error:", error);
     return NextResponse.json(

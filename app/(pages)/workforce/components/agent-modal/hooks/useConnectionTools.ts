@@ -21,11 +21,27 @@ export type ConnectionWithTools = {
 };
 
 /**
+ * Represents a NO_AUTH platform toolkit with its tools
+ */
+export type PlatformToolkit = {
+  slug: string;
+  name: string;
+  logo?: string;
+  mode: string;
+  tools: Array<{
+    id: string;
+    name: string;
+    description: string;
+  }>;
+};
+
+/**
  * Hook for managing connection tools for an agent.
  * Fetches available connection tools and agent's assigned bindings.
  */
 export function useConnectionTools(agentId: string) {
   const [availableConnections, setAvailableConnections] = useState<ConnectionWithTools[]>([]);
+  const [platformToolkits, setPlatformToolkits] = useState<PlatformToolkit[]>([]);
   const [assignedBindings, setAssignedBindings] = useState<ConnectionToolBinding[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +72,7 @@ export function useConnectionTools(agentId: string) {
       const assignedData = assignedRes.ok ? await assignedRes.json() : { bindings: [] };
 
       setAvailableConnections(availableData.connections || []);
+      setPlatformToolkits(availableData.platformToolkits || []);
       setAssignedBindings(assignedData.bindings || []);
     } catch (err) {
       console.error("[useConnectionTools] Error:", err);
@@ -103,6 +120,7 @@ export function useConnectionTools(agentId: string) {
 
   return {
     availableConnections,
+    platformToolkits,
     assignedBindings,
     isLoading,
     error,
