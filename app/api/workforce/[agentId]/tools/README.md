@@ -1,161 +1,76 @@
-# Agent Tools API (`/api/workforce/[agentId]/tools`)
+# Agent Tools (Legacy)
 
-This module manages all tools assigned to an agent, organized into two categories: **Custom Tools** (local workflows) and **Connection Tools** (Composio integrations).
+> Legacy endpoint for managing agent custom tools. Use the specific endpoints instead.
 
-## Architecture Overview
-
-```
-Agent Tools
-├── /custom              # Local workflow tools
-│   ├── GET/POST         # Read/update assigned custom tools
-│   └── /available       # List all available custom tools
-│
-└── /connection          # Composio integration tools
-    ├── GET/POST         # Read/update connection tool bindings
-    └── /available       # List tools from user's connections (auth required)
-```
+**Endpoint:** `GET/POST /api/workforce/[agentId]/tools`  
+**Auth:** None
 
 ---
 
-## Routes Summary
+## Purpose
 
-### Custom Tools
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/tools/custom` | Get agent's assigned custom tools |
-| POST | `/tools/custom` | Update agent's custom tools |
-| GET | `/tools/custom/available` | List all available custom tools |
-
-### Connection Tools
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/tools/connection` | Get agent's connection tool bindings | No |
-| POST | `/tools/connection` | Update agent's connection bindings | No |
-| GET | `/tools/connection/available` | List user's available connection tools | **Yes** |
+This is a legacy route maintained for backwards compatibility. It manages custom tool IDs assigned to an agent. New code should use the more specific endpoints:
+- `/tools/custom` for custom workflow tools
+- `/tools/connection` for connection-based tools
 
 ---
 
-## Tool Categories
+## Approach
 
-### Custom Tools
-
-Local workflow tools defined in `_tables/tools/`. These are:
-- Platform-defined capabilities (research, analysis, etc.)
-- Available to all agents
-- No authentication required to assign
-
-**Storage:** `toolIds: string[]` in agent config
-
-### Connection Tools
-
-Composio-based tools from connected services (Gmail, GitHub, etc.). These are:
-- User-specific (based on OAuth connections)
-- Bound to specific connected accounts
-- Support multi-account scenarios
-
-**Storage:** `connectionToolBindings: ConnectionToolBinding[]` in agent config
+Simply delegates to the agent config service to get or update the custom tool IDs array.
 
 ---
 
-## Data Model
+## Pseudocode
 
-### Agent Config (in `_tables/agents/[agentId].ts`)
-
-```typescript
-export const agentConfig: AgentConfig = {
-  id: "mira-patel",
-  name: "Mira Patel",
-  
-  // Custom tools - array of tool IDs
-  toolIds: ["workflow-research-v1"],
-  
-  // Connection tools - explicit bindings
-  connectionToolBindings: [
-    { toolId: "GMAIL_SEND_EMAIL", connectionId: "ca_abc123", toolkitSlug: "gmail" }
-  ],
-  
-  // ...other config
-};
+**GET:**
+```
+GET(request, { params }): NextResponse
+├── Extract agentId from params
+├── **Call `getAgentCustomTools(agentId)`**
+└── Return { toolIds }
 ```
 
-### ConnectionToolBinding Type
-
-```typescript
-type ConnectionToolBinding = {
-  toolId: string;       // Composio action name (e.g., "GMAIL_SEND_EMAIL")
-  connectionId: string; // Connected account ID (e.g., "ca_abc123")
-  toolkitSlug: string;  // Toolkit identifier (e.g., "gmail")
-};
+**POST:**
+```
+POST(request, { params }): NextResponse
+├── Extract agentId from params
+├── Parse and validate body with Zod
+├── **Call `updateAgentTools(agentId, toolIds)`**
+└── Return { success, toolIds }
 ```
 
 ---
 
-## Service Layer
+## Input (POST)
 
-**File:** `app/api/workforce/services/agent-config.ts`
-
-| Function | Description |
-|----------|-------------|
-| `getAgentCustomTools(agentId)` | Returns agent's `toolIds` array |
-| `updateAgentTools(agentId, toolIds)` | Updates `toolIds` in agent config file |
-| `getAgentConnectionToolBindings(agentId)` | Returns agent's `connectionToolBindings` |
-| `updateConnectionToolBindings(agentId, bindings)` | Updates `connectionToolBindings` in config |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `toolIds` | string[] | Yes | Array of custom tool IDs |
 
 ---
 
-## Chat Execution
+## Output
 
-The chat route (`/api/workforce/[agentId]/chat`) loads both tool types:
-
-```typescript
-// 1. Load custom tools
-for (const toolId of agent.toolIds) {
-  const tool = getExecutableToolById(toolId);
-  toolMap[toolId] = tool;
-}
-
-// 2. Load connection tools with binding context
-for (const binding of agent.connectionToolBindings) {
-  const tool = getConnectionToolExecutable(binding.toolId, binding.connectionId);
-  toolMap[binding.toolId] = tool;
-}
-```
-
----
-
-## Frontend Components
-
-| Component | Location | Description |
-|-----------|----------|-------------|
-| `CapabilitiesTab` | Agent modal | Displays both tool sections |
-| `ToolEditor` | Agent modal | Manages custom tool assignments |
-| `ConnectionToolEditor` | Agent modal | Manages connection tool bindings |
-| `ToolCard` | Agent modal | Renders custom tool |
-| `ConnectionToolCard` | Agent modal | Renders connection tool |
-
----
-
-## Legacy Route
-
-### POST `/api/workforce/[agentId]/tools`
-
-The root tools endpoint still supports updating custom tools for backwards compatibility:
-
+**GET Response:**
 ```json
-{
-  "toolIds": ["workflow-research-v1"]
-}
+{ "toolIds": ["workflow-my-tool"] }
 ```
 
-New code should use `/tools/custom` instead.
+**POST Response:**
+```json
+{ "success": true, "toolIds": ["workflow-my-tool"] }
+```
 
 ---
 
-## See Also
+## Notes
 
-- [Custom Tools README](./custom/README.md)
-- [Connection Tools README](./connection/README.md)
-- [Tools Runtime Service](../../../tools/services/README.md)
-- [Composio Service](../../../connections/services/README.md)
+- **Deprecated** - Use `/tools/custom` instead
+- Does not handle connection tools
+
+---
+
+## Future Improvements
+
+- [ ] Remove after migration to specific endpoints

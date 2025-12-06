@@ -1,122 +1,80 @@
-# Custom Tools API (`/api/workforce/[agentId]/tools/custom`)
+# Custom Tools
 
-This module manages custom (local workflow) tools assigned to an agent.
+> Enables users to assign custom workflow tools to their agents.
 
-## Routes
+**Endpoint:** `GET/POST /api/workforce/[agentId]/tools/custom`  
+**Auth:** None
 
-### GET `/api/workforce/[agentId]/tools/custom`
+---
 
-Returns the custom tool IDs currently assigned to the specified agent.
+## Purpose
 
-**Path Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `agentId` | string | Agent identifier (e.g., `mira-patel`) |
+Manages which custom tools are assigned to an agent. Custom tools are user-defined workflow tools stored in `_tables/tools/`. Unlike connection tools, custom tools don't require external authentication - they're internal capabilities built within the platform.
 
-**Response:**
+---
+
+## Approach
+
+We store an array of tool IDs in the agent configuration. The IDs reference tools in the `_tables/tools/` directory. When the agent runs, it loads these tools dynamically from the filesystem.
+
+---
+
+## Pseudocode
+
+**GET:**
+```
+GET(request, { params }): NextResponse
+├── Extract agentId from params
+├── **Call `getAgentCustomTools(agentId)`**
+└── Return { toolIds }
+```
+
+**POST:**
+```
+POST(request, { params }): NextResponse
+├── Extract agentId from params
+├── Parse body with Zod (toolIds array)
+├── **Call `updateAgentTools(agentId, toolIds)`**
+└── Return { success, toolIds }
+```
+
+---
+
+## Input (POST)
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `toolIds` | string[] | Yes | Array of custom tool IDs |
+
+**Example Request:**
 ```json
 {
-  "toolIds": ["workflow-research-v1", "workflow-email-summary"]
+  "toolIds": ["workflow-data-analysis", "workflow-report-generator"]
 }
 ```
 
-**Service Function:** `getAgentCustomTools(agentId)` from `services/agent-config.ts`
-
 ---
 
-### POST `/api/workforce/[agentId]/tools/custom`
+## Output
 
-Updates the custom tools assigned to the agent by modifying the agent's TypeScript configuration file.
-
-**Path Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `agentId` | string | Agent identifier |
-
-**Request Body:**
+**GET Response:**
 ```json
 {
-  "toolIds": ["workflow-research-v1", "workflow-email-summary"]
+  "toolIds": ["workflow-data-analysis"]
 }
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "toolIds": ["workflow-research-v1", "workflow-email-summary"]
-}
-```
+---
 
-**Service Function:** `updateAgentTools(agentId, toolIds)` from `services/agent-config.ts`
+## Consumers
+
+| Consumer | Location | Usage |
+|----------|----------|-------|
+| CustomToolEditorPanel | `app/(pages)/workforce/components/agent-modal/` | Tool assignment UI |
 
 ---
 
-### GET `/api/workforce/[agentId]/tools/custom/available`
+## Future Improvements
 
-Returns all available custom tools that can be assigned to any agent. These are loaded from `_tables/tools/` directory.
-
-**Response:**
-```json
-{
-  "tools": [
-    {
-      "id": "workflow-research-v1",
-      "name": "Research Workflow",
-      "description": "Performs web research on a topic"
-    }
-  ]
-}
-```
-
-**Service Function:** `listToolDefinitions()` from `tools/services/index.ts`
-
----
-
-## Data Model
-
-Custom tools are stored in the agent's configuration file (`_tables/agents/[agentId].ts`) in the `toolIds` array:
-
-```typescript
-export const agentConfig: AgentConfig = {
-  id: "mira-patel",
-  name: "Mira Patel",
-  toolIds: ["workflow-research-v1"],  // Custom tools
-  // ...
-};
-```
-
----
-
-## Custom Tool Definition
-
-Custom tools are defined in `_tables/tools/` as TypeScript files:
-
-```typescript
-// _tables/tools/workflow-research-v1.ts
-export const toolDefinition: ToolDefinition = {
-  id: "workflow-research-v1",
-  name: "Research Workflow",
-  description: "Performs web research",
-  // ...
-};
-```
-
----
-
-## Frontend Consumers
-
-| Component | Hook | Description |
-|-----------|------|-------------|
-| `ToolEditor` | `useCustomTools` | Dialog for assigning custom tools |
-| `CapabilitiesTab` | `useAgentDetails` | Displays assigned custom tools |
-
----
-
-## Notes
-
-- Custom tools are "low-code" workflows defined locally in the codebase
-- The POST endpoint directly modifies TypeScript source files on disk
-- Changes take effect immediately for new chat sessions
-- Tool IDs use the format `workflow-{name}-v{version}`
-
+- [ ] Validate tool IDs exist before saving
+- [ ] Add tool categories/tags

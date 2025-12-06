@@ -1,29 +1,83 @@
-# Connect Route
+# Connect
 
-**Endpoint:** `POST /api/integrations/connect`
+> Enables users to link their external accounts (Gmail, GitHub, Slack) to power agent capabilities.
+
+**Endpoint:** `POST /api/connections/connect`  
+**Auth:** Clerk
+
+---
 
 ## Purpose
 
-Initiates an OAuth connection flow for a user. Returns a redirect URL to the OAuth provider (Google, GitHub, etc.) where the user can authorize access.
+Initiates a connection flow for the authenticated user. This is how users link their external accounts to Agipo. The route supports two authentication modes: OAuth (redirects user to provider) and API Key (immediate connection). Once connected, agents can use these accounts to perform actions on behalf of the user.
 
-## Request Format
+---
 
-```json
-{
-  "authConfigId": "ac_FpW8_GwXyMBz",
-  "userId": "agipo_test_user",
-  "redirectUri": "http://localhost:3000/api/integrations/callback"
-}
+## Approach
+
+We authenticate the user via Clerk, then branch based on whether an API key was provided. For OAuth connections, we call Composio's `initiateConnection()` which returns a redirect URL to the OAuth provider. For API key connections, we call `initiateApiKeyConnection()` which creates the connection immediately without a redirect.
+
+---
+
+## Pseudocode
+
 ```
+POST(request): NextResponse
+├── Authenticate user via Clerk
+├── Parse request body for authConfigId, redirectUri, apiKey
+├── Validate authConfigId is present
+├── If apiKey provided:
+│   ├── **Call `initiateApiKeyConnection()`** with userId, authConfigId, apiKey
+│   └── Return { success, connectionId, status }
+├── Else (OAuth flow):
+│   ├── **Call `initiateConnection()`** with userId, authConfigId, redirectUri
+│   └── Return { redirectUrl, connectionStatus }
+└── On error: Return 500 with error message
+```
+
+---
+
+## Input
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `authConfigId` | string | Yes | The Composio auth config ID (NOT the app name) |
-| `userId` | string | No | User identifier, defaults to "agipo_test_user" |
-| `redirectUri` | string | No | OAuth callback URL |
+| `authConfigId` | string | Yes | The Composio auth config ID |
+| `redirectUri` | string | No | Custom OAuth callback URL |
+| `apiKey` | string | No | API key for non-OAuth connections |
 
-## Response Format
+**Example Request (OAuth):**
+```json
+{
+  "authConfigId": "ac_FpW8_GwXyMBz"
+}
+```
 
+**Example Request (API Key):**
+```json
+{
+  "authConfigId": "ac_xyz123",
+  "apiKey": "sk-live-abc123..."
+}
+```
+
+---
+
+## Output
+
+**OAuth Response:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `redirectUrl` | string | URL to redirect user for OAuth |
+| `connectionStatus` | string | "PENDING" |
+
+**API Key Response:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | boolean | Whether connection was created |
+| `connectionId` | string | The new connection ID |
+| `status` | string | "ACTIVE" |
+
+**Example Response (OAuth):**
 ```json
 {
   "redirectUrl": "https://accounts.google.com/o/oauth2/auth?...",
@@ -31,76 +85,45 @@ Initiates an OAuth connection flow for a user. Returns a redirect URL to the OAu
 }
 ```
 
-## Frontend Consumers
+---
 
-| Component | File | Usage |
-|-----------|------|-------|
-| `useIntegrations.initiateConnection()` | `app/(pages)/profile/hooks/useIntegrations.ts` | Hook method |
-| `IntegrationTable` | `app/(pages)/profile/components/integrations/IntegrationTable.tsx` | "Connect" button |
-| `AddConnectionDialog` | `app/(pages)/profile/components/integrations/AddConnectionDialog.tsx` | Selection confirm |
+## Flow Diagram
 
-## Composio SDK
+```
+OAuth Flow:
+1. User selects service in AddConnectionDialog
+2. Frontend calls POST /api/connections/connect
+3. Backend returns redirectUrl
+4. Frontend redirects user to OAuth provider
+5. User authorizes access
+6. Provider redirects to /api/connections/callback
+7. Callback redirects to /profile with status
 
-**Method:** `client.connectedAccounts.initiate(userId, authConfigId, options)`
-
-**Documentation:** https://docs.composio.dev/api-reference/connected-accounts
-
-**TypeScript SDK Types:** See `node_modules/@composio/core/dist/index.d.ts` lines 65360-65410
-
-### Critical: Use Auth Config ID, NOT App Name
-
-```typescript
-// ❌ WRONG - will fail with "Auth config not found"
-await client.connectedAccounts.initiate(userId, "gmail", options);
-
-// ✅ CORRECT - use the auth config ID
-await client.connectedAccounts.initiate(userId, "ac_FpW8_GwXyMBz", options);
+API Key Flow:
+1. User enters API key in dialog
+2. Frontend calls POST /api/connections/connect with apiKey
+3. Backend creates connection immediately
+4. Frontend shows success, refreshes connections list
 ```
 
-The auth config ID can be found:
-- In the Composio Dashboard
-- From the `/api/integrations/auth-configs` response
+---
 
-### SDK Example from Docs
+## Consumers
 
-```typescript
-// For OAuth2 authentication
-const connectionRequest = await composio.connectedAccounts.initiate(
-  'user_123',
-  'auth_config_123',
-  {
-    callbackUrl: 'https://your-app.com/callback',
-    config: AuthScheme.OAuth2({
-      access_token: 'your_access_token',
-      token_type: 'Bearer'
-    })
-  }
-);
+| Consumer | Location | Usage |
+|----------|----------|-------|
+| AddConnectionDialog | `app/(pages)/profile/components/connections/` | Initiates connection |
 
-// For API Key authentication
-const connectionRequest = await composio.connectedAccounts.initiate(
-  'user_123',
-  'auth_config_123',
-  {
-    config: AuthScheme.ApiKey({
-      api_key: 'your_api_key'
-    })
-  }
-);
-```
+---
 
-## User Identity (MVP)
+## Related Docs
 
-Currently using hardcoded `"agipo_test_user"`. In production, this should come from:
-- Session/JWT token
-- Clerk/Auth0 user ID
-- Database user record
+- [Composio Connected Accounts](https://docs.composio.dev/api-reference/connected-accounts) - SDK reference
+
+---
 
 ## Future Improvements
 
-- [ ] Replace hardcoded userId with authenticated user
-- [ ] Support API Key auth flow (no redirect needed)
-- [ ] Add rate limiting
 - [ ] Validate authConfigId exists before calling Composio
-- [ ] Store pending connections in database
-
+- [ ] Add rate limiting
+- [ ] Support custom scopes for OAuth

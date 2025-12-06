@@ -1,24 +1,65 @@
-# List Connections Route
+# List Connections
 
-**Endpoint:** `GET /api/integrations/list`
+> Enables users to see all their connected external accounts and their status.
+
+**Endpoint:** `GET /api/connections/list`  
+**Auth:** Clerk
+
+---
 
 ## Purpose
 
-Lists all connected accounts for a specific user. Returns the user's active integrations with their connection status.
+Lists all connected accounts for the authenticated user. This powers the connections management UI where users can see which services they've linked (Gmail, GitHub, etc.), their connection status, and when they were connected. It's essential for users to understand what integrations are active and available for their agents to use.
 
-## Query Parameters
+---
 
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `userId` | string | No | User identifier, defaults to "agipo_test_user" |
+## Approach
 
-## Response Format
+We authenticate the user via Clerk, then call Composio's `listConnections()` with the user ID. The raw Composio response is transformed into a cleaner format that includes the essential fields: connection ID, auth config ID, toolkit slug, status, and timestamps.
 
+---
+
+## Pseudocode
+
+```
+GET(): NextResponse
+├── Authenticate user via Clerk
+├── If not authenticated: Return 401
+├── **Call `listConnections(userId)`** from composio service
+├── Transform response to simpler format:
+│   ├── Extract id, authConfigId, toolkitSlug
+│   ├── Extract status, createdAt, updatedAt
+│   └── Map each connection item
+└── Return formatted connections array
+```
+
+---
+
+## Input
+
+None (user ID from Clerk auth)
+
+---
+
+## Output
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `[]` | Connection[] | Array of user's connections |
+| `[].id` | string | Connection ID |
+| `[].authConfigId` | string | Associated auth config |
+| `[].toolkitSlug` | string | Service identifier (gmail, slack) |
+| `[].status` | string | ACTIVE, PENDING, EXPIRED |
+| `[].createdAt` | string | ISO timestamp |
+| `[].updatedAt` | string | ISO timestamp |
+
+**Example Response:**
 ```json
 [
   {
     "id": "conn_abc123",
-    "appName": "ac_FpW8_GwXyMBz",
+    "authConfigId": "ac_FpW8_GwXyMBz",
+    "toolkitSlug": "gmail",
     "status": "ACTIVE",
     "createdAt": "2025-12-01T00:00:00.000Z",
     "updatedAt": "2025-12-03T12:34:56.789Z"
@@ -26,76 +67,25 @@ Lists all connected accounts for a specific user. Returns the user's active inte
 ]
 ```
 
-| Field | Description |
-|-------|-------------|
-| `id` | Unique connection ID |
-| `appName` | The auth config ID this connection uses |
-| `status` | ACTIVE, PENDING, EXPIRED, FAILED |
-| `createdAt` | When the connection was created |
-| `updatedAt` | Last activity timestamp |
+---
 
-**Note:** The `appName` field is actually the `authConfigId` - this naming is from the original implementation and could be improved.
+## Consumers
 
-## Frontend Consumers
+| Consumer | Location | Usage |
+|----------|----------|-------|
+| ConnectionsSection | `app/(pages)/profile/components/connections/` | Displays connections list |
+| Agent tools APIs | `app/api/workforce/[agentId]/tools/` | Validates user has connection |
 
-| Component | File | Usage |
-|-----------|------|-------|
-| `useIntegrations` | `app/(pages)/profile/hooks/useIntegrations.ts` | Fetches on dialog open |
+---
 
-The hook uses this data to:
-1. Show which auth configs are connected
-2. Display connection status badges
-3. Calculate stats (healthy, errors)
+## Related Docs
 
-## Composio SDK
+- [Composio Connected Accounts](https://docs.composio.dev/api-reference/connected-accounts) - SDK reference
 
-**Method:** `client.connectedAccounts.list(options)`
-
-**Documentation:** https://docs.composio.dev/api-reference/connected-accounts
-
-**TypeScript SDK Types:** See `node_modules/@composio/core/dist/index.d.ts` lines 65340-65360
-
-### SDK Example from Docs
-
-```typescript
-// List all connected accounts
-const allAccounts = await composio.connectedAccounts.list();
-
-// List connected accounts for specific users
-const userAccounts = await composio.connectedAccounts.list({
-  userIds: ['user_123', 'user_456']
-});
-
-// List connected accounts for a specific toolkit
-const githubAccounts = await composio.connectedAccounts.list({
-  toolkit: 'github'
-});
-```
-
-## Data Transformation
-
-The route transforms the Composio response:
-
-```typescript
-// Composio returns
-{
-  items: [
-    { id, authConfigId, connectionStatus, createdAt, updatedAt, ... }
-  ]
-}
-
-// We transform to
-[
-  { id, appName: authConfigId, status: connectionStatus, createdAt, updatedAt }
-]
-```
+---
 
 ## Future Improvements
 
-- [ ] Rename `appName` to `authConfigId` in response for clarity
 - [ ] Add pagination for users with many connections
-- [ ] Include more connection metadata (scopes, expiry)
-- [ ] Add filtering by status (show only errors)
-- [ ] Cache responses with short TTL
-- [ ] Add connection health check endpoint
-
+- [ ] Include connection health/last-used info
+- [ ] Cache with short TTL

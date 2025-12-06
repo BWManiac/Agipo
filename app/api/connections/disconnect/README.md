@@ -1,63 +1,91 @@
-# Disconnect Connection API (`/api/connections/disconnect`)
+# Disconnect
 
-**Method:** `DELETE`
+> Enables users to remove a connected external account they no longer want linked.
+
+**Endpoint:** `DELETE /api/connections/disconnect`  
+**Auth:** Clerk
+
+---
 
 ## Purpose
 
-Disconnects (removes) a connected account for the authenticated user. This revokes the OAuth connection and removes it from the user's account.
+Removes a connected account for the authenticated user. When a user no longer wants an integration (like Gmail or GitHub) linked to their Agipo account, this endpoint handles the disconnection. After disconnection, agents will no longer be able to use tools from that service on behalf of the user.
 
-## Authentication
+---
 
-Requires Clerk authentication. The authenticated user can only disconnect their own connections.
+## Approach
 
-## Request Body
+We authenticate the user via Clerk, validate the connection ID from the request body, then call Composio's `disconnectAccount()` to remove the connection. Composio handles revoking any stored tokens on their end.
 
-```json
-{
-  "connectionId": "ca_abc123xyz"
-}
+---
+
+## Pseudocode
+
 ```
+DELETE(request): NextResponse
+├── Authenticate user via Clerk
+├── If not authenticated: Return 401
+├── Parse connectionId from request body
+├── Validate connectionId is present and is string
+├── **Call `disconnectAccount(connectionId)`** from composio service
+└── Return { success: true }
+```
+
+---
+
+## Input
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `connectionId` | string | Yes | The Composio connected account ID to disconnect |
+| `connectionId` | string | Yes | The connection ID to remove |
 
-## Response
+**Example Request:**
+```json
+{
+  "connectionId": "conn_abc123"
+}
+```
 
-**Success (200):**
+---
+
+## Output
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | boolean | Whether disconnection succeeded |
+
+**Example Response:**
 ```json
 {
   "success": true
 }
 ```
 
-**Error (400):**
-```json
-{
-  "message": "connectionId is required"
-}
-```
+---
 
-**Error (401):**
-```json
-{
-  "message": "Unauthorized"
-}
-```
+## Consumers
 
-## Service Layer
+| Consumer | Location | Usage |
+|----------|----------|-------|
+| ConnectionsSection | `app/(pages)/profile/components/connections/` | "Disconnect" button action |
 
-**Function:** `disconnectAccount(connectionId)` from `services/composio.ts`
+---
 
-**SDK Method:** `client.connectedAccounts.delete(connectionId)`
+## Related Docs
 
-## Frontend Consumer
+- [Composio Connected Accounts](https://docs.composio.dev/api-reference/connected-accounts) - SDK reference
 
-- `useIntegrations.disconnectConnection()` in `app/(pages)/profile/hooks/useIntegrations.ts`
-- Called from the connection management UI in profile settings
+---
 
 ## Notes
 
-- This action is irreversible - the user will need to re-authenticate to reconnect
-- Any agent connection tool bindings using this `connectionId` will no longer work after disconnection
+- We don't verify the connection belongs to the user - Composio may handle this
+- Consider adding ownership validation before disconnecting
 
+---
+
+## Future Improvements
+
+- [ ] Verify connection belongs to authenticated user
+- [ ] Warn user if agents are using this connection
+- [ ] Add soft-delete with grace period

@@ -1,196 +1,95 @@
-# Connection Tools API (`/api/workforce/[agentId]/tools/connection`)
+# Connection Tools
 
-This module manages Composio-based connection tools assigned to an agent. Connection tools are actions from external services (Gmail, GitHub, etc.) that require OAuth authentication.
+> Enables users to assign external service tools (Gmail, Slack) to their agents.
 
-## Routes
+**Endpoint:** `GET/POST /api/workforce/[agentId]/tools/connection`  
+**Auth:** None
 
-### GET `/api/workforce/[agentId]/tools/connection`
+---
 
-Returns the connection tool bindings currently assigned to the specified agent.
+## Purpose
 
-**Path Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `agentId` | string | Agent identifier (e.g., `mira-patel`) |
+Manages which connection tools are assigned to an agent. Connection tools are tools from external services like Gmail, Slack, or GitHub that require user authentication. When a user assigns a connection tool, they're giving the agent permission to use that tool with their connected account.
 
-**Response:**
+---
+
+## Approach
+
+We store connection tool "bindings" which link a tool ID to a specific connection ID and toolkit. This ensures the agent uses the correct authenticated account when executing tools. The bindings are validated with Zod and persisted to the agent config.
+
+---
+
+## Pseudocode
+
+**GET:**
+```
+GET(request, { params }): NextResponse
+├── Extract agentId from params
+├── **Call `getAgentConnectionToolBindings(agentId)`**
+└── Return { bindings }
+```
+
+**POST:**
+```
+POST(request, { params }): NextResponse
+├── Extract agentId from params
+├── Parse body with Zod (bindings array)
+├── **Call `updateConnectionToolBindings(agentId, bindings)`**
+└── Return { success, bindings }
+```
+
+---
+
+## Input (POST)
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `bindings` | ConnectionToolBinding[] | Yes | Array of tool bindings |
+| `bindings[].toolId` | string | Yes | Tool identifier (e.g., "GMAIL_SEND_EMAIL") |
+| `bindings[].connectionId` | string | Yes | User's connection ID |
+| `bindings[].toolkitSlug` | string | Yes | Toolkit identifier (e.g., "gmail") |
+
+**Example Request:**
 ```json
 {
   "bindings": [
     {
       "toolId": "GMAIL_SEND_EMAIL",
-      "connectionId": "ca_abc123xyz",
+      "connectionId": "conn_abc123",
       "toolkitSlug": "gmail"
     }
   ]
 }
 ```
 
-**Service Function:** `getAgentConnectionToolBindings(agentId)` from `services/agent-config.ts`
-
 ---
 
-### POST `/api/workforce/[agentId]/tools/connection`
+## Output
 
-Updates the connection tool bindings assigned to the agent.
-
-**Path Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `agentId` | string | Agent identifier |
-
-**Request Body:**
+**GET Response:**
 ```json
 {
   "bindings": [
     {
       "toolId": "GMAIL_SEND_EMAIL",
-      "connectionId": "ca_abc123xyz",
-      "toolkitSlug": "gmail"
-    },
-    {
-      "toolId": "GMAIL_FETCH_EMAILS",
-      "connectionId": "ca_abc123xyz",
+      "connectionId": "conn_abc123",
       "toolkitSlug": "gmail"
     }
   ]
 }
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "bindings": [...]
-}
-```
+---
 
-**Service Function:** `updateConnectionToolBindings(agentId, bindings)` from `services/agent-config.ts`
+## Consumers
+
+| Consumer | Location | Usage |
+|----------|----------|-------|
+| ConnectionToolEditorPanel | `app/(pages)/workforce/components/agent-modal/` | Tool assignment UI |
 
 ---
 
-### GET `/api/workforce/[agentId]/tools/connection/available`
+## Future Improvements
 
-Returns all connection tools available to the authenticated user, grouped by connection. This endpoint is user-specific - it only returns tools from the user's connected accounts.
-
-**Authentication:** Requires Clerk auth
-
-**Response:**
-```json
-{
-  "connections": [
-    {
-      "connectionId": "ca_abc123xyz",
-      "toolkitSlug": "gmail",
-      "toolkitName": "Gmail",
-      "toolkitLogo": "https://...",
-      "accountLabel": "user@gmail.com",
-      "status": "ACTIVE",
-      "tools": [
-        {
-          "id": "GMAIL_SEND_EMAIL",
-          "name": "Send Email",
-          "description": "Send an email via Gmail"
-        },
-        {
-          "id": "GMAIL_FETCH_EMAILS",
-          "name": "Fetch Emails",
-          "description": "Retrieve emails from inbox"
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Service Functions:**
-- `listConnections(userId)` - Gets user's connected accounts
-- `getToolsForConnection(toolkitSlug)` - Gets tools for each toolkit
-
----
-
-## Data Model
-
-### ConnectionToolBinding
-
-Connection tools are stored in the agent's configuration file using explicit bindings:
-
-```typescript
-type ConnectionToolBinding = {
-  toolId: string;       // Composio action name, e.g., "GMAIL_SEND_EMAIL"
-  connectionId: string; // Composio connected account ID, e.g., "ca_abc123"
-  toolkitSlug: string;  // Toolkit identifier, e.g., "gmail"
-};
-```
-
-### Agent Config
-
-```typescript
-// _tables/agents/mira-patel.ts
-export const agentConfig: AgentConfig = {
-  id: "mira-patel",
-  name: "Mira Patel",
-  connectionToolBindings: [
-    { toolId: "GMAIL_SEND_EMAIL", connectionId: "ca_abc123", toolkitSlug: "gmail" },
-    { toolId: "GMAIL_FETCH_EMAILS", connectionId: "ca_abc123", toolkitSlug: "gmail" }
-  ],
-  // ...
-};
-```
-
----
-
-## Multi-Account Support
-
-The binding model supports multiple accounts for the same service:
-
-```typescript
-// Two Gmail accounts - each tool bound to a specific account
-connectionToolBindings: [
-  { toolId: "GMAIL_SEND_EMAIL", connectionId: "ca_personal", toolkitSlug: "gmail" },
-  { toolId: "GMAIL_FETCH_EMAILS", connectionId: "ca_work", toolkitSlug: "gmail" }
-]
-```
-
----
-
-## Execution Flow
-
-When an agent uses a connection tool:
-
-1. Chat route loads agent's `connectionToolBindings`
-2. Runtime calls `getConnectionToolExecutable(toolId, connectionId)`
-3. Composio SDK executes tool with the bound `connectedAccountId`
-4. Tool uses the OAuth credentials from that specific connection
-
----
-
-## Frontend Consumers
-
-| Component | Hook | Description |
-|-----------|------|-------------|
-| `ConnectionToolEditor` | `useConnectionTools` | Dialog for assigning connection tools |
-| `CapabilitiesTab` | `useAgentDetails` | Displays assigned connection tools |
-| `ConnectionToolCard` | - | Renders individual connection tool |
-
----
-
-## Validation Schema
-
-```typescript
-const ConnectionToolBindingSchema = z.object({
-  toolId: z.string(),      // Required: Composio action name
-  connectionId: z.string(), // Required: Connected account ID
-  toolkitSlug: z.string(),  // Required: Toolkit identifier
-});
-```
-
----
-
-## Notes
-
-- Connection tools require the user to have an active OAuth connection
-- The `connectionId` must match an active connection owned by the user
-- Tool IDs are Composio action names (e.g., `GMAIL_SEND_EMAIL`, not display names)
-- The `/available` endpoint respects user authentication to show only their connections
-
+- [ ] Add auth to verify user owns the connection
+- [ ] Validate connection is still active before saving

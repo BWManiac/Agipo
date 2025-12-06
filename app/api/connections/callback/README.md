@@ -1,84 +1,109 @@
-# OAuth Callback Route
+# OAuth Callback
 
-**Endpoint:** `GET /api/integrations/callback`
+> Completes the OAuth connection flow after a user authorizes access with an external provider.
+
+**Endpoint:** `GET /api/connections/callback`  
+**Auth:** None (called by OAuth provider)
+
+---
 
 ## Purpose
 
-Handles the OAuth callback after a user authorizes with an external provider (Google, GitHub, Slack, etc.). 
+Handles the OAuth callback after a user authorizes with an external provider like Google, GitHub, or Slack. This is the redirect target that OAuth providers call after user authorization. The route processes the result (success or error) and redirects the user back to the profile page with appropriate status information.
 
-When a user clicks "Connect" and completes the OAuth flow with the external provider, Composio redirects them back to this endpoint.
+---
 
-## Flow
+## Approach
+
+When called, we parse the query parameters from the OAuth provider. If there's an error parameter, we redirect to the profile page with error details. On success, Composio handles the token storage on their backend - we simply redirect the user back to the profile page with a success action that triggers the connections dialog to open and refresh.
+
+---
+
+## Pseudocode
 
 ```
-1. User clicks "Connect" in AddConnectionDialog
-2. Frontend calls POST /api/integrations/connect
-3. Backend returns redirectUrl to OAuth provider
-4. User authorizes in OAuth provider
-5. OAuth provider redirects to Composio
-6. Composio redirects to THIS endpoint with status
-7. This endpoint redirects to /profile with query params
-8. Frontend opens IntegrationSettingsDialog and refetches data
+GET(request): NextResponse
+├── Parse searchParams from URL
+├── Check for error parameter
+├── If error:
+│   ├── Log error details
+│   └── Redirect to /profile?action=integration-error&error=...
+├── Else (success):
+│   ├── Log success (hasCode, hasState)
+│   └── Redirect to /profile?action=open-connections
+└── On exception: Redirect to /profile with generic error
 ```
 
-## Query Parameters (from Composio)
+---
 
-| Param | Description |
-|-------|-------------|
-| `status` | "success" or "error" |
-| `connectionId` | The new connected account ID (on success) |
-| `error` | Error message (on failure) |
+## Input
 
-## Redirect Behavior
+Query parameters (provided by OAuth provider):
 
-**On Success:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `code` | string | Authorization code (on success) |
+| `state` | string | CSRF state parameter |
+| `error` | string | Error code (on failure) |
+| `error_description` | string | Error details (on failure) |
+
+---
+
+## Output
+
+This endpoint always redirects (302). No JSON response.
+
+**Success Redirect:**
 ```
-/profile?action=open-integrations&connectionStatus=success&connectionId=conn_xxx
-```
-
-**On Error:**
-```
-/profile?action=open-integrations&connectionStatus=error&errorMessage=...
-```
-
-## Frontend Consumer
-
-| Component | File | Usage |
-|-----------|------|-------|
-| `ConnectionsSection` | `app/(pages)/profile/components/integrations/ConnectionsSection.tsx` | Reads `action` query param to auto-open dialog |
-
-The frontend checks for `?action=open-integrations` and automatically opens the IntegrationSettingsDialog.
-
-## Composio Configuration
-
-The callback URL is passed when initiating the connection:
-
-```typescript
-// In /api/integrations/connect
-const connection = await client.connectedAccounts.initiate(
-  userId,
-  authConfigId,
-  {
-    callbackUrl: "http://localhost:3000/api/integrations/callback"
-  }
-);
+/profile?action=open-connections
 ```
 
-**Documentation:** https://docs.composio.dev/api-reference/connected-accounts
+**Error Redirect:**
+```
+/profile?action=integration-error&error=<message>
+```
 
-## Environment Considerations
+---
 
-| Environment | Callback URL |
-|-------------|--------------|
-| Development | `http://localhost:3000/api/integrations/callback` |
-| Production | `https://your-domain.com/api/integrations/callback` |
+## Flow Diagram
 
-The callback URL must be whitelisted in your OAuth provider's settings (Google Console, GitHub OAuth App, etc.).
+```
+1. User clicks "Connect" → POST /api/connections/connect
+2. User redirected to OAuth provider (Google, GitHub, etc.)
+3. User authorizes access
+4. Provider redirects to THIS endpoint with code/state
+5. We redirect to /profile?action=open-connections
+6. Profile page auto-opens ConnectionsDialog
+7. Dialog fetches updated connections list
+```
+
+---
+
+## Consumers
+
+| Consumer | Location | Usage |
+|----------|----------|-------|
+| OAuth Providers | External | Redirect target after authorization |
+| ConnectionsSection | `app/(pages)/profile/` | Reads `action` query param |
+
+---
+
+## Notes
+
+- Composio handles token exchange and storage on their backend
+- We don't store any OAuth tokens locally
+- The callback URL must be whitelisted in OAuth provider settings
+
+---
+
+## Related Docs
+
+- [Composio OAuth Flow](https://docs.composio.dev/docs/authentication) - OAuth documentation
+
+---
 
 ## Future Improvements
 
-- [ ] Store connection result in database for audit trail
-- [ ] Send notification/toast on success/error
-- [ ] Handle edge cases (user cancels OAuth, token already exists)
-- [ ] Add webhook support for async connection updates
-
+- [ ] Add state parameter validation for CSRF protection
+- [ ] Store connection audit trail in database
+- [ ] Handle edge case: user cancels OAuth flow

@@ -1,23 +1,79 @@
-# Tool Chat API (`/api/tools/chat`)
+# Tools Chat
 
-**Method:** `POST`
+> Enables testing custom tools via a simple chat interface.
+
+**Endpoint:** `POST /api/tools/chat`  
+**Auth:** None
+
+---
 
 ## Purpose
-The specialized chat backend for the **Workflow Builder Assistant**. This agent helps users build workflows by understanding natural language commands (e.g., "Create a workflow that scrapes Hacker News") and converting them into canvas actions using the `workflowTools` set.
 
-## Request Body
-Accepts a JSON object compatible with the Vercel AI SDK:
+Provides a simple chat endpoint for testing custom workflow tools. Unlike the agent chat which requires an agent configuration, this endpoint loads all available custom tools and makes them available to a basic LLM conversation. Useful for testing tools in isolation.
 
+---
+
+## Approach
+
+We load all executable tools from the `_tables/tools/` directory, build a tool map, then use the Vercel AI SDK's `streamText` to have a conversation with tool access. The AI Gateway routes the request to the configured model.
+
+---
+
+## Pseudocode
+
+```
+POST(request): NextResponse
+├── Parse messages from body
+├── **Call `getExecutableTools()`** to load all custom tools
+├── Build toolMap from tool definitions
+├── Create AI Gateway client
+├── **Call `streamText()`** with model, messages, tools
+└── Return streaming text response
+```
+
+---
+
+## Input
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `messages` | Message[] | Yes | Conversation messages |
+
+**Example Request:**
 ```json
 {
-  "messages": [ ... ], // Array of UIMessages
-  "workflowContext": "..." // Optional: Stringified representation of current canvas state
+  "messages": [
+    { "role": "user", "content": "Run the data analysis tool" }
+  ]
 }
 ```
 
-## Response
-Streams a Vercel AI SDK response, which may include text chunks and tool calls (e.g., `add_node`, `connect_nodes`).
+---
 
-## Context Injection
-The `workflowContext` is injected as a system message at the start of the conversation to ground the LLM in the current state of the user's work.
+## Output
 
+Streaming text response in Vercel AI SDK format.
+
+---
+
+## Consumers
+
+| Consumer | Location | Usage |
+|----------|----------|-------|
+| ToolsPage | `app/(pages)/tools/` | Tool testing interface |
+
+---
+
+## Notes
+
+- Uses `maxDuration: 30` seconds
+- Only loads custom tools, not connection tools
+- Model hardcoded to `google/gemini-3-pro-preview`
+
+---
+
+## Future Improvements
+
+- [ ] Add model selection
+- [ ] Include connection tools for testing
+- [ ] Add tool execution logging
