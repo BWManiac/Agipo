@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 7 - Source Selector Dropdown</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 p-8">
+  
+  <div class="max-w-lg mx-auto space-y-12">
+    
+    <!-- Source Type Selection -->
+    <div>
+      <h1 class="text-lg font-semibold mb-2">Source Selector - Choose Type</h1>
+      <p class="text-sm text-gray-500 mb-6">First dropdown: choose the source type</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-medium text-gray-900">subject</span>
+              </div>
+              <p class="text-[10px] text-gray-500 mt-0.5">Subject line of the email</p>
+            </div>
+          </div>
+          
+          <!-- Trigger button (open state) -->
+          <button class="w-full flex items-center justify-between px-3 py-2 bg-white border-2 border-blue-500 rounded-md text-xs ring-4 ring-blue-50">
+            <span class="text-gray-400">Select source...</span>
+            <svg class="h-3 w-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
+          
+          <!-- Dropdown menu -->
+          <div class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            
+            <!-- Step Output Option -->
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+              <span class="w-2 h-2 bg-blue-500 rounded-full shrink-0"></span>
+              <div class="flex-1">
+                <span class="text-xs font-medium text-gray-900 block">Step Output</span>
+                <span class="text-[10px] text-gray-500">Use data from a previous step</span>
+              </div>
+              <svg class="h-3 w-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <!-- Workflow Input Option -->
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full shrink-0"></span>
+              <div class="flex-1">
+                <span class="text-xs font-medium text-gray-900 block">Workflow Input</span>
+                <span class="text-[10px] text-gray-500">Use a workflow parameter</span>
+              </div>
+              <svg class="h-3 w-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <!-- Literal Value Option -->
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+              <span class="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+              <div class="flex-1">
+                <span class="text-xs font-medium text-gray-900 block">Literal Value</span>
+                <span class="text-[10px] text-gray-500">Enter a fixed value</span>
+              </div>
+              <svg class="h-3 w-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <!-- Clear option -->
+            <button class="w-full flex items-center gap-3 px-3 py-2 hover:bg-red-50 transition-colors text-left">
+              <span class="w-2 h-2 bg-gray-300 rounded-full shrink-0"></span>
+              <span class="text-xs text-gray-500">Clear binding</span>
+            </button>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Step Output - Step Selection -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Step Output - Select Step</h2>
+      <p class="text-sm text-gray-500 mb-6">After choosing "Step Output", select which step's data to use</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            <span class="text-xs text-gray-600">Step Output from:</span>
+          </div>
+          
+          <!-- Step selector dropdown -->
+          <div class="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+              <div class="w-6 h-6 bg-orange-100 rounded flex items-center justify-center shrink-0">
+                <span class="text-orange-600 text-[10px] font-bold">1</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="text-xs font-medium text-gray-900 block">Navigate to URL</span>
+                <span class="text-[10px] text-gray-500">browser_tool</span>
+              </div>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 bg-blue-50 text-left">
+              <div class="w-6 h-6 bg-orange-100 rounded flex items-center justify-center shrink-0">
+                <span class="text-orange-600 text-[10px] font-bold">2</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="text-xs font-medium text-gray-900 block">Fetch Webpage Content</span>
+                <span class="text-[10px] text-gray-500">browser_tool</span>
+              </div>
+              <svg class="h-4 w-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Workflow Input - Input Selection -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Workflow Input - Select Input</h2>
+      <p class="text-sm text-gray-500 mb-6">After choosing "Workflow Input", select which workflow parameter</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+            <span class="text-xs text-gray-600">Workflow Input:</span>
+          </div>
+          
+          <!-- Input selector dropdown -->
+          <div class="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+              <div class="flex-1 min-w-0">
+                <span class="text-xs font-medium text-gray-900 block">url</span>
+                <span class="text-[10px] text-gray-500">string • required</span>
+              </div>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 bg-emerald-50 text-left">
+              <div class="flex-1 min-w-0">
+                <span class="text-xs font-medium text-gray-900 block">recipient</span>
+                <span class="text-[10px] text-gray-500">string • required</span>
+              </div>
+              <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <!-- Empty state hint -->
+            <div class="px-3 py-2 text-[10px] text-gray-500 bg-gray-50">
+              Define inputs in the <span class="text-blue-600 font-medium">Inputs</span> tab
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Literal Value Input -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Literal Value - Enter Value</h2>
+      <p class="text-sm text-gray-500 mb-6">After choosing "Literal", enter a fixed value</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+            <span class="text-xs text-gray-600">Literal Value:</span>
+          </div>
+          
+          <!-- Value input -->
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              value="Your Daily Digest"
+              class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-md text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500"
+              placeholder="Enter value..."
+            />
+            <button class="px-3 py-2 bg-blue-500 text-white rounded-md text-xs font-medium hover:bg-blue-600 transition-colors">
+              Apply
+            </button>
+          </div>
+          
+          <div class="mt-2 flex items-center gap-2 text-[10px] text-gray-500">
+            <span class="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">string</span>
+            <span>Expected type based on schema</span>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <!-- First Step Variant: No Step Output Option -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">First Step Variant</h2>
+      <p class="text-sm text-gray-500 mb-6">"Step Output" option is disabled/hidden for the first step</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs text-gray-600">Select source for <strong>url</strong>:</span>
+          </div>
+          
+          <div class="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            
+            <!-- Step Output - Disabled -->
+            <button disabled class="w-full flex items-center gap-3 px-3 py-2.5 text-left opacity-50 cursor-not-allowed bg-gray-50">
+              <span class="w-2 h-2 bg-gray-300 rounded-full shrink-0"></span>
+              <div class="flex-1">
+                <span class="text-xs font-medium text-gray-400 block">Step Output</span>
+                <span class="text-[10px] text-gray-400">No previous steps available</span>
+              </div>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <!-- Workflow Input - Available -->
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full shrink-0"></span>
+              <div class="flex-1">
+                <span class="text-xs font-medium text-gray-900 block">Workflow Input</span>
+                <span class="text-[10px] text-gray-500">Use a workflow parameter</span>
+              </div>
+              <svg class="h-3 w-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            <div class="border-t border-gray-100"></div>
+            
+            <!-- Literal Value - Available -->
+            <button class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left">
+              <span class="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+              <div class="flex-1">
+                <span class="text-xs font-medium text-gray-900 block">Literal Value</span>
+                <span class="text-[10px] text-gray-500">Enter a fixed value</span>
+              </div>
+              <svg class="h-3 w-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,3502 @@
+{
+  "slug": "firecrawl",
+  "name": "Firecrawl",
+  "logo": "https://logos.composio.dev/api/firecrawl",
+  "tools": [
+    {
+      "slug": "FIRECRAWL_CANCEL_A_CRAWL_JOB",
+      "name": "Cancel a crawl job",
+      "description": "Cancels an active or queued web crawl job using its ID; attempting to cancel completed, failed, or previously canceled jobs will not change their state.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier (UUID) of the crawl job to be canceled.",
+            "title": "Id",
+            "examples": [
+              "c72c3457-79c2-4212-a7ac-25350a2785f3"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "CancelACrawlJobRequest",
+        "description": "Request schema for `CancelACrawlJob`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Indicates the operation outcome. Value is 'cancelled' when the crawl job has been successfully cancelled.",
+                "title": "Status",
+                "const": "cancelled"
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CancelACrawlJobResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    },
+    {
+      "slug": "FIRECRAWL_CRAWL",
+      "name": "Start a web crawl",
+      "description": "Initiates a Firecrawl web crawl from a given URL, applying various filtering and content extraction rules, and polls until the job is complete; ensure the URL is accessible and any regex patterns for paths are valid.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "allowBackwardLinks": {
+            "type": "boolean",
+            "description": "If true, allows the crawler to navigate to pages that were linked from pages already visited (i.e., navigate 'backwards'). Defaults to false.",
+            "title": "Allow Backward Links",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "allowExternalLinks": {
+            "type": "boolean",
+            "description": "If true, allows the crawler to follow links that lead to external websites (different domains). Defaults to false.",
+            "title": "Allow External Links",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in milliseconds between requests to avoid overwhelming the server",
+            "title": "Delay",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              100,
+              500,
+              1000
+            ]
+          },
+          "excludePaths": {
+            "type": "array",
+            "description": "A list of Regular Expression (regex) patterns for URL paths to exclude from the crawl. URLs whose paths match any of these patterns will be ignored. For example, `\"blog/archive/.*\"` would exclude all paths under `/blog/archive/`.",
+            "title": "Exclude Paths",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "blog/archive/.*",
+              "private/.*",
+              "user/\\d+/profile/edit"
+            ]
+          },
+          "ignoreQueryParameters": {
+            "type": "boolean",
+            "description": "If true, ignore query parameters when determining if a URL has been visited",
+            "title": "Ignore Query Parameters",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "ignoreSitemap": {
+            "type": "boolean",
+            "description": "If true, the crawler will ignore any sitemap.xml found on the website. Defaults to true.",
+            "title": "Ignore Sitemap",
+            "default": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "includePaths": {
+            "type": "array",
+            "description": "A list of Regular Expression (regex) patterns for URL paths to include in the crawl. Only URLs whose paths match one of these patterns will be processed. For example, `\"products/featured/.*\"` would only include paths under `/products/featured/`.",
+            "title": "Include Paths",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "products/featured/.*",
+              "docs/api/v1/.*",
+              "articles/\\d{4}/\\d{2}/.*"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of pages to crawl. The crawl will stop once this limit is reached. Default is 10.",
+            "title": "Limit",
+            "default": 10,
+            "examples": [
+              "5",
+              "10",
+              "20"
+            ]
+          },
+          "maxDepth": {
+            "type": "integer",
+            "description": "Maximum depth of subpages to crawl relative to the base URL. A depth of 0 crawls only the base URL, 1 crawls the base URL and its direct links, etc. Default is 2.",
+            "title": "Max Depth",
+            "default": 2,
+            "examples": [
+              "0",
+              "1",
+              "2"
+            ]
+          },
+          "maxDiscoveryDepth": {
+            "type": "integer",
+            "description": "Maximum depth for discovering new links, separate from crawling depth",
+            "title": "Max Discovery Depth",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              1,
+              2,
+              3
+            ]
+          },
+          "scrapeOptions_actions": {
+            "type": "array",
+            "description": "List of actions to perform on each page before scraping (e.g., clicking buttons, waiting)",
+            "title": "Scrape Options Actions",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "title": "Action",
+              "properties": {
+                "coordinate": {
+                  "type": "array",
+                  "title": "Coordinate",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "integer",
+                    "properties": {}
+                  }
+                },
+                "milliseconds": {
+                  "type": "integer",
+                  "title": "Milliseconds",
+                  "default": null,
+                  "nullable": true
+                },
+                "selector": {
+                  "type": "string",
+                  "title": "Selector",
+                  "default": null,
+                  "nullable": true
+                },
+                "text": {
+                  "type": "string",
+                  "title": "Text",
+                  "default": null,
+                  "nullable": true
+                },
+                "type": {
+                  "type": "string",
+                  "title": "Type",
+                  "enum": [
+                    "wait",
+                    "click",
+                    "write",
+                    "press",
+                    "scroll",
+                    "screenshot"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ]
+            }
+          },
+          "scrapeOptions_blockAds": {
+            "type": "boolean",
+            "description": "If true, block advertisements during scraping",
+            "title": "Scrape Options Block Ads",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_changeTrackingOptions": {
+            "type": "object",
+            "description": "Options for tracking changes between crawls",
+            "title": "ChangeTrackingOptions",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "data_schema": {
+                "type": "object",
+                "description": "Schema for change tracking",
+                "title": "Data Schema",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              },
+              "modes": {
+                "type": "array",
+                "description": "Change tracking modes",
+                "title": "Modes",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              },
+              "prompt": {
+                "type": "string",
+                "description": "Prompt for change tracking",
+                "title": "Prompt",
+                "default": null,
+                "nullable": true
+              },
+              "tag": {
+                "type": "string",
+                "description": "Tag for change tracking",
+                "title": "Tag",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "scrapeOptions_excludeTags": {
+            "type": "array",
+            "description": "A list of HTML tags to exclude from the scraped output. Content within these tags (and their children) will be removed before processing.",
+            "title": "Scrape Options Exclude Tags",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "nav",
+              "footer",
+              "script",
+              "style",
+              "aside"
+            ]
+          },
+          "scrapeOptions_formats": {
+            "type": "array",
+            "description": "Specifies the desired output formats for the scraped content from each page. Default is `[\"markdown\"]`. If format is json, jsonOptions is required.",
+            "title": "Scrape Options Formats",
+            "default": [
+              "markdown"
+            ],
+            "items": {
+              "type": "string",
+              "title": "FormatsEnm",
+              "properties": {},
+              "enum": [
+                "markdown",
+                "html",
+                "rawHtml",
+                "links",
+                "screenshot",
+                "json"
+              ]
+            },
+            "examples": [
+              "markdown",
+              "html",
+              "rawHtml",
+              "links",
+              "screenshot",
+              "json"
+            ]
+          },
+          "scrapeOptions_headers": {
+            "type": "object",
+            "description": "Custom HTTP headers to send with each request",
+            "title": "Scrape Options Headers",
+            "default": null,
+            "nullable": true,
+            "additionalProperties": {
+              "type": "string"
+            },
+            "examples": [
+              {
+                "Accept": "text/html",
+                "User-Agent": "CustomBot/1.0"
+              }
+            ]
+          },
+          "scrapeOptions_includeTags": {
+            "type": "array",
+            "description": "A list of HTML tags to specifically include in the scraped output. Only content within these tags will be processed. If empty or null, all relevant content is considered based on other options.",
+            "title": "Scrape Options Include Tags",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "article",
+              "main",
+              "h1",
+              "p"
+            ]
+          },
+          "scrapeOptions_jsonOptions": {
+            "type": "object",
+            "description": "Options for JSON format extraction including schema and prompts",
+            "title": "JsonOptions",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "json_schema": {
+                "type": "object",
+                "description": "JSON schema for structured extraction",
+                "title": "Json Schema",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              },
+              "prompt": {
+                "type": "string",
+                "description": "User prompt for JSON extraction",
+                "title": "Prompt",
+                "default": null,
+                "nullable": true
+              },
+              "systemPrompt": {
+                "type": "string",
+                "description": "System prompt for JSON extraction",
+                "title": "System Prompt",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "scrapeOptions_location": {
+            "type": "object",
+            "description": "Geolocation settings for the scraper",
+            "title": "Location",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "country": {
+                "type": "string",
+                "description": "Country code for geolocation",
+                "title": "Country",
+                "default": "US",
+                "nullable": true
+              },
+              "languages": {
+                "type": "array",
+                "description": "Language preferences",
+                "title": "Languages",
+                "default": [
+                  "en-US"
+                ],
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "scrapeOptions_maxAge": {
+            "type": "integer",
+            "description": "Maximum age in seconds for cached content. If content is older than this, it will be re-scraped",
+            "title": "Scrape Options Max Age",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              0,
+              3600,
+              86400
+            ]
+          },
+          "scrapeOptions_mobile": {
+            "type": "boolean",
+            "description": "If true, emulate a mobile device when scraping",
+            "title": "Scrape Options Mobile",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_onlyMainContent": {
+            "type": "boolean",
+            "description": "If true, attempts to extract only the main content of each page, excluding common elements like headers, navigation bars, and footers. Default is true.",
+            "title": "Scrape Options Only Main Content",
+            "default": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_parsePDF": {
+            "type": "boolean",
+            "description": "If true, attempt to parse PDF files encountered during crawling",
+            "title": "Scrape Options Parse Pdf",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_proxy": {
+            "type": "string",
+            "description": "Proxy configuration for requests",
+            "title": "Scrape Options Proxy",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              "basic",
+              "premium"
+            ]
+          },
+          "scrapeOptions_removeBase64Images": {
+            "type": "boolean",
+            "description": "If true, remove base64-encoded images from the scraped content",
+            "title": "Scrape Options Remove Base64 Images",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_skipTlsVerification": {
+            "type": "boolean",
+            "description": "If true, skip TLS certificate verification",
+            "title": "Scrape Options Skip Tls Verification",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_storeInCache": {
+            "type": "boolean",
+            "description": "If true, store scraped content in cache for future use",
+            "title": "Scrape Options Store In Cache",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_timeout": {
+            "type": "integer",
+            "description": "Timeout in milliseconds for each page request. Default is 30000ms (30 seconds)",
+            "title": "Scrape Options Timeout",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              5000,
+              15000,
+              30000,
+              60000
+            ]
+          },
+          "scrapeOptions_waitFor": {
+            "type": "integer",
+            "description": "The duration in milliseconds to wait for page JavaScript to execute and content to load before scraping. Useful for pages with dynamically loaded content. Default is 123ms.",
+            "title": "Scrape Options Wait For",
+            "default": 123,
+            "examples": [
+              "0",
+              "500",
+              "1000",
+              "2500"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "The base URL to start crawling from. This is the initial entry point for the web crawler.",
+            "title": "Url",
+            "examples": [
+              "https://firecrawl.dev/"
+            ]
+          },
+          "webhook": {
+            "type": "string",
+            "description": "An optional webhook URL to receive real-time updates on the crawl job. Events include crawl start (`crawl.started`), page crawled (`crawl.page`), and crawl completion (`crawl.completed` or `crawl.failed`). The payload structure matches the `/scrape` endpoint response.",
+            "title": "Webhook",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              "https://api.example.com/webhook/firecrawl-status"
+            ]
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "CrawlRequest",
+        "description": "Parameters to initiate a web crawl, allowing customization of crawl depth, path inclusion/exclusion (regex), content extraction formats, and more, starting from a base URL."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "integer",
+            "description": "Number of pages successfully crawled",
+            "title": "Completed"
+          },
+          "creditsUsed": {
+            "type": "integer",
+            "description": "API credits consumed by this crawl job",
+            "title": "Credits Used"
+          },
+          "data": {
+            "type": "array",
+            "description": "Array of crawled page results",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Data from a single crawled page.",
+              "title": "CrawledPage",
+              "properties": {
+                "actions": {
+                  "type": "array",
+                  "description": "Record of automated actions performed on the page (click, scroll, write, wait, press, etc.)",
+                  "title": "Actions",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": true
+                  }
+                },
+                "extract": {
+                  "type": "object",
+                  "description": "Structured data extracted from the page using LLM extraction",
+                  "title": "Extract",
+                  "default": null,
+                  "nullable": true,
+                  "additionalProperties": true
+                },
+                "html": {
+                  "type": "string",
+                  "description": "Processed HTML content of the page",
+                  "title": "Html",
+                  "default": null,
+                  "nullable": true
+                },
+                "links": {
+                  "type": "array",
+                  "description": "Array of URLs found on the page",
+                  "title": "Links",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "string",
+                    "properties": {}
+                  }
+                },
+                "markdown": {
+                  "type": "string",
+                  "description": "Page content converted to clean, LLM-ready markdown format",
+                  "title": "Markdown",
+                  "default": null,
+                  "nullable": true
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Page metadata container",
+                  "title": "Metadata",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "Meta description of the page",
+                      "title": "Description",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Error message if the page scrape failed",
+                      "title": "Error",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "keywords": {
+                      "type": "string",
+                      "description": "Meta keywords from the page",
+                      "title": "Keywords",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "Detected language of the page content",
+                      "title": "Language",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogLocaleAlternate": {
+                      "type": "array",
+                      "description": "Array of alternative locale versions from Open Graph tags",
+                      "title": "Og Locale Alternate",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "string",
+                        "properties": {}
+                      }
+                    },
+                    "scrapeId": {
+                      "type": "string",
+                      "description": "Unique identifier for this specific scrape operation",
+                      "title": "Scrape Id",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "sourceURL": {
+                      "type": "string",
+                      "description": "Original URL that was requested for crawling",
+                      "title": "Source Url"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "description": "HTTP status code returned when accessing the page",
+                      "title": "Status Code"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Page title from the title tag",
+                      "title": "Title",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "Final URL after any redirects",
+                      "title": "Url",
+                      "default": null,
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "sourceURL",
+                    "statusCode"
+                  ],
+                  "additionalProperties": false
+                },
+                "rawHtml": {
+                  "type": "string",
+                  "description": "Original unprocessed HTML content of the page",
+                  "title": "Raw Html",
+                  "default": null,
+                  "nullable": true
+                },
+                "screenshot": {
+                  "type": "string",
+                  "description": "Base64-encoded screenshot or URL of the rendered page",
+                  "title": "Screenshot",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "required": [
+                "metadata"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "ISO 8601 timestamp indicating when the crawl results will expire and be deleted",
+            "title": "Expires At"
+          },
+          "next": {
+            "type": "string",
+            "description": "URL for retrieving the next batch of results when response exceeds 10MB. Null when all data has been retrieved",
+            "title": "Next",
+            "default": null,
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Current state of the crawl job. Possible values: 'scraping', 'completed', 'failed'",
+            "title": "Status"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the API call was successful",
+            "title": "Success"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of pages identified to crawl",
+            "title": "Total"
+          },
+          "warning": {
+            "type": "string",
+            "description": "Warning message for issues like robots.txt limitations, low results, or other non-fatal problems. Null when no warnings",
+            "title": "Warning",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "success",
+          "status",
+          "total",
+          "completed",
+          "creditsUsed",
+          "expiresAt",
+          "data",
+          "successful"
+        ],
+        "title": "CrawlResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    },
+    {
+      "slug": "FIRECRAWL_CRAWL_V2",
+      "name": "Start a web crawl (v2) [NEW]",
+      "description": "[NEW v2 API] Initiates a Firecrawl v2 web crawl with enhanced features over v1: natural language prompts for automatic crawler configuration, crawlEntireDomain for sibling/parent page discovery, better depth control with maxDiscoveryDepth, subdomain support, and full webhook configuration. Polls until crawl is complete.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "allowExternalLinks": {
+            "type": "boolean",
+            "description": "If true, allows the crawler to follow links that lead to external websites (different domains). Defaults to false.",
+            "title": "Allow External Links",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "allowSubdomains": {
+            "type": "boolean",
+            "description": "If true, allows the crawler to follow links to subdomains of the main domain.",
+            "title": "Allow Subdomains",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "crawlEntireDomain": {
+            "type": "boolean",
+            "description": "Allows the crawler to follow internal links to sibling or parent URLs, not just child paths. False: Only crawls deeper (child) URLs (e.g., /features/feature-1 → /features/feature-1/tips). True: Crawls any internal links including siblings and parents (e.g., /features/feature-1 → /pricing, /).",
+            "title": "Crawl Entire Domain",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in seconds between scrapes to respect website rate limits.",
+            "title": "Delay",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              1,
+              2,
+              5
+            ]
+          },
+          "excludePaths": {
+            "type": "array",
+            "description": "A list of Regular Expression (regex) patterns for URL paths to exclude from the crawl. URLs whose paths match any of these patterns will be ignored. For example, `\"blog/archive/.*\"` would exclude all paths under `/blog/archive/`.",
+            "title": "Exclude Paths",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "blog/archive/.*",
+              "private/.*",
+              "user/\\d+/profile/edit"
+            ]
+          },
+          "ignoreQueryParameters": {
+            "type": "boolean",
+            "description": "If true, do not re-scrape the same path with different (or no) query parameters",
+            "title": "Ignore Query Parameters",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "includePaths": {
+            "type": "array",
+            "description": "A list of Regular Expression (regex) patterns for URL paths to include in the crawl. Only URLs whose paths match one of these patterns will be processed. For example, `\"products/featured/.*\"` would only include paths under `/products/featured/`.",
+            "title": "Include Paths",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "products/featured/.*",
+              "docs/api/v1/.*",
+              "articles/\\d{4}/\\d{2}/.*"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of pages to crawl. The crawl will stop once this limit is reached. Default is 10.",
+            "title": "Limit",
+            "default": 10,
+            "examples": [
+              5,
+              10,
+              50,
+              100
+            ]
+          },
+          "maxConcurrency": {
+            "type": "integer",
+            "description": "Maximum number of concurrent scrapes. If not specified, uses your team's concurrency limit.",
+            "title": "Max Concurrency",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              3,
+              5,
+              10
+            ]
+          },
+          "maxDiscoveryDepth": {
+            "type": "integer",
+            "description": "Maximum depth to crawl based on discovery order. The root site and sitemapped pages have a discovery depth of 0. For example, if you set it to 1 and set sitemap='skip', you will only crawl the entered URL and all URLs linked on that page.",
+            "title": "Max Discovery Depth",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              1,
+              2,
+              3
+            ]
+          },
+          "prompt": {
+            "type": "string",
+            "description": "A natural language prompt to automatically generate crawler settings. Example: 'Only crawl blog posts and docs, skip marketing pages'. Explicitly set parameters will override the generated equivalents.",
+            "title": "Prompt",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              "Only crawl API reference pages",
+              "Crawl documentation, skip tutorials and guides"
+            ]
+          },
+          "scrapeOptions_actions": {
+            "type": "array",
+            "description": "List of actions to perform on each page before scraping (e.g., clicking buttons, waiting)",
+            "title": "Scrape Options Actions",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "title": "Action",
+              "properties": {
+                "coordinate": {
+                  "type": "array",
+                  "title": "Coordinate",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "integer",
+                    "properties": {}
+                  }
+                },
+                "milliseconds": {
+                  "type": "integer",
+                  "title": "Milliseconds",
+                  "default": null,
+                  "nullable": true
+                },
+                "selector": {
+                  "type": "string",
+                  "title": "Selector",
+                  "default": null,
+                  "nullable": true
+                },
+                "text": {
+                  "type": "string",
+                  "title": "Text",
+                  "default": null,
+                  "nullable": true
+                },
+                "type": {
+                  "type": "string",
+                  "title": "Type",
+                  "enum": [
+                    "wait",
+                    "click",
+                    "write",
+                    "press",
+                    "scroll",
+                    "screenshot"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ]
+            }
+          },
+          "scrapeOptions_blockAds": {
+            "type": "boolean",
+            "description": "If true, block advertisements during scraping",
+            "title": "Scrape Options Block Ads",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_excludeTags": {
+            "type": "array",
+            "description": "A list of HTML tags to exclude from the scraped output. Content within these tags will be removed.",
+            "title": "Scrape Options Exclude Tags",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "nav",
+              "footer",
+              "script",
+              "style",
+              "aside"
+            ]
+          },
+          "scrapeOptions_formats": {
+            "type": "array",
+            "description": "Specifies the desired output formats for the scraped content from each page. Default is `[\"markdown\"]`. If format is json, jsonOptions with systemPrompt is required.",
+            "title": "Scrape Options Formats",
+            "default": [
+              "markdown"
+            ],
+            "items": {
+              "type": "string",
+              "title": "FormatsEnm",
+              "properties": {},
+              "enum": [
+                "markdown",
+                "html",
+                "rawHtml",
+                "links",
+                "screenshot",
+                "json"
+              ]
+            },
+            "examples": [
+              "markdown",
+              "html",
+              "rawHtml",
+              "links",
+              "screenshot",
+              "json"
+            ]
+          },
+          "scrapeOptions_headers": {
+            "type": "object",
+            "description": "Custom HTTP headers to send with each request",
+            "title": "Scrape Options Headers",
+            "default": null,
+            "nullable": true,
+            "additionalProperties": {
+              "type": "string"
+            },
+            "examples": [
+              {
+                "Accept": "text/html",
+                "User-Agent": "CustomBot/1.0"
+              }
+            ]
+          },
+          "scrapeOptions_includeTags": {
+            "type": "array",
+            "description": "A list of HTML tags to specifically include in the scraped output. Only content within these tags will be processed.",
+            "title": "Scrape Options Include Tags",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              "article",
+              "main",
+              "h1",
+              "p"
+            ]
+          },
+          "scrapeOptions_jsonOptions": {
+            "type": "object",
+            "description": "Options for JSON format extraction. Use systemPrompt to define extraction schema/instructions and prompt for specific extraction requests.",
+            "title": "JsonOptions",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "description": "User prompt for JSON extraction",
+                "title": "Prompt",
+                "default": null,
+                "nullable": true
+              },
+              "systemPrompt": {
+                "type": "string",
+                "description": "System prompt for JSON extraction (can include schema definition)",
+                "title": "System Prompt",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "scrapeOptions_location": {
+            "type": "object",
+            "description": "Geolocation settings for the scraper",
+            "title": "Location",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "country": {
+                "type": "string",
+                "description": "Country code for geolocation",
+                "title": "Country",
+                "default": "US",
+                "nullable": true
+              },
+              "languages": {
+                "type": "array",
+                "description": "Language preferences",
+                "title": "Languages",
+                "default": [
+                  "en-US"
+                ],
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "scrapeOptions_maxAge": {
+            "type": "integer",
+            "description": "Maximum age in milliseconds for cached content. If content is older than this, it will be re-scraped.",
+            "title": "Scrape Options Max Age",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              0,
+              3600000,
+              86400000
+            ]
+          },
+          "scrapeOptions_mobile": {
+            "type": "boolean",
+            "description": "If true, emulate a mobile device when scraping",
+            "title": "Scrape Options Mobile",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_onlyMainContent": {
+            "type": "boolean",
+            "description": "If true, attempts to extract only the main content of each page, excluding common elements like headers, navigation bars, and footers. Default is true.",
+            "title": "Scrape Options Only Main Content",
+            "default": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_parsers": {
+            "type": "array",
+            "description": "List of parsers to use for specific content types (e.g., 'pdf')",
+            "title": "Scrape Options Parsers",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "title": "ParserType",
+              "properties": {},
+              "enum": [
+                "pdf"
+              ]
+            },
+            "examples": [
+              [
+                "pdf"
+              ]
+            ]
+          },
+          "scrapeOptions_proxy": {
+            "type": "string",
+            "description": "Proxy configuration for requests",
+            "title": "Scrape Options Proxy",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              "auto",
+              "basic",
+              "premium"
+            ]
+          },
+          "scrapeOptions_removeBase64Images": {
+            "type": "boolean",
+            "description": "If true, remove base64-encoded images from the scraped content",
+            "title": "Scrape Options Remove Base64 Images",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_skipTlsVerification": {
+            "type": "boolean",
+            "description": "If true, skip TLS certificate verification",
+            "title": "Scrape Options Skip Tls Verification",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_storeInCache": {
+            "type": "boolean",
+            "description": "If true, store scraped content in cache for future use",
+            "title": "Scrape Options Store In Cache",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "scrapeOptions_timeout": {
+            "type": "integer",
+            "description": "Timeout in milliseconds for each page request. Default is 30000ms (30 seconds)",
+            "title": "Scrape Options Timeout",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              5000,
+              15000,
+              30000,
+              60000
+            ]
+          },
+          "scrapeOptions_waitFor": {
+            "type": "integer",
+            "description": "The duration in milliseconds to wait for page JavaScript to execute and content to load before scraping.",
+            "title": "Scrape Options Wait For",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              0,
+              500,
+              1000,
+              2500
+            ]
+          },
+          "sitemap": {
+            "type": "string",
+            "description": "Sitemap mode when crawling. 'include' (default) uses sitemap and discovers other pages. 'skip' ignores sitemap entirely and only discovers pages from the start URL.",
+            "title": "Sitemap",
+            "default": "include",
+            "enum": [
+              "include",
+              "skip"
+            ],
+            "examples": [
+              "include",
+              "skip"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "The base URL to start crawling from. This is the initial entry point for the web crawler.",
+            "title": "Url",
+            "examples": [
+              "https://firecrawl.dev/"
+            ]
+          },
+          "webhook": {
+            "type": "object",
+            "description": "Webhook configuration for receiving real-time crawl updates.",
+            "title": "WebhookConfig",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "events": {
+                "type": "array",
+                "description": "Events to trigger webhook",
+                "title": "Events",
+                "default": [
+                  "completed"
+                ],
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                },
+                "examples": [
+                  [
+                    "completed"
+                  ]
+                ]
+              },
+              "headers": {
+                "type": "object",
+                "description": "Custom headers for webhook requests",
+                "title": "Headers",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Custom metadata to include in webhook payload (string key-value pairs)",
+                "title": "Metadata",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "url": {
+                "type": "string",
+                "description": "Webhook URL to receive crawl updates",
+                "title": "Url"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          },
+          "zeroDataRetention": {
+            "type": "boolean",
+            "description": "If true, enables zero data retention for this crawl. Contact help@firecrawl.dev to enable this feature.",
+            "title": "Zero Data Retention",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "CrawlV2Request",
+        "description": "Parameters for Firecrawl v2 crawl API with enhanced discovery, natural language prompts, and granular control over crawl scope and content extraction."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "integer",
+            "description": "Number of pages successfully crawled and processed",
+            "title": "Completed"
+          },
+          "creditsUsed": {
+            "type": "integer",
+            "description": "API credits consumed by the crawl job",
+            "title": "Credits Used"
+          },
+          "data": {
+            "type": "array",
+            "description": "Array of crawled page objects containing content and metadata",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Data from a single crawled page including content and metadata.",
+              "title": "CrawledPage",
+              "properties": {
+                "actions": {
+                  "type": "object",
+                  "description": "Results from browser actions performed during scraping.",
+                  "title": "Actions",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "javascriptReturns": {
+                      "type": "array",
+                      "description": "Results from JavaScript execution",
+                      "title": "Javascript Returns",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "Result from JavaScript execution during browser actions.",
+                        "title": "JavaScriptReturn",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "Data type of the returned value",
+                            "title": "Type"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "The value returned from JavaScript execution",
+                            "title": "Value",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "value"
+                        ]
+                      }
+                    },
+                    "pdfs": {
+                      "type": "array",
+                      "description": "Array of PDF file URLs generated from actions",
+                      "title": "Pdfs",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "string",
+                        "properties": {}
+                      }
+                    },
+                    "scrapes": {
+                      "type": "array",
+                      "description": "Array of scrape results from actions",
+                      "title": "Scrapes",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "Result from a scrape action performed during browser automation.",
+                        "title": "ScrapeResult",
+                        "properties": {
+                          "html": {
+                            "type": "string",
+                            "description": "HTML content from the scrape",
+                            "title": "Html"
+                          },
+                          "url": {
+                            "type": "string",
+                            "description": "URL that was scraped",
+                            "title": "Url"
+                          }
+                        },
+                        "required": [
+                          "url",
+                          "html"
+                        ]
+                      }
+                    },
+                    "screenshots": {
+                      "type": "array",
+                      "description": "Array of screenshot URLs captured during actions",
+                      "title": "Screenshots",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "string",
+                        "properties": {}
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "html": {
+                  "type": "string",
+                  "description": "Cleaned HTML content of the page",
+                  "title": "Html",
+                  "default": null,
+                  "nullable": true
+                },
+                "links": {
+                  "type": "array",
+                  "description": "Array of URLs found on the page",
+                  "title": "Links",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "string",
+                    "properties": {}
+                  }
+                },
+                "markdown": {
+                  "type": "string",
+                  "description": "Page content converted to markdown format",
+                  "title": "Markdown",
+                  "default": null,
+                  "nullable": true
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Metadata extracted from the page including Open Graph tags, SEO data, and HTTP status",
+                  "title": "Metadata",
+                  "properties": {
+                    "appleMobileWebAppTitle": {
+                      "type": "string",
+                      "description": "iOS mobile app title",
+                      "title": "Apple Mobile Web App Title",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "applicationName": {
+                      "type": "string",
+                      "description": "Application identifier from meta tags",
+                      "title": "Application Name",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "canonical": {
+                      "type": "string",
+                      "description": "Canonical URL reference from link tag",
+                      "title": "Canonical",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "charset": {
+                      "type": "string",
+                      "description": "Character encoding specification",
+                      "title": "Charset",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Page description from meta tags",
+                      "title": "Description",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Error message if the page failed to scrape",
+                      "title": "Error",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "generator": {
+                      "type": "string",
+                      "description": "Content generation tool or platform",
+                      "title": "Generator",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "keywords": {
+                      "type": "string",
+                      "description": "Page keywords from meta tags",
+                      "title": "Keywords",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "Page language code (e.g., 'en', 'es')",
+                      "title": "Language",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "msapplicationConfig": {
+                      "type": "string",
+                      "description": "Microsoft application configuration URL",
+                      "title": "Msapplication Config",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "msapplicationTileColor": {
+                      "type": "string",
+                      "description": "Windows tile color for pinned sites",
+                      "title": "Msapplication Tile Color",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogDescription": {
+                      "type": "string",
+                      "description": "Open Graph description tag",
+                      "title": "Og Description",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogImage": {
+                      "type": "string",
+                      "description": "Open Graph image URL",
+                      "title": "Og Image",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogImageHeight": {
+                      "type": "string",
+                      "description": "Open Graph image height in pixels",
+                      "title": "Og Image Height",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogImageWidth": {
+                      "type": "string",
+                      "description": "Open Graph image width in pixels",
+                      "title": "Og Image Width",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogLocaleAlternate": {
+                      "type": "array",
+                      "description": "Array of alternate locale identifiers from Open Graph tags",
+                      "title": "Og Locale Alternate",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "string",
+                        "properties": {}
+                      }
+                    },
+                    "ogSiteName": {
+                      "type": "string",
+                      "description": "Open Graph site name",
+                      "title": "Og Site Name",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogTitle": {
+                      "type": "string",
+                      "description": "Open Graph title tag",
+                      "title": "Og Title",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogType": {
+                      "type": "string",
+                      "description": "Open Graph content type designation",
+                      "title": "Og Type",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogUrl": {
+                      "type": "string",
+                      "description": "Open Graph canonical URL",
+                      "title": "Og Url",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "robots": {
+                      "type": "string",
+                      "description": "Robot directives from meta tags (e.g., 'follow, index')",
+                      "title": "Robots",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "sourceURL": {
+                      "type": "string",
+                      "description": "The original URL that was scraped",
+                      "title": "Source Url"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "description": "HTTP status code of the response (e.g., 200, 404)",
+                      "title": "Status Code"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Page title from meta tags or title element",
+                      "title": "Title",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "twitterCard": {
+                      "type": "string",
+                      "description": "Twitter card type",
+                      "title": "Twitter Card",
+                      "default": null,
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "sourceURL",
+                    "statusCode"
+                  ],
+                  "additionalProperties": false
+                },
+                "rawHtml": {
+                  "type": "string",
+                  "description": "Raw unprocessed HTML of the page",
+                  "title": "Raw Html",
+                  "default": null,
+                  "nullable": true
+                },
+                "screenshot": {
+                  "type": "string",
+                  "description": "Base64 encoded screenshot of the page",
+                  "title": "Screenshot",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "required": [
+                "metadata"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "ISO 8601 date-time format timestamp when the crawl data will expire",
+            "title": "Expires At"
+          },
+          "next": {
+            "type": "string",
+            "description": "URL for pagination to retrieve the next chunk of results. Present when response exceeds 10MB or crawl is incomplete. Absence indicates end of crawl data",
+            "title": "Next",
+            "default": null,
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Current state of the crawl job",
+            "title": "Status",
+            "enum": [
+              "scraping",
+              "completed",
+              "failed"
+            ]
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of pages identified in the crawl",
+            "title": "Total"
+          }
+        },
+        "required": [
+          "status",
+          "total",
+          "completed",
+          "creditsUsed",
+          "expiresAt",
+          "data",
+          "successful"
+        ],
+        "title": "CrawlV2ResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    },
+    {
+      "slug": "FIRECRAWL_EXTRACT",
+      "name": "Extract structured data",
+      "description": "Extracts structured data from web pages by initiating an extraction job and polling for completion; requires a natural language `prompt` or a JSON `schema` (one must be provided).",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "enable_web_search": {
+            "type": "boolean",
+            "description": "If `True`, allows crawling links outside initial domains in `urls`; if `False`, restricts to same domains.",
+            "title": "Enable Web Search",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Natural language query for information to extract from URL content. E.g., 'Extract the company mission, whether it supports SSO, etc.'",
+            "title": "Prompt",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              "Extract the company mission, whether it supports SSO, etc."
+            ]
+          },
+          "schema": {
+            "type": "object",
+            "description": "JSON object (dictionary) defining the desired structure for extracted data. Must be a valid JSON Schema object with properties and types.",
+            "title": "Schema",
+            "default": null,
+            "nullable": true,
+            "additionalProperties": true,
+            "examples": [
+              {
+                "properties": {
+                  "company_mission": {
+                    "type": "string"
+                  },
+                  "is_in_yc": {
+                    "type": "boolean"
+                  },
+                  "is_open_source": {
+                    "type": "boolean"
+                  },
+                  "supports_sso": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "company_mission",
+                  "supports_sso",
+                  "is_open_source",
+                  "is_in_yc"
+                ],
+                "type": "object"
+              }
+            ]
+          },
+          "urls": {
+            "type": "array",
+            "description": "A list of URLs from which to extract data (maximum 10 URLs while in beta). Wildcards (e.g., `https://example.com/blog/*`) can be used for crawling multiple pages under a specific path.",
+            "title": "Urls",
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "maxItems": 10,
+            "examples": [
+              [
+                "https://firecrawl.dev/",
+                "https://docs.firecrawl.dev/"
+              ]
+            ]
+          }
+        },
+        "required": [
+          "urls"
+        ],
+        "title": "ExtractRequest",
+        "description": "Request to extract structured data from URLs via a `prompt` or `schema`."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Contains the structured data extracted from the URLs. The structure of this object depends on the schema or prompt defined in the extract request.",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Timestamp in ISO 8601 date-time format indicating when the extraction results expire (within 24 hours of creation).",
+            "title": "Expires At"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current job state. Possible values: 'completed', 'processing', 'failed', or 'cancelled'.",
+            "title": "Status",
+            "enum": [
+              "completed",
+              "processing",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the extraction request succeeded.",
+            "title": "Success"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          },
+          "tokensUsed": {
+            "type": "integer",
+            "description": "Number of tokens consumed by the extraction job.",
+            "title": "Tokens Used"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "status",
+          "expiresAt",
+          "tokensUsed",
+          "successful"
+        ],
+        "title": "ExtractResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    },
+    {
+      "slug": "FIRECRAWL_GET_THE_STATUS_OF_A_CRAWL_JOB",
+      "name": "Get the status of a crawl job",
+      "description": "Retrieves the current status, progress, and details of a web crawl job, using the job ID obtained when the crawl was initiated.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier (UUID) of the crawl job.",
+            "title": "Id",
+            "examples": [
+              "f5e5a0c5-0b7c-455e-8c1a-31e0b0d1f3b0"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "GetTheStatusOfACrawlJobRequest",
+        "description": "Input for retrieving the status of a specific crawl job."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "integer",
+            "description": "The number of pages that have been successfully crawled.",
+            "title": "Completed"
+          },
+          "creditsUsed": {
+            "type": "integer",
+            "description": "The number of credits used for the crawl.",
+            "title": "Credits Used"
+          },
+          "data": {
+            "type": "array",
+            "description": "Array of crawled page objects containing the extracted content.",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Data for a single crawled page.",
+              "title": "CrawledPage",
+              "properties": {
+                "html": {
+                  "type": "string",
+                  "description": "HTML version of the content on page if includeHtml is true.",
+                  "title": "Html",
+                  "default": null,
+                  "nullable": true
+                },
+                "links": {
+                  "type": "array",
+                  "description": "List of links on the page if includeLinks is true.",
+                  "title": "Links",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "string",
+                    "properties": {}
+                  }
+                },
+                "markdown": {
+                  "type": "string",
+                  "description": "Markdown-formatted page content.",
+                  "title": "Markdown",
+                  "default": null,
+                  "nullable": true
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Metadata object containing information extracted from the page.",
+                  "title": "Metadata",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "Description extracted from the page, can be a string or array of strings.",
+                      "title": "Description",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "The error message of the page if an error occurred.",
+                      "title": "Error",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "keywords": {
+                      "type": "string",
+                      "description": "Keywords extracted from the page, can be a string or array of strings.",
+                      "title": "Keywords",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "Language extracted from the page, can be a string or array of strings.",
+                      "title": "Language",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "ogLocaleAlternate": {
+                      "type": "array",
+                      "description": "Alternative locales for the page.",
+                      "title": "Og Locale Alternate",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "string",
+                        "properties": {}
+                      }
+                    },
+                    "sourceURL": {
+                      "type": "string",
+                      "description": "Source page URL.",
+                      "title": "Source Url",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "description": "The HTTP status code of the page.",
+                      "title": "Status Code",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Title extracted from the page, can be a string or array of strings.",
+                      "title": "Title",
+                      "default": null,
+                      "nullable": true
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "rawHtml": {
+                  "type": "string",
+                  "description": "Raw HTML content of the page if includeRawHtml is true.",
+                  "title": "Raw Html",
+                  "default": null,
+                  "nullable": true
+                },
+                "screenshot": {
+                  "type": "string",
+                  "description": "Screenshot of the page if includeScreenshot is true.",
+                  "title": "Screenshot",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "required": [
+                "metadata"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "The date and time when the crawl will expire.",
+            "title": "Expires At",
+            "format": "date-time"
+          },
+          "next": {
+            "type": "string",
+            "description": "The URL to retrieve the next 10MB of data. Returned if the crawl is not completed or if the response is larger than 10MB. Null when no additional data remains.",
+            "title": "Next",
+            "default": null,
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "The current status of the crawl. Can be 'scraping', 'completed', or 'failed'.",
+            "title": "Status"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          },
+          "total": {
+            "type": "integer",
+            "description": "The total number of pages that were attempted to be crawled.",
+            "title": "Total"
+          }
+        },
+        "required": [
+          "status",
+          "total",
+          "completed",
+          "creditsUsed",
+          "expiresAt",
+          "data",
+          "successful"
+        ],
+        "title": "GetTheStatusOfACrawlJobResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    },
+    {
+      "slug": "FIRECRAWL_MAP_MULTIPLE_URLS_BASED_ON_OPTIONS",
+      "name": "Map multiple URLs",
+      "description": "Maps a website by discovering URLs from a starting base URL, with options to customize the crawl via search query, subdomain inclusion, sitemap handling, and result limits; search effectiveness is site-dependent.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "ignoreSitemap": {
+            "type": "boolean",
+            "description": "If true, the crawler ignores sitemap.xml files, relying on page links for discovery.",
+            "title": "Ignore Sitemap",
+            "default": true,
+            "examples": [
+              "true",
+              "false"
+            ]
+          },
+          "includeSubdomains": {
+            "type": "boolean",
+            "description": "If true, includes subdomains of the base URL in the mapping. E.g., if `url` is example.com, blog.example.com is mapped.",
+            "title": "Include Subdomains",
+            "default": false,
+            "examples": [
+              "true",
+              "false"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of unique links/pages to discover and return; helps control mapping scope and duration.",
+            "title": "Limit",
+            "default": 5000,
+            "examples": [
+              "100",
+              "1000",
+              "10000"
+            ]
+          },
+          "search": {
+            "type": "string",
+            "description": "Optional search query to guide URL mapping, prioritizing or finding specific page types. 'Smart' search is limited to 1000 initial results in Alpha, but overall mapping can exceed this.",
+            "title": "Search",
+            "examples": [
+              "product reviews",
+              "articles about AI",
+              "contact us page"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "The primary base URL from which the mapping process will begin.",
+            "title": "Url",
+            "format": "uri",
+            "examples": [
+              "https://example.com",
+              "https://sub.example.com/path"
+            ]
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "MapMultipleUrlsBasedOnOptionsRequest",
+        "description": "Request schema for mapping URLs based on various options."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "links": {
+                "type": "array",
+                "description": "Collection of discovered URLs with metadata, ordered from most relevant to least relevant when using search parameter",
+                "title": "Links",
+                "items": {
+                  "type": "object",
+                  "description": "Represents a discovered URL with optional metadata.",
+                  "title": "LinkResult",
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "Page summary or meta description, availability varies by site",
+                      "title": "Description",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Page title or heading, not always present depending on website",
+                      "title": "Title",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "Full URL of the discovered page",
+                      "title": "Url"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ]
+                }
+              },
+              "success": {
+                "type": "boolean",
+                "description": "Indicates whether the API call was successful",
+                "title": "Success"
+              },
+              "warning": {
+                "type": "string",
+                "description": "Warning message for alerts such as low results, robots.txt limitations, or other issues during mapping",
+                "title": "Warning",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "required": [
+              "success",
+              "links"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "MapMultipleUrlsBasedOnOptionsResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    },
+    {
+      "slug": "FIRECRAWL_SCRAPE",
+      "name": "Scrape URL",
+      "description": "Scrapes a publicly accessible URL, optionally performing pre-scrape browser actions or extracting structured JSON using an LLM, to retrieve content in specified formats.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "array",
+            "description": "An optional list of browser actions (e.g., click, write, wait, press) to perform on the page before scraping. Useful for interacting with dynamic content, filling forms, or navigating through page elements.",
+            "title": "Actions",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "description": "Action to perform on the page",
+              "title": "Action",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "description": "Key to press (e.g., 'Enter', 'Escape', 'Tab'), used with 'press' actions.",
+                  "title": "Key",
+                  "default": null,
+                  "nullable": true,
+                  "examples": [
+                    "Enter",
+                    "Escape",
+                    "Tab"
+                  ]
+                },
+                "milliseconds": {
+                  "type": "integer",
+                  "description": "Specifies a duration in milliseconds, e.g., for a 'wait' action or a delay.",
+                  "title": "Milliseconds",
+                  "default": null,
+                  "nullable": true,
+                  "examples": [
+                    "500",
+                    "1000",
+                    "2000"
+                  ]
+                },
+                "selector": {
+                  "type": "string",
+                  "description": "CSS selector for the HTML element targeted by the action. Required for actions like 'click' or 'write'.",
+                  "title": "Selector",
+                  "default": null,
+                  "nullable": true,
+                  "examples": [
+                    "#submit-button",
+                    ".product-title",
+                    "div[data-testid='item']"
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Text to be typed into an element, used with 'write' actions.",
+                  "title": "Text",
+                  "default": null,
+                  "nullable": true,
+                  "examples": [
+                    "Hello world",
+                    "user@example.com",
+                    "search query"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The type of browser action to perform on the page before scraping. Supported actions: 'wait', 'click', 'screenshot', 'write', 'press', 'scroll'.",
+                  "title": "Type",
+                  "examples": [
+                    "click",
+                    "write",
+                    "wait",
+                    "press",
+                    "scroll"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ]
+            }
+          },
+          "excludeTags": {
+            "type": "array",
+            "description": "A list of HTML tags to specifically exclude from the output. Content within these tags will be removed.",
+            "title": "Exclude Tags",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              [
+                "script",
+                "style"
+              ],
+              [
+                "nav",
+                "footer",
+                "aside"
+              ]
+            ]
+          },
+          "formats": {
+            "type": "array",
+            "description": "A list of desired output formats for the scraped content. Defaults to ['markdown']. Cannot include both 'screenshot' and 'screenshot@fullPage'. If 'json' is included, jsonOptions must be provided.",
+            "title": "Formats",
+            "default": [
+              "markdown"
+            ],
+            "items": {
+              "type": "string",
+              "title": "FormatsEnm",
+              "properties": {},
+              "enum": [
+                "markdown",
+                "html",
+                "rawHtml",
+                "links",
+                "screenshot",
+                "json",
+                "screenshot@fullPage"
+              ]
+            },
+            "examples": [
+              [
+                "markdown"
+              ],
+              [
+                "html",
+                "screenshot"
+              ],
+              [
+                "json"
+              ]
+            ]
+          },
+          "includeTags": {
+            "type": "array",
+            "description": "A list of HTML tags to specifically include in the output. Content within these tags will be prioritized.",
+            "title": "Include Tags",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              [
+                "h1",
+                "p"
+              ],
+              [
+                "article",
+                "section"
+              ]
+            ]
+          },
+          "jsonOptions": {
+            "type": "object",
+            "description": "Options for JSON extraction",
+            "title": "JsonOptions",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "description": "A user-defined prompt for data extraction when a specific JSON schema is not provided. Guides the LLM on what information to extract.",
+                "title": "Prompt",
+                "default": null,
+                "nullable": true,
+                "examples": [
+                  "Extract the main headline and the first paragraph.",
+                  "What are the product specifications mentioned on this page?",
+                  "Summarize the article in three bullet points."
+                ]
+              },
+              "schema": {
+                "type": "object",
+                "description": "A valid JSON Schema object defining the structure for data extraction. Must have 'type': 'object' at top level with 'properties' defined. The LLM will populate this schema with data from the page.",
+                "title": "Schema",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true,
+                "examples": [
+                  {
+                    "properties": {
+                      "author": {
+                        "type": "string"
+                      },
+                      "published_date": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "features": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "price": {
+                        "type": "number"
+                      },
+                      "product_name": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                ]
+              },
+              "systemPrompt": {
+                "type": "string",
+                "description": "A system-level prompt to guide the LLM during JSON extraction, setting context or desired behavior.",
+                "title": "System Prompt",
+                "default": null,
+                "nullable": true,
+                "examples": [
+                  "Extract key information accurately.",
+                  "Focus on product details and specifications."
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "location": {
+            "type": "object",
+            "description": "Location settings for the request",
+            "title": "LocationRequest",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "country": {
+                "type": "string",
+                "description": "ISO 3166-1 alpha-2 country code to make the request from (e.g., 'US', 'AU', 'DE', 'JP').",
+                "title": "Country",
+                "default": "US",
+                "examples": [
+                  "US",
+                  "AU",
+                  "DE",
+                  "JP"
+                ]
+              },
+              "languages": {
+                "type": "array",
+                "description": "List of preferred languages and locales for the request, in order of priority. Uses format like 'en-US'.",
+                "title": "Languages",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                },
+                "examples": [
+                  [
+                    "en-US",
+                    "en"
+                  ],
+                  [
+                    "fr-CA",
+                    "fr"
+                  ],
+                  [
+                    "de-DE"
+                  ]
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "onlyMainContent": {
+            "type": "boolean",
+            "description": "If true, attempts to extract only the main article content, excluding headers, footers, navigation bars, and ads. Defaults to true.",
+            "title": "Only Main Content",
+            "default": true
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "Maximum time in milliseconds to wait for the scraping request to complete. Defaults to 30000.",
+            "title": "Timeout",
+            "default": 30000,
+            "examples": [
+              "30000",
+              "10000",
+              "60000"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "The fully qualified URL of the web page to scrape.",
+            "title": "Url",
+            "examples": [
+              "https://firecrawl.dev/",
+              "https://example.com/article"
+            ]
+          },
+          "waitFor": {
+            "type": "integer",
+            "description": "Time in milliseconds to wait for the page to load or for dynamic content to render before starting the scrape. Defaults to 0.",
+            "title": "Wait For",
+            "default": 0,
+            "examples": [
+              "0",
+              "1000",
+              "5000"
+            ]
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "ScrapeRequest",
+        "description": "Defines the parameters for a scrape request to Firecrawl, enabling web page content retrieval,\nmain content filtering, and optional structured data extraction using LLM capabilities."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Contains all scraped content and metadata.",
+            "title": "Data",
+            "properties": {
+              "actions": {
+                "type": "object",
+                "description": "Results from browser automation actions",
+                "title": "ActionsResult",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "javascriptReturns": {
+                    "type": "array",
+                    "description": "Array of results from JavaScript execution during actions, each containing 'type' and 'value'.",
+                    "title": "Javascript Returns",
+                    "default": null,
+                    "nullable": true,
+                    "items": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": true
+                    }
+                  },
+                  "pdfs": {
+                    "type": "array",
+                    "description": "Array of PDF URLs extracted during actions.",
+                    "title": "Pdfs",
+                    "default": null,
+                    "nullable": true,
+                    "items": {
+                      "type": "string",
+                      "properties": {}
+                    }
+                  },
+                  "scrapes": {
+                    "type": "array",
+                    "description": "Array of scrape results from action sequences, each containing 'url' and 'html'.",
+                    "title": "Scrapes",
+                    "default": null,
+                    "nullable": true,
+                    "items": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "screenshots": {
+                    "type": "array",
+                    "description": "Array of screenshot URLs captured during actions.",
+                    "title": "Screenshots",
+                    "default": null,
+                    "nullable": true,
+                    "items": {
+                      "type": "string",
+                      "properties": {}
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "branding": {
+                "type": "object",
+                "description": "Brand identity information extracted from the website",
+                "title": "Branding",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "animations": {
+                    "type": "object",
+                    "description": "Animation and transition settings detected on the site.",
+                    "title": "Animations",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "colorScheme": {
+                    "type": "string",
+                    "description": "Detected color scheme: 'light' or 'dark'.",
+                    "title": "Color Scheme",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "colors": {
+                    "type": "object",
+                    "description": "Primary, secondary, accent, background, and text colors used on the site.",
+                    "title": "Colors",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "components": {
+                    "type": "object",
+                    "description": "Styling information for UI components like buttons and inputs.",
+                    "title": "Components",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "fonts": {
+                    "type": "array",
+                    "description": "Array of font families detected on the site.",
+                    "title": "Fonts",
+                    "default": null,
+                    "nullable": true,
+                    "items": {
+                      "type": "string",
+                      "properties": {}
+                    }
+                  },
+                  "images": {
+                    "type": "object",
+                    "description": "URLs for logo, favicon, and Open Graph images.",
+                    "title": "Images",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "layout": {
+                    "type": "object",
+                    "description": "Layout configuration including grid and header/footer dimensions.",
+                    "title": "Layout",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "logo": {
+                    "type": "string",
+                    "description": "URL of the site logo.",
+                    "title": "Logo",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "personality": {
+                    "type": "object",
+                    "description": "Brand personality traits including tone and target audience information.",
+                    "title": "Personality",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "spacing": {
+                    "type": "object",
+                    "description": "Spacing information including base unit, border radius, padding and margins.",
+                    "title": "Spacing",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "typography": {
+                    "type": "object",
+                    "description": "Typography settings including font sizes, weights, families, and line heights.",
+                    "title": "Typography",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "changeTracking": {
+                "type": "object",
+                "description": "Change detection information",
+                "title": "ChangeTracking",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "changeStatus": {
+                    "type": "string",
+                    "description": "Status of detected changes: 'new', 'same', 'changed', or 'removed'.",
+                    "title": "Change Status",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "diff": {
+                    "type": "string",
+                    "description": "Text diff showing what changed between scrapes.",
+                    "title": "Diff",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "json": {
+                    "type": "object",
+                    "description": "Structured representation of changes.",
+                    "title": "Json",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "previousScrapeAt": {
+                    "type": "string",
+                    "description": "ISO 8601 timestamp of the previous scrape operation.",
+                    "title": "Previous Scrape At",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "visibility": {
+                    "type": "string",
+                    "description": "Visibility status: 'visible' or 'hidden'.",
+                    "title": "Visibility",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "html": {
+                "type": "string",
+                "description": "Processed and cleaned HTML content of the page. Returned when 'html' is included in formats parameter.",
+                "title": "Html",
+                "default": null,
+                "nullable": true
+              },
+              "json": {
+                "type": "object",
+                "description": "Structured data extracted using LLM with optional schema or prompt. Returned when using extract/JSON mode.",
+                "title": "Json",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              },
+              "links": {
+                "type": "array",
+                "description": "Array of URLs extracted from the page.",
+                "title": "Links",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              },
+              "markdown": {
+                "type": "string",
+                "description": "Page content converted to LLM-ready markdown format. Returned when 'markdown' is included in formats parameter.",
+                "title": "Markdown",
+                "default": null,
+                "nullable": true
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Comprehensive metadata about the scraped page including Open Graph tags and HTTP information.",
+                "title": "Metadata",
+                "properties": {
+                  "cache_state": {
+                    "type": "string",
+                    "description": "Indicates cache hit or miss status.",
+                    "title": "Cache State",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "content_type": {
+                    "type": "string",
+                    "description": "MIME type of the scraped content.",
+                    "title": "Content Type",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "credits_used": {
+                    "type": "integer",
+                    "description": "Number of API credits consumed by this scrape operation.",
+                    "title": "Credits Used",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Page description from meta description tag.",
+                    "title": "Description",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "error": {
+                    "type": "string",
+                    "description": "Error message if an error occurred during scraping.",
+                    "title": "Error",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "keywords": {
+                    "type": "string",
+                    "description": "Keywords from meta keywords tag.",
+                    "title": "Keywords",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Detected or declared language code of the page content.",
+                    "title": "Language",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "ogDescription": {
+                    "type": "string",
+                    "description": "Open Graph description meta property.",
+                    "title": "Og Description",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "ogImage": {
+                    "type": "string",
+                    "description": "Open Graph image URL meta property.",
+                    "title": "Og Image",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "ogLocaleAlternate": {
+                    "type": "array",
+                    "description": "Array of alternate locale codes from Open Graph.",
+                    "title": "Og Locale Alternate",
+                    "default": null,
+                    "nullable": true,
+                    "items": {
+                      "type": "string",
+                      "properties": {}
+                    }
+                  },
+                  "ogSiteName": {
+                    "type": "string",
+                    "description": "Open Graph site name meta property.",
+                    "title": "Og Site Name",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "ogTitle": {
+                    "type": "string",
+                    "description": "Open Graph title meta property.",
+                    "title": "Og Title",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "ogUrl": {
+                    "type": "string",
+                    "description": "Open Graph canonical URL meta property.",
+                    "title": "Og Url",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "robots": {
+                    "type": "string",
+                    "description": "Robots meta tag directives for crawlers.",
+                    "title": "Robots",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "sourceURL": {
+                    "type": "string",
+                    "description": "Original URL that was requested for scraping.",
+                    "title": "Source Url"
+                  },
+                  "statusCode": {
+                    "type": "integer",
+                    "description": "HTTP response status code from the scraping request.",
+                    "title": "Status Code"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Page title from the HTML title tag or meta tags.",
+                    "title": "Title",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "Final resolved URL after following redirects.",
+                    "title": "Url",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "sourceURL",
+                  "statusCode"
+                ],
+                "additionalProperties": false
+              },
+              "rawHtml": {
+                "type": "string",
+                "description": "Unprocessed raw HTML as received from the server. Returned when 'rawHtml' is included in formats parameter.",
+                "title": "Raw Html",
+                "default": null,
+                "nullable": true
+              },
+              "screenshot": {
+                "type": "string",
+                "description": "Base64-encoded screenshot image or screenshot URL. Returned when 'screenshot' is included in formats parameter.",
+                "title": "Screenshot",
+                "default": null,
+                "nullable": true
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise AI-generated summary of the page content. Available in v2.5+.",
+                "title": "Summary",
+                "default": null,
+                "nullable": true
+              },
+              "warning": {
+                "type": "string",
+                "description": "Warning message if any issues occurred during scraping that didn't cause failure.",
+                "title": "Warning",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "required": [
+              "metadata"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the scrape operation completed successfully.",
+            "title": "Success"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "successful"
+        ],
+        "title": "ScrapeResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    },
+    {
+      "slug": "FIRECRAWL_SEARCH",
+      "name": "Search",
+      "description": "Performs a web search for a query, scrapes content from the top search results using Firecrawl, and returns details in specified formats.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "country": {
+            "type": "string",
+            "description": "Country code to tailor search results (e.g., 'us' for United States, default 'us').",
+            "title": "Country",
+            "default": "us",
+            "nullable": true,
+            "examples": [
+              "us",
+              "uk",
+              "fr"
+            ]
+          },
+          "formats": {
+            "type": "array",
+            "description": "Desired output formats for scraped content of each search result (e.g., 'markdown', 'html'). If None, default scraping applies. Available: 'markdown', 'html', 'rawHtml', 'links', 'screenshot', 'screenshot@fullPage'.",
+            "title": "Formats",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              [
+                "markdown",
+                "html"
+              ],
+              [
+                "screenshot@fullPage"
+              ],
+              [
+                "links"
+              ],
+              [
+                "markdown",
+                "html",
+                "rawHtml",
+                "links",
+                "screenshot",
+                "screenshot@fullPage"
+              ]
+            ]
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language code for search results (e.g., 'en' for English, default 'en').",
+            "title": "Lang",
+            "default": "en",
+            "nullable": true,
+            "examples": [
+              "en",
+              "es",
+              "fr"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of search results to return (1-10, default 5).",
+            "title": "Limit",
+            "default": 5,
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 10,
+            "examples": [
+              "1",
+              "5",
+              "10"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "The search query to execute.",
+            "title": "Query",
+            "examples": [
+              "what is firecrawl?"
+            ]
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "Maximum time in milliseconds for search and scrape operations (1000-300000, default 60000).",
+            "title": "Timeout",
+            "default": 60000,
+            "nullable": true,
+            "minimum": 1000,
+            "maximum": 300000,
+            "examples": [
+              "10000",
+              "60000",
+              "300000"
+            ]
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "SearchRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Contains search results organized by source type.",
+            "title": "Data",
+            "properties": {
+              "images": {
+                "type": "array",
+                "description": "Array of image search results. Available when 'images' is included in sources parameter.",
+                "title": "Images",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "title": "ImageSearchResult",
+                  "properties": {
+                    "imageHeight": {
+                      "type": "integer",
+                      "description": "Height of the image in pixels.",
+                      "title": "Image Height"
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "description": "Direct URL to the image file.",
+                      "title": "Image Url"
+                    },
+                    "imageWidth": {
+                      "type": "integer",
+                      "description": "Width of the image in pixels.",
+                      "title": "Image Width"
+                    },
+                    "position": {
+                      "type": "integer",
+                      "description": "Ranking order or position of the image in search results.",
+                      "title": "Position"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Image title or description.",
+                      "title": "Title"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the page containing the image.",
+                      "title": "Url"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "imageUrl",
+                    "imageWidth",
+                    "imageHeight",
+                    "url",
+                    "position"
+                  ]
+                }
+              },
+              "news": {
+                "type": "array",
+                "description": "Array of news search results. Available when 'news' is included in sources parameter.",
+                "title": "News",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "title": "NewsSearchResult",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "description": "Publication date or timestamp of the news article.",
+                      "title": "Date"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description or summary of the news article.",
+                      "title": "Description",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "html": {
+                      "type": "string",
+                      "description": "HTML content of the article. Included when scraping is enabled with html format.",
+                      "title": "Html",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "description": "URL of the thumbnail or featured image for the news article.",
+                      "title": "Image Url",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "links": {
+                      "type": "array",
+                      "description": "Array of extracted hyperlinks from the article. Included when scraping is enabled with links format.",
+                      "title": "Links",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "string",
+                        "properties": {}
+                      }
+                    },
+                    "markdown": {
+                      "type": "string",
+                      "description": "Article content in markdown format. Included when scrapeOptions specify markdown format.",
+                      "title": "Markdown",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Contains metadata about the scraped news article.",
+                      "title": "MetadataResponse",
+                      "default": null,
+                      "nullable": true,
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "description": "Meta description tag content.",
+                          "title": "Description",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "error": {
+                          "type": "string",
+                          "description": "Error message if scraping failed or encountered issues.",
+                          "title": "Error",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "sourceURL": {
+                          "type": "string",
+                          "description": "Original source URL of the page.",
+                          "title": "Source Url",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "statusCode": {
+                          "type": "integer",
+                          "description": "HTTP response status code.",
+                          "title": "Status Code",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Page title from metadata.",
+                          "title": "Title",
+                          "default": null,
+                          "nullable": true
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "position": {
+                      "type": "integer",
+                      "description": "Ranking order or position of the news article in search results.",
+                      "title": "Position"
+                    },
+                    "rawHtml": {
+                      "type": "string",
+                      "description": "Unprocessed raw HTML of the article. Included when scraping is enabled with rawHtml format.",
+                      "title": "Raw Html",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "screenshot": {
+                      "type": "string",
+                      "description": "Base64-encoded screenshot of the article page. Included when scraping is enabled with screenshot format.",
+                      "title": "Screenshot",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "snippet": {
+                      "type": "string",
+                      "description": "Short excerpt or snippet from the news article.",
+                      "title": "Snippet"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Headline or title of the news article.",
+                      "title": "Title"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the news article.",
+                      "title": "Url"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "snippet",
+                    "url",
+                    "date",
+                    "position"
+                  ]
+                }
+              },
+              "web": {
+                "type": "array",
+                "description": "Array of web search results. Available when 'web' is included in sources parameter.",
+                "title": "Web",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "title": "WebSearchResult",
+                  "properties": {
+                    "category": {
+                      "type": "string",
+                      "description": "Content classification category (e.g., 'github', 'research').",
+                      "title": "Category",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Meta description or summary of the page content.",
+                      "title": "Description"
+                    },
+                    "html": {
+                      "type": "string",
+                      "description": "HTML content of the page. Included when scraping is enabled with html format.",
+                      "title": "Html",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "links": {
+                      "type": "array",
+                      "description": "Array of extracted hyperlinks from the page. Included when scraping is enabled with links format.",
+                      "title": "Links",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "string",
+                        "properties": {}
+                      }
+                    },
+                    "markdown": {
+                      "type": "string",
+                      "description": "Cleaned, structured content in markdown format. Included when scrapeOptions specify markdown format.",
+                      "title": "Markdown",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Contains metadata about the scraped page.",
+                      "title": "Metadata",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "description": "Meta description tag content.",
+                          "title": "Description",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "error": {
+                          "type": "string",
+                          "description": "Error message if scraping failed or encountered issues.",
+                          "title": "Error",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "sourceURL": {
+                          "type": "string",
+                          "description": "Original source URL of the page.",
+                          "title": "Source Url",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "statusCode": {
+                          "type": "integer",
+                          "description": "HTTP response status code.",
+                          "title": "Status Code",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Page title from metadata.",
+                          "title": "Title",
+                          "default": null,
+                          "nullable": true
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "rawHtml": {
+                      "type": "string",
+                      "description": "Unprocessed raw HTML markup. Included when scraping is enabled with rawHtml format.",
+                      "title": "Raw Html",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "screenshot": {
+                      "type": "string",
+                      "description": "Base64-encoded screenshot of the page. Included when scraping is enabled with screenshot format.",
+                      "title": "Screenshot",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Page title of the search result.",
+                      "title": "Title"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the search result.",
+                      "title": "Url"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "description",
+                    "url",
+                    "metadata"
+                  ]
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the API request was successful.",
+            "title": "Success"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          },
+          "warning": {
+            "type": "string",
+            "description": "Optional warning message about the request or response.",
+            "title": "Warning",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "success",
+          "data",
+          "successful"
+        ],
+        "title": "SearchResponseWrapper"
+      },
+      "toolkitSlug": "firecrawl"
+    }
+  ],
+  "toolCount": 8
+}

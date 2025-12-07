@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swimlane View - Complex Example</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .swimlane {
+      border-left: 3px solid;
+      background: linear-gradient(to right, rgba(255,255,255,0.03), transparent);
+      min-width: 200px;
+    }
+    .node-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .lane-connector {
+      width: 2px;
+      background: currentColor;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">Swimlane View - Complex Workflow Example</h1>
+      <p class="text-slate-400">Process Job Applications workflow with parallel lanes for concurrent execution.</p>
+      <div class="flex gap-2 mt-3 text-xs">
+        <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded">Sequential</span>
+        <span class="px-2 py-1 bg-pink-500/20 text-pink-400 rounded">ForEach</span>
+        <span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded">Branch</span>
+        <span class="px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded">Parallel</span>
+        <span class="px-2 py-1 bg-violet-500/20 text-violet-400 rounded">Loop</span>
+        <span class="px-2 py-1 bg-rose-500/20 text-rose-400 rounded">Suspend</span>
+      </div>
+    </div>
+
+    <!-- WORKFLOW -->
+    <div class="bg-slate-900 rounded-xl p-8 border border-slate-800">
+      
+      <!-- START -->
+      <div class="flex justify-center mb-4">
+        <div class="text-xs text-slate-500 bg-slate-800 px-3 py-1 rounded-full">START</div>
+      </div>
+      
+      <!-- STEP 1: Get Applications (Single Lane) -->
+      <div class="flex justify-center mb-4">
+        <div class="swimlane border-l-blue-500 pl-4 py-3">
+          <div class="text-xs text-blue-400 mb-2 font-medium">MAIN</div>
+          <div class="node-card p-3">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-green-100 flex items-center justify-center flex-shrink-0">
+                <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm text-slate-900">Get Applications</div>
+                <div class="text-xs text-slate-500">Query Table</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- FOR EACH: Spawns iteration lanes -->
+      <div class="flex justify-center mb-2">
+        <div class="bg-pink-500 text-white text-xs px-4 py-1.5 rounded-full font-medium">
+          🔁 FOR EACH application (×5 concurrent)
+        </div>
+      </div>
+      
+      <!-- Iteration Lanes (showing 3 of 5 concurrent) -->
+      <div class="flex justify-center gap-2 mb-4">
+        
+        <!-- Iteration Lane 1 -->
+        <div class="swimlane border-l-pink-400 pl-3 py-3 min-w-[180px]">
+          <div class="text-[10px] text-pink-400 mb-2 font-medium">app[0]</div>
+          
+          <!-- 2.1 Validate -->
+          <div class="node-card p-2 mb-2 text-xs border-pink-200">
+            <div class="font-medium text-slate-800">Validate</div>
+          </div>
+          
+          <!-- 2.2 Branch indicator -->
+          <div class="bg-amber-100 text-amber-700 text-[10px] px-2 py-1 rounded mb-2 text-center">
+            Branch: exp ≥ 5 → Senior
+          </div>
+          
+          <!-- 2.3 Parallel Fork indicator -->
+          <div class="bg-cyan-100 text-cyan-700 text-[10px] px-2 py-1 rounded mb-1 text-center">
+            ⑃ fork
+          </div>
+          
+          <!-- Mini parallel lanes -->
+          <div class="flex gap-1 mb-1">
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">LinkedIn</div>
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">GitHub</div>
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">Refs</div>
+          </div>
+          
+          <div class="bg-cyan-100 text-cyan-700 text-[10px] px-2 py-1 rounded mb-2 text-center">
+            ⊕ join
+          </div>
+          
+          <!-- 2.4 AI Score -->
+          <div class="node-card p-2 text-xs border-purple-200">
+            <div class="font-medium text-slate-800">🤖 AI Score</div>
+          </div>
+        </div>
+        
+        <!-- Iteration Lane 2 -->
+        <div class="swimlane border-l-pink-400 pl-3 py-3 min-w-[180px]">
+          <div class="text-[10px] text-pink-400 mb-2 font-medium">app[1]</div>
+          
+          <div class="node-card p-2 mb-2 text-xs border-pink-200">
+            <div class="font-medium text-slate-800">Validate</div>
+          </div>
+          
+          <div class="bg-amber-100 text-amber-700 text-[10px] px-2 py-1 rounded mb-2 text-center">
+            Branch: exp ≥ 2 → Mid
+          </div>
+          
+          <div class="bg-cyan-100 text-cyan-700 text-[10px] px-2 py-1 rounded mb-1 text-center">
+            ⑃ fork
+          </div>
+          
+          <div class="flex gap-1 mb-1">
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">LinkedIn</div>
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">GitHub</div>
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">Refs</div>
+          </div>
+          
+          <div class="bg-cyan-100 text-cyan-700 text-[10px] px-2 py-1 rounded mb-2 text-center">
+            ⊕ join
+          </div>
+          
+          <div class="node-card p-2 text-xs border-purple-200">
+            <div class="font-medium text-slate-800">🤖 AI Score</div>
+          </div>
+        </div>
+        
+        <!-- Iteration Lane 3 -->
+        <div class="swimlane border-l-pink-400 pl-3 py-3 min-w-[180px]">
+          <div class="text-[10px] text-pink-400 mb-2 font-medium">app[2]</div>
+          
+          <div class="node-card p-2 mb-2 text-xs border-pink-200">
+            <div class="font-medium text-slate-800">Validate</div>
+          </div>
+          
+          <div class="bg-amber-100 text-amber-700 text-[10px] px-2 py-1 rounded mb-2 text-center">
+            Branch: else → Junior
+          </div>
+          
+          <div class="bg-cyan-100 text-cyan-700 text-[10px] px-2 py-1 rounded mb-1 text-center">
+            ⑃ fork
+          </div>
+          
+          <div class="flex gap-1 mb-1">
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">LinkedIn</div>
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">GitHub</div>
+            <div class="flex-1 bg-cyan-50 p-1 rounded text-[9px] text-cyan-700 text-center">Refs</div>
+          </div>
+          
+          <div class="bg-cyan-100 text-cyan-700 text-[10px] px-2 py-1 rounded mb-2 text-center">
+            ⊕ join
+          </div>
+          
+          <div class="node-card p-2 text-xs border-purple-200">
+            <div class="font-medium text-slate-800">🤖 AI Score</div>
+          </div>
+        </div>
+        
+        <!-- More indicator -->
+        <div class="flex items-center text-slate-500 text-sm px-3">
+          +2 more...
+        </div>
+        
+      </div>
+      
+      <!-- Collect results -->
+      <div class="flex justify-center mb-4">
+        <div class="bg-pink-500 text-white text-xs px-4 py-1.5 rounded-full font-medium">
+          📥 Collect: scoredApplications[]
+        </div>
+      </div>
+      
+      <!-- Back to single lane -->
+      <div class="flex justify-center mb-4">
+        <div class="swimlane border-l-violet-500 pl-4 py-3">
+          <div class="text-xs text-violet-400 mb-2 font-medium">MAIN</div>
+          
+          <!-- Loop Container -->
+          <div class="border-2 border-dashed border-violet-400 rounded-xl p-4 bg-violet-950/20 relative mb-3">
+            <div class="absolute -top-2.5 left-3 bg-slate-900 px-2">
+              <span class="text-[10px] font-semibold text-violet-400">🔄 DO UNTIL: allScored</span>
+            </div>
+            
+            <div class="space-y-2 mt-1">
+              <div class="node-card p-2 text-xs border-violet-200">
+                <div class="font-medium text-slate-800">Check Progress</div>
+              </div>
+              <div class="node-card p-2 text-xs border-teal-200">
+                <div class="flex items-center gap-2">
+                  <svg class="h-3 w-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="font-medium text-slate-800">Sleep 5s</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="absolute -bottom-2.5 right-3 bg-slate-900 px-2">
+              <span class="text-[9px] text-violet-400">max: 100</span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!-- SUSPEND -->
+      <div class="flex justify-center mb-4">
+        <div class="swimlane border-l-rose-500 pl-4 py-3">
+          <div class="text-xs text-rose-400 mb-2 font-medium">MAIN</div>
+          
+          <div class="node-card p-3 border-rose-300 bg-rose-50">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-rose-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm text-rose-900">Suspend</div>
+                <div class="text-xs text-rose-600">⏸ Awaiting HR Review</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pause indicator -->
+          <div class="border-l-2 border-dashed border-rose-400 h-8 ml-4 my-2"></div>
+          <div class="text-[10px] text-rose-400 ml-2 mb-2">⏸ paused</div>
+          
+        </div>
+      </div>
+      
+      <!-- Resume indicator -->
+      <div class="flex justify-center mb-4">
+        <div class="bg-rose-500 text-white text-xs px-4 py-1.5 rounded-full font-medium">
+          ▶ Resume (after approval)
+        </div>
+      </div>
+      
+      <!-- Final step -->
+      <div class="flex justify-center mb-4">
+        <div class="swimlane border-l-blue-500 pl-4 py-3">
+          <div class="text-xs text-blue-400 mb-2 font-medium">MAIN</div>
+          
+          <div class="node-card p-3">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-emerald-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm text-slate-900">Save Results</div>
+                <div class="text-xs text-slate-500">Write Table • hiring_decisions</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- END -->
+      <div class="flex justify-center">
+        <div class="text-xs text-slate-500 bg-slate-800 px-3 py-1 rounded-full">END</div>
+      </div>
+      
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-8 p-4 bg-slate-900/50 border border-slate-800 rounded-lg text-xs">
+      <div class="font-medium text-slate-400 mb-2">Swimlane View Benefits:</div>
+      <div class="grid grid-cols-3 gap-4 text-slate-500">
+        <div>• Clear parallel visualization</div>
+        <div>• Shows actual concurrency</div>
+        <div>• Time flows top-to-bottom</div>
+        <div>• Lane labels show context</div>
+        <div>• Fork/Join clearly marked</div>
+        <div>• Iteration lanes expandable</div>
+      </div>
+    </div>
+
+    <!-- Comparison Note -->
+    <div class="mt-4 p-4 bg-amber-950/30 border border-amber-800/50 rounded-lg text-xs">
+      <div class="font-medium text-amber-400 mb-2">💡 Swimlane vs Rail vs Outline:</div>
+      <div class="text-amber-300/70">
+        Swimlane excels at showing <strong>actual parallel execution</strong> - you can see multiple items being processed simultaneously. 
+        Rail view keeps everything on a single spine. Outline view is most compact and scannable.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

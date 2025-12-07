@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflows F - List Page Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
+            secondary: {
+              DEFAULT: "hsl(var(--secondary))",
+              foreground: "hsl(var(--secondary-foreground))",
+            },
+            muted: {
+              DEFAULT: "hsl(var(--muted))",
+              foreground: "hsl(var(--muted-foreground))",
+            },
+            accent: {
+              DEFAULT: "hsl(var(--accent))",
+              foreground: "hsl(var(--accent-foreground))",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 210 40% 96.1%;
+      --secondary-foreground: 222.2 47.4% 11.2%;
+      --muted: 210 40% 96.1%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96.1%;
+      --accent-foreground: 222.2 47.4% 11.2%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 221.2 83.2% 53.3%;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50">
+  <div class="min-h-screen p-4 md:p-8">
+    <div class="container mx-auto max-w-7xl">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900">Workflows F</h1>
+          <p class="text-slate-500 mt-1">
+            Greenfield workflow editor - built from scratch with lessons learned
+          </p>
+        </div>
+        <button class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:opacity-90 transition-opacity flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          New Workflow
+        </button>
+      </div>
+
+      <!-- Workflow Grid -->
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <!-- Workflow Card 1 -->
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-semibold text-slate-900 truncate group-hover:text-primary transition-colors">
+                  Job Application Automation
+                </h3>
+                <p class="text-sm text-slate-500 mt-1 line-clamp-2">
+                  Automatically scrape job listings, generate personalized cover letters, and submit applications
+                </p>
+              </div>
+              <button class="h-8 w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </button>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-slate-500">
+              <div class="flex items-center gap-1">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span>5 steps</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Dec 15, 2024</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workflow Card 2 -->
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-semibold text-slate-900 truncate group-hover:text-primary transition-colors">
+                  Email Newsletter Workflow
+                </h3>
+                <p class="text-sm text-slate-500 mt-1 line-clamp-2">
+                  Collect articles, format newsletter, and send to subscriber list
+                </p>
+              </div>
+              <button class="h-8 w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </button>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-slate-500">
+              <div class="flex items-center gap-1">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span>3 steps</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Dec 12, 2024</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workflow Card 3 -->
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-semibold text-slate-900 truncate group-hover:text-primary transition-colors">
+                  Social Media Scheduler
+                </h3>
+                <p class="text-sm text-slate-500 mt-1 line-clamp-2">
+                  Schedule posts across multiple platforms with content variations
+                </p>
+              </div>
+              <button class="h-8 w-8 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </button>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-slate-500">
+              <div class="flex items-center gap-1">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span>7 steps</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Dec 10, 2024</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State (hidden, shown when no workflows) -->
+      <div class="hidden border-2 border-dashed border-slate-300 rounded-lg p-12 text-center">
+        <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+          <svg class="h-6 w-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <h3 class="font-semibold text-lg text-slate-900 mb-1">No workflows yet</h3>
+        <p class="text-slate-500 mb-4 max-w-sm mx-auto">
+          Create your first workflow to start automating multi-step processes with Composio tools. This is a greenfield implementation built with lessons learned from previous variations.
+        </p>
+        <button class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:opacity-90 transition-opacity inline-flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Create Workflow
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+

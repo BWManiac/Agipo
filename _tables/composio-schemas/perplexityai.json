@@ -1,0 +1,388 @@
+{
+  "slug": "perplexityai",
+  "name": "Perplexityai",
+  "logo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master//perplexity.jpeg",
+  "tools": [
+    {
+      "slug": "PERPLEXITYAI_PERPLEXITY_AI_SEARCH",
+      "name": "PerplexityAISearch",
+      "description": "Perplexity Ai Search interfaces with Perplexity AI to perform search queries and return responses from a range of models. This action manages requests to Perplexity AI and processes the resulting completions, which may include text, citations, and images based on selected models and settings. Key features include: Autoprompting to enhance and refine queries, choice of AI models for various content and performance requirements, temperature settings to manage response randomness, Top K and Top P filters to fine-tune response generation. Beta features include citations and images in results, and response streaming for dynamic interaction. Note: The parameters 'presence_penalty' and 'frequency_penalty' are mutually exclusive and cannot be used simultaneously.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "frequency_penalty": {
+            "type": "number",
+            "description": "Multiplicative penalty for new tokens based on their frequency in the text to avoid repetition. Mutually exclusive with the 'presence_penalty' parameter. For example: 0.5, 1.0, 1.5.",
+            "title": "Frequency Penalty",
+            "exclusiveMinimum": 0,
+            "examples": [
+              0.5,
+              1,
+              1.5
+            ]
+          },
+          "max_tokens": {
+            "type": "integer",
+            "description": "The maximum number of tokens to generate. Sum of max_tokens and prompt tokens should not exceed the model's context window limit. Unspecified leads to generation until stop token or context window end. For e.g 100, 150, 200",
+            "title": "Max Tokens",
+            "examples": [
+              100,
+              150,
+              200
+            ]
+          },
+          "model": {
+            "type": "string",
+            "description": "The name of the model to use for generating completions. Choose a model based on the desired balance between performance and resource usage. For more information check https://docs.perplexity.ai/guides/model-cards",
+            "title": "Model",
+            "default": "sonar",
+            "enum": [
+              "sonar",
+              "sonar-reasoning-pro",
+              "sonar-reasoning",
+              "sonar-pro"
+            ]
+          },
+          "presence_penalty": {
+            "type": "number",
+            "description": "Penalty for new tokens based on their current presence in the text, encouraging topic variety. Mutually exclusive with the 'frequency_penalty' parameter. For example: -2.0, 0.0, 2.0.",
+            "title": "Presence Penalty",
+            "minimum": -2,
+            "maximum": 2,
+            "examples": [
+              -2,
+              0,
+              2
+            ]
+          },
+          "return_citations": {
+            "type": "boolean",
+            "description": "Whether to include citations in the model's response. Citations feature is in closed beta. For e.g True, False",
+            "title": "Return Citations",
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "return_images": {
+            "type": "boolean",
+            "description": "Whether to include images in the model's response. Image generation feature is in closed beta. For e.g True, False",
+            "title": "Return Images",
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "Whether to stream the response incrementally using server-sent events.  For e.g True, False",
+            "title": "Stream",
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "systemContent": {
+            "type": "string",
+            "description": "The system's Content for specifying instructions. For e.g Be precise and concise., Be elaborate and descriptive",
+            "title": "System Content",
+            "examples": [
+              "Be precise and concise."
+            ]
+          },
+          "temperature": {
+            "type": "number",
+            "description": "Controls generation randomness, with 0 being deterministic and values approaching 2 being more random. For e.g 0.0, 0.7, 1.5",
+            "title": "Temperature",
+            "minimum": 0,
+            "exclusiveMaximum": 2,
+            "examples": [
+              0,
+              0.7,
+              1.5
+            ]
+          },
+          "top_k": {
+            "type": "integer",
+            "description": "Limits the number of high-probability tokens to consider for generation. Set to 0 to disable. For e.g 0, 40, 80",
+            "title": "Top K",
+            "minimum": 0,
+            "maximum": 2048,
+            "examples": [
+              0,
+              40,
+              80
+            ]
+          },
+          "top_p": {
+            "type": "number",
+            "description": "Nucleus sampling threshold, controlling the token selection pool based on cumulative probability. For e.g 0.1, 0.9, 1.0",
+            "title": "Top P",
+            "minimum": 0,
+            "maximum": 1,
+            "examples": [
+              0.1,
+              0.9,
+              1
+            ]
+          },
+          "userContent": {
+            "type": "string",
+            "description": "The user's Content for asking questions or providing input. For e.g How many stars are there in our galaxy?",
+            "title": "User Content",
+            "examples": [
+              "How many stars are there in our galaxy?"
+            ]
+          }
+        },
+        "required": [
+          "systemContent",
+          "userContent"
+        ],
+        "title": "CompletionRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "choices": {
+                "type": "array",
+                "description": "List of completion choices generated by the model",
+                "title": "Choices",
+                "items": {
+                  "type": "object",
+                  "title": "Choice",
+                  "properties": {
+                    "finish_reason": {
+                      "type": "string",
+                      "description": "Reason why the model stopped generating (e.g., 'stop')",
+                      "title": "Finish Reason"
+                    },
+                    "index": {
+                      "type": "integer",
+                      "description": "Index of this choice in the list of choices",
+                      "title": "Index"
+                    },
+                    "message": {
+                      "type": "object",
+                      "description": "The message generated by the model",
+                      "title": "Message",
+                      "properties": {
+                        "content": {
+                          "type": "string",
+                          "description": "Content of the message",
+                          "title": "Content"
+                        },
+                        "role": {
+                          "type": "string",
+                          "description": "Role of the message sender (system, user, or assistant)",
+                          "title": "Role"
+                        }
+                      },
+                      "required": [
+                        "role",
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "index",
+                    "finish_reason",
+                    "message"
+                  ]
+                }
+              },
+              "created": {
+                "type": "integer",
+                "description": "Unix timestamp (in seconds) when the completion was created",
+                "title": "Created"
+              },
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the completion",
+                "title": "Id"
+              },
+              "model": {
+                "type": "string",
+                "description": "Model used for generating the completion",
+                "title": "Model"
+              },
+              "object": {
+                "type": "string",
+                "description": "Object type, always 'chat.completion'",
+                "title": "Object"
+              },
+              "search_results": {
+                "type": "array",
+                "description": "Search results used to ground the response (if available)",
+                "title": "Search Results",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "title": "SearchResult",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "description": "Date of the search result (YYYY-MM-DD format)",
+                      "title": "Date"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Title of the search result",
+                      "title": "Title"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the search result",
+                      "title": "Url"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "url",
+                    "date"
+                  ]
+                }
+              },
+              "usage": {
+                "type": "object",
+                "description": "Token usage information for this completion",
+                "title": "Usage",
+                "properties": {
+                  "citation_tokens": {
+                    "type": "integer",
+                    "description": "Number of tokens used for citations",
+                    "title": "Citation Tokens",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "completion_tokens": {
+                    "type": "integer",
+                    "description": "Number of tokens in the completion",
+                    "title": "Completion Tokens"
+                  },
+                  "num_search_queries": {
+                    "type": "integer",
+                    "description": "Number of search queries performed",
+                    "title": "Num Search Queries",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "prompt_tokens": {
+                    "type": "integer",
+                    "description": "Number of tokens in the prompt",
+                    "title": "Prompt Tokens"
+                  },
+                  "reasoning_tokens": {
+                    "type": "integer",
+                    "description": "Number of tokens used for reasoning",
+                    "title": "Reasoning Tokens",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "search_context_size": {
+                    "type": "string",
+                    "description": "Size of the search context",
+                    "title": "Search Context Size",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "total_tokens": {
+                    "type": "integer",
+                    "description": "Total number of tokens used",
+                    "title": "Total Tokens"
+                  }
+                },
+                "required": [
+                  "prompt_tokens",
+                  "completion_tokens",
+                  "total_tokens"
+                ],
+                "additionalProperties": false
+              },
+              "videos": {
+                "type": "array",
+                "description": "Videos related to the query (if available)",
+                "title": "Videos",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "title": "Video",
+                  "properties": {
+                    "duration": {
+                      "type": "integer",
+                      "description": "Duration of the video in seconds",
+                      "title": "Duration"
+                    },
+                    "thumbnail_height": {
+                      "type": "integer",
+                      "description": "Height of the video thumbnail in pixels",
+                      "title": "Thumbnail Height"
+                    },
+                    "thumbnail_url": {
+                      "type": "string",
+                      "description": "URL of the video thumbnail",
+                      "title": "Thumbnail Url"
+                    },
+                    "thumbnail_width": {
+                      "type": "integer",
+                      "description": "Width of the video thumbnail in pixels",
+                      "title": "Thumbnail Width"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the video",
+                      "title": "Url"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "thumbnail_url",
+                    "thumbnail_width",
+                    "thumbnail_height",
+                    "duration"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "id",
+              "model",
+              "created",
+              "usage",
+              "object",
+              "choices"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CompletionResponseWrapper"
+      },
+      "toolkitSlug": "perplexityai"
+    }
+  ],
+  "toolCount": 1
+}

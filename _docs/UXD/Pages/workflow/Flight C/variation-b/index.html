@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight C - Variation B: Interactive Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Space Grotesk', system-ui, sans-serif; }
+    code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; }
+    ::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+    
+    /* Canvas dot pattern */
+    .canvas-dots {
+      background-image: radial-gradient(circle, #2a2a4a 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    
+    /* Animations */
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .animate-pulse { animation: pulse 2s infinite; }
+    .animate-spin { animation: spin 1s linear infinite; }
+    .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+    .animate-slideIn { animation: slideIn 0.3s ease-out; }
+    
+    /* Tab active state */
+    .tab-btn.active { color: #818cf8; border-bottom-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
+    
+    /* View toggle active state */
+    .view-btn.active { background: #252538; color: white; }
+    
+    /* Modal transitions */
+    .modal-overlay { transition: opacity 0.2s ease-out; }
+    .modal-content { transition: transform 0.2s ease-out, opacity 0.2s ease-out; }
+    
+    /* Hidden state */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body class="bg-[#0a0a14] text-gray-100">
+  
+  <!-- Main App Container -->
+  <div id="app" class="h-screen flex flex-col">
+    
+    <!-- Top Bar -->
+    <header class="h-14 bg-[#12121f] border-b border-[#1a1a2e] flex items-center justify-between px-4 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <button class="w-8 h-8 rounded-lg bg-[#1a1a2e] hover:bg-[#252538] flex items-center justify-center text-gray-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <input id="workflow-name" type="text" value="Job Application Workflow" class="bg-transparent text-white font-medium text-lg border-none outline-none focus:ring-0 w-64" />
+        <span id="save-status" class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Saved</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Abstraction Level Toggle -->
+        <div class="flex bg-[#1a1a2e] rounded-lg p-1">
+          <button data-level="flow" class="level-btn px-3 py-1.5 text-xs font-medium rounded-md bg-indigo-600 text-white">Flow</button>
+          <button data-level="spec" class="level-btn px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white">Spec</button>
+          <button data-level="code" class="level-btn px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white">Code</button>
+        </div>
+        <!-- View Toggle -->
+        <div class="flex bg-[#1a1a2e] rounded-lg p-1">
+          <button data-view="list" class="view-btn active px-3 py-1.5 text-xs font-medium rounded-md">List</button>
+          <button data-view="canvas" class="view-btn px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white">Canvas</button>
+        </div>
+        <button id="test-btn" class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+          Test
+        </button>
+        <button class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white">Save</button>
+        <button class="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Publish</button>
+      </div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <div class="flex-1 flex overflow-hidden">
+      
+      <!-- Left: AI Chat Panel (collapsible) -->
+      <aside id="ai-panel" class="w-80 bg-[#0f0f1a] border-r border-[#1a1a2e] flex flex-col transition-all duration-300">
+        <!-- Chat Header -->
+        <div class="p-4 border-b border-[#1a1a2e] flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-white">AI Assistant</h3>
+              <p class="text-xs text-green-400">Online</p>
+            </div>
+          </div>
+          <button id="collapse-ai" class="text-gray-400 hover:text-white" title="Collapse">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+          </button>
+        </div>
+        
+        <!-- Chat Messages -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+          <!-- Welcome Message -->
+          <div class="flex justify-start">
+            <div class="max-w-[85%] bg-[#1a1a2e] text-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
+              <p class="text-sm">👋 Hi! I can help you build and improve your workflow. Try asking me to:</p>
+              <ul class="text-sm text-gray-400 mt-2 space-y-1">
+                <li>• Add a new step</li>
+                <li>• Explain what this workflow does</li>
+                <li>• Add error handling</li>
+                <li>• Suggest improvements</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="p-4 border-t border-[#1a1a2e]">
+          <div class="flex gap-2">
+            <input id="chat-input" type="text" placeholder="Ask anything about your workflow..." class="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+            <button id="send-chat" class="w-10 h-10 bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center justify-center text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Collapsed AI Button (shown when panel is collapsed) -->
+      <aside id="ai-collapsed" class="hidden w-16 bg-[#0f0f1a] border-r border-[#1a1a2e] flex flex-col items-center py-4">
+        <button id="expand-ai" class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white hover:scale-105 transition-transform" title="Open AI Assistant">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </button>
+        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+      </aside>
+      
+      <!-- Center: Workflow Area -->
+      <main id="workflow-area" class="flex-1 bg-[#0a0a14] overflow-hidden">
+        
+        <!-- LIST VIEW -->
+        <div id="list-view" class="h-full overflow-y-auto p-6">
+          <div class="max-w-2xl mx-auto">
+            <!-- Workflow Description -->
+            <div class="mb-8 p-4 bg-[#12121f] rounded-lg border border-[#1a1a2e]">
+              <p class="text-gray-300 text-sm">
+                <strong class="text-white">Purpose:</strong> Automatically scrape job listings, generate tailored resumes, and send application emails.
+              </p>
+            </div>
+            
+            <!-- Steps Timeline -->
+            <div id="steps-container">
+              <!-- Step 1 -->
+              <div class="step-item relative pl-8 pb-8" data-step="1">
+                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">1</div>
+                <div class="absolute left-[11px] top-6 bottom-0 w-0.5 bg-[#2a2a4a]"></div>
+                
+                <div class="step-card bg-[#12121f] rounded-lg border border-[#1a1a2e] hover:border-indigo-500/50 transition-colors cursor-pointer" onclick="selectStep(1)">
+                  <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-lg">🔥</span>
+                        <h3 class="font-semibold text-white">Scrape Job Listing</h3>
+                      </div>
+                      <span class="px-2 py-0.5 text-xs bg-orange-500/20 text-orange-400 rounded">Firecrawl</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Extract job details from the provided URL including title, company, requirements, and contact info.</p>
+                    <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                      <span>Input: <code class="text-indigo-400">jobUrl</code></span>
+                      <span>Output: <code class="text-emerald-400">jobData</code></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Mapping Badge 1→2 -->
+              <div class="relative pl-8 pb-2">
+                <div class="absolute left-[11px] top-0 bottom-0 w-0.5 bg-[#2a2a4a]"></div>
+                <button onclick="openMappingModal(1, 2)" class="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a2e] hover:bg-[#252538] rounded-full text-xs text-gray-400 hover:text-white transition-colors ml-4">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
+                  3 fields mapped
+                </button>
+              </div>
+              
+              <!-- Step 2 -->
+              <div class="step-item relative pl-8 pb-8" data-step="2">
+                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">2</div>
+                <div class="absolute left-[11px] top-6 bottom-0 w-0.5 bg-[#2a2a4a]"></div>
+                
+                <div class="step-card bg-[#12121f] rounded-lg border border-[#1a1a2e] hover:border-indigo-500/50 transition-colors cursor-pointer" onclick="selectStep(2)">
+                  <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-lg">🤖</span>
+                        <h3 class="font-semibold text-white">Generate Tailored Resume</h3>
+                      </div>
+                      <span class="px-2 py-0.5 text-xs bg-purple-500/20 text-purple-400 rounded">OpenAI</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Use AI to customize the resume based on job requirements and company culture.</p>
+                    <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                      <span>Input: <code class="text-indigo-400">jobData</code>, <code class="text-indigo-400">baseResume</code></span>
+                      <span>Output: <code class="text-emerald-400">tailoredResume</code></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Mapping Badge 2→3 -->
+              <div class="relative pl-8 pb-2">
+                <div class="absolute left-[11px] top-0 bottom-0 w-0.5 bg-[#2a2a4a]"></div>
+                <button onclick="openMappingModal(2, 3)" class="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a2e] hover:bg-[#252538] rounded-full text-xs text-gray-400 hover:text-white transition-colors ml-4">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
+                  1 field mapped
+                </button>
+              </div>
+              
+              <!-- Step 3 -->
+              <div class="step-item relative pl-8 pb-8" data-step="3">
+                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">3</div>
+                
+                <div class="step-card bg-[#12121f] rounded-lg border border-[#1a1a2e] hover:border-indigo-500/50 transition-colors cursor-pointer" onclick="selectStep(3)">
+                  <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-lg">📧</span>
+                        <h3 class="font-semibold text-white">Send Application Email</h3>
+                      </div>
+                      <span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded">Gmail</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Send the tailored resume and cover letter to the hiring contact.</p>
+                    <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                      <span>Input: <code class="text-indigo-400">tailoredResume</code>, <code class="text-indigo-400">recipientEmail</code></span>
+                      <span>Output: <code class="text-emerald-400">emailStatus</code></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Add Step Button -->
+            <div class="relative pl-8">
+              <button onclick="openAddStepModal()" class="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-[#2a2a4a] hover:border-indigo-500 rounded-lg text-gray-400 hover:text-white transition-colors w-full justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Add Step
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CANVAS VIEW -->
+        <div id="canvas-view" class="hidden h-full canvas-dots relative overflow-hidden">
+          <!-- SVG for connections -->
+          <svg class="absolute inset-0 w-full h-full pointer-events-none">
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+              </marker>
+            </defs>
+            <path d="M 280 120 C 350 120, 350 260, 420 260" stroke="#6366f1" stroke-width="2" fill="none" />
+            <path d="M 620 260 C 690 260, 690 400, 760 400" stroke="#6366f1" stroke-width="2" fill="none" />
+          </svg>
+          
+          <!-- Node 1 -->
+          <div class="canvas-node absolute left-[80px] top-[70px] w-[200px] bg-[#12121f] rounded-xl border border-[#2a2a4a] hover:border-indigo-500 transition-colors cursor-pointer shadow-xl" onclick="selectStep(1)">
+            <div class="p-3 border-b border-[#2a2a4a]">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">🔥</span>
+                <span class="text-sm font-medium text-white">Scrape Job</span>
+              </div>
+            </div>
+            <div class="p-3">
+              <div class="text-xs text-gray-500 mb-1">Firecrawl</div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-indigo-400">1 input</span>
+                <span class="text-emerald-400">4 outputs</span>
+              </div>
+            </div>
+            <div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-indigo-600 rounded-full border-2 border-[#12121f]"></div>
+          </div>
+          
+          <!-- Node 2 -->
+          <div class="canvas-node absolute left-[420px] top-[210px] w-[200px] bg-[#12121f] rounded-xl border border-[#2a2a4a] hover:border-indigo-500 transition-colors cursor-pointer shadow-xl" onclick="selectStep(2)">
+            <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-indigo-600 rounded-full border-2 border-[#12121f]"></div>
+            <div class="p-3 border-b border-[#2a2a4a]">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">🤖</span>
+                <span class="text-sm font-medium text-white">Generate Resume</span>
+              </div>
+            </div>
+            <div class="p-3">
+              <div class="text-xs text-gray-500 mb-1">OpenAI</div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-indigo-400">3 inputs</span>
+                <span class="text-emerald-400">1 output</span>
+              </div>
+            </div>
+            <div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-indigo-600 rounded-full border-2 border-[#12121f]"></div>
+          </div>
+          
+          <!-- Node 3 -->
+          <div class="canvas-node absolute left-[760px] top-[350px] w-[200px] bg-[#12121f] rounded-xl border border-[#2a2a4a] hover:border-indigo-500 transition-colors cursor-pointer shadow-xl" onclick="selectStep(3)">
+            <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-indigo-600 rounded-full border-2 border-[#12121f]"></div>
+            <div class="p-3 border-b border-[#2a2a4a]">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">📧</span>
+                <span class="text-sm font-medium text-white">Send Email</span>
+              </div>
+            </div>
+            <div class="p-3">
+              <div class="text-xs text-gray-500 mb-1">Gmail</div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-indigo-400">2 inputs</span>
+                <span class="text-emerald-400">1 output</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Zoom Controls -->
+          <div class="absolute bottom-4 right-4 flex flex-col gap-2">
+            <button class="w-10 h-10 bg-[#1a1a2e] hover:bg-[#252538] rounded-lg flex items-center justify-center text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            </button>
+            <button class="w-10 h-10 bg-[#1a1a2e] hover:bg-[#252538] rounded-lg flex items-center justify-center text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- SPEC VIEW -->
+        <div id="spec-view" class="hidden h-full bg-white overflow-y-auto p-8">
+          <div class="max-w-2xl mx-auto">
+            <div class="border-b-2 border-gray-200 pb-6 mb-8">
+              <div class="flex items-center gap-2 text-gray-500 text-sm mb-2">📋 Standard Operating Procedure</div>
+              <h1 class="text-3xl font-bold text-gray-900 mb-2">Job Application Workflow</h1>
+              <p class="text-gray-600">Automatically scrape job listings, generate tailored resumes, and send application emails.</p>
+            </div>
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">📥 Required Inputs</h2>
+              <table class="w-full text-sm">
+                <thead><tr class="border-b border-gray-200"><th class="text-left py-2 text-gray-600 font-medium">Input</th><th class="text-left py-2 text-gray-600 font-medium">Type</th><th class="text-left py-2 text-gray-600 font-medium">Description</th></tr></thead>
+                <tbody>
+                  <tr class="border-b border-gray-100"><td class="py-2 font-mono text-indigo-600">jobUrl</td><td class="py-2 text-gray-500">string</td><td class="py-2 text-gray-700">URL of the job listing</td></tr>
+                  <tr class="border-b border-gray-100"><td class="py-2 font-mono text-indigo-600">baseResume</td><td class="py-2 text-gray-500">string</td><td class="py-2 text-gray-700">User's base resume</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Procedure</h2>
+              <div class="space-y-4">
+                <div class="pl-4 border-l-4 border-blue-500"><div class="flex items-center gap-2 mb-1"><span class="w-6 h-6 rounded-full bg-blue-500 text-white text-sm flex items-center justify-center">1</span><h3 class="font-medium text-gray-900">Scrape Job Listing</h3></div><p class="text-gray-600 text-sm">Extract job details from the URL.</p></div>
+                <div class="pl-4 border-l-4 border-purple-500"><div class="flex items-center gap-2 mb-1"><span class="w-6 h-6 rounded-full bg-purple-500 text-white text-sm flex items-center justify-center">2</span><h3 class="font-medium text-gray-900">Generate Tailored Resume</h3></div><p class="text-gray-600 text-sm">Use AI to customize resume.</p></div>
+                <div class="pl-4 border-l-4 border-red-500"><div class="flex items-center gap-2 mb-1"><span class="w-6 h-6 rounded-full bg-red-500 text-white text-sm flex items-center justify-center">3</span><h3 class="font-medium text-gray-900">Send Application Email</h3></div><p class="text-gray-600 text-sm">Email the tailored resume.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CODE VIEW -->
+        <div id="code-view" class="hidden h-full bg-[#0a0a14] overflow-auto">
+          <div class="p-4">
+            <pre class="text-sm font-mono leading-relaxed"><code><span class="text-gray-500">// workflow.ts - Generated by Agipo</span>
+<span class="text-purple-400">import</span> { <span class="text-yellow-300">createWorkflow</span>, <span class="text-yellow-300">createStep</span> } <span class="text-purple-400">from</span> <span class="text-emerald-400">'@mastra/core'</span>;
+
+<span class="text-purple-400">const</span> <span class="text-cyan-300">scrapeJob</span> = <span class="text-yellow-300">createStep</span>({ <span class="text-white">id</span>: <span class="text-emerald-400">'scrape-job'</span> });
+<span class="text-purple-400">const</span> <span class="text-cyan-300">generateResume</span> = <span class="text-yellow-300">createStep</span>({ <span class="text-white">id</span>: <span class="text-emerald-400">'generate-resume'</span> });
+<span class="text-purple-400">const</span> <span class="text-cyan-300">sendEmail</span> = <span class="text-yellow-300">createStep</span>({ <span class="text-white">id</span>: <span class="text-emerald-400">'send-email'</span> });
+
+<span class="text-purple-400">export const</span> <span class="text-cyan-300">workflow</span> = <span class="text-yellow-300">createWorkflow</span>({ <span class="text-white">id</span>: <span class="text-emerald-400">'job-application'</span> })
+  .<span class="text-blue-300">then</span>(<span class="text-cyan-300">scrapeJob</span>)
+  .<span class="text-blue-300">map</span>(<span class="text-purple-400">async</span> ({ <span class="text-orange-300">inputData</span> }) => ({ <span class="text-gray-500">/* mapping */</span> }))
+  .<span class="text-blue-300">then</span>(<span class="text-cyan-300">generateResume</span>)
+  .<span class="text-blue-300">map</span>(<span class="text-purple-400">async</span> ({ <span class="text-orange-300">inputData</span> }) => ({ <span class="text-gray-500">/* mapping */</span> }))
+  .<span class="text-blue-300">then</span>(<span class="text-cyan-300">sendEmail</span>)
+  .<span class="text-blue-300">commit</span>();</code></pre>
+          </div>
+        </div>
+      </main>
+      
+      <!-- Right: Settings Panel -->
+      <aside id="settings-panel" class="w-80 bg-[#0f0f1a] border-l border-[#1a1a2e] flex flex-col">
+        <!-- Tab Bar -->
+        <div class="flex border-b border-[#1a1a2e]">
+          <button data-tab="tools" class="tab-btn active flex-1 px-3 py-3 text-sm font-medium border-b-2 border-transparent">Tools</button>
+          <button data-tab="inputs" class="tab-btn flex-1 px-3 py-3 text-sm font-medium text-gray-500 border-b-2 border-transparent">Inputs</button>
+          <button data-tab="config" class="tab-btn flex-1 px-3 py-3 text-sm font-medium text-gray-500 border-b-2 border-transparent">Config</button>
+          <button data-tab="connect" class="tab-btn flex-1 px-3 py-3 text-sm font-medium text-gray-500 border-b-2 border-transparent">Connect</button>
+          <button data-tab="test" class="tab-btn flex-1 px-3 py-3 text-sm font-medium text-gray-500 border-b-2 border-transparent">Test</button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="flex-1 overflow-y-auto">
+          <!-- Tools Tab -->
+          <div id="tab-tools" class="tab-content p-4">
+            <div class="relative mb-4">
+              <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input type="text" placeholder="Search tools..." class="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500" />
+            </div>
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Web Scraping</h4>
+                <div class="space-y-1">
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">🔍 Scrape Page</button>
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">🗺️ Crawl Site</button>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">AI / LLM</h4>
+                <div class="space-y-1">
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">💬 Chat Completion</button>
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">📝 Generate Text</button>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Email</h4>
+                <div class="space-y-1">
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">📤 Send Email</button>
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">📥 Read Email</button>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Control Flow</h4>
+                <div class="space-y-1">
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">🔀 Branch (If/Else)</button>
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">⏸️ Parallel</button>
+                  <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#1a1a2e] text-sm text-gray-300 flex items-center gap-2">🔁 Loop</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Inputs Tab -->
+          <div id="tab-inputs" class="tab-content hidden p-4">
+            <p class="text-xs text-gray-500 mb-4">Define inputs users provide when running this workflow.</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-[#1a1a2e] rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-white">jobUrl <span class="text-red-400">*</span></span>
+                  <span class="text-xs text-gray-500">string</span>
+                </div>
+                <p class="text-xs text-gray-400">URL of the job listing</p>
+              </div>
+              <div class="p-3 bg-[#1a1a2e] rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-white">baseResume <span class="text-red-400">*</span></span>
+                  <span class="text-xs text-gray-500">string</span>
+                </div>
+                <p class="text-xs text-gray-400">User's base resume content</p>
+              </div>
+              <button class="w-full px-4 py-2 text-sm border border-dashed border-[#2a2a4a] hover:border-indigo-500 text-gray-400 hover:text-white rounded-lg flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Add Input
+              </button>
+            </div>
+          </div>
+          
+          <!-- Config Tab -->
+          <div id="tab-config" class="tab-content hidden p-4">
+            <p class="text-xs text-gray-500 mb-4">Workflow configuration and settings.</p>
+            <div class="space-y-4">
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">Timeout (seconds)</label>
+                <input type="number" value="300" class="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg px-3 py-2 text-sm text-white" />
+              </div>
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">Retry on Failure</label>
+                <select class="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg px-3 py-2 text-sm text-white">
+                  <option>No retry</option>
+                  <option selected>1 retry</option>
+                  <option>2 retries</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Connect Tab -->
+          <div id="tab-connect" class="tab-content hidden p-4">
+            <p class="text-xs text-gray-500 mb-4">Required connections for this workflow.</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-[#1a1a2e] rounded-lg border border-green-500/30">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span>📧</span>
+                    <span class="text-sm text-white">Gmail</span>
+                  </div>
+                  <span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Connected</span>
+                </div>
+              </div>
+              <div class="p-3 bg-[#1a1a2e] rounded-lg border border-green-500/30">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span>🔥</span>
+                    <span class="text-sm text-white">Firecrawl</span>
+                  </div>
+                  <span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Connected</span>
+                </div>
+              </div>
+              <div class="p-3 bg-[#1a1a2e] rounded-lg border border-amber-500/30">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span>🤖</span>
+                    <span class="text-sm text-white">OpenAI</span>
+                  </div>
+                  <button class="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Test Tab -->
+          <div id="tab-test" class="tab-content hidden p-4">
+            <p class="text-xs text-gray-500 mb-4">Run test cases for this workflow.</p>
+            <div class="space-y-3 mb-4">
+              <div class="p-3 bg-[#1a1a2e] rounded-lg">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-white">Basic job flow</span>
+                  <span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Passed</span>
+                </div>
+                <p class="text-xs text-gray-500">Last run: 2 min ago</p>
+              </div>
+              <div class="p-3 bg-[#1a1a2e] rounded-lg border border-red-500/30">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-white">Long resume test</span>
+                  <span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded">Failed</span>
+                </div>
+                <p class="text-xs text-gray-500">Last run: 1 hour ago</p>
+              </div>
+            </div>
+            <button class="w-full px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+              Run Quick Test
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  
+  <!-- MODALS -->
+  
+  <!-- Add Step Modal -->
+  <div id="add-step-modal" class="hidden fixed inset-0 z-50">
+    <div class="modal-overlay absolute inset-0 bg-black/60" onclick="closeAddStepModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="modal-content bg-[#12121f] rounded-xl border border-[#2a2a4a] shadow-2xl w-[600px] max-h-[80vh] overflow-hidden animate-slideIn">
+        <div class="p-4 border-b border-[#1a1a2e] flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-white">Add New Step</h3>
+            <p class="text-sm text-gray-500">Choose what type of step to add</p>
+          </div>
+          <button onclick="closeAddStepModal()" class="w-8 h-8 rounded-lg hover:bg-[#1a1a2e] flex items-center justify-center text-gray-400 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-2 gap-4">
+            <button class="p-4 bg-[#1a1a2e] hover:bg-[#252538] rounded-xl border-2 border-transparent hover:border-indigo-500 text-left transition-all">
+              <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🔧</span><span class="text-sm font-semibold text-white">Composio Tool</span></div>
+              <p class="text-xs text-gray-400">Use a pre-built integration</p>
+            </button>
+            <button class="p-4 bg-[#1a1a2e] hover:bg-[#252538] rounded-xl border-2 border-transparent hover:border-indigo-500 text-left transition-all">
+              <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💻</span><span class="text-sm font-semibold text-white">Custom Code</span></div>
+              <p class="text-xs text-gray-400">Write TypeScript</p>
+            </button>
+            <button class="p-4 bg-[#1a1a2e] hover:bg-[#252538] rounded-xl border-2 border-transparent hover:border-amber-500 text-left transition-all">
+              <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🔀</span><span class="text-sm font-semibold text-white">Branch (If/Else)</span></div>
+              <p class="text-xs text-gray-400">Conditional logic</p>
+            </button>
+            <button class="p-4 bg-[#1a1a2e] hover:bg-[#252538] rounded-xl border-2 border-transparent hover:border-purple-500 text-left transition-all">
+              <div class="flex items-center gap-3 mb-2"><span class="text-2xl">⏸️</span><span class="text-sm font-semibold text-white">Parallel</span></div>
+              <p class="text-xs text-gray-400">Concurrent execution</p>
+            </button>
+            <button class="p-4 bg-[#1a1a2e] hover:bg-[#252538] rounded-xl border-2 border-transparent hover:border-emerald-500 text-left transition-all">
+              <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🔁</span><span class="text-sm font-semibold text-white">Loop</span></div>
+              <p class="text-xs text-gray-400">Iterate over items</p>
+            </button>
+            <button class="p-4 bg-[#1a1a2e] hover:bg-[#252538] rounded-xl border-2 border-transparent hover:border-cyan-500 text-left transition-all">
+              <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📦</span><span class="text-sm font-semibold text-white">Import Step</span></div>
+              <p class="text-xs text-gray-400">Reuse from another workflow</p>
+            </button>
+          </div>
+        </div>
+        <div class="p-4 border-t border-[#1a1a2e] flex justify-between">
+          <button onclick="closeAddStepModal()" class="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mapping Modal -->
+  <div id="mapping-modal" class="hidden fixed inset-0 z-50">
+    <div class="modal-overlay absolute inset-0 bg-black/60" onclick="closeMappingModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="modal-content bg-[#12121f] rounded-xl border border-[#2a2a4a] shadow-2xl w-[700px] max-h-[80vh] overflow-hidden animate-slideIn">
+        <div class="p-4 border-b border-[#1a1a2e] flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-white">Data Mapping</h3>
+            <p id="mapping-subtitle" class="text-sm text-gray-500">Step 1 → Step 2</p>
+          </div>
+          <button onclick="closeMappingModal()" class="w-8 h-8 rounded-lg hover:bg-[#1a1a2e] flex items-center justify-center text-gray-400 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="p-6">
+          <p class="text-sm text-gray-400 mb-4">Connect outputs from the source step to inputs of the target step.</p>
+          <div class="flex gap-6">
+            <div class="flex-1">
+              <h4 class="text-sm font-medium text-white mb-3">Source Outputs</h4>
+              <div class="space-y-2 bg-[#0a0a14] rounded-lg p-3">
+                <div class="p-2 bg-[#1a1a2e] rounded flex items-center justify-between"><code class="text-sm text-emerald-400">title</code><span class="text-xs text-gray-500">string</span></div>
+                <div class="p-2 bg-[#1a1a2e] rounded flex items-center justify-between"><code class="text-sm text-emerald-400">company</code><span class="text-xs text-gray-500">string</span></div>
+                <div class="p-2 bg-[#1a1a2e] rounded flex items-center justify-between"><code class="text-sm text-emerald-400">requirements</code><span class="text-xs text-gray-500">string[]</span></div>
+              </div>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-sm font-medium text-white mb-3">Target Inputs</h4>
+              <div class="space-y-2 bg-[#0a0a14] rounded-lg p-3">
+                <div class="p-2 bg-indigo-500/20 rounded flex items-center justify-between border border-indigo-500"><code class="text-sm text-indigo-400">jobTitle</code><span class="text-xs text-emerald-400">← title</span></div>
+                <div class="p-2 bg-indigo-500/20 rounded flex items-center justify-between border border-indigo-500"><code class="text-sm text-indigo-400">companyName</code><span class="text-xs text-emerald-400">← company</span></div>
+                <div class="p-2 bg-indigo-500/20 rounded flex items-center justify-between border border-indigo-500"><code class="text-sm text-indigo-400">targetSkills</code><span class="text-xs text-emerald-400">← requirements</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-[#1a1a2e] flex justify-between">
+          <button onclick="closeMappingModal()" class="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+          <button onclick="closeMappingModal()" class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">Save Mapping</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Test Running Modal -->
+  <div id="test-modal" class="hidden fixed inset-0 z-50">
+    <div class="modal-overlay absolute inset-0 bg-black/60"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="modal-content bg-[#12121f] rounded-xl border border-[#2a2a4a] shadow-2xl w-[600px] max-h-[80vh] overflow-hidden animate-slideIn">
+        <div class="p-4 border-b border-[#1a1a2e] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span id="test-status-icon" class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <svg class="w-4 h-4 text-amber-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </span>
+            <div>
+              <h3 id="test-status-title" class="text-lg font-semibold text-white">Running Test...</h3>
+              <p id="test-status-subtitle" class="text-sm text-gray-500">Executing workflow</p>
+            </div>
+          </div>
+          <button id="stop-test-btn" onclick="stopTest()" class="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg">Stop</button>
+        </div>
+        <div class="p-6">
+          <!-- Progress -->
+          <div class="mb-6">
+            <div class="flex justify-between text-sm text-gray-400 mb-2">
+              <span>Progress</span>
+              <span id="test-progress-text">Step 1 of 3</span>
+            </div>
+            <div class="h-2 bg-[#1a1a2e] rounded-full overflow-hidden">
+              <div id="test-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500" style="width: 33%"></div>
+            </div>
+          </div>
+          
+          <!-- Steps -->
+          <div id="test-steps" class="space-y-3">
+            <div class="test-step flex items-center gap-3 p-3 bg-[#1a1a2e] rounded-lg border-2 border-indigo-500">
+              <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-indigo-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </div>
+              <div class="flex-1"><span class="text-sm text-white">🔥 Scrape Job Listing</span></div>
+              <span class="text-xs text-indigo-400 animate-pulse">Running...</span>
+            </div>
+            <div class="test-step flex items-center gap-3 p-3 bg-[#1a1a2e] rounded-lg opacity-50">
+              <div class="w-8 h-8 rounded-full bg-[#252538] flex items-center justify-center text-gray-500">2</div>
+              <div class="flex-1"><span class="text-sm text-gray-400">🤖 Generate Tailored Resume</span></div>
+              <span class="text-xs text-gray-500">Pending</span>
+            </div>
+            <div class="test-step flex items-center gap-3 p-3 bg-[#1a1a2e] rounded-lg opacity-50">
+              <div class="w-8 h-8 rounded-full bg-[#252538] flex items-center justify-center text-gray-500">3</div>
+              <div class="flex-1"><span class="text-sm text-gray-400">📧 Send Application Email</span></div>
+              <span class="text-xs text-gray-500">Pending</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- JavaScript -->
+  <script>
+    // State
+    let currentView = 'list'; // list | canvas
+    let currentLevel = 'flow'; // flow | spec | code
+    let selectedStep = null;
+    let aiExpanded = true;
+    
+    // View Toggle
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const view = btn.dataset.view;
+        setView(view);
+      });
+    });
+    
+    function setView(view) {
+      currentView = view;
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`[data-view="${view}"]`).classList.add('active');
+      
+      document.getElementById('list-view').classList.toggle('hidden', view !== 'list');
+      document.getElementById('canvas-view').classList.toggle('hidden', view !== 'canvas');
+      document.getElementById('spec-view').classList.add('hidden');
+      document.getElementById('code-view').classList.add('hidden');
+    }
+    
+    // Level Toggle (Flow / Spec / Code)
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const level = btn.dataset.level;
+        setLevel(level);
+      });
+    });
+    
+    function setLevel(level) {
+      currentLevel = level;
+      document.querySelectorAll('.level-btn').forEach(b => {
+        b.classList.remove('bg-indigo-600', 'text-white');
+        b.classList.add('text-gray-400');
+      });
+      const activeBtn = document.querySelector(`[data-level="${level}"]`);
+      activeBtn.classList.add('bg-indigo-600', 'text-white');
+      activeBtn.classList.remove('text-gray-400');
+      
+      if (level === 'flow') {
+        setView(currentView === 'list' ? 'list' : 'canvas');
+      } else if (level === 'spec') {
+        document.getElementById('list-view').classList.add('hidden');
+        document.getElementById('canvas-view').classList.add('hidden');
+        document.getElementById('spec-view').classList.remove('hidden');
+        document.getElementById('code-view').classList.add('hidden');
+      } else if (level === 'code') {
+        document.getElementById('list-view').classList.add('hidden');
+        document.getElementById('canvas-view').classList.add('hidden');
+        document.getElementById('spec-view').classList.add('hidden');
+        document.getElementById('code-view').classList.remove('hidden');
+      }
+    }
+    
+    // Tab Switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        setTab(tab);
+      });
+    });
+    
+    function setTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+      
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    }
+    
+    // AI Panel Toggle
+    document.getElementById('collapse-ai').addEventListener('click', () => {
+      aiExpanded = false;
+      document.getElementById('ai-panel').classList.add('hidden');
+      document.getElementById('ai-collapsed').classList.remove('hidden');
+    });
+    
+    document.getElementById('expand-ai').addEventListener('click', () => {
+      aiExpanded = true;
+      document.getElementById('ai-panel').classList.remove('hidden');
+      document.getElementById('ai-collapsed').classList.add('hidden');
+    });
+    
+    // Step Selection
+    function selectStep(stepNum) {
+      selectedStep = stepNum;
+      document.querySelectorAll('.step-card').forEach(c => c.classList.remove('border-indigo-500', 'ring-4', 'ring-indigo-500/20'));
+      document.querySelectorAll('.canvas-node').forEach(c => c.classList.remove('border-indigo-500', 'ring-4', 'ring-indigo-500/20'));
+      
+      const listCard = document.querySelector(`[data-step="${stepNum}"] .step-card`);
+      if (listCard) {
+        listCard.classList.add('border-indigo-500', 'ring-4', 'ring-indigo-500/20');
+      }
+      
+      // Also highlight in canvas
+      const canvasNodes = document.querySelectorAll('.canvas-node');
+      if (canvasNodes[stepNum - 1]) {
+        canvasNodes[stepNum - 1].classList.add('border-indigo-500', 'ring-4', 'ring-indigo-500/20');
+      }
+    }
+    
+    // Modals
+    function openAddStepModal() {
+      document.getElementById('add-step-modal').classList.remove('hidden');
+    }
+    
+    function closeAddStepModal() {
+      document.getElementById('add-step-modal').classList.add('hidden');
+    }
+    
+    function openMappingModal(from, to) {
+      document.getElementById('mapping-subtitle').textContent = `Step ${from} → Step ${to}`;
+      document.getElementById('mapping-modal').classList.remove('hidden');
+    }
+    
+    function closeMappingModal() {
+      document.getElementById('mapping-modal').classList.add('hidden');
+    }
+    
+    // Test Execution
+    document.getElementById('test-btn').addEventListener('click', runTest);
+    
+    function runTest() {
+      document.getElementById('test-modal').classList.remove('hidden');
+      simulateTest();
+    }
+    
+    function stopTest() {
+      document.getElementById('test-modal').classList.add('hidden');
+    }
+    
+    async function simulateTest() {
+      const steps = document.querySelectorAll('#test-steps .test-step');
+      const progressBar = document.getElementById('test-progress-bar');
+      const progressText = document.getElementById('test-progress-text');
+      
+      // Step 1
+      await sleep(1500);
+      steps[0].innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div class="flex-1"><span class="text-sm text-white">🔥 Scrape Job Listing</span></div>
+        <span class="text-xs text-green-400">✓ 1.2s</span>
+      `;
+      steps[0].classList.remove('border-indigo-500');
+      steps[0].classList.add('border-green-500/30');
+      steps[1].classList.remove('opacity-50');
+      steps[1].innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-indigo-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </div>
+        <div class="flex-1"><span class="text-sm text-white">🤖 Generate Tailored Resume</span></div>
+        <span class="text-xs text-indigo-400 animate-pulse">Running...</span>
+      `;
+      steps[1].classList.add('border-2', 'border-indigo-500');
+      progressBar.style.width = '66%';
+      progressText.textContent = 'Step 2 of 3';
+      
+      // Step 2
+      await sleep(2000);
+      steps[1].innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div class="flex-1"><span class="text-sm text-white">🤖 Generate Tailored Resume</span></div>
+        <span class="text-xs text-green-400">✓ 2.1s</span>
+      `;
+      steps[1].classList.remove('border-indigo-500');
+      steps[1].classList.add('border-green-500/30');
+      steps[2].classList.remove('opacity-50');
+      steps[2].innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-indigo-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </div>
+        <div class="flex-1"><span class="text-sm text-white">📧 Send Application Email</span></div>
+        <span class="text-xs text-indigo-400 animate-pulse">Running...</span>
+      `;
+      steps[2].classList.add('border-2', 'border-indigo-500');
+      progressBar.style.width = '100%';
+      progressText.textContent = 'Step 3 of 3';
+      
+      // Step 3 Complete
+      await sleep(1000);
+      steps[2].innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div class="flex-1"><span class="text-sm text-white">📧 Send Application Email</span></div>
+        <span class="text-xs text-green-400">✓ 0.5s</span>
+      `;
+      steps[2].classList.remove('border-indigo-500');
+      steps[2].classList.add('border-green-500/30');
+      
+      // Success state
+      document.getElementById('test-status-icon').innerHTML = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+      document.getElementById('test-status-icon').classList.remove('bg-amber-500/20');
+      document.getElementById('test-status-icon').classList.add('bg-green-500/20');
+      document.getElementById('test-status-title').textContent = 'Test Passed!';
+      document.getElementById('test-status-subtitle').textContent = 'Completed in 3.8s';
+      document.getElementById('stop-test-btn').textContent = 'Close';
+      document.getElementById('stop-test-btn').classList.remove('bg-red-600', 'hover:bg-red-700');
+      document.getElementById('stop-test-btn').classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+    }
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    // Chat
+    document.getElementById('send-chat').addEventListener('click', sendChatMessage);
+    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendChatMessage();
+    });
+    
+    function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+      
+      const chatMessages = document.getElementById('chat-messages');
+      
+      // Add user message
+      chatMessages.innerHTML += `
+        <div class="flex justify-end animate-fadeIn">
+          <div class="max-w-[80%] bg-indigo-600 text-white rounded-2xl rounded-br-md px-4 py-2">
+            <p class="text-sm">${message}</p>
+          </div>
+        </div>
+      `;
+      
+      input.value = '';
+      
+      // Simulate AI response
+      setTimeout(() => {
+        chatMessages.innerHTML += `
+          <div class="flex justify-start animate-fadeIn">
+            <div class="max-w-[80%] bg-[#1a1a2e] text-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
+              <p class="text-sm">I understand you want to "${message}". I'm analyzing your workflow to help with that...</p>
+            </div>
+          </div>
+        `;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 1000);
+      
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  </script>
+</body>
+</html>
+
+
+
+

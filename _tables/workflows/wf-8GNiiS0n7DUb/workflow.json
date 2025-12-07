@@ -1,0 +1,30 @@
+{
+  "id": "wf-8GNiiS0n7DUb",
+  "name": "Untitled Workflow",
+  "description": "",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "steps": [],
+  "mappings": [],
+  "controlFlow": {
+    "type": "sequential",
+    "order": []
+  },
+  "connections": {},
+  "tableRequirements": [],
+  "tables": {},
+  "runtimeInputs": [],
+  "configs": [],
+  "createdAt": "2025-12-07T17:38:47.076Z",
+  "lastModified": "2025-12-07T17:38:47.941Z",
+  "createdBy": "user",
+  "published": false
+}

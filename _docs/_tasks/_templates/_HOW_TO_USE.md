@@ -10,6 +10,25 @@ These templates create **actionable documentation** that aligns humans and LLMs 
 
 ## Philosophy
 
+### The Three Document Types
+
+| Document Type | Contains | Nature | Example |
+|--------------|----------|--------|---------|
+| **Research Log** | Immutable facts | What APIs actually provide | "Mastra's `createStep()` requires `inputSchema`" |
+| **Product Spec** | Mutable decisions | What we choose to build | "We'll support both list and canvas views" |
+| **Implementation Plan** | Concrete actions | How we build it | "Phase 1: Create `_tables/workflows/` folder" |
+
+**The key insight:** Information flows downstream.
+
+```
+Research (immutable)    →    Product Spec (mutable)    →    Implementation (concrete)
+"What does the API do?"      "What should we build?"         "How do we build it?"
+```
+
+- **Research** discovers external truth. You can't wish an API worked differently.
+- **Product Spec** makes decisions grounded in that truth. You control these.
+- **Implementation** plans concrete actions informed by both. It doesn't re-research or re-decide.
+
 ### Why Research Before Implementation?
 
 We research to **ground implementation in truth**. The failure mode we're avoiding:
@@ -147,9 +166,11 @@ Templates use consistent patterns that LLMs can follow:
 
 | Principle | What It Means |
 |-----------|---------------|
+| **Research = Immutable** | Research discovers external truth you cannot change |
+| **Product Spec = Mutable** | Product decisions you control, grounded in research |
+| **Implementation = Concrete** | Specific actions informed by both, no re-research |
 | **Grounded in Truth** | Research discovers what APIs actually provide, eliminating assumptions |
 | **Actionable** | Every section informs a decision or action |
-| **External vs Internal** | Research Log = discover immutable facts; Product Spec = make mutable decisions |
 | **Mapped to Requirements** | Research questions tie to PR-X.X acceptance criteria |
 | **Primitive-Focused** | Research ends with specific functions to call, not vague concepts |
 | **Gap-Aware** | Document where APIs don't fully meet requirements (blockers) |

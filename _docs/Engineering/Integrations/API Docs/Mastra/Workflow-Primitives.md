@@ -2,7 +2,7 @@
 
 **Purpose:** Quick reference for mapping visual workflow editor concepts to Mastra code.
 
-**Last Updated:** December 6, 2025  
+**Last Updated:** December 6, 2025
 **Verified Against:** `@mastra/core@0.24.x`, `@composio/core@0.x`
 
 ---

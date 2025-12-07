@@ -1,0 +1,1749 @@
+{
+  "slug": "heygen",
+  "name": "Heygen",
+  "logo": "https://logos.composio.dev/api/heygen",
+  "tools": [
+    {
+      "slug": "HEYGEN_ADD_NEW_ASSET",
+      "name": "Add new asset",
+      "description": "Creates a new asset in the HeyGen platform. This endpoint allows users to add various types of assets that can be used in video generation, such as avatars, backgrounds, or other content elements. The asset is created by sending plain text data, which likely includes necessary metadata or configuration information. This tool should be used when integrating new assets into the HeyGen ecosystem for use in content creation workflows. It's important to note that this endpoint may not support direct file uploads; instead, it might expect references to pre-uploaded files or configuration data for asset creation.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "title": "FileUploadable",
+            "description": "Path to file",
+            "format": "path",
+            "type": "string",
+            "file_uploadable": true
+          }
+        },
+        "title": "AddNewAssetRequest",
+        "description": "Request schema for `AddNewAsset`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "AddNewAssetResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_PERSONALIZED_VIDEO_ADD_CONTACT",
+      "name": "Add contact to personalized video project",
+      "description": "This endpoint allows you to add one or more contacts to a specific personalized video project in the Heygen platform. It is used when you need to associate individual contact information with a project, likely for the purpose of creating tailored video content for each contact. The endpoint accepts a project identifier and a list of contacts, each with a first name and email address. This tool is essential for populating your project with recipient data, enabling the creation of personalized videos at scale. Note that this endpoint only adds contacts to a project; it does not initiate video creation or sending. Ensure that your project_id is valid and that all contact information is accurate to avoid errors in video personalization or delivery.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project identifier",
+            "title": "Project Id"
+          },
+          "variables_list": {
+            "type": "array",
+            "description": "Variables List",
+            "title": "Variables List",
+            "items": {
+              "type": "object",
+              "description": "Request schema for `PersonalizedVideoAddContactvariablesList`",
+              "title": "PersonalizedVideoAddContactvariablesListRequest",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "Contact\"s email",
+                  "title": "Email",
+                  "format": "email"
+                },
+                "first_name": {
+                  "type": "string",
+                  "description": "Contact\"s first name",
+                  "title": "First Name"
+                }
+              },
+              "required": [
+                "first_name",
+                "email"
+              ]
+            }
+          }
+        },
+        "required": [
+          "project_id",
+          "variables_list"
+        ],
+        "title": "PersonalizedVideoAddContactRequest",
+        "description": "Request schema for `PersonalizedVideoAddContact`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "PersonalizedVideoAddContactResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_PERSONALIZED_VIDEO_AUDIENCE_DETAIL",
+      "name": "Retrieve audience video details",
+      "description": "Retrieves detailed information about the audience for personalized videos. This endpoint provides insights into the target audience characteristics, preferences, and engagement metrics for HeyGen's AI-generated personalized video content. It can be used to gain a deeper understanding of the audience demographics, behavior patterns, and content preferences to optimize video creation and targeting strategies. The tool is particularly useful for content creators, marketers, and businesses looking to tailor their video content to specific audience segments using HeyGen's AI capabilities.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id",
+            "title": "Id"
+          }
+        },
+        "title": "PersonalizedVideoAudienceDetailRequest",
+        "description": "Request schema for `PersonalizedVideoAudienceDetail`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "PersonalizedVideoAudienceDetailResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_PERSONALIZED_VIDEO_PROJECT_DETAIL",
+      "name": "Fetch personalized video project detail",
+      "description": "Retrieves detailed information about a specific personalized video project in the HeyGen platform. This endpoint allows you to fetch comprehensive data about a project, including its current status, configuration settings, and any other relevant metadata. Use this when you need to get an up-to-date overview of a particular video project, such as checking its progress, reviewing its settings, or gathering information for reporting purposes. The endpoint is read-only and does not modify any project data. Note that it may not include the actual video content itself, but rather focuses on the project's attributes and status.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id",
+            "title": "Id"
+          }
+        },
+        "title": "PersonalizedVideoProjectDetailRequest",
+        "description": "Request schema for `PersonalizedVideoProjectDetail`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "PersonalizedVideoProjectDetailResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_POST_TALKING_PHOTO_BINARY_IMAGE",
+      "name": "Post talking photo binary image",
+      "description": "Creates a talking photo by processing an uploaded image file. This endpoint enables users to transform static images into interactive, speaking visual content using HeyGen's advanced AI technology. It accepts JPEG or PNG image files and likely combines them with audio narration (though audio input is not specified in this schema). Use this endpoint when you want to generate engaging, personalized content from still images, such as creating speaking avatars or animated photographs. The endpoint is particularly useful for marketing materials, educational content, or personalized messages. Note that while image upload is specified, the method for providing or generating the associated audio is not detailed in this schema.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "title": "FileUploadable",
+            "description": "Path to file",
+            "format": "path",
+            "type": "string",
+            "file_uploadable": true
+          }
+        },
+        "title": "PostTalkingPhotoBinaryImageRequest",
+        "description": "Request schema for `PostTalkingPhotoBinaryImage`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "PostTalkingPhotoBinaryImageResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_AVATAR_LIST",
+      "name": "List streaming avatars",
+      "description": "Retrieves a list of available avatars for streaming purposes in the HeyGen platform. This endpoint allows developers to access the collection of realistic avatars that can be used for creating professional-looking videos with AI-generated content. It's designed to support applications requiring dynamic or live video content, enabling real-time access to the avatar library. The endpoint should be used when you need to fetch the current set of available avatars for integration into streaming or video generation workflows. It may not provide detailed information about each avatar's capabilities or customization options, focusing instead on delivering a quick, up-to-date list for immediate use in streaming contexts.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "StreamingAvatarListRequest",
+        "description": "Request schema for `StreamingAvatarList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingAvatarListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_CREATE_TOKEN",
+      "name": "Create streaming token with expiry",
+      "description": "Creates a new streaming token for use with HeyGen's real-time avatar and voice chat services. This endpoint generates a unique, time-limited token that authenticates and authorizes access to HeyGen's streaming capabilities. Use this endpoint when initiating a new streaming session or when the previous token has expired. The generated token is typically for one-time use and should be obtained shortly before starting a streaming interaction. Note that this endpoint does not initiate the streaming itself; it only provides the necessary credentials for subsequent streaming API calls.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "expiry": {
+            "type": "integer",
+            "description": "Token expiry time in seconds",
+            "title": "Expiry",
+            "default": 3600
+          }
+        },
+        "title": "StreamingCreateTokenRequest",
+        "description": "Request schema for `StreamingCreateToken`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingCreateTokenResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_ICE",
+      "name": "Post streaming ice candidates",
+      "description": "This endpoint is used to submit ICE (Interactive Connectivity Establishment) candidate information for a specific streaming session in the Heygen platform. It plays a crucial role in establishing and managing peer-to-peer connections for real-time communication and streaming of avatar content. The endpoint should be called when new ICE candidates are discovered during the connection setup process, typically as part of the WebRTC negotiation. It's essential for ensuring optimal connectivity between clients, especially in scenarios involving NAT traversal or complex network environments. This endpoint does not return the status of the connection or initiate the streaming itself; it only submits candidate information to be used in the connection process.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "candidate__candidate": {
+            "type": "string",
+            "description": "ICE candidate string",
+            "title": "Candidate  Candidate"
+          },
+          "candidate__sdpMLineIndex": {
+            "type": "integer",
+            "description": "Index of the media line",
+            "title": "Candidate  Sdp M Line Index"
+          },
+          "candidate__sdpMid": {
+            "type": "string",
+            "description": "Media stream identifier",
+            "title": "Candidate  Sdp Mid"
+          },
+          "candidate__usernameFragment": {
+            "type": "string",
+            "description": "ICE username fragment",
+            "title": "Candidate  Username Fragment"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "Streaming session ID",
+            "title": "Session Id"
+          }
+        },
+        "required": [
+          "session_id"
+        ],
+        "title": "StreamingIceRequest",
+        "description": "Request schema for `StreamingIce`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingIceResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_INTERRUPT",
+      "name": "Interrupt streaming session",
+      "description": "Interrupts an ongoing streaming session with an interactive avatar. This endpoint allows immediate termination of the avatar's current action or speech, providing control over the flow of interaction. Use this when you need to abruptly stop the avatar's current behavior, such as when changing topics or responding to user input that requires a different response. The interruption is immediate and irreversible, so use it judiciously to maintain a smooth user experience. This endpoint is particularly useful in scenarios where real-time responsiveness is crucial, like in customer service applications or interactive presentations.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "ID of the streaming session to interrupt",
+            "title": "Session Id"
+          }
+        },
+        "required": [
+          "session_id"
+        ],
+        "title": "StreamingInterruptRequest",
+        "description": "Request schema for `StreamingInterrupt`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingInterruptResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_LIST",
+      "name": "Retrieve streaming list",
+      "description": "Retrieves a list of active or available streaming sessions or content within the HeyGen platform. This endpoint allows users to get an overview of ongoing streams, which may include live avatar interactions, real-time video generations, or other streaming content created using HeyGen's AI-driven tools. It's particularly useful for monitoring current streaming activities or checking the availability of streams for integration into applications. The endpoint returns basic information about each stream, such as stream IDs, status, and possibly metadata, but does not provide the actual stream content. Use this when you need to track or display a list of active streams in your application's interface or for administrative purposes.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "StreamingListRequest",
+        "description": "Request schema for `StreamingList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_NEW",
+      "name": "Set streaming quality endpoint",
+      "description": "Initiates a new streaming session with HeyGen, allowing users to start an avatar-based stream with specified quality settings. This endpoint should be used when starting a new interactive content session or when creating a personalized digital avatar stream. It sets up the initial configuration for the streaming quality, which affects the overall user experience and bandwidth usage. The endpoint does not handle the actual streaming content or avatar creation; it only establishes the session parameters.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "quality": {
+            "type": "string",
+            "description": "Streaming quality",
+            "title": "Quality",
+            "default": "medium",
+            "enum": [
+              "high",
+              "low",
+              "medium"
+            ]
+          }
+        },
+        "title": "StreamingNewRequest",
+        "description": "Request schema for `StreamingNew`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingNewResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_START",
+      "name": "Start streaming session",
+      "description": "Initiates a new streaming session for real-time communication in the HeyGen platform. This endpoint is used to set up a WebRTC connection for video, audio, and data streaming, likely for interactions with AI avatars. It requires a unique session ID and a Session Description Protocol (SDP) offer to establish the connection. This endpoint should be called when starting a new interactive session with a HeyGen AI avatar or when initiating a live streaming event. It's crucial for setting up the initial parameters of the real-time communication channel.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "StreamingStartRequest",
+        "description": "Request schema for `StreamingStart`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingStartResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_STOP",
+      "name": "Stop streaming session",
+      "description": "The streaming.stop endpoint is used to terminate an active streaming session in the Heygen API. This endpoint should be called when you want to end a real-time data transfer session, such as when closing an interactive avatar conversation or stopping a live content stream. It's particularly useful for freeing up server resources and ensuring proper closure of streaming connections. The endpoint requires the unique session_id to identify which specific session to stop, allowing for precise control over multiple concurrent sessions. Note that once a session is stopped, it cannot be resumed; a new session must be started if streaming is needed again.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Session to stop",
+            "title": "Session Id"
+          }
+        },
+        "required": [
+          "session_id"
+        ],
+        "title": "StreamingStopRequest",
+        "description": "Request schema for `StreamingStop`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingStopResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_STREAMING_TASK",
+      "name": "Post streaming task session",
+      "description": "The StreamingTask endpoint initiates a real-time speaking task for an AI-driven avatar within an active streaming session. It enables developers to make avatars vocalize specified text, creating interactive and dynamic user experiences. This endpoint should be used when you want to generate speech from an avatar in response to user input or as part of a scripted interaction. It's particularly useful for applications requiring real-time avatar interactions, such as virtual assistants, interactive presentations, or educational content. Note that this endpoint requires an active streaming session, and the avatar's voice and appearance are determined by the session configuration.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Session identifier",
+            "title": "Session Id"
+          },
+          "text": {
+            "type": "string",
+            "description": "Text for avatar to speak",
+            "title": "Text"
+          }
+        },
+        "required": [
+          "session_id",
+          "text"
+        ],
+        "title": "StreamingTaskRequest",
+        "description": "Request schema for `StreamingTask`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "StreamingTaskResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_AVATAR_LIST",
+      "name": "List avatars endpoint",
+      "description": "Retrieves a list of available avatars from the Heygen platform. This endpoint allows users to fetch both public and private avatars, depending on their access rights and the specified parameters. It's particularly useful for applications that need to display available avatars to users for selection or customization. The endpoint supports pagination to handle large numbers of avatars efficiently. Use this when you need to present avatar options to users, manage avatar inventories, or sync local avatar data with the Heygen platform. Note that the response will likely include basic information about each avatar, such as ID, name, and type, but may not include full avatar details or assets.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V1AvatarListRequest",
+        "description": "Request schema for `V1AvatarList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1AvatarListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_TALKING_PHOTO_LIST",
+      "name": "List talking photo entries",
+      "description": "Retrieves a list of talking photos created using the HeyGen platform. This endpoint allows users to fetch information about their existing talking photo projects, which are interactive images capable of speaking and engaging users. It's useful for managing and reviewing your talking photo content, or for integrating talking photo information into your application. The endpoint returns details about each talking photo, potentially including identifiers, creation dates, and associated metadata. Note that this endpoint likely returns all talking photos by default, so for users with a large number of projects, implementing client-side filtering or pagination may be necessary.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V1TalkingPhotoListRequest",
+        "description": "Request schema for `V1TalkingPhotoList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1TalkingPhotoListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_VIDEO_DELETE",
+      "name": "Delete video",
+      "description": "The video.delete endpoint allows users to remove a specific video from their HeyGen account. This operation moves the video to the trash, from where it can be restored if needed. Use this endpoint when you want to delete a video that is no longer required or to manage your account's storage. It's important to note that this action doesn't permanently delete the video immediately, as it can be restored from the trash. Exercise caution when using this endpoint, as deleted videos may not be recoverable after a certain period.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "video_id": {
+            "type": "string",
+            "description": "Video Id",
+            "title": "Video Id"
+          }
+        },
+        "title": "V1VideoDeleteRequest",
+        "description": "Request schema for `V1VideoDelete`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1VideoDeleteResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_VIDEO_LIST",
+      "name": "List videos",
+      "description": "Retrieves a list of videos associated with the user's account on the HeyGen platform. This endpoint is crucial for content management, allowing users to view and organize their video library efficiently. It provides an overview of all videos created or managed through the HeyGen service, including AI-generated videos with custom avatars. Use this endpoint when you need to display a comprehensive list of videos, manage content, or track video creation progress. The response likely includes metadata for each video such as title, creation date, duration, and status. Note that this endpoint does not provide the actual video content or detailed analytics; it's primarily for listing and basic information retrieval.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V1VideoListRequest",
+        "description": "Request schema for `V1VideoList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1VideoListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_VIDEO_STATUS_GET_LATEST_ID",
+      "name": "Retrieve video status",
+      "description": "Retrieves the current status of a video in the HeyGen platform. This endpoint is used to check the progress of video processing, particularly useful for avatar videos that may require time to generate. It provides real-time information on whether the video is still being processed or has been completed. Use this endpoint to monitor the state of your video creation requests and determine when a video is ready for further actions or viewing. The status returned can help in managing user expectations and workflow sequencing in applications integrating HeyGen's video generation capabilities.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "video_id": {
+            "type": "string",
+            "description": "Video Id",
+            "title": "Video Id"
+          }
+        },
+        "title": "V1VideoStatusGetLatestIdRequest",
+        "description": "Request schema for `V1VideoStatusGetLatestId`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1VideoStatusGetLatestIdResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_VOICE_LIST",
+      "name": "List voice endpoints",
+      "description": "Retrieves a comprehensive list of all available voices in the HeyGen platform. This endpoint should be used when you need to obtain information about the voice options that can be utilized for avatar creation or text-to-speech functionalities. The returned list likely includes details such as voice IDs, names, languages, and potentially other characteristics like gender or accent. It's particularly useful for applications that need to present voice choices to users or for initializing voice-related features. Note that this endpoint does not provide audio samples of the voices; it only lists their metadata.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V1VoiceListRequest",
+        "description": "Request schema for `V1VoiceList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1VoiceListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_WEBHOOK_ENDPOINT_ADD",
+      "name": "Add webhook endpoint",
+      "description": "Adds a new webhook endpoint to receive real-time notifications for specified Heygen events. This endpoint allows you to configure where and for which events you want to receive updates, enabling seamless integration of Heygen's capabilities into your application. Use this when you need to set up automated responses to specific events in the Heygen platform, such as avatar creation or video completion. The webhook will send POST requests to the specified URL whenever the subscribed events occur. Note that you may need to implement proper security measures on your receiving endpoint to validate incoming webhook requests.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array",
+            "description": "Event types to subscribe to",
+            "title": "Events",
+            "items": {
+              "type": "string",
+              "properties": {}
+            }
+          },
+          "url": {
+            "type": "string",
+            "description": "Webhook URL",
+            "title": "Url",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url",
+          "events"
+        ],
+        "title": "V1WebhookEndpointAddRequest",
+        "description": "Request schema for `V1WebhookEndpointAdd`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1WebhookEndpointAddResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_WEBHOOK_ENDPOINT_DELETE",
+      "name": "Delete webhook endpoint",
+      "description": "Deletes a specific webhook endpoint from the HeyGen system. This operation permanently removes the configured webhook, stopping any future notifications or data transmissions to the previously specified URL. Use this endpoint when you no longer need to receive real-time updates for certain events or when you want to change your webhook configuration. Once deleted, you will need to create a new webhook endpoint if you wish to resume notifications. This action cannot be undone, so use it with caution. The deletion is typically immediate, but allow for a short processing time to ensure all systems are updated.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "description": "Endpoint Id",
+            "title": "Endpoint Id"
+          }
+        },
+        "required": [
+          "endpoint_id"
+        ],
+        "title": "V1WebhookEndpointDeleteRequest",
+        "description": "Request schema for `V1WebhookEndpointDelete`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1WebhookEndpointDeleteResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_WEBHOOK_ENDPOINT_LIST",
+      "name": "List webhook endpoints",
+      "description": "Retrieves a list of all webhook endpoints configured for your HeyGen account. This endpoint allows you to view and manage the webhook configurations that receive notifications about various events in your HeyGen integration. Use this endpoint to monitor your existing webhook setups, verify their status, or gather information for updating or removing webhooks. The response will likely include details such as the endpoint URLs, associated event types, and current status of each webhook. This tool is particularly useful for developers managing multiple webhook integrations or troubleshooting notification issues within their HeyGen-powered applications.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V1WebhookEndpointListRequest",
+        "description": "Request schema for `V1WebhookEndpointList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1WebhookEndpointListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V1_WEBHOOK_WEBHOOK_LIST",
+      "name": "List webhooks",
+      "description": "Retrieves a list of all webhooks configured for your HeyGen account. This endpoint allows you to view and manage the webhook integrations set up to receive real-time notifications about events in your HeyGen workspace, such as video generation status updates or avatar creation completions. Use this endpoint when you need to audit your existing webhook configurations, verify webhook URLs, or prepare for updating or deleting specific webhooks. The response typically includes details such as webhook IDs, target URLs, and the types of events each webhook is subscribed to. Note that this endpoint does not create, modify, or delete webhooks; it only provides a read-only view of your current webhook configurations.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V1WebhookWebhookListRequest",
+        "description": "Request schema for `V1WebhookWebhookList`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V1WebhookWebhookListResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_AVATARS",
+      "name": "Retrieve avatars collection",
+      "description": "Retrieves a list of available avatars from the HeyGen platform. This endpoint allows users to access the vast library of realistic avatars that can be used for video creation. It should be used when you need to browse or select avatars for your projects, such as creating marketing videos, educational content, or social media posts. The endpoint returns basic information about each avatar, which may include identifiers, names, and preview images. It does not provide detailed customization options or allow for avatar creation; it's purely for listing existing avatars. Keep in mind that the returned list may be paginated, and additional calls might be needed to retrieve the full set of avatars.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V2AvatarsRequest",
+        "description": "Request schema for `V2Avatars`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2AvatarsResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_TALKING_PHOTO_ID_DELETE",
+      "name": "Delete talking photo by id",
+      "description": "Deletes a specific talking photo from the HeyGen platform using its unique identifier. This endpoint should be used when you need to permanently remove a talking photo resource, such as when it's no longer needed or to manage storage. Once deleted, the talking photo cannot be recovered, so use this endpoint with caution. It's important to note that this operation does not affect any videos or content that may have already been generated using this talking photo.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "title": "Id"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "V2TalkingPhotoIdDeleteRequest",
+        "description": "Request schema for `V2TalkingPhotoIdDelete`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2TalkingPhotoIdDeleteResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_TEMPLATE_GENERATE",
+      "name": "Generate video template with variables",
+      "description": "This endpoint generates a customized video based on a pre-existing template using HeyGen's AI-driven platform. It allows for dynamic content creation by accepting a video title and a set of variables that can be used to personalize the video content. The endpoint is ideal for creating tailored videos at scale, such as personalized marketing content, educational materials, or customized presentations. It supports optional features like test mode for preliminary checks, caption enablement for accessibility, and custom video dimensions for various output formats. This tool should be used when you need to produce videos with consistent structure but varying content, leveraging HeyGen's AI avatars and text-to-speech capabilities to create engaging, personalized video experiences.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "boolean",
+            "description": "Enable captions",
+            "title": "Caption"
+          },
+          "dimension__height": {
+            "type": "integer",
+            "description": "Video height",
+            "title": "Dimension  Height"
+          },
+          "dimension__width": {
+            "type": "integer",
+            "description": "Video width",
+            "title": "Dimension  Width"
+          },
+          "id": {
+            "type": "string",
+            "description": "Template ID",
+            "title": "Id"
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Test mode flag",
+            "title": "Test"
+          },
+          "title": {
+            "type": "string",
+            "description": "Video title",
+            "title": "Title"
+          },
+          "variables": {
+            "type": "object",
+            "description": "Variables",
+            "title": "Variables",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "variables"
+        ],
+        "title": "V2TemplateGenerateRequest",
+        "description": "Request schema for `V2TemplateGenerate`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2TemplateGenerateResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_TEMPLATE_ID",
+      "name": "Get template by id",
+      "description": "Retrieves a specific template from the HeyGen platform using its unique identifier. This endpoint allows users to access detailed information about a particular template, including its structure, elements, and customization options. It's particularly useful when you need to review or use an existing template for video creation or modification. The endpoint returns comprehensive template data, which may include settings for avatars, content placeholders, and customization parameters. Use this when you want to fetch the complete details of a known template before applying it to create or edit a video. Note that this endpoint retrieves template information only and does not create or modify any content.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Template ID",
+            "title": "Id"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "V2TemplateIdRequest",
+        "description": "Request schema for `V2TemplateId`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2TemplateIdResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_TEMPLATES",
+      "name": "Retrieve all templates",
+      "description": "Retrieves a list of available avatar templates from the HeyGen platform. This endpoint allows users to access pre-designed avatars that can be used for creating professional-looking videos. It's particularly useful when you need to browse or select from HeyGen's library of realistic avatars for your video projects. The endpoint returns template information, which likely includes details such as template IDs, names, preview images, and customization options. Use this endpoint when you want to display available avatar options to users or when you need to select a template for video generation.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V2TemplatesRequest",
+        "description": "Request schema for `V2Templates`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2TemplatesResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_USER_REMAINING_QUOTA",
+      "name": "Retrieve user remaining quota",
+      "description": "Retrieves the current remaining quota for the authenticated user on the HeyGen platform. This endpoint allows users to check their available resources or actions within their account limits. It should be used to monitor usage and plan resource allocation effectively. The returned information helps users understand how much of their quota is left before reaching account limits. Note that this endpoint does not provide details on total quota or usage history, focusing solely on the remaining available quota.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V2UserRemainingQuotaRequest",
+        "description": "Request schema for `V2UserRemainingQuota`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2UserRemainingQuotaResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_VIDEO_GENERATE",
+      "name": "Generate video with inputs",
+      "description": "Generates a customized video using Heygen's AI-driven platform. This endpoint allows you to create videos featuring digital avatars with specified voices, enabling dynamic content creation. It's ideal for producing personalized video content, such as explainer videos, product demonstrations, or interactive presentations. The endpoint supports multiple input configurations, allowing for complex video scenarios with different characters and voices. Use this when you need to programmatically create AI-generated videos with specific avatar and voice combinations. Note that while the endpoint offers extensive customization, real-time video generation is not supported, and processing times may vary based on complexity and system load.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "aspect_ratio": {
+            "type": "string",
+            "description": "Video aspect ratio",
+            "title": "Aspect Ratio"
+          },
+          "callback_id": {
+            "type": "string",
+            "description": "Optional callback ID",
+            "title": "Callback Id"
+          },
+          "dimension__height": {
+            "type": "integer",
+            "description": "Video height in pixels",
+            "title": "Dimension  Height"
+          },
+          "dimension__width": {
+            "type": "integer",
+            "description": "Video width in pixels",
+            "title": "Dimension  Width"
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Test mode flag",
+            "title": "Test"
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the video",
+            "title": "Title"
+          },
+          "video_inputs": {
+            "type": "array",
+            "description": "Array of video input configurations",
+            "title": "Video Inputs",
+            "items": {
+              "type": "object",
+              "description": "Request schema for `V2VideoGeneratevideoInputs`",
+              "title": "V2VideoGeneratevideoInputsRequest",
+              "properties": {
+                "character__avatar__id": {
+                  "type": "string",
+                  "description": "ID of the avatar",
+                  "title": "Character  Avatar  Id"
+                },
+                "character__avatar__style": {
+                  "type": "string",
+                  "description": "Style of the avatar",
+                  "title": "Character  Avatar  Style"
+                },
+                "character__type": {
+                  "type": "string",
+                  "description": "Type of character",
+                  "title": "Character  Type",
+                  "enum": [
+                    "avatar"
+                  ]
+                },
+                "voice__input__text": {
+                  "type": "string",
+                  "description": "Text to be spoken",
+                  "title": "Voice  Input  Text"
+                },
+                "voice__type": {
+                  "type": "string",
+                  "description": "Type of voice input",
+                  "title": "Voice  Type",
+                  "enum": [
+                    "text"
+                  ]
+                },
+                "voice__voice__id": {
+                  "type": "string",
+                  "description": "ID of the voice (required when voice is specified)",
+                  "title": "Voice  Voice  Id"
+                }
+              },
+              "required": [
+                "voice__voice__id"
+              ]
+            }
+          }
+        },
+        "required": [
+          "video_inputs"
+        ],
+        "title": "V2VideoGenerateRequest",
+        "description": "Request schema for `V2VideoGenerate`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2VideoGenerateResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_VIDEO_TRANSLATE",
+      "name": "Post video translate request",
+      "description": "The TranslateVideo endpoint enables the translation of video content from one language to another. It offers flexible options for translating either the entire video or just the audio track, accommodating various use cases. This tool is ideal for creating multilingual versions of video content, making it accessible to a global audience. The endpoint requires specifying the source video URL and the desired output language, with additional options to customize the translation process, such as handling multiple speakers and setting a title for the translated video. Use this endpoint when you need to quickly and efficiently translate video content while maintaining the integrity of the original presentation.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "output_language": {
+            "type": "string",
+            "description": "Target language",
+            "title": "Output Language"
+          },
+          "speaker_num": {
+            "type": "integer",
+            "description": "Number of speakers",
+            "title": "Speaker Num"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title for translated video",
+            "title": "Title"
+          },
+          "translate_audio_only": {
+            "type": "boolean",
+            "description": "Translate only audio",
+            "title": "Translate Audio Only",
+            "default": false
+          },
+          "video_url": {
+            "type": "string",
+            "description": "Source video URL",
+            "title": "Video Url",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "video_url",
+          "output_language"
+        ],
+        "title": "V2VideoTranslateRequest",
+        "description": "Request schema for `V2VideoTranslate`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2VideoTranslateResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_VIDEO_TRANSLATE_ID_STATUS",
+      "name": "Retrieve video translation by id",
+      "description": "Retrieves the current status of a video translation job in the HeyGen platform. This endpoint allows users to check the progress of their requested video translations, providing information such as whether the translation is in progress, completed, or if any errors have occurred. It should be used when tracking the state of an ongoing translation task or to confirm if a translation has finished processing. The endpoint does not modify the translation job or initiate new translations; it's purely for status checking purposes.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Video ID",
+            "title": "Id"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "V2VideoTranslateIdStatusRequest",
+        "description": "Request schema for `V2VideoTranslateIdStatus`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2VideoTranslateIdStatusResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_VIDEO_TRANSLATE_TARGET_LANGUAGES",
+      "name": "Retrieve video translation target languages",
+      "description": "Retrieves a list of all available target languages supported by HeyGen's video translation feature. This endpoint should be used when you need to know which languages are available for translating your video content. It provides an up-to-date array of supported languages, including various dialects and locales, allowing you to make informed decisions about your video translation projects. The endpoint does not require any parameters and will return the complete list of supported languages, which currently includes over 77 options. This tool is particularly useful for planning multilingual content strategies or when preparing to use HeyGen's video translation services.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V2VideoTranslateTargetLanguagesRequest",
+        "description": "Request schema for `V2VideoTranslateTargetLanguages`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2VideoTranslateTargetLanguagesResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    },
+    {
+      "slug": "HEYGEN_V2_VOICES",
+      "name": "List available voices",
+      "description": "Retrieves a list of available voice models and options that can be used with HeyGen's AI-driven video creation platform. This endpoint provides information about the various voice options, including different languages and voice characteristics, which can be applied to avatars in generated videos. Use this endpoint when you need to present users with voice choices for their video projects or when implementing voice customization features in your application. The returned data likely includes details such as voice ID, language, gender, and other relevant attributes for each available voice model. This endpoint is essential for applications that want to offer a range of voice options to enhance the personalization of AI-generated video content.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "V2VoicesRequest",
+        "description": "Request schema for `V2Voices`"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "title": "Data",
+            "additionalProperties": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "V2VoicesResponseWrapper"
+      },
+      "toolkitSlug": "heygen"
+    }
+  ],
+  "toolCount": 35
+}

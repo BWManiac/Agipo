@@ -48,7 +48,7 @@ export async function getToolAction(userId: string, actionName: string) {
  */
 export async function getToolsForConnection(toolkitSlug: string) {
   const client = getComposioClient();
-  const tools = await client.tools.getRawComposioTools({ toolkits: [toolkitSlug], limit: 100 });
+  const tools = await client.tools.getRawComposioTools({ toolkits: [toolkitSlug], limit: 1000 });
   
   return (tools || []).map((tool: { slug?: string; name?: string; displayName?: string; description?: string }) => ({
     id: tool.slug || tool.name || "",
@@ -74,7 +74,7 @@ export async function getToolkit(slug: string) {
  */
 export async function getToolsForToolkit(toolkitSlug: string) {
   const client = getComposioClient();
-  return await client.tools.getRawComposioTools({ toolkits: [toolkitSlug] });
+  return await client.tools.getRawComposioTools({ toolkits: [toolkitSlug], limit: 1000 });
 }
 
 // ============================================================================
@@ -130,7 +130,7 @@ export async function getNoAuthToolkits() {
       
       if (mode !== "NO_AUTH") continue;
 
-      const tools = await client.tools.getRawComposioTools({ toolkits: [slug], limit: 100 });
+      const tools = await client.tools.getRawComposioTools({ toolkits: [slug], limit: 1000 });
       
       results.push({
         slug,

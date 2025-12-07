@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas View - Node Types</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --primary: 217.2 91.2% 59.8%;
+    }
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .handle {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid white;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .handle-top { top: -5px; background: #94a3b8; }
+    .handle-bottom { bottom: -5px; background: #3b82f6; }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">Canvas View - Node Types</h1>
+      <p class="text-slate-400">All workflow node types as they appear in ReactFlow canvas. Each node has input (top) and output (bottom) handles.</p>
+    </div>
+
+    <!-- CORE NODES -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-4 text-primary">Core Execution Nodes</h2>
+      <div class="grid grid-cols-4 gap-6">
+        
+        <!-- Step Node: Composio Tool -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">Composio Tool</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3 border-b border-slate-100">
+                <div class="h-8 w-8 rounded bg-blue-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-slate-900">Scrape URL</div>
+                  <div class="text-xs text-slate-500">Firecrawl</div>
+                </div>
+              </div>
+              <div class="p-2 text-xs flex justify-between text-slate-500">
+                <span>3 inputs</span>
+                <span>5 outputs</span>
+              </div>
+            </div>
+            <div class="handle handle-bottom"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">type: "composio"</p>
+        </div>
+
+        <!-- Step Node: Custom Code -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">Custom Code</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3 border-b border-slate-100">
+                <div class="h-8 w-8 rounded bg-purple-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-slate-900">Transform Data</div>
+                  <div class="text-xs text-slate-500">Custom</div>
+                </div>
+              </div>
+              <div class="p-2 text-xs flex justify-between text-slate-500">
+                <span>2 inputs</span>
+                <span>1 output</span>
+              </div>
+            </div>
+            <div class="handle handle-bottom"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">type: "custom"</p>
+        </div>
+
+        <!-- Step Node: Query Table -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">Query Table</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3 border-b border-slate-100">
+                <div class="h-8 w-8 rounded bg-green-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-slate-900">Get Jobs</div>
+                  <div class="text-xs text-slate-500">Query Table</div>
+                </div>
+              </div>
+              <div class="p-2 text-xs flex justify-between text-slate-500">
+                <span>1 input</span>
+                <span>3 outputs</span>
+              </div>
+            </div>
+            <div class="handle handle-bottom"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">type: "query_table"</p>
+        </div>
+
+        <!-- Step Node: Write Table -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">Write Table</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3 border-b border-slate-100">
+                <div class="h-8 w-8 rounded bg-emerald-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-slate-900">Save Result</div>
+                  <div class="text-xs text-slate-500">Write Table</div>
+                </div>
+              </div>
+              <div class="p-2 text-xs flex justify-between text-slate-500">
+                <span>4 inputs</span>
+                <span>1 output</span>
+              </div>
+            </div>
+            <div class="handle handle-bottom"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">type: "write_table"</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROL FLOW NODES -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-4 text-amber-400">Control Flow Nodes (Containers)</h2>
+      <p class="text-sm text-slate-500 mb-6">Control flow nodes act as containers that hold child nodes inside them.</p>
+      <div class="grid grid-cols-2 gap-8">
+        
+        <!-- Branch Node (Router/Decision Point) - Vertical Flow -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">.branch() - Conditional Router</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <!-- Router node - lists conditions, outputs at bottom -->
+            <div class="bg-amber-50 rounded-lg border-2 border-amber-400 shadow-sm min-w-[260px]">
+              <!-- Header -->
+              <div class="flex items-center gap-2 p-3 border-b border-amber-200">
+                <div class="h-8 w-8 rounded bg-amber-500 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-amber-900">Branch</div>
+                  <div class="text-xs text-amber-600">4 conditions</div>
+                </div>
+              </div>
+              
+              <!-- Condition list (vertical) -->
+              <div class="p-2 text-xs space-y-1">
+                <div class="flex items-center gap-2 p-1.5 bg-amber-100 rounded">
+                  <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                  <code class="text-amber-800">score >= 90</code>
+                </div>
+                <div class="flex items-center gap-2 p-1.5 bg-amber-100 rounded">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                  <code class="text-amber-800">score >= 70</code>
+                </div>
+                <div class="flex items-center gap-2 p-1.5 bg-amber-100 rounded">
+                  <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                  <code class="text-amber-800">score >= 50</code>
+                </div>
+                <div class="flex items-center gap-2 p-1.5 bg-slate-200 rounded">
+                  <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                  <span class="text-slate-600 italic">else</span>
+                </div>
+              </div>
+              
+              <!-- Output handles at BOTTOM - horizontal row -->
+              <div class="flex justify-center gap-6 px-3 py-2 border-t border-amber-200 bg-amber-100/50 rounded-b-lg">
+                <div class="flex flex-col items-center">
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white shadow"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-white shadow"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-2.5 h-2.5 rounded-full bg-yellow-500 border-2 border-white shadow"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-2.5 h-2.5 rounded-full bg-slate-400 border-2 border-white shadow"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">.branch([[cond, step], ...]) — Outputs fan out vertically to downstream steps</p>
+        </div>
+
+        <!-- Parallel Node (Fork/Join) - Vertical Flow -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">.parallel() - Fork / Join</h3>
+          
+          <!-- Fork Node -->
+          <div class="mb-6">
+            <div class="text-[10px] text-cyan-400 mb-2">FORK (splits execution)</div>
+            <div class="relative inline-block">
+              <div class="handle handle-top"></div>
+              <div class="bg-cyan-50 rounded-lg border-2 border-cyan-400 shadow-sm min-w-[240px]">
+                <div class="flex items-center gap-2 p-3 border-b border-cyan-200">
+                  <div class="h-8 w-8 rounded bg-cyan-500 flex items-center justify-center">
+                    <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-medium text-sm text-cyan-900">Parallel Fork</div>
+                    <div class="text-xs text-cyan-600">run all concurrently</div>
+                  </div>
+                </div>
+                
+                <!-- Branch list (vertical) -->
+                <div class="p-2 text-xs space-y-1">
+                  <div class="flex items-center gap-2 p-1.5 bg-cyan-100 rounded">
+                    <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                    <span class="text-cyan-700">Branch A</span>
+                  </div>
+                  <div class="flex items-center gap-2 p-1.5 bg-cyan-100 rounded">
+                    <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                    <span class="text-cyan-700">Branch B</span>
+                  </div>
+                  <div class="flex items-center gap-2 p-1.5 bg-cyan-100 rounded">
+                    <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                    <span class="text-cyan-700">Branch C</span>
+                  </div>
+                </div>
+                
+                <!-- Output handles at BOTTOM - horizontal row -->
+                <div class="flex justify-center gap-8 px-3 py-2 border-t border-cyan-200 bg-cyan-100/50 rounded-b-lg">
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-white shadow"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-white shadow"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-white shadow"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Join Node -->
+          <div>
+            <div class="text-[10px] text-cyan-400 mb-2">JOIN (waits for all, merges results)</div>
+            <div class="relative inline-block">
+              <div class="bg-cyan-50 rounded-lg border-2 border-cyan-400 shadow-sm min-w-[240px]">
+                <!-- Input handles at TOP - horizontal row -->
+                <div class="flex justify-center gap-8 px-3 py-2 border-b border-cyan-200 bg-cyan-100/50 rounded-t-lg">
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-white shadow"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-white shadow"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-white shadow"></div>
+                </div>
+                
+                <div class="flex items-center gap-2 p-3">
+                  <div class="h-8 w-8 rounded bg-cyan-500 flex items-center justify-center">
+                    <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-medium text-sm text-cyan-900">Parallel Join</div>
+                    <div class="text-xs text-cyan-600">output: { A, B, C }</div>
+                  </div>
+                </div>
+              </div>
+              <div class="handle handle-bottom" style="background: #06b6d4;"></div>
+            </div>
+          </div>
+          
+          <p class="mt-3 text-xs text-slate-500">.parallel([...]) — Fork outputs fan down, Join inputs collect from above</p>
+        </div>
+
+        <!-- Loop Node (Container) -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">.dountil() / .dowhile() - Loop Container</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <!-- Container frame -->
+            <div class="bg-violet-950/40 rounded-xl border-2 border-violet-400 shadow-lg min-w-[280px]">
+              <!-- Header bar -->
+              <div class="flex items-center gap-2 px-3 py-2 bg-violet-500/20 rounded-t-lg border-b border-violet-400/50">
+                <div class="h-6 w-6 rounded bg-violet-500 flex items-center justify-center">
+                  <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-violet-200">Do Until</div>
+                </div>
+                <div class="text-[10px] text-violet-300 bg-violet-800 px-2 py-0.5 rounded">
+                  until: status === 'done'
+                </div>
+              </div>
+              
+              <!-- Container body - where child nodes live -->
+              <div class="p-4 min-h-[120px]">
+                <div class="text-[10px] text-violet-400 mb-2 uppercase tracking-wide">Loop Body</div>
+                <!-- Child nodes rendered inside -->
+                <div class="flex flex-col gap-3 items-center">
+                  <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm px-3 py-2 min-w-[140px]">
+                    <div class="font-medium text-xs text-slate-900">API Call</div>
+                    <div class="text-[10px] text-slate-500">Custom</div>
+                  </div>
+                  <svg class="h-4 w-4 text-violet-300"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+                  <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm px-3 py-2 min-w-[140px]">
+                    <div class="font-medium text-xs text-slate-900">Check Status</div>
+                    <div class="text-[10px] text-slate-500">Custom</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Footer with condition -->
+              <div class="flex items-center justify-between px-3 py-2 bg-violet-500/10 rounded-b-lg border-t border-violet-400/30 text-[10px]">
+                <span class="text-violet-400">max: 5 iterations</span>
+                <span class="text-violet-300">↩ loops if false</span>
+              </div>
+            </div>
+            <div class="handle handle-bottom" style="background: #8b5cf6;"></div>
+            <!-- Loop-back indicator -->
+            <div class="absolute -right-4 top-1/2 transform -translate-y-1/2">
+              <svg class="w-8 h-20 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 32 80">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke-dasharray="4 2" d="M4 10 C24 10 24 70 4 70" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 70 L10 64 M4 70 L10 76" />
+              </svg>
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">.dountil([stepA, stepB, ...], condition) — Child nodes render inside container</p>
+        </div>
+
+        <!-- ForEach Node (Container) -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">.foreach() - Iterate Container</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <!-- Container frame -->
+            <div class="bg-pink-950/40 rounded-xl border-2 border-pink-400 shadow-lg min-w-[280px]">
+              <!-- Header bar -->
+              <div class="flex items-center gap-2 px-3 py-2 bg-pink-500/20 rounded-t-lg border-b border-pink-400/50">
+                <div class="h-6 w-6 rounded bg-pink-500 flex items-center justify-center">
+                  <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-pink-200">For Each</div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="text-[10px] text-pink-300 bg-pink-800 px-2 py-0.5 rounded">
+                    items[]
+                  </div>
+                  <div class="text-[10px] text-pink-300 bg-pink-800 px-2 py-0.5 rounded">
+                    ×3 concurrent
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Container body - where child nodes live -->
+              <div class="p-4 min-h-[140px]">
+                <div class="text-[10px] text-pink-400 mb-2 uppercase tracking-wide">Per-Item Steps (item)</div>
+                <!-- Child nodes rendered inside -->
+                <div class="flex flex-col gap-3 items-center">
+                  <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm px-3 py-2 min-w-[140px]">
+                    <div class="font-medium text-xs text-slate-900">Validate</div>
+                    <div class="text-[10px] text-slate-500">Custom</div>
+                  </div>
+                  <svg class="h-4 w-4 text-pink-300"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+                  <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm px-3 py-2 min-w-[140px]">
+                    <div class="font-medium text-xs text-slate-900">Transform</div>
+                    <div class="text-[10px] text-slate-500">Custom</div>
+                  </div>
+                  <svg class="h-4 w-4 text-pink-300"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+                  <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm px-3 py-2 min-w-[140px]">
+                    <div class="font-medium text-xs text-slate-900">Save Item</div>
+                    <div class="text-[10px] text-slate-500">Write Table</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Footer -->
+              <div class="flex items-center justify-between px-3 py-2 bg-pink-500/10 rounded-b-lg border-t border-pink-400/30 text-[10px]">
+                <span class="text-pink-400">input: items[] (15 items)</span>
+                <span class="text-pink-300">output: results[]</span>
+              </div>
+            </div>
+            <div class="handle handle-bottom" style="background: #ec4899;"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">.foreach([stepA, stepB, ...], { concurrency }) — Child nodes render inside container</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMING & EVENT NODES -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-4 text-teal-400">Timing & Event Nodes</h2>
+      <div class="grid grid-cols-3 gap-6">
+        
+        <!-- Sleep Node -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">.sleep() - Delay</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-teal-50 rounded-lg border-2 border-teal-300 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3">
+                <div class="h-8 w-8 rounded bg-teal-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-teal-900">Sleep</div>
+                  <div class="text-xs text-teal-600">5000ms</div>
+                </div>
+              </div>
+            </div>
+            <div class="handle handle-bottom" style="background: #14b8a6;"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">.sleep(5000)</p>
+        </div>
+
+        <!-- Sleep Until Node -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">.sleepUntil() - Schedule</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-teal-50 rounded-lg border-2 border-teal-300 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3">
+                <div class="h-8 w-8 rounded bg-teal-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-teal-900">Sleep Until</div>
+                  <div class="text-xs text-teal-600">Jan 1, 2025</div>
+                </div>
+              </div>
+            </div>
+            <div class="handle handle-bottom" style="background: #14b8a6;"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">.sleepUntil(date)</p>
+        </div>
+
+        <!-- Wait For Event Node -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">.waitForEvent() - External</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-orange-50 rounded-lg border-2 border-orange-300 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3">
+                <div class="h-8 w-8 rounded bg-orange-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-orange-900">Wait for Event</div>
+                  <div class="text-xs text-orange-600">"approval"</div>
+                </div>
+              </div>
+            </div>
+            <div class="handle handle-bottom" style="background: #f97316;"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">.waitForEvent('approval', step)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HUMAN-IN-THE-LOOP NODES -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-4 text-rose-400">Human-in-the-Loop Nodes</h2>
+      <div class="grid grid-cols-3 gap-6">
+        
+        <!-- Suspend Node -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">suspend() - Pause for Human</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-rose-50 rounded-lg border-2 border-rose-300 shadow-sm min-w-[200px]">
+              <div class="flex items-center gap-2 p-3 border-b border-rose-200">
+                <div class="h-8 w-8 rounded bg-rose-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-rose-900">Suspend</div>
+                  <div class="text-xs text-rose-600">Awaiting approval</div>
+                </div>
+              </div>
+              <div class="p-2 text-xs text-rose-700">
+                <div class="mb-1">Payload:</div>
+                <code class="bg-rose-100 px-1 rounded text-[10px]">{ reason, amount }</code>
+              </div>
+            </div>
+            <div class="handle handle-bottom" style="background: #f43f5e;"></div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">suspend({ reason, amount })</p>
+        </div>
+
+        <!-- Bail Node -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">bail() - Early Exit</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-emerald-50 rounded-lg border-2 border-emerald-300 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3">
+                <div class="h-8 w-8 rounded bg-emerald-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-emerald-900">Bail</div>
+                  <div class="text-xs text-emerald-600">Exit with success</div>
+                </div>
+              </div>
+            </div>
+            <!-- No output handle - terminates -->
+          </div>
+          <p class="mt-3 text-xs text-slate-500">bail({ status: 'skipped' })</p>
+        </div>
+
+        <!-- Abort Node -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">abort() - Cancel</h3>
+          <div class="relative inline-block">
+            <div class="handle handle-top"></div>
+            <div class="bg-red-50 rounded-lg border-2 border-red-300 shadow-sm min-w-[180px]">
+              <div class="flex items-center gap-2 p-3">
+                <div class="h-8 w-8 rounded bg-red-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="font-medium text-sm text-red-900">Abort</div>
+                  <div class="text-xs text-red-600">Cancel workflow</div>
+                </div>
+              </div>
+            </div>
+            <!-- No output handle - terminates -->
+          </div>
+          <p class="mt-3 text-xs text-slate-500">abort()</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- NODE BADGES -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-4 text-slate-400">Node Badges (Overlays)</h2>
+      <p class="text-sm text-slate-500 mb-4">Badges that appear on nodes to indicate additional configuration:</p>
+      <div class="grid grid-cols-4 gap-6">
+        
+        <!-- Retry Badge -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">Retry Config</h3>
+          <div class="relative inline-block">
+            <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm min-w-[160px] p-3">
+              <div class="font-medium text-sm text-slate-900">API Call</div>
+              <div class="text-xs text-slate-500">Custom</div>
+            </div>
+            <div class="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full">
+              ×3
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">retries: 3</p>
+        </div>
+
+        <!-- Timeout Badge -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">Timeout</h3>
+          <div class="relative inline-block">
+            <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm min-w-[160px] p-3">
+              <div class="font-medium text-sm text-slate-900">Long Task</div>
+              <div class="text-xs text-slate-500">Custom</div>
+            </div>
+            <div class="absolute -top-2 -right-2 bg-teal-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+              <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+              </svg>
+              30s
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">timeout: 30000</p>
+        </div>
+
+        <!-- Connection Required Badge -->
+        <div>
+          <h3 class="text-xs font-medium text-slate-400 mb-3 uppercase">Connection Required</h3>
+          <div class="relative inline-block">
+            <div class="bg-white rounded-lg border-2 border-slate-200 shadow-sm min-w-[160px] p-3">
+              <div class="font-medium text-sm text-slate-900">Send Email</div>
+              <div class="text-xs text-slate-500">Gmail</div>
+            </div>
+            <div class="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+              <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+              </svg>
+            </div>
+          </div>
+          <p class="mt-3 text-xs text-slate-500">requires: gmail</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
+

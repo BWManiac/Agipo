@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForEach Configuration Modal - Phase 4 UXD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { 
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            background: '#0a0a0a',
+            foreground: '#fafafa',
+            card: '#18181b',
+            border: '#27272a',
+            muted: '#71717a',
+            primary: '#3b82f6',
+            accent: '#22c55e',
+            warning: '#f59e0b',
+            purple: '#a855f7',
+            pink: '#ec4899',
+            cyan: '#06b6d4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen p-8 flex items-center justify-center">
+  
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black/60"></div>
+
+  <!-- Modal Container -->
+  <div class="relative bg-card border border-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-border">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-pink/10 flex items-center justify-center">
+          <svg class="w-4 h-4 text-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold">Configure ForEach</h2>
+          <p class="text-xs text-muted">Iterate over array items</p>
+        </div>
+      </div>
+      <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-muted hover:text-foreground transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-5">
+      
+      <!-- Visual Preview -->
+      <div class="bg-background border border-border rounded-lg p-4 mb-5">
+        <div class="flex items-center justify-center gap-4">
+          <!-- Array -->
+          <div class="flex flex-col gap-1">
+            <div class="text-[10px] text-muted text-center mb-1">Input Array</div>
+            <div class="flex gap-1">
+              <div class="w-6 h-6 bg-pink/20 border border-pink/30 rounded flex items-center justify-center text-[10px] text-pink font-medium">1</div>
+              <div class="w-6 h-6 bg-pink/20 border border-pink/30 rounded flex items-center justify-center text-[10px] text-pink font-medium">2</div>
+              <div class="w-6 h-6 bg-pink/20 border border-pink/30 rounded flex items-center justify-center text-[10px] text-pink font-medium">3</div>
+              <div class="w-6 h-6 bg-pink/10 border border-pink/20 border-dashed rounded flex items-center justify-center text-[10px] text-pink/50">...</div>
+            </div>
+          </div>
+          <!-- Arrow -->
+          <svg class="w-6 h-6 text-pink/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <!-- Container -->
+          <div class="border-2 border-dashed border-pink/30 rounded-lg p-2">
+            <div class="text-[10px] uppercase tracking-wider text-pink font-medium mb-1.5">For Each Item</div>
+            <div class="px-2 py-1.5 bg-card border border-border rounded text-[10px] text-muted">Process Item</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Array Source -->
+      <div class="mb-5">
+        <label class="text-sm font-medium block mb-2">Array Source</label>
+        <p class="text-xs text-muted mb-2">Reference to the array you want to iterate over</p>
+        <div class="relative">
+          <input type="text" value="steps.getUsers.output.users" class="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-pink focus:border-pink" placeholder="e.g., steps.fetchItems.output.items">
+          <div class="absolute right-2 top-1/2 -translate-y-1/2">
+            <span class="text-[10px] text-muted bg-card px-1.5 py-0.5 rounded">Path</span>
+          </div>
+        </div>
+        <!-- Hint dropdown -->
+        <div class="mt-2 text-xs text-muted">
+          <span class="text-foreground/60">Available:</span>
+          <button class="ml-1 text-pink hover:underline">steps.getUsers.output.users</button>,
+          <button class="ml-1 text-pink hover:underline">input.items</button>
+        </div>
+      </div>
+
+      <!-- Item Variable Name -->
+      <div class="mb-5">
+        <label class="text-sm font-medium block mb-2">Item Variable Name</label>
+        <p class="text-xs text-muted mb-2">How to reference each item inside the loop</p>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-muted">Access as:</span>
+          <input type="text" value="user" class="w-32 bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-pink focus:border-pink" placeholder="item">
+        </div>
+        <p class="text-xs text-muted mt-2">
+          Inside the loop, use <code class="text-pink font-mono">{`{{ user.name }}`}</code> to access properties
+        </p>
+      </div>
+
+      <!-- Concurrency -->
+      <div class="mb-5">
+        <label class="text-sm font-medium block mb-2">Concurrency</label>
+        <p class="text-xs text-muted mb-2">How many items to process at once</p>
+        <div class="flex items-center gap-3">
+          <input type="range" min="1" max="10" value="3" class="flex-1 h-2 bg-background rounded-lg appearance-none cursor-pointer accent-pink">
+          <div class="w-12 text-center">
+            <span class="text-lg font-semibold text-pink">3</span>
+          </div>
+        </div>
+        <div class="flex justify-between text-[10px] text-muted mt-1">
+          <span>Sequential</span>
+          <span>Max Parallel</span>
+        </div>
+      </div>
+
+      <!-- Error Handling -->
+      <div class="bg-background border border-border rounded-lg p-3">
+        <div class="flex items-start gap-3">
+          <input type="checkbox" class="mt-1 w-4 h-4 rounded border-border bg-card text-pink focus:ring-pink focus:ring-offset-0">
+          <div>
+            <div class="text-sm font-medium">Continue on error</div>
+            <div class="text-xs text-muted mt-0.5">If one item fails, continue processing other items</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-between px-5 py-4 border-t border-border bg-white/[0.02]">
+      <div class="text-xs text-muted">
+        <span class="text-foreground/60">1 step</span> will be wrapped
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="px-4 py-2 text-sm text-muted hover:text-foreground transition-colors">Cancel</button>
+        <button class="px-4 py-2 text-sm font-medium bg-pink hover:bg-pink/90 text-white rounded-lg transition-colors">Create ForEach</button>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
+

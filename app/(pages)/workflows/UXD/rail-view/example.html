@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rail View - Complex Example</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .rail { width: 2px; background: #3b82f6; }
+    .rail-segment { width: 2px; }
+    .node-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .connector-dot {
+      width: 12px;
+      height: 12px;
+      background: #3b82f6;
+      border: 3px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #3b82f6;
+    }
+    .container-box {
+      border: 2px dashed;
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">Rail View - Complex Workflow Example</h1>
+      <p class="text-slate-400">Process Job Applications workflow demonstrating all primitives.</p>
+      <div class="flex gap-2 mt-3 text-xs">
+        <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded">Sequential</span>
+        <span class="px-2 py-1 bg-pink-500/20 text-pink-400 rounded">ForEach</span>
+        <span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded">Branch</span>
+        <span class="px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded">Parallel</span>
+        <span class="px-2 py-1 bg-violet-500/20 text-violet-400 rounded">Loop</span>
+        <span class="px-2 py-1 bg-rose-500/20 text-rose-400 rounded">Suspend</span>
+      </div>
+    </div>
+
+    <!-- WORKFLOW -->
+    <div class="flex flex-col items-center">
+      
+      <!-- START -->
+      <div class="text-xs text-slate-500 mb-2">START</div>
+      <div class="connector-dot"></div>
+      <div class="rail h-6"></div>
+      
+      <!-- STEP 1: Get Applications -->
+      <div class="node-card p-4 min-w-[300px]">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+            <svg class="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold text-slate-900">Get Applications</div>
+            <div class="text-sm text-slate-500">Query Table • applications</div>
+          </div>
+          <div class="text-xs text-slate-400">1</div>
+        </div>
+      </div>
+      
+      <div class="connector-dot my-2" style="background: #ec4899; box-shadow: 0 0 0 2px #ec4899;"></div>
+      <div class="rail-segment h-4 bg-pink-400"></div>
+      
+      <!-- FOR EACH CONTAINER -->
+      <div class="container-box border-pink-400 bg-pink-950/10 min-w-[500px]">
+        <div class="absolute -top-3 left-4 bg-slate-950 px-3">
+          <span class="text-sm font-semibold text-pink-400">🔁 FOR EACH application (×5 concurrent)</span>
+        </div>
+        
+        <div class="flex flex-col items-center pt-4">
+          
+          <!-- 2.1 Validate -->
+          <div class="node-card p-3 min-w-[280px] border-pink-200">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-pink-100 flex items-center justify-center text-pink-600">✓</div>
+              <div class="flex-1">
+                <div class="font-medium text-slate-900">Validate Fields</div>
+                <div class="text-xs text-slate-500">Custom</div>
+              </div>
+              <div class="text-xs text-pink-400">2.1</div>
+            </div>
+          </div>
+          
+          <div class="w-0.5 h-4 bg-pink-400"></div>
+          <div class="w-2 h-2 rounded-full bg-amber-500 my-1"></div>
+          <div class="w-0.5 h-2 bg-amber-400"></div>
+          
+          <!-- 2.2 BRANCH -->
+          <div class="node-card p-3 min-w-[280px] border-amber-300">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-amber-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="font-medium text-slate-900">Branch</div>
+                <div class="text-xs text-amber-600">on: experience</div>
+              </div>
+              <div class="text-xs text-amber-400">2.2</div>
+            </div>
+            <div class="mt-2 space-y-1 text-xs">
+              <div class="flex items-center gap-2 px-2 py-1 bg-green-50 rounded">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                <code class="text-green-700">exp >= 5</code>
+                <span class="text-green-600 ml-auto">→ Senior</span>
+              </div>
+              <div class="flex items-center gap-2 px-2 py-1 bg-blue-50 rounded">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                <code class="text-blue-700">exp >= 2</code>
+                <span class="text-blue-600 ml-auto">→ Mid</span>
+              </div>
+              <div class="flex items-center gap-2 px-2 py-1 bg-slate-100 rounded">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                <span class="text-slate-600 italic">else</span>
+                <span class="text-slate-500 ml-auto">→ Junior</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Branch splits -->
+          <div class="flex gap-8 mt-3">
+            <div class="flex flex-col items-center">
+              <div class="w-2 h-2 rounded-full bg-green-500"></div>
+              <div class="w-0.5 h-6 bg-green-400"></div>
+              <div class="node-card p-2 text-xs border-green-200 min-w-[80px] text-center">
+                <span class="text-slate-700">Senior</span>
+              </div>
+              <div class="w-0.5 h-6 bg-green-400"></div>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+              <div class="w-0.5 h-6 bg-blue-400"></div>
+              <div class="node-card p-2 text-xs border-blue-200 min-w-[80px] text-center">
+                <span class="text-slate-700">Mid</span>
+              </div>
+              <div class="w-0.5 h-6 bg-blue-400"></div>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+              <div class="w-0.5 h-6 bg-slate-400"></div>
+              <div class="node-card p-2 text-xs min-w-[80px] text-center">
+                <span class="text-slate-700">Junior</span>
+              </div>
+              <div class="w-0.5 h-6 bg-slate-400"></div>
+            </div>
+          </div>
+          
+          <!-- Merge back -->
+          <div class="w-2 h-2 rounded-full bg-pink-400 my-1"></div>
+          <div class="w-0.5 h-4 bg-pink-400"></div>
+          
+          <!-- 2.3 PARALLEL -->
+          <div class="w-2 h-2 rounded-full bg-cyan-500 my-1"></div>
+          <div class="node-card p-3 min-w-[280px] border-cyan-300">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-cyan-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="font-medium text-slate-900">Parallel Fork</div>
+                <div class="text-xs text-cyan-600">fetch profile data</div>
+              </div>
+              <div class="text-xs text-cyan-400">2.3</div>
+            </div>
+          </div>
+          
+          <!-- Parallel branches -->
+          <div class="flex gap-6 mt-2">
+            <div class="flex flex-col items-center">
+              <div class="w-1.5 h-1.5 rounded-full bg-cyan-500"></div>
+              <div class="w-0.5 h-4 bg-cyan-400"></div>
+              <div class="node-card p-2 text-[11px] border-cyan-200 text-center">LinkedIn</div>
+              <div class="w-0.5 h-4 bg-cyan-400"></div>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-1.5 h-1.5 rounded-full bg-cyan-500"></div>
+              <div class="w-0.5 h-4 bg-cyan-400"></div>
+              <div class="node-card p-2 text-[11px] border-cyan-200 text-center">GitHub</div>
+              <div class="w-0.5 h-4 bg-cyan-400"></div>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-1.5 h-1.5 rounded-full bg-cyan-500"></div>
+              <div class="w-0.5 h-4 bg-cyan-400"></div>
+              <div class="node-card p-2 text-[11px] border-cyan-200 text-center">References</div>
+              <div class="w-0.5 h-4 bg-cyan-400"></div>
+            </div>
+          </div>
+          
+          <!-- Join -->
+          <div class="node-card p-2 min-w-[200px] border-cyan-300 text-center mt-2">
+            <span class="text-sm text-cyan-700 font-medium">⊕ Join</span>
+          </div>
+          
+          <div class="w-0.5 h-4 bg-pink-400"></div>
+          
+          <!-- 2.4 AI Score -->
+          <div class="node-card p-3 min-w-[280px] border-pink-200">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-purple-100 flex items-center justify-center">🤖</div>
+              <div class="flex-1">
+                <div class="font-medium text-slate-900">AI Score Candidate</div>
+                <div class="text-xs text-slate-500">OpenAI</div>
+              </div>
+              <div class="text-xs text-pink-400">2.4</div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class="absolute -bottom-3 right-4 bg-slate-950 px-3">
+          <span class="text-xs text-pink-400">output: scoredApplications[]</span>
+        </div>
+      </div>
+      
+      <div class="rail-segment h-4 bg-pink-400"></div>
+      <div class="connector-dot" style="background: #8b5cf6; box-shadow: 0 0 0 2px #8b5cf6;"></div>
+      <div class="rail-segment h-2 bg-violet-400"></div>
+      
+      <!-- STEP 3: LOOP UNTIL -->
+      <div class="container-box border-violet-400 bg-violet-950/10 min-w-[350px]">
+        <div class="absolute -top-3 left-4 bg-slate-950 px-3">
+          <span class="text-sm font-semibold text-violet-400">🔄 DO UNTIL: allScored OR count > 100</span>
+        </div>
+        
+        <div class="flex flex-col items-center pt-4">
+          <div class="node-card p-3 min-w-[250px] border-violet-200">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-violet-100 flex items-center justify-center">📊</div>
+              <div class="flex-1">
+                <div class="font-medium text-slate-900">Check Progress</div>
+                <div class="text-xs text-slate-500">Custom</div>
+              </div>
+              <div class="text-xs text-violet-400">3.1</div>
+            </div>
+          </div>
+          <div class="w-0.5 h-3 bg-violet-400"></div>
+          <div class="node-card p-3 min-w-[250px] border-teal-200">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded bg-teal-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="font-medium text-slate-900">Sleep</div>
+                <div class="text-xs text-teal-600">5000ms</div>
+              </div>
+              <div class="text-xs text-violet-400">3.2</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Loop arrow -->
+        <div class="absolute -right-6 top-1/2 -translate-y-1/2">
+          <svg class="w-6 h-16 text-violet-400" viewBox="0 0 24 64">
+            <path d="M4 8 C16 8 16 56 4 56" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
+            <path d="M4 56 L8 52 M4 56 L8 60" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        
+        <div class="absolute -bottom-3 right-4 bg-slate-950 px-3">
+          <span class="text-xs text-violet-400">max: 100</span>
+        </div>
+      </div>
+      
+      <div class="rail-segment h-4 bg-violet-400"></div>
+      <div class="connector-dot" style="background: #f43f5e; box-shadow: 0 0 0 2px #f43f5e;"></div>
+      <div class="rail-segment h-2 bg-rose-400"></div>
+      
+      <!-- STEP 4: SUSPEND -->
+      <div class="node-card p-4 min-w-[300px] border-rose-300 bg-rose-50">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-rose-100 flex items-center justify-center">
+            <svg class="h-5 w-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold text-rose-900">Suspend</div>
+            <div class="text-sm text-rose-600">⏸ Awaiting HR Review</div>
+          </div>
+          <div class="text-xs text-rose-400">4</div>
+        </div>
+      </div>
+      
+      <!-- Pause indicator -->
+      <div class="border-2 border-dashed border-rose-400 rounded-lg px-4 py-2 my-3">
+        <span class="text-xs text-rose-400">⏸ Workflow paused for human approval</span>
+      </div>
+      
+      <div class="connector-dot" style="background: #f43f5e; box-shadow: 0 0 0 2px #f43f5e;"></div>
+      <div class="rail h-4"></div>
+      
+      <!-- STEP 5: Save Results -->
+      <div class="node-card p-4 min-w-[300px]">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+            <svg class="h-5 w-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold text-slate-900">Save Results</div>
+            <div class="text-sm text-slate-500">Write Table • hiring_decisions</div>
+          </div>
+          <div class="text-xs text-slate-400">5</div>
+        </div>
+      </div>
+      
+      <div class="rail h-6"></div>
+      <div class="connector-dot"></div>
+      <div class="text-xs text-slate-500 mt-2">END</div>
+      
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-12 p-4 bg-slate-900/50 border border-slate-800 rounded-lg text-xs">
+      <div class="font-medium text-slate-400 mb-2">This example demonstrates:</div>
+      <div class="grid grid-cols-3 gap-4 text-slate-500">
+        <div>• Query Table (Get Applications)</div>
+        <div>• ForEach with concurrency</div>
+        <div>• Nested Branch (3 conditions)</div>
+        <div>• Nested Parallel (3 branches)</div>
+        <div>• DoUntil loop with Sleep</div>
+        <div>• Suspend (human-in-loop)</div>
+        <div>• Write Table (Save Results)</div>
+        <div>• AI step (OpenAI)</div>
+        <div>• API steps (LinkedIn, GitHub)</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

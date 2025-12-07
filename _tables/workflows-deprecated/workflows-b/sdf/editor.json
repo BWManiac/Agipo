@@ -1,0 +1,147 @@
+{
+  "workflow": {
+    "id": "sdf",
+    "name": "sdf",
+    "description": "sdf",
+    "status": "draft",
+    "steps": [
+      {
+        "id": "WPSluVTf",
+        "type": "composio",
+        "label": "Extract Data",
+        "toolId": "FIRECRAWL_EXTRACT",
+        "platform": "firecrawl",
+        "inputSchema": {
+          "fields": [
+            {
+              "name": "input",
+              "type": "string",
+              "description": "Input data",
+              "required": true
+            }
+          ]
+        },
+        "outputSchema": {
+          "fields": [
+            {
+              "name": "result",
+              "type": "object",
+              "description": "Operation result"
+            }
+          ]
+        },
+        "inputMappings": [],
+        "position": 0
+      },
+      {
+        "id": "m1YpXk0L",
+        "type": "composio",
+        "label": "Crawl Site",
+        "toolId": "FIRECRAWL_CRAWL",
+        "platform": "firecrawl",
+        "inputSchema": {
+          "fields": [
+            {
+              "name": "input",
+              "type": "string",
+              "description": "Input data",
+              "required": true
+            }
+          ]
+        },
+        "outputSchema": {
+          "fields": [
+            {
+              "name": "result",
+              "type": "object",
+              "description": "Operation result"
+            }
+          ]
+        },
+        "inputMappings": [],
+        "position": 1
+      },
+      {
+        "id": "NhKZZjus",
+        "type": "composio",
+        "label": "Generate Text",
+        "toolId": "OPENAI_GENERATE",
+        "platform": "openai",
+        "inputSchema": {
+          "fields": [
+            {
+              "name": "input",
+              "type": "string",
+              "description": "Input data",
+              "required": true
+            }
+          ]
+        },
+        "outputSchema": {
+          "fields": [
+            {
+              "name": "result",
+              "type": "object",
+              "description": "Operation result"
+            }
+          ]
+        },
+        "inputMappings": [],
+        "position": 2
+      },
+      {
+        "id": "ZsnTnARN",
+        "type": "composio",
+        "label": "Crawl Site",
+        "toolId": "FIRECRAWL_CRAWL",
+        "platform": "firecrawl",
+        "inputSchema": {
+          "fields": [
+            {
+              "name": "input",
+              "type": "string",
+              "description": "Input data",
+              "required": true
+            }
+          ]
+        },
+        "outputSchema": {
+          "fields": [
+            {
+              "name": "result",
+              "type": "object",
+              "description": "Operation result"
+            }
+          ]
+        },
+        "inputMappings": [],
+        "position": 3
+      }
+    ],
+    "inputs": [],
+    "configs": [],
+    "connections": [
+      {
+        "platform": "firecrawl",
+        "displayName": "Firecrawl",
+        "toolIds": [
+          "FIRECRAWL_EXTRACT",
+          "FIRECRAWL_CRAWL"
+        ],
+        "required": true
+      },
+      {
+        "platform": "openai",
+        "displayName": "Openai",
+        "toolIds": [
+          "OPENAI_GENERATE"
+        ],
+        "required": true
+      }
+    ],
+    "createdAt": "2025-12-06T21:50:01.950Z",
+    "updatedAt": "2025-12-07T07:29:09.882Z"
+  },
+  "expandedStepIds": [],
+  "version": 1
+}

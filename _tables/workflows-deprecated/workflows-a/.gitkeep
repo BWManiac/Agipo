@@ -1,0 +1,8 @@
+# Workflow definitions storage
+# Each workflow gets its own folder: [workflowId]/
+# - workflow.json  (editor state)
+# - workflow.ts    (generated Mastra code)
+
+
+
+

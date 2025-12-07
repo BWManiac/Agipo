@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tools Panel - Phase 3 Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
+            secondary: {
+              DEFAULT: "hsl(var(--secondary))",
+              foreground: "hsl(var(--secondary-foreground))",
+            },
+            muted: {
+              DEFAULT: "hsl(var(--muted))",
+              foreground: "hsl(var(--muted-foreground))",
+            },
+            accent: {
+              DEFAULT: "hsl(var(--accent))",
+              foreground: "hsl(var(--accent-foreground))",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 217.2 32.6% 17.5%;
+      --secondary-foreground: 210 40% 98%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --accent: 217.2 32.6% 17.5%;
+      --accent-foreground: 210 40% 98%;
+      --border: 217.2 32.6% 17.5%;
+      --input: 217.2 32.6% 17.5%;
+      --ring: 224.3 76.3% 48%;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">Tools Panel - Phase 3 Mockup</h1>
+      <p class="text-slate-400">Right-side settings panel with tabbed interface. Tools tab active by default.</p>
+    </div>
+
+    <!-- Component States Grid -->
+    <div class="grid grid-cols-3 gap-8">
+      
+      <!-- State 1: Default (Tools tab active, toolkits expanded) -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Default State</h3>
+        <div class="w-80 bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+          <!-- Tab bar -->
+          <div class="flex border-b border-slate-800">
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-white border-b-2 border-primary">
+              Tools
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white">
+              Inputs
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white">
+              Config
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white">
+              Connect
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white">
+              Test
+            </button>
+          </div>
+          
+          <!-- Tools tab content -->
+          <div class="p-4">
+            <!-- Search -->
+            <div class="relative mb-4">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search tools..."
+                class="w-full h-9 pl-9 pr-3 bg-slate-800/50 border border-slate-700 rounded-md text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent"
+              />
+            </div>
+
+            <!-- Toolkit Groups -->
+            <div class="space-y-3">
+              <!-- Firecrawl (expanded) -->
+              <div class="border border-slate-800 rounded-lg bg-slate-800/30">
+                <button class="w-full flex items-center justify-between p-3 hover:bg-slate-800/50 transition-colors">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <span class="text-sm font-medium text-white">Firecrawl</span>
+                    <span class="text-xs text-slate-500">(5)</span>
+                  </div>
+                </button>
+                <div class="border-t border-slate-700/50">
+                  <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors border-b border-slate-700/30 last:border-b-0">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm text-white font-medium">Scrape URL</span>
+                      <span class="text-xs text-slate-500">3 in, 5 out</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">Scrape content from any URL and extract structured data</p>
+                  </button>
+                  <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors border-b border-slate-700/30 last:border-b-0">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm text-white font-medium">Crawl Website</span>
+                      <span class="text-xs text-slate-500">2 in, 3 out</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">Crawl entire website and extract pages</p>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Gmail (collapsed) -->
+              <div class="border border-slate-800 rounded-lg bg-slate-800/30">
+                <button class="w-full flex items-center justify-between p-3 hover:bg-slate-800/50 transition-colors">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span class="text-sm font-medium text-white">Gmail</span>
+                    <span class="text-xs text-slate-500">(12)</span>
+                  </div>
+                </button>
+              </div>
+
+              <!-- GitHub (collapsed) -->
+              <div class="border border-slate-800 rounded-lg bg-slate-800/30">
+                <button class="w-full flex items-center justify-between p-3 hover:bg-slate-800/50 transition-colors">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span class="text-sm font-medium text-white">GitHub</span>
+                    <span class="text-xs text-slate-500">(24)</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 2: Loading -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Loading State</h3>
+        <div class="w-80 bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+          <!-- Tab bar -->
+          <div class="flex border-b border-slate-800">
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-white border-b-2 border-primary">
+              Tools
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Inputs
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Config
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Connect
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Test
+            </button>
+          </div>
+          
+          <!-- Loading content -->
+          <div class="p-4 flex items-center justify-center min-h-[300px]">
+            <div class="text-center">
+              <svg class="animate-spin h-8 w-8 text-primary mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p class="text-sm text-slate-400">Loading tools...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 3: Error -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Error State</h3>
+        <div class="w-80 bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+          <!-- Tab bar -->
+          <div class="flex border-b border-slate-800">
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-white border-b-2 border-primary">
+              Tools
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Inputs
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Config
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Connect
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Test
+            </button>
+          </div>
+          
+          <!-- Error content -->
+          <div class="p-4 flex items-center justify-center min-h-[300px]">
+            <div class="text-center">
+              <div class="h-12 w-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-3">
+                <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <p class="text-sm text-red-400 mb-3">Failed to load tools</p>
+              <button class="px-4 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-white rounded-md transition-colors">
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 4: Search with results -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Search Results</h3>
+        <div class="w-80 bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+          <!-- Tab bar -->
+          <div class="flex border-b border-slate-800">
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-white border-b-2 border-primary">
+              Tools
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Inputs
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Config
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Connect
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Test
+            </button>
+          </div>
+          
+          <!-- Tools tab content -->
+          <div class="p-4">
+            <!-- Search with query -->
+            <div class="relative mb-4">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value="email"
+                class="w-full h-9 pl-9 pr-8 bg-slate-800/50 border border-primary/50 rounded-md text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              <button class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Filtered results -->
+            <div class="space-y-3">
+              <!-- Gmail (expanded, filtered) -->
+              <div class="border border-slate-800 rounded-lg bg-slate-800/30">
+                <button class="w-full flex items-center justify-between p-3 hover:bg-slate-800/50 transition-colors">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <span class="text-sm font-medium text-white">Gmail</span>
+                    <span class="text-xs text-slate-500">(3 matches)</span>
+                  </div>
+                </button>
+                <div class="border-t border-slate-700/50">
+                  <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors border-b border-slate-700/30">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm text-white font-medium">Send <mark class="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">Email</mark></span>
+                      <span class="text-xs text-slate-500">4 in, 2 out</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">Send an <mark class="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">email</mark> via Gmail</p>
+                  </button>
+                  <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors border-b border-slate-700/30">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm text-white font-medium">List <mark class="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">Email</mark>s</span>
+                      <span class="text-xs text-slate-500">2 in, 4 out</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">Get <mark class="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">email</mark> list from inbox</p>
+                  </button>
+                  <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm text-white font-medium">Read <mark class="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">Email</mark></span>
+                      <span class="text-xs text-slate-500">1 in, 6 out</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">Get full <mark class="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">email</mark> content by ID</p>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 5: No results -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">No Results</h3>
+        <div class="w-80 bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+          <!-- Tab bar -->
+          <div class="flex border-b border-slate-800">
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-white border-b-2 border-primary">
+              Tools
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Inputs
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Config
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Connect
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Test
+            </button>
+          </div>
+          
+          <!-- Tools tab content -->
+          <div class="p-4">
+            <!-- Search with query -->
+            <div class="relative mb-4">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value="xyz123"
+                class="w-full h-9 pl-9 pr-8 bg-slate-800/50 border border-slate-700 rounded-md text-sm text-white placeholder-slate-500 focus:outline-none"
+              />
+              <button class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- No results -->
+            <div class="text-center py-12">
+              <div class="h-12 w-12 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-3">
+                <svg class="h-6 w-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p class="text-sm text-slate-400 mb-1">No tools found</p>
+              <p class="text-xs text-slate-500">Try a different search term</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 6: Hover on tool item -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Tool Item Hover</h3>
+        <div class="w-80 bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+          <!-- Tab bar -->
+          <div class="flex border-b border-slate-800">
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-white border-b-2 border-primary">
+              Tools
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Inputs
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Config
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Connect
+            </button>
+            <button class="flex-1 px-3 py-2.5 text-xs font-medium text-slate-400 border-b-2 border-transparent">
+              Test
+            </button>
+          </div>
+          
+          <!-- Tools tab content -->
+          <div class="p-4">
+            <!-- Search -->
+            <div class="relative mb-4">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search tools..."
+                class="w-full h-9 pl-9 pr-3 bg-slate-800/50 border border-slate-700 rounded-md text-sm text-white placeholder-slate-500"
+              />
+            </div>
+
+            <!-- Toolkit Groups -->
+            <div class="space-y-3">
+              <!-- Firecrawl (expanded) with hover state -->
+              <div class="border border-slate-800 rounded-lg bg-slate-800/30">
+                <button class="w-full flex items-center justify-between p-3 hover:bg-slate-800/50 transition-colors">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <span class="text-sm font-medium text-white">Firecrawl</span>
+                    <span class="text-xs text-slate-500">(5)</span>
+                  </div>
+                </button>
+                <div class="border-t border-slate-700/50">
+                  <!-- Hovered item -->
+                  <button class="w-full text-left px-3 py-2.5 bg-primary/10 border-l-2 border-primary transition-colors">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm text-white font-medium">Scrape URL</span>
+                      <span class="text-xs text-primary">3 in, 5 out</span>
+                    </div>
+                    <p class="text-xs text-slate-300 line-clamp-2">Scrape content from any URL and extract structured data</p>
+                    <div class="mt-2 flex items-center gap-1 text-xs text-primary">
+                      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                      </svg>
+                      Click to add step
+                    </div>
+                  </button>
+                  <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm text-white font-medium">Crawl Website</span>
+                      <span class="text-xs text-slate-500">2 in, 3 out</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">Crawl entire website and extract pages</p>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Annotations -->
+    <div class="mt-12 p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+      <h2 class="text-lg font-semibold mb-4">Design Notes</h2>
+      <div class="grid grid-cols-2 gap-6 text-sm">
+        <div>
+          <h3 class="font-medium text-primary mb-2">Tab Bar</h3>
+          <ul class="space-y-1 text-slate-400">
+            <li>• 5 tabs: Tools, Inputs, Config, Connect, Test</li>
+            <li>• Tools tab active by default</li>
+            <li>• Active tab: white text + primary border-bottom</li>
+            <li>• Inactive tabs: slate-400 text, hover → white</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-medium text-primary mb-2">Search</h3>
+          <ul class="space-y-1 text-slate-400">
+            <li>• Search icon left, clear button right (when has text)</li>
+            <li>• Filters both toolkit names and tool names</li>
+            <li>• Highlights matching text in yellow</li>
+            <li>• Shows "(X matches)" count in toolkit header</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-medium text-primary mb-2">Toolkit Groups</h3>
+          <ul class="space-y-1 text-slate-400">
+            <li>• Collapsible with chevron indicator</li>
+            <li>• Shows toolkit name + tool count</li>
+            <li>• First toolkit expanded by default</li>
+            <li>• Border + subtle background</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-medium text-primary mb-2">Tool Items</h3>
+          <ul class="space-y-1 text-slate-400">
+            <li>• Tool name (font-medium) + schema counts badge</li>
+            <li>• Description (2-line max, truncated)</li>
+            <li>• Hover: bg-primary/10, left border, "Click to add" hint</li>
+            <li>• Click → adds step to workflow</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

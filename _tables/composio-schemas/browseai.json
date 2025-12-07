@@ -1,0 +1,1179 @@
+{
+  "slug": "browseai",
+  "name": "Browseai",
+  "logo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master/browseai.svg",
+  "tools": [
+    {
+      "slug": "BROWSEAI_BULK_RUN_TASKS",
+      "name": "Bulk Run Tasks",
+      "description": "This action allows users to bulk run up to 50,000 tasks using a specified robot. It provides a POST endpoint at /v2/robots/{robotId}/bulk-tasks and supports parameters such as robot_id (required), title (required), and input_parameters (required). This bulk operation is essential for large-scale data extraction.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "input_parameters": {
+            "type": "array",
+            "description": "Array of input parameters for each task to run. Each item is a dictionary of parameters for a single task. Maximum 50,000 tasks allowed.",
+            "title": "Input Parameters",
+            "items": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            "examples": [
+              [
+                {
+                  "originUrl": "https://www.example.com/page1",
+                  "parameter1": "value1"
+                },
+                {
+                  "originUrl": "https://www.example.com/page2",
+                  "parameter1": "value2"
+                }
+              ]
+            ]
+          },
+          "robot_id": {
+            "type": "string",
+            "description": "The unique ID of the robot to run bulk tasks with.",
+            "title": "Robot Id",
+            "examples": [
+              "c3689adb-50aa-44af-b265-a7e0d4e5846e"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "description": "A descriptive title for the bulk run (1-200 characters).",
+            "title": "Title",
+            "minLength": 1,
+            "maxLength": 200,
+            "examples": [
+              "Bulk Run Title"
+            ]
+          }
+        },
+        "required": [
+          "robot_id",
+          "title",
+          "input_parameters"
+        ],
+        "title": "BulkRunTasksRequest",
+        "description": "Request model for bulk running tasks."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "bulk_run": {
+                "type": "object",
+                "description": "Information about the created bulk run.",
+                "title": "Bulk Run",
+                "properties": {
+                  "created_at": {
+                    "type": "integer",
+                    "description": "Unix timestamp of when the bulk run was created.",
+                    "title": "Created At"
+                  },
+                  "failed_tasks": {
+                    "type": "integer",
+                    "description": "Number of failed tasks.",
+                    "title": "Failed Tasks"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The unique ID of the bulk run.",
+                    "title": "Id"
+                  },
+                  "robot_id": {
+                    "type": "string",
+                    "description": "The ID of the robot used for the bulk run.",
+                    "title": "Robot Id"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The current status of the bulk run.",
+                    "title": "Status"
+                  },
+                  "successful_tasks": {
+                    "type": "integer",
+                    "description": "Number of successfully completed tasks.",
+                    "title": "Successful Tasks"
+                  },
+                  "tasks_count": {
+                    "type": "integer",
+                    "description": "Total number of tasks in the bulk run.",
+                    "title": "Tasks Count"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "The title of the bulk run.",
+                    "title": "Title"
+                  }
+                },
+                "required": [
+                  "id",
+                  "title",
+                  "status",
+                  "tasks_count",
+                  "successful_tasks",
+                  "failed_tasks",
+                  "robot_id",
+                  "created_at"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "bulk_run"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "BulkRunTasksResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_CREATE_MONITOR",
+      "name": "Create Monitor",
+      "description": "This tool creates a new monitor for a specific robot in Browse AI. It allows you to configure a monitor with a schedule (frequency and interval) for automatic execution, along with optional custom name and input parameters, enabling automated tracking of website changes.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "input_parameters": {
+            "type": "object",
+            "description": "Input parameters to override default input parameters",
+            "title": "Input Parameters",
+            "additionalProperties": true,
+            "examples": [
+              {
+                "companies_limit": 10,
+                "companies_skip": 0,
+                "originUrl": "https://www.example.com"
+              }
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "Monitor name [1-200 characters]",
+            "title": "Name",
+            "minLength": 1,
+            "maxLength": 200,
+            "examples": [
+              "Monitor Products"
+            ]
+          },
+          "notify_on_screenshot_change": {
+            "type": "boolean",
+            "description": "Send email notification for screenshot changes",
+            "title": "Notify On Screenshot Change",
+            "examples": [
+              true
+            ]
+          },
+          "notify_on_text_change": {
+            "type": "boolean",
+            "description": "Send email notification for text changes",
+            "title": "Notify On Text Change",
+            "examples": [
+              true
+            ]
+          },
+          "robot_id": {
+            "type": "string",
+            "description": "Unique robot ID. You can find a robot's ID by opening it on the dashboard.",
+            "title": "Robot Id",
+            "examples": [
+              "c3689adb-50aa-44af-b265-a7e0d4e5846e"
+            ]
+          },
+          "schedule": {
+            "type": "string",
+            "description": "Recurring schedule in format 'FREQ=HOURLY;INTERVAL=1;BYWEEKDAY=MO,TU,WE,TH,FR'",
+            "title": "Schedule",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              "FREQ=HOURLY;INTERVAL=1;BYWEEKDAY=MO,TU,WE,TH,FR"
+            ]
+          },
+          "screenshot_notification_threshold": {
+            "type": "integer",
+            "description": "Threshold percentage for screenshot change notifications",
+            "title": "Screenshot Notification Threshold",
+            "minimum": 0,
+            "maximum": 100,
+            "examples": [
+              15
+            ]
+          }
+        },
+        "required": [
+          "robot_id",
+          "name",
+          "input_parameters",
+          "notify_on_screenshot_change",
+          "notify_on_text_change",
+          "screenshot_notification_threshold"
+        ],
+        "title": "CreateMonitorRequest",
+        "description": "Request model for creating a monitor."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "messageCode": {
+                "type": "string",
+                "description": "Response message code",
+                "title": "Message Code"
+              },
+              "monitor": {
+                "type": "object",
+                "description": "Created monitor details",
+                "title": "Monitor",
+                "properties": {
+                  "capturedScreenshotNotificationThreshold": {
+                    "type": "integer",
+                    "description": "Threshold for screenshot change notifications",
+                    "title": "Captured Screenshot Notification Threshold"
+                  },
+                  "createdAt": {
+                    "type": "integer",
+                    "description": "Monitor creation timestamp",
+                    "title": "Created At"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Unique monitor ID",
+                    "title": "Id"
+                  },
+                  "inputParameters": {
+                    "type": "object",
+                    "description": "Input parameters for the monitor",
+                    "title": "Input Parameters",
+                    "additionalProperties": true
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Monitor name",
+                    "title": "Name"
+                  },
+                  "notifyOnCapturedScreenshotChange": {
+                    "type": "boolean",
+                    "description": "Whether to notify on screenshot changes",
+                    "title": "Notify On Captured Screenshot Change"
+                  },
+                  "notifyOnCapturedTextChange": {
+                    "type": "boolean",
+                    "description": "Whether to notify on text changes",
+                    "title": "Notify On Captured Text Change"
+                  },
+                  "pausedAt": {
+                    "type": "integer",
+                    "description": "Monitor pause timestamp if applicable",
+                    "title": "Paused At",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "pausedReason": {
+                    "type": "string",
+                    "description": "Reason for paused status if applicable",
+                    "title": "Paused Reason",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "schedule": {
+                    "type": "string",
+                    "description": "Monitor schedule",
+                    "title": "Schedule",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Monitor status",
+                    "title": "Status"
+                  },
+                  "updatedAt": {
+                    "type": "integer",
+                    "description": "Monitor last update timestamp",
+                    "title": "Updated At"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "status",
+                  "inputParameters",
+                  "notifyOnCapturedScreenshotChange",
+                  "notifyOnCapturedTextChange",
+                  "capturedScreenshotNotificationThreshold",
+                  "createdAt",
+                  "updatedAt"
+                ],
+                "additionalProperties": false
+              },
+              "statusCode": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "title": "Status Code"
+              }
+            },
+            "required": [
+              "statusCode",
+              "messageCode",
+              "monitor"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CreateMonitorResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_CREATE_WEBHOOK",
+      "name": "Create Webhook",
+      "description": "This tool creates a new webhook for a BrowseAI robot. Webhooks are used to receive notifications when tasks are completed or data changes are detected. The webhook will be called with the task details when specific events occur. It is useful for: - Setting up automated notifications for task completion - Receiving real-time updates when changes are detected - Integrating BrowseAI with your own systems - Automating workflows based on robot task results The webhook can be configured to trigger on different events: - task.completed: When a task is successfully completed - task.failed: When a task fails - changes.detected: When changes are detected during monitoring",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "A description of the webhook",
+            "title": "Description",
+            "default": null,
+            "nullable": true,
+            "examples": [
+              "Webhook for task completion notifications"
+            ]
+          },
+          "events": {
+            "type": "array",
+            "description": "List of events to trigger the webhook",
+            "title": "Events",
+            "default": [
+              "task.completed"
+            ],
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "examples": [
+              [
+                "task.completed",
+                "task.failed",
+                "changes.detected"
+              ]
+            ]
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Whether the webhook should be active immediately",
+            "title": "Is Active",
+            "default": true,
+            "nullable": true,
+            "examples": [
+              true
+            ]
+          },
+          "robot_id": {
+            "type": "string",
+            "description": "The ID of the robot to attach the webhook to",
+            "title": "Robot Id",
+            "examples": [
+              "robot_abc123"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "The URL where webhook notifications will be sent",
+            "title": "Url",
+            "minLength": 1,
+            "format": "uri",
+            "examples": [
+              "https://example.com/webhook"
+            ]
+          }
+        },
+        "required": [
+          "robot_id",
+          "url"
+        ],
+        "title": "CreateWebhookRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Details of the created webhook",
+            "title": "Data",
+            "properties": {
+              "createdAt": {
+                "type": "string",
+                "description": "ISO timestamp of when the webhook was created",
+                "title": "Created At"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the webhook",
+                "title": "Description",
+                "default": null,
+                "nullable": true
+              },
+              "events": {
+                "type": "array",
+                "description": "List of events that trigger this webhook",
+                "title": "Events",
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              },
+              "id": {
+                "type": "string",
+                "description": "Unique identifier of the created webhook",
+                "title": "Id"
+              },
+              "isActive": {
+                "type": "boolean",
+                "description": "Whether the webhook is currently active",
+                "title": "Is Active"
+              },
+              "robotId": {
+                "type": "string",
+                "description": "The ID of the robot this webhook is attached to",
+                "title": "Robot Id"
+              },
+              "url": {
+                "type": "string",
+                "description": "The URL where webhook notifications will be sent",
+                "title": "Url"
+              }
+            },
+            "required": [
+              "id",
+              "url",
+              "robotId",
+              "events",
+              "isActive",
+              "createdAt"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CreateWebhookResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_DELETE_MONITOR",
+      "name": "Delete a specific monitor",
+      "description": "This tool allows users to delete a specific monitor from their Browse AI account. It uses the DELETE method and requires a valid monitor_id.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "monitor_id": {
+            "type": "string",
+            "description": "The unique ID of the monitor to be deleted",
+            "title": "Monitor Id",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "examples": [
+              "c3689adb-50aa-44af-b265-a7e0d4e5846e"
+            ]
+          }
+        },
+        "required": [
+          "monitor_id"
+        ],
+        "title": "DeleteMonitorRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "Success or error message",
+                "title": "Message",
+                "default": "Monitor deleted successfully"
+              },
+              "success": {
+                "type": "boolean",
+                "description": "Whether the deletion was successful",
+                "title": "Success",
+                "default": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "DeleteMonitorResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_DELETE_TASK",
+      "name": "Delete a specific task",
+      "description": "This tool allows you to delete a specific task in BrowseAI by its task ID. It is used for cleaning up completed or failed tasks, managing resources, and maintaining your task list.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "robot_id": {
+            "type": "string",
+            "description": "The unique ID of the robot that created the task",
+            "title": "Robot Id",
+            "examples": [
+              "c3689adb-50aa-44af-b265-a7e0d4e5846e"
+            ]
+          },
+          "task_id": {
+            "type": "string",
+            "description": "The unique ID of the task to be deleted",
+            "title": "Task Id",
+            "examples": [
+              "f3672790-4561-424b-8a7b-7b7df182b236"
+            ]
+          }
+        },
+        "required": [
+          "robot_id",
+          "task_id"
+        ],
+        "title": "DeleteTaskRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "message_code": {
+                "type": "string",
+                "description": "Success or error message",
+                "title": "Message Code",
+                "default": null,
+                "nullable": true
+              },
+              "status_code": {
+                "type": "integer",
+                "description": "HTTP status code of the operation",
+                "title": "Status Code",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "DeleteTaskResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_GET_ROBOTS",
+      "name": "Get Robots List",
+      "description": "This tool retrieves a list of all robots under your account in Browse AI. Each robot represents an automated task that can be trained to perform various web operations like opening webpages, logging in, clicking buttons, filling forms, extracting data, and monitoring changes. It is useful for: - Getting an overview of all your automated tasks - Checking the status of your robots - Retrieving robot IDs for use with other API endpoints - Monitoring when robots were last updated or created",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "GetRobotsRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "messageCode": {
+                "type": "string",
+                "description": "Response message code",
+                "title": "Message Code"
+              },
+              "robots": {
+                "type": "object",
+                "description": "Robots data containing total count and items",
+                "title": "Robots",
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "description": "List of robots under your account",
+                    "title": "Items",
+                    "items": {
+                      "type": "object",
+                      "title": "Robot",
+                      "properties": {
+                        "createdAt": {
+                          "type": "string",
+                          "description": "ISO timestamp of when the robot was created",
+                          "title": "Created At"
+                        },
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier of the robot",
+                          "title": "Id"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the robot",
+                          "title": "Name"
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Current status of the robot (e.g., 'active', 'inactive')",
+                          "title": "Status"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "description": "ISO timestamp of when the robot was last updated",
+                          "title": "Updated At",
+                          "default": null,
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "createdAt",
+                        "status"
+                      ]
+                    }
+                  },
+                  "totalCount": {
+                    "type": "integer",
+                    "description": "Total number of robots",
+                    "title": "Total Count"
+                  }
+                },
+                "required": [
+                  "totalCount",
+                  "items"
+                ],
+                "additionalProperties": false
+              },
+              "statusCode": {
+                "type": "integer",
+                "description": "HTTP status code",
+                "title": "Status Code"
+              }
+            },
+            "required": [
+              "statusCode",
+              "messageCode",
+              "robots"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetRobotsResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_GET_ROBOT_TASKS",
+      "name": "Get Robot Tasks",
+      "description": "This tool retrieves all tasks associated with a specific robot in Browse AI. It provides a paginated list of tasks with their details including status, input parameters, captured data, screenshots, and lists. It is useful for: - Monitoring task execution status - Retrieving captured data and screenshots - Analyzing task execution history - Debugging robot performance",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Number of tasks to return per request",
+            "title": "Limit",
+            "default": null,
+            "nullable": true,
+            "minimum": 1
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Pagination offset for the results",
+            "title": "Offset",
+            "default": null,
+            "nullable": true,
+            "minimum": 0
+          },
+          "robot_id": {
+            "type": "string",
+            "description": "The unique identifier of the robot whose tasks you want to retrieve",
+            "title": "Robot Id",
+            "examples": [
+              "robot_12345"
+            ]
+          }
+        },
+        "required": [
+          "robot_id"
+        ],
+        "title": "GetRobotTasksRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "List of tasks associated with the robot",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "title": "TaskResult",
+              "properties": {
+                "capturedData": {
+                  "type": "object",
+                  "description": "Data captured during the task execution",
+                  "title": "Captured Data",
+                  "default": null,
+                  "nullable": true,
+                  "additionalProperties": true
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "ISO timestamp of when the task was created",
+                  "title": "Created At"
+                },
+                "lists": {
+                  "type": "array",
+                  "description": "List of data items extracted during the task execution",
+                  "title": "Lists",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": true
+                  }
+                },
+                "parameters": {
+                  "type": "object",
+                  "description": "Input parameters used for the task execution",
+                  "title": "Parameters",
+                  "default": null,
+                  "nullable": true,
+                  "additionalProperties": true
+                },
+                "screenshots": {
+                  "type": "array",
+                  "description": "List of screenshot URLs captured during the task execution",
+                  "title": "Screenshots",
+                  "default": null,
+                  "nullable": true,
+                  "items": {
+                    "type": "string",
+                    "properties": {}
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Status of the task execution",
+                  "title": "Status"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "description": "ISO timestamp of when the task was last updated",
+                  "title": "Updated At",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "required": [
+                "status",
+                "createdAt"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetRobotTasksResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_GET_TASK_DETAILS",
+      "name": "Get Task Details",
+      "description": "This tool retrieves detailed information about a specific task in Browse AI by its task ID. It returns comprehensive details including the task's status, execution results, associated metadata, timestamps, and configuration. It complements existing tools by providing an in-depth view of individual task execution, including metadata and error details if applicable.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "The unique identifier of the task to retrieve details for",
+            "title": "Task Id",
+            "examples": [
+              "task_12345"
+            ]
+          }
+        },
+        "required": [
+          "task_id"
+        ],
+        "title": "GetTaskDetailsRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Detailed information about the requested task",
+            "title": "Data",
+            "properties": {
+              "capturedData": {
+                "type": "object",
+                "description": "Data captured during the task execution",
+                "title": "Captured Data",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              },
+              "completedAt": {
+                "type": "string",
+                "description": "ISO timestamp of when the task execution completed",
+                "title": "Completed At",
+                "default": null,
+                "nullable": true
+              },
+              "createdAt": {
+                "type": "string",
+                "description": "ISO timestamp of when the task was created",
+                "title": "Created At"
+              },
+              "error": {
+                "type": "object",
+                "description": "Error details if the task failed",
+                "title": "Error",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              },
+              "id": {
+                "type": "string",
+                "description": "The unique identifier of the task",
+                "title": "Id"
+              },
+              "lists": {
+                "type": "array",
+                "description": "List of data items extracted during the task execution",
+                "title": "Lists",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "parameters": {
+                "type": "object",
+                "description": "Input parameters used for the task execution",
+                "title": "Parameters",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              },
+              "robotId": {
+                "type": "string",
+                "description": "The ID of the robot that executed this task",
+                "title": "Robot Id"
+              },
+              "screenshots": {
+                "type": "array",
+                "description": "List of screenshot URLs captured during the task execution",
+                "title": "Screenshots",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              },
+              "startedAt": {
+                "type": "string",
+                "description": "ISO timestamp of when the task execution started",
+                "title": "Started At",
+                "default": null,
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "description": "Current status of the task",
+                "title": "Status"
+              },
+              "updatedAt": {
+                "type": "string",
+                "description": "ISO timestamp of when the task was last updated",
+                "title": "Updated At",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "status",
+              "createdAt",
+              "robotId"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetTaskDetailsResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    },
+    {
+      "slug": "BROWSEAI_RUN_ROBOT",
+      "name": "Run Robot",
+      "description": "This tool allows you to trigger the execution of a BrowseAI robot on demand. The tool will run a specified robot with the provided parameters and return the task details. It requires a robot_id and optional input_parameters (such as URL, search term, or other parameters) to configure the robot's execution. It is useful for: - Starting robot executions programmatically - Automating data collection tasks - Triggering robots with custom parameters - Integrating robot execution in workflows",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "input_parameters": {
+            "type": "object",
+            "description": "Custom parameters for the robot execution (such as URL, search term, or other parameters)",
+            "title": "Input Parameters",
+            "default": null,
+            "nullable": true,
+            "additionalProperties": true,
+            "examples": [
+              {
+                "search_term": "example",
+                "url": "https://example.com"
+              }
+            ]
+          },
+          "robot_id": {
+            "type": "string",
+            "description": "The unique identifier of the robot to run",
+            "title": "Robot Id",
+            "examples": [
+              "robot_12345"
+            ]
+          }
+        },
+        "required": [
+          "robot_id"
+        ],
+        "title": "RunRobotRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "result": {
+                "type": "object",
+                "description": "Details of the created task",
+                "title": "Result",
+                "properties": {
+                  "createdAt": {
+                    "type": "string",
+                    "description": "ISO timestamp of when the task was created",
+                    "title": "Created At"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The unique identifier of the created task",
+                    "title": "Id"
+                  },
+                  "parameters": {
+                    "type": "object",
+                    "description": "The input parameters used for the task",
+                    "title": "Parameters",
+                    "default": null,
+                    "nullable": true,
+                    "additionalProperties": true
+                  },
+                  "robotId": {
+                    "type": "string",
+                    "description": "The ID of the robot that was executed",
+                    "title": "Robot Id"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The current status of the task",
+                    "title": "Status"
+                  }
+                },
+                "required": [
+                  "id",
+                  "status",
+                  "createdAt",
+                  "robotId"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "RunRobotResponseWrapper"
+      },
+      "toolkitSlug": "browseai"
+    }
+  ],
+  "toolCount": 9
+}

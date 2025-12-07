@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List View - Control Flow Patterns</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">List View - Control Flow Patterns</h1>
+      <p class="text-slate-400">How control flow primitives (branch, parallel, loop, foreach) appear in list view. Uses indentation, grouping, and badges.</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8">
+      <!-- Pattern 1: Simple Sequential -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-primary mb-2">Simple Sequential</h3>
+        <p class="text-xs text-slate-500 mb-4">.then(A).then(B).then(C)</p>
+        
+        <div class="space-y-3 max-w-sm">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">1</div>
+              <span class="text-sm text-white">Step A</span>
+            </div>
+          </div>
+          
+          <div class="flex justify-center">
+            <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+          
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">2</div>
+              <span class="text-sm text-white">Step B</span>
+            </div>
+          </div>
+          
+          <div class="flex justify-center">
+            <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+          
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">3</div>
+              <span class="text-sm text-white">Step C</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="mt-4 text-xs text-slate-400">Simple vertical stack with arrows between cards.</p>
+      </div>
+
+      <!-- Pattern 2: With Data Mapping -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-primary mb-2">With Data Mapping</h3>
+        <p class="text-xs text-slate-500 mb-4">.then(A).map(...).then(B)</p>
+        
+        <div class="space-y-2 max-w-sm">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">1</div>
+              <div>
+                <span class="text-sm text-white">Scrape Job</span>
+                <div class="text-[10px] text-emerald-400 mt-0.5">Out: title, company</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mapping Badge -->
+          <div class="flex justify-center py-1">
+            <button class="flex items-center gap-1.5 px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-full text-[10px] text-slate-300 border border-slate-700">
+              <svg class="h-3 w-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+              </svg>
+              <span class="text-primary font-medium">2 fields mapped</span>
+            </button>
+          </div>
+          
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">2</div>
+              <div>
+                <span class="text-sm text-white">Generate Email</span>
+                <div class="text-[10px] text-indigo-400 mt-0.5">In: jobTitle, companyName</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <p class="mt-4 text-xs text-slate-400">Clickable badge between cards shows mapping. Click to edit.</p>
+      </div>
+
+      <!-- Pattern 3: Branch (IF/ELSE) -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-amber-400 mb-2">Branch (IF/ELSE)</h3>
+        <p class="text-xs text-slate-500 mb-4">.branch([[cond, A], [else, B]])</p>
+        
+        <div class="space-y-2 max-w-sm">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">1</div>
+              <span class="text-sm text-white">Check Condition</span>
+            </div>
+          </div>
+          
+          <!-- Branch Container -->
+          <div class="border border-dashed border-amber-500/30 rounded-lg p-3 bg-amber-500/5">
+            <div class="flex items-center gap-2 mb-3">
+              <svg class="h-4 w-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="text-xs font-medium text-amber-400">BRANCH</span>
+            </div>
+            
+            <!-- IF Path -->
+            <div class="mb-2">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] text-amber-400 bg-amber-500/20 px-1.5 py-0.5 rounded">IF</span>
+                <code class="text-[10px] text-amber-300">exp > 5</code>
+              </div>
+              <div class="ml-4 bg-slate-900 border border-amber-500/30 rounded p-2">
+                <span class="text-xs text-white">Senior Path</span>
+              </div>
+            </div>
+            
+            <!-- ELSE Path -->
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] text-slate-400 bg-slate-700 px-1.5 py-0.5 rounded">ELSE</span>
+              </div>
+              <div class="ml-4 bg-slate-900 border border-slate-700 rounded p-2">
+                <span class="text-xs text-white">Junior Path</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">2</div>
+              <span class="text-sm text-white">Continue</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="mt-4 text-xs text-slate-400">Dashed container with IF/ELSE labels. Indented paths.</p>
+      </div>
+
+      <!-- Pattern 4: Parallel -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-cyan-400 mb-2">Parallel Execution</h3>
+        <p class="text-xs text-slate-500 mb-4">.parallel([A, B, C])</p>
+        
+        <div class="space-y-2 max-w-sm">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">1</div>
+              <span class="text-sm text-white">Start</span>
+            </div>
+          </div>
+          
+          <!-- Parallel Container -->
+          <div class="border border-dashed border-cyan-500/30 rounded-lg p-3 bg-cyan-500/5">
+            <div class="flex items-center gap-2 mb-3">
+              <svg class="h-4 w-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+              </svg>
+              <span class="text-xs font-medium text-cyan-400">PARALLEL</span>
+              <span class="text-[10px] text-cyan-300">(runs simultaneously)</span>
+            </div>
+            
+            <div class="space-y-2">
+              <div class="bg-slate-900 border border-cyan-500/30 rounded p-2 flex items-center gap-2">
+                <span class="text-[10px] text-cyan-400 bg-cyan-500/20 px-1.5 rounded">A</span>
+                <span class="text-xs text-white">Fetch LinkedIn</span>
+              </div>
+              <div class="bg-slate-900 border border-cyan-500/30 rounded p-2 flex items-center gap-2">
+                <span class="text-[10px] text-cyan-400 bg-cyan-500/20 px-1.5 rounded">B</span>
+                <span class="text-xs text-white">Fetch GitHub</span>
+              </div>
+              <div class="bg-slate-900 border border-cyan-500/30 rounded p-2 flex items-center gap-2">
+                <span class="text-[10px] text-cyan-400 bg-cyan-500/20 px-1.5 rounded">C</span>
+                <span class="text-xs text-white">Fetch Portfolio</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">2</div>
+              <span class="text-sm text-white">Merge Results</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="mt-4 text-xs text-slate-400">Grouped cards in dashed container. All run at once.</p>
+      </div>
+
+      <!-- Pattern 5: Loop -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-violet-400 mb-2">Loop (Until/While)</h3>
+        <p class="text-xs text-slate-500 mb-4">.dountil(step, condition)</p>
+        
+        <div class="space-y-2 max-w-sm">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">1</div>
+              <span class="text-sm text-white">Start</span>
+            </div>
+          </div>
+          
+          <!-- Loop Container -->
+          <div class="border border-dashed border-violet-500/30 rounded-lg p-3 bg-violet-500/5 relative">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <svg class="h-4 w-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span class="text-xs font-medium text-violet-400">REPEAT UNTIL</span>
+              </div>
+              <code class="text-[10px] text-violet-300 bg-violet-500/20 px-1.5 py-0.5 rounded">status === 'done'</code>
+            </div>
+            
+            <div class="bg-slate-900 border border-violet-500/30 rounded p-2">
+              <span class="text-xs text-white">Retry API Call</span>
+            </div>
+            
+            <div class="mt-2 text-[10px] text-violet-300">
+              Max iterations: 5
+            </div>
+          </div>
+          
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">2</div>
+              <span class="text-sm text-white">Continue</span>
+            </div>
+          </div>
+        </div>
+        
+        <p class="mt-4 text-xs text-slate-400">Loop wrapper shows condition and max iterations.</p>
+      </div>
+
+      <!-- Pattern 6: ForEach -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-pink-400 mb-2">ForEach (Iteration)</h3>
+        <p class="text-xs text-slate-500 mb-4">.foreach(step, { concurrency: 3 })</p>
+        
+        <div class="space-y-2 max-w-sm">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">1</div>
+              <div>
+                <span class="text-sm text-white">Get Items</span>
+                <div class="text-[10px] text-emerald-400 mt-0.5">Out: items[]</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- ForEach Container -->
+          <div class="border border-dashed border-pink-500/30 rounded-lg p-3 bg-pink-500/5">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <svg class="h-4 w-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span class="text-xs font-medium text-pink-400">FOR EACH</span>
+                <code class="text-[10px] text-pink-300">item in items[]</code>
+              </div>
+              <span class="text-[10px] text-pink-300 bg-pink-500/20 px-1.5 py-0.5 rounded">×3</span>
+            </div>
+            
+            <div class="bg-slate-900 border border-pink-500/30 rounded p-2">
+              <span class="text-xs text-white">Process Item</span>
+              <div class="text-[10px] text-indigo-400 mt-0.5">In: item</div>
+            </div>
+          </div>
+          
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center text-[10px] font-semibold text-violet-400">2</div>
+              <div>
+                <span class="text-sm text-white">Collect Results</span>
+                <div class="text-[10px] text-indigo-400 mt-0.5">In: results[]</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <p class="mt-4 text-xs text-slate-400">Shows input array, concurrency, and output array.</p>
+      </div>
+    </div>
+
+    <!-- Limitations Section -->
+    <div class="mt-12 p-6 bg-red-500/5 border border-red-500/20 rounded-lg">
+      <h2 class="text-lg font-semibold text-red-400 mb-4">List View Limitations</h2>
+      <div class="grid grid-cols-2 gap-6 text-sm">
+        <div>
+          <h3 class="font-medium text-white mb-2">When List View Struggles</h3>
+          <ul class="text-slate-400 space-y-1 text-xs">
+            <li>• Deeply nested control flow (branch inside loop inside parallel)</li>
+            <li>• Many parallel branches (>3-4 gets crowded)</li>
+            <li>• Complex data flow with multiple sources</li>
+            <li>• Non-linear execution paths</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-medium text-white mb-2">When to Suggest Canvas View</h3>
+          <ul class="text-slate-400 space-y-1 text-xs">
+            <li>• User adds nested control flow</li>
+            <li>• Workflow exceeds 10 steps</li>
+            <li>• Multiple parallel branches</li>
+            <li>• User explicitly wants spatial layout</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

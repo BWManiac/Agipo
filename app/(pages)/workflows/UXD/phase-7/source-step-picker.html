@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 7 - Step Output Path Picker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 p-8">
+  
+  <div class="max-w-lg mx-auto space-y-12">
+    
+    <!-- Path Picker - Schema Tree -->
+    <div>
+      <h1 class="text-lg font-semibold mb-2">Step Output - Path Picker</h1>
+      <p class="text-sm text-gray-500 mb-6">After selecting a step, browse its output schema to pick a specific path</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        
+        <!-- Header showing selected step -->
+        <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+          <div class="w-6 h-6 bg-orange-100 rounded flex items-center justify-center">
+            <span class="text-orange-600 text-[10px] font-bold">2</span>
+          </div>
+          <div>
+            <span class="text-xs font-medium text-gray-900">Fetch Webpage Content</span>
+            <span class="text-[10px] text-gray-500 ml-2">output schema</span>
+          </div>
+        </div>
+        
+        <!-- Schema tree -->
+        <div class="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+          
+          <!-- Root level -->
+          <div class="divide-y divide-gray-100">
+            
+            <!-- data (object) - expanded -->
+            <div>
+              <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 transition-colors text-left">
+                <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+                <span class="text-xs font-medium text-gray-900">data</span>
+                <span class="text-[10px] text-gray-500 bg-gray-200 px-1.5 py-0.5 rounded">object</span>
+              </button>
+              
+              <!-- Nested properties -->
+              <div class="pl-6 divide-y divide-gray-50 border-l border-gray-200 ml-3">
+                
+                <!-- content (string) - selectable -->
+                <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-blue-50 hover:border-l-2 hover:border-blue-500 hover:-ml-[2px] transition-colors text-left group">
+                  <span class="w-3"></span>
+                  <span class="text-xs text-gray-700 group-hover:text-gray-900">content</span>
+                  <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">string</span>
+                  <span class="text-[10px] text-gray-400 ml-auto opacity-0 group-hover:opacity-100">Click to select</span>
+                </button>
+                
+                <!-- contentLength (integer) -->
+                <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-blue-50 hover:border-l-2 hover:border-blue-500 hover:-ml-[2px] transition-colors text-left group">
+                  <span class="w-3"></span>
+                  <span class="text-xs text-gray-700 group-hover:text-gray-900">contentLength</span>
+                  <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">integer</span>
+                </button>
+                
+                <!-- title (string) - SELECTED -->
+                <button class="w-full flex items-center gap-2 px-3 py-2 bg-blue-50 border-l-2 border-blue-500 -ml-[2px] text-left">
+                  <span class="w-3"></span>
+                  <span class="text-xs text-gray-900 font-medium">title</span>
+                  <span class="text-[10px] text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">string</span>
+                  <svg class="h-3 w-3 text-blue-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+                
+                <!-- url (string) -->
+                <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-blue-50 hover:border-l-2 hover:border-blue-500 hover:-ml-[2px] transition-colors text-left group">
+                  <span class="w-3"></span>
+                  <span class="text-xs text-gray-700 group-hover:text-gray-900">url</span>
+                  <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">string</span>
+                </button>
+                
+                <!-- format (string) -->
+                <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-blue-50 hover:border-l-2 hover:border-blue-500 hover:-ml-[2px] transition-colors text-left group">
+                  <span class="w-3"></span>
+                  <span class="text-xs text-gray-700 group-hover:text-gray-900">format</span>
+                  <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">string</span>
+                </button>
+                
+                <!-- sessionId (string) -->
+                <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-blue-50 hover:border-l-2 hover:border-blue-500 hover:-ml-[2px] transition-colors text-left group">
+                  <span class="w-3"></span>
+                  <span class="text-xs text-gray-700 group-hover:text-gray-900">sessionId</span>
+                  <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">string</span>
+                </button>
+                
+              </div>
+            </div>
+            
+            <!-- successful (boolean) -->
+            <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-blue-50 transition-colors text-left group">
+              <span class="w-3"></span>
+              <span class="text-xs text-gray-700 group-hover:text-gray-900">successful</span>
+              <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">boolean</span>
+            </button>
+            
+            <!-- error (string) -->
+            <button class="w-full flex items-center gap-2 px-3 py-2 hover:bg-blue-50 transition-colors text-left group">
+              <span class="w-3"></span>
+              <span class="text-xs text-gray-700 group-hover:text-gray-900">error</span>
+              <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">string</span>
+            </button>
+            
+          </div>
+        </div>
+        
+        <!-- Selected path preview -->
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-gray-500 uppercase tracking-wide">Selected Path</span>
+              <div class="flex items-center gap-1.5 mt-1">
+                <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                <code class="text-xs text-gray-900 font-mono bg-gray-100 px-2 py-0.5 rounded">data.title</code>
+              </div>
+            </div>
+            <button class="px-3 py-1.5 bg-blue-500 text-white rounded-md text-xs font-medium hover:bg-blue-600 transition-colors">
+              Apply
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <!-- Manual path entry -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Alternative: Manual Path Entry</h2>
+      <p class="text-sm text-gray-500 mb-6">For power users who know the exact path</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            <span class="text-xs text-gray-600">Step 2 output path:</span>
+          </div>
+          
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              value="data.title"
+              class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-xs text-gray-900 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500"
+              placeholder="e.g., data.messages[0].subject"
+            />
+            <button class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-xs text-gray-700 hover:bg-gray-200 transition-colors">
+              Browse
+            </button>
+          </div>
+          
+          <p class="text-[10px] text-gray-500">
+            Use dot notation for nested paths. Arrays: <code class="bg-gray-100 px-1 rounded">data.items[0]</code>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Final bound state -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Final State: Field Bound</h2>
+      <p class="text-sm text-gray-500 mb-6">How the field looks after binding is complete</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex-1 min-w-0">
+              <span class="text-xs font-medium text-gray-900">subject</span>
+              <p class="text-[10px] text-gray-500 mt-0.5">Subject line of the email</p>
+            </div>
+          </div>
+          <div class="mt-2">
+            <button class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md text-xs hover:border-gray-300 transition-colors group">
+              <span class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                <span class="text-gray-500">Step 2:</span>
+                <code class="text-gray-900 font-mono font-medium">data.title</code>
+              </span>
+              <div class="flex items-center gap-1">
+                <span class="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100">Change</span>
+                <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,3296 @@
+{
+  "slug": "instagram",
+  "name": "Instagram",
+  "logo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master/instagram.svg",
+  "tools": [
+    {
+      "slug": "INSTAGRAM_CREATE_CAROUSEL_CONTAINER",
+      "name": "Create Carousel Container",
+      "description": "Create a draft carousel post with multiple images/videos before publishing.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "default": null,
+            "nullable": true
+          },
+          "child_image_files": {
+            "type": "array",
+            "description": "List of local image files to include as children",
+            "title": "Child Image Files",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "title": "FileUploadable",
+              "properties": {
+                "mimetype": {
+                  "type": "string",
+                  "description": "The MIME type of the file",
+                  "title": "Mimetype",
+                  "examples": [
+                    "application/pdf",
+                    "image/jpeg",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  ]
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The filename that will be used when uploading the file to the destination service",
+                  "title": "Name",
+                  "examples": [
+                    "document.pdf",
+                    "image.jpg",
+                    "report.docx"
+                  ]
+                },
+                "s3key": {
+                  "type": "string",
+                  "description": "The S3 key of a publicly accessible file, typically returned from a previous download action that stored the file in S3. This key references an existing file that can be uploaded to another service.",
+                  "title": "S3Key",
+                  "examples": [
+                    "47563/gmail/GET_ATTACHMENT/response/12345"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "mimetype",
+                "s3key"
+              ],
+              "file_uploadable": true
+            }
+          },
+          "child_image_urls": {
+            "type": "array",
+            "description": "List of image URLs to include as children",
+            "title": "Child Image Urls",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            }
+          },
+          "child_video_files": {
+            "type": "array",
+            "description": "List of local video files to include as children",
+            "title": "Child Video Files",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "title": "FileUploadable",
+              "properties": {
+                "mimetype": {
+                  "type": "string",
+                  "description": "The MIME type of the file",
+                  "title": "Mimetype",
+                  "examples": [
+                    "application/pdf",
+                    "image/jpeg",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  ]
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The filename that will be used when uploading the file to the destination service",
+                  "title": "Name",
+                  "examples": [
+                    "document.pdf",
+                    "image.jpg",
+                    "report.docx"
+                  ]
+                },
+                "s3key": {
+                  "type": "string",
+                  "description": "The S3 key of a publicly accessible file, typically returned from a previous download action that stored the file in S3. This key references an existing file that can be uploaded to another service.",
+                  "title": "S3Key",
+                  "examples": [
+                    "47563/gmail/GET_ATTACHMENT/response/12345"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "mimetype",
+                "s3key"
+              ],
+              "file_uploadable": true
+            }
+          },
+          "child_video_urls": {
+            "type": "array",
+            "description": "List of video URLs to include as children",
+            "title": "Child Video Urls",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            }
+          },
+          "children": {
+            "type": "array",
+            "description": "List of child creation_ids (image/video items)",
+            "title": "Children",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            }
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID",
+            "title": "Ig User Id"
+          }
+        },
+        "required": [
+          "ig_user_id"
+        ],
+        "title": "CreateCarouselContainerRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique identifier of the created carousel container. This container ID must be used in subsequent API calls to publish the carousel or check its status.",
+                "title": "Id"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CreateCarouselContainerResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_CREATE_MEDIA_CONTAINER",
+      "name": "Create Media Container",
+      "description": "Create a draft media container for photos/videos/reels before publishing.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "string",
+            "description": "Post caption",
+            "title": "Caption",
+            "default": null,
+            "nullable": true
+          },
+          "content_type": {
+            "type": "string",
+            "description": "What you want to post: 'photo', 'video', 'reel', or 'carousel_item' (for carousel drafts)",
+            "title": "Content Type",
+            "default": null,
+            "nullable": true,
+            "enum": [
+              "photo",
+              "video",
+              "reel",
+              "carousel_item"
+            ]
+          },
+          "cover_url": {
+            "type": "string",
+            "description": "Optional cover image URL for reels/videos",
+            "title": "Cover Url",
+            "default": null,
+            "nullable": true
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID",
+            "title": "Ig User Id"
+          },
+          "image_file": {
+            "title": "FileUploadable",
+            "description": "Local image file to upload. File will be uploaded to a public URL automatically. Use this instead of image_url for local files.",
+            "format": "path",
+            "type": "string",
+            "file_uploadable": true
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Public URL of the image. Must be a directly downloadable URL (no redirects) accessible to Meta crawlers. Supported formats: JPG, PNG (WebP not supported). Must pass correct Content-Type header, Content-Length header, max 8MB file size, minimum 320px width, aspect ratio between 4:5 and 1.91:1. URL must return the image file directly, not an HTML page.",
+            "title": "Image Url",
+            "default": null,
+            "nullable": true
+          },
+          "is_carousel_item": {
+            "type": "boolean",
+            "title": "Is Carousel Item",
+            "default": null,
+            "nullable": true
+          },
+          "media_type": {
+            "type": "string",
+            "description": "Explicit media type override, e.g., REELS or CAROUSEL.",
+            "title": "Media Type",
+            "default": null,
+            "nullable": true
+          },
+          "video_file": {
+            "title": "FileUploadable",
+            "description": "Local video file to upload. File will be uploaded to a public URL automatically. Use this instead of video_url for local files.",
+            "format": "path",
+            "type": "string",
+            "file_uploadable": true
+          },
+          "video_url": {
+            "type": "string",
+            "description": "Public URL of the video. Must be a directly downloadable URL (no redirects) accessible to Meta crawlers. Supported formats: MP4, MOV. Must pass correct Content-Type header, Content-Length header, max 100MB file size for feed videos, max 1GB for IGTV, minimum 3 seconds duration. URL must return the video file directly, not an HTML page.",
+            "title": "Video Url",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "ig_user_id"
+        ],
+        "title": "CreateMediaContainerRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The media container ID (also called creation_id) returned upon successful creation. This ID is used in the subsequent media_publish endpoint to publish the media to Instagram. Container IDs expire after 24 hours if not published.",
+                "title": "Id"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CreateMediaContainerResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_CREATE_POST",
+      "name": "Create Post",
+      "description": "Publish a draft media container to Instagram (final publishing step).",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "creation_id": {
+            "type": "string",
+            "description": "Draft ID returned from create actions",
+            "title": "Creation Id"
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID",
+            "title": "Ig User Id"
+          }
+        },
+        "required": [
+          "ig_user_id",
+          "creation_id"
+        ],
+        "title": "CreatePostRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Published media id",
+                "title": "Id"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CreatePostResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_GET_CONVERSATION",
+      "name": "Get Conversation",
+      "description": "Get details about a specific Instagram DM conversation (participants, etc).",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "description": "Conversation ID",
+            "title": "Conversation Id"
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          }
+        },
+        "required": [
+          "conversation_id"
+        ],
+        "title": "GetConversationRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "can_reply": {
+                "type": "boolean",
+                "description": "Indicates whether the page can reply to messages in this conversation",
+                "title": "Can Reply",
+                "default": null,
+                "nullable": true
+              },
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the conversation thread",
+                "title": "Id"
+              },
+              "is_subscribed": {
+                "type": "boolean",
+                "description": "Indicates whether the page is subscribed to notifications for this conversation",
+                "title": "Is Subscribed",
+                "default": null,
+                "nullable": true
+              },
+              "link": {
+                "type": "string",
+                "description": "Link to the conversation",
+                "title": "Link",
+                "default": null,
+                "nullable": true
+              },
+              "message_count": {
+                "type": "integer",
+                "description": "Total number of messages in the conversation",
+                "title": "Message Count",
+                "default": null,
+                "nullable": true
+              },
+              "messages": {
+                "type": "object",
+                "description": "Container for messages within a conversation.",
+                "title": "MessagesData",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "description": "Array of message objects within the conversation",
+                    "title": "Data",
+                    "items": {
+                      "type": "object",
+                      "description": "Represents a message within a conversation.",
+                      "title": "Message",
+                      "properties": {
+                        "created_time": {
+                          "type": "string",
+                          "description": "Timestamp indicating when the message was created (ISO 8601)",
+                          "title": "Created Time",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "from": {
+                          "type": "object",
+                          "description": "Information about the sender of a message.",
+                          "title": "MessageFrom",
+                          "default": null,
+                          "nullable": true,
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Unique identifier for the sender",
+                              "title": "Id"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the sender",
+                              "title": "Name",
+                              "default": null,
+                              "nullable": true
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier for the message",
+                          "title": "Id"
+                        },
+                        "message": {
+                          "type": "string",
+                          "description": "The text content of the message",
+                          "title": "Message",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "to": {
+                          "type": "object",
+                          "description": "Container for message recipients.",
+                          "title": "MessageTo",
+                          "default": null,
+                          "nullable": true,
+                          "properties": {
+                            "data": {
+                              "type": "array",
+                              "description": "Array of recipient objects",
+                              "title": "Data",
+                              "items": {
+                                "type": "object",
+                                "description": "Information about a message recipient.",
+                                "title": "MessageRecipient",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Unique identifier for the recipient",
+                                    "title": "Id"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the recipient",
+                                    "title": "Name",
+                                    "default": null,
+                                    "nullable": true
+                                  }
+                                },
+                                "required": [
+                                  "id"
+                                ]
+                              }
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "participants": {
+                "type": "object",
+                "description": "Container for participant list.",
+                "title": "ParticipantsData",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "description": "Array of participant objects",
+                    "title": "Data",
+                    "items": {
+                      "type": "object",
+                      "description": "Represents a participant or sender in a conversation.",
+                      "title": "ParticipantOrSender",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "description": "Email address of the participant, if available",
+                          "title": "Email",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier for the participant/sender",
+                          "title": "Id"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the participant/sender",
+                          "title": "Name",
+                          "default": null,
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "senders": {
+                "type": "object",
+                "description": "Container for sender list.",
+                "title": "SendersData",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "description": "Array of sender objects",
+                    "title": "Data",
+                    "items": {
+                      "type": "object",
+                      "description": "Represents a participant or sender in a conversation.",
+                      "title": "ParticipantOrSender",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "description": "Email address of the participant, if available",
+                          "title": "Email",
+                          "default": null,
+                          "nullable": true
+                        },
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier for the participant/sender",
+                          "title": "Id"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the participant/sender",
+                          "title": "Name",
+                          "default": null,
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "snippet": {
+                "type": "string",
+                "description": "Preview or excerpt of the most recent message",
+                "title": "Snippet",
+                "default": null,
+                "nullable": true
+              },
+              "tags": {
+                "type": "array",
+                "description": "Array of tags associated with the conversation",
+                "title": "Tags",
+                "default": null,
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              },
+              "unread_count": {
+                "type": "integer",
+                "description": "Number of unread messages in the conversation",
+                "title": "Unread Count",
+                "default": null,
+                "nullable": true
+              },
+              "updated_time": {
+                "type": "string",
+                "description": "Timestamp when the conversation was last updated (ISO 8601)",
+                "title": "Updated Time",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetConversationResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_GET_POST_COMMENTS",
+      "name": "Get Post Comments",
+      "description": "Get comments on an Instagram post.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "after": {
+            "type": "string",
+            "description": "Cursor for pagination - get comments after this cursor",
+            "title": "After",
+            "default": null,
+            "nullable": true
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_post_id": {
+            "type": "string",
+            "description": "Instagram Post ID",
+            "title": "Ig Post Id"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of comments to return (max 100)",
+            "title": "Limit",
+            "default": 25,
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "ig_post_id"
+        ],
+        "title": "GetPostCommentsRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of comment objects returned by the API",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Instagram comment object.",
+              "title": "CommentItem",
+              "properties": {
+                "from": {
+                  "type": "object",
+                  "description": "Instagram user who created the comment.",
+                  "title": "FromUser",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Instagram user ID (IGSID) of the commenter",
+                      "title": "Id"
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "Username of the commenter",
+                      "title": "Username"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "username"
+                  ],
+                  "additionalProperties": false
+                },
+                "hidden": {
+                  "type": "boolean",
+                  "description": "Indicates whether the comment is hidden",
+                  "title": "Hidden",
+                  "default": null,
+                  "nullable": true
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the comment",
+                  "title": "Id"
+                },
+                "legacy_instagram_comment_id": {
+                  "type": "string",
+                  "description": "The ID for Instagram comment that was created for Marketing API endpoints. Available in Graph API v21.0 and older",
+                  "title": "Legacy Instagram Comment Id",
+                  "default": null,
+                  "nullable": true
+                },
+                "like_count": {
+                  "type": "integer",
+                  "description": "Number of likes on the comment",
+                  "title": "Like Count",
+                  "default": null,
+                  "nullable": true
+                },
+                "media": {
+                  "type": "object",
+                  "description": "Media on which the comment was made.",
+                  "title": "MediaReference",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the media object",
+                      "title": "Id"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "additionalProperties": false
+                },
+                "parent_id": {
+                  "type": "string",
+                  "description": "ID of the parent comment if this comment is a reply to another comment",
+                  "title": "Parent Id",
+                  "default": null,
+                  "nullable": true
+                },
+                "replies": {
+                  "type": "object",
+                  "description": "Nested replies to the comment.",
+                  "title": "Replies",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of reply comment objects",
+                      "title": "Data",
+                      "items": {
+                        "type": "object",
+                        "description": "Simplified reply comment object to avoid circular references.",
+                        "title": "ReplyComment",
+                        "properties": {
+                          "from": {
+                            "type": "object",
+                            "description": "Instagram user who created the comment.",
+                            "title": "FromUser",
+                            "default": null,
+                            "nullable": true,
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Instagram user ID (IGSID) of the commenter",
+                                "title": "Id"
+                              },
+                              "username": {
+                                "type": "string",
+                                "description": "Username of the commenter",
+                                "title": "Username"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "username"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "hidden": {
+                            "type": "boolean",
+                            "description": "Indicates whether the reply is hidden",
+                            "title": "Hidden",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the reply",
+                            "title": "Id"
+                          },
+                          "like_count": {
+                            "type": "integer",
+                            "description": "Number of likes on the reply",
+                            "title": "Like Count",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "parent_id": {
+                            "type": "string",
+                            "description": "ID of the parent comment",
+                            "title": "Parent Id",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "text": {
+                            "type": "string",
+                            "description": "The text content of the reply",
+                            "title": "Text",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "description": "ISO 8601 formatted timestamp indicating when the reply was created",
+                            "title": "Timestamp",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "username": {
+                            "type": "string",
+                            "description": "Username of the commenter. Only returned when the 'from' field is not available",
+                            "title": "Username",
+                            "default": null,
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "text": {
+                  "type": "string",
+                  "description": "The text content of the comment",
+                  "title": "Text",
+                  "default": null,
+                  "nullable": true
+                },
+                "timestamp": {
+                  "type": "string",
+                  "description": "ISO 8601 formatted timestamp indicating when the comment was created",
+                  "title": "Timestamp",
+                  "default": null,
+                  "nullable": true
+                },
+                "user": {
+                  "type": "object",
+                  "description": "Deprecated Instagram user object (Graph API v12+).",
+                  "title": "IgUser",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Instagram user ID",
+                      "title": "Id",
+                      "default": null,
+                      "nullable": true
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "Instagram username",
+                      "title": "Username",
+                      "default": null,
+                      "nullable": true
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "username": {
+                  "type": "string",
+                  "description": "Username of the commenter. Only returned when the 'from' field is not available",
+                  "title": "Username",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "paging": {
+            "type": "object",
+            "description": "Pagination information for retrieving additional pages of comments.",
+            "title": "Paging",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "cursors": {
+                "type": "object",
+                "description": "Cursor tokens used for pagination",
+                "title": "Cursors",
+                "properties": {
+                  "after": {
+                    "type": "string",
+                    "description": "Cursor pointing to the end of the page of data",
+                    "title": "After",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "before": {
+                    "type": "string",
+                    "description": "Cursor pointing to the start of the page of data",
+                    "title": "Before",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "next": {
+                "type": "string",
+                "description": "Complete URL for retrieving the next page of results",
+                "title": "Next",
+                "default": null,
+                "nullable": true
+              },
+              "previous": {
+                "type": "string",
+                "description": "Complete URL for retrieving the previous page of results",
+                "title": "Previous",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "required": [
+              "cursors"
+            ],
+            "additionalProperties": false
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "successful"
+        ],
+        "title": "GetPostCommentsResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_GET_POST_INSIGHTS",
+      "name": "Get Post Insights",
+      "description": "Get Instagram post insights/analytics (impressions, reach, engagement, etc.).",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_post_id": {
+            "type": "string",
+            "description": "Instagram Post ID",
+            "title": "Ig Post Id"
+          },
+          "metric": {
+            "type": "array",
+            "description": "Metrics to retrieve for the media. If not provided and metric_preset is not set, uses auto_safe preset. Allowed metrics vary by media_product_type: IMAGE/CAROUSEL: impressions, reach, likes, comments, saved, shares, engagement. VIDEO: reach, plays, likes, comments, saved, shares (impressions NOT supported). REELS: reach, plays, likes, comments, saved, shares, total_interactions, ig_reels_video_view_total_time, ig_reels_avg_watch_time. Stories: impressions, reach, replies, taps_forward, taps_back, exits. Common unsupported metrics: engagement on REELS (use total_interactions), impressions on VIDEO/Reels. If a metric is unsupported for the post type, API returns 400 error.",
+            "title": "Metric",
+            "default": null,
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "properties": {}
+            }
+          },
+          "metric_preset": {
+            "type": "string",
+            "description": "Predefined metric sets for different media types to avoid API errors.",
+            "title": "MetricPreset",
+            "default": "auto_safe",
+            "nullable": true,
+            "enum": [
+              "auto_safe",
+              "image_basic",
+              "video_basic",
+              "reel_basic",
+              "carousel_basic"
+            ]
+          }
+        },
+        "required": [
+          "ig_post_id"
+        ],
+        "title": "GetPostInsightsRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of insight objects containing metrics for the media",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Individual insight metric data point.",
+              "title": "InsightData",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "Detailed explanation of what the metric measures",
+                  "title": "Description"
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier in format '{media-id}/insights/{metric-name}/{period}'",
+                  "title": "Id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The metric name/identifier",
+                  "title": "Name"
+                },
+                "period": {
+                  "type": "string",
+                  "description": "The time period for the metric (typically 'lifetime' for media insights)",
+                  "title": "Period"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Human-readable title for the metric",
+                  "title": "Title"
+                },
+                "values": {
+                  "type": "array",
+                  "description": "Array containing the metric value objects",
+                  "title": "Values",
+                  "items": {
+                    "type": "object",
+                    "description": "Value object for an insight metric.",
+                    "title": "InsightValue",
+                    "properties": {
+                      "value": {
+                        "type": "integer",
+                        "description": "The numeric value of the metric",
+                        "title": "Value"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "period",
+                "values",
+                "title",
+                "description",
+                "id"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "paging": {
+            "type": "object",
+            "description": "Pagination object for navigating through results.",
+            "title": "Paging",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "cursors": {
+                "type": "object",
+                "description": "Cursor-based pagination identifiers.",
+                "title": "PagingCursors",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "after": {
+                    "type": "string",
+                    "description": "Cursor pointing to the next page of results",
+                    "title": "After",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "before": {
+                    "type": "string",
+                    "description": "Cursor pointing to the previous page of results",
+                    "title": "Before",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "next": {
+                "type": "string",
+                "description": "Full URL to retrieve the next page of results",
+                "title": "Next",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetPostInsightsResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_GET_POST_STATUS",
+      "name": "Get Post Status",
+      "description": "Check the processing status of a draft post container.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "creation_id": {
+            "type": "string",
+            "description": "Post container creation id",
+            "title": "Creation Id"
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          }
+        },
+        "required": [
+          "creation_id"
+        ],
+        "title": "GetPostStatusRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique identifier of the container",
+                "title": "Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "A human-readable status message describing the current state. If status_code is ERROR, this value will be an error sub code.",
+                "title": "Status",
+                "default": null,
+                "nullable": true
+              },
+              "status_code": {
+                "type": "string",
+                "description": "The container's publishing status code. Indicates the current state of the media container in the publishing workflow.",
+                "title": "Status Code",
+                "enum": [
+                  "IN_PROGRESS",
+                  "FINISHED",
+                  "ERROR",
+                  "EXPIRED",
+                  "PUBLISHED"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "status_code"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetPostStatusResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_GET_USER_INFO",
+      "name": "Get User Info",
+      "description": "Get Instagram user info including profile details and statistics.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID (optional, defaults to current user)",
+            "title": "Ig User Id",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "title": "GetUserInfoRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "account_type": {
+                "type": "string",
+                "description": "The account type. Possible values: BUSINESS, CREATOR, PERSONAL.",
+                "title": "Account Type",
+                "default": null,
+                "nullable": true
+              },
+              "biography": {
+                "type": "string",
+                "description": "The biography text of the user's profile.",
+                "title": "Biography",
+                "default": null,
+                "nullable": true
+              },
+              "followers_count": {
+                "type": "integer",
+                "description": "The total number of followers of the account. Note: Hidden for accounts with fewer than 100 followers (as of 2025 API updates).",
+                "title": "Followers Count",
+                "default": null,
+                "nullable": true
+              },
+              "follows_count": {
+                "type": "integer",
+                "description": "The total number of accounts that the user is following.",
+                "title": "Follows Count",
+                "default": null,
+                "nullable": true
+              },
+              "id": {
+                "type": "string",
+                "description": "The unique Instagram user ID.",
+                "title": "Id"
+              },
+              "ig_id": {
+                "type": "string",
+                "description": "The Instagram user ID (legacy field). Note: This field may be deprecated in future API versions.",
+                "title": "Ig Id",
+                "default": null,
+                "nullable": true
+              },
+              "media_count": {
+                "type": "integer",
+                "description": "The number of posts (media) published by the user.",
+                "title": "Media Count",
+                "default": null,
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "description": "The display name of the Instagram account.",
+                "title": "Name",
+                "default": null,
+                "nullable": true
+              },
+              "profile_picture_url": {
+                "type": "string",
+                "description": "The URL of the user's profile picture.",
+                "title": "Profile Picture Url",
+                "default": null,
+                "nullable": true
+              },
+              "shopping_product_tag_eligibility": {
+                "type": "boolean",
+                "description": "Indicates whether the account is eligible to tag products in posts for Instagram Shopping.",
+                "title": "Shopping Product Tag Eligibility",
+                "default": null,
+                "nullable": true
+              },
+              "username": {
+                "type": "string",
+                "description": "The Instagram username (account name).",
+                "title": "Username",
+                "default": null,
+                "nullable": true
+              },
+              "website": {
+                "type": "string",
+                "description": "The website URL listed in the user's profile.",
+                "title": "Website",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetUserInfoResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_GET_USER_INSIGHTS",
+      "name": "Get User Insights",
+      "description": "Get Instagram account-level insights and analytics (profile views, reach, follower count, etc.). metric_type (time_series or total_value): When set to total_value, the API returns a total_value object instead of values. breakdown: Only applicable when metric_type=total_value and only for supported metrics. timeframe: Required for demographics-related metrics and overrides since/until for those metrics.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "breakdown": {
+            "type": "string",
+            "description": "Breakdown to use when metric_type=total_value. Allowed values: contact_button_type, follow_type, media_product_type.",
+            "title": "Breakdown",
+            "default": null,
+            "nullable": true
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID (optional, defaults to current user)",
+            "title": "Ig User Id",
+            "default": null,
+            "nullable": true
+          },
+          "metric": {
+            "type": "array",
+            "description": "Metrics to retrieve for the user account. Core metrics: reach, follower_count, profile_views, website_clicks, online_followers. Engagement metrics: accounts_engaged, total_interactions, likes, comments, shares, saves, replies. Activity metrics: follows_and_unfollows, profile_links_taps, views. Demographics metrics (require timeframe parameter): engaged_audience_demographics, reached_audience_demographics, follower_demographics. Threads metrics: threads_likes, threads_replies, reposts, quotes, threads_followers, etc. If multiple metrics are provided, all must support the same period.",
+            "title": "Metric",
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "description": "Valid metrics for Instagram account-level insights.\n\nCore metrics:\n- reach, follower_count, profile_views, website_clicks, online_followers\n\nEngagement metrics:\n- accounts_engaged, total_interactions, likes, comments, shares, saves, replies\n\nActivity metrics:\n- follows_and_unfollows, profile_links_taps, views\n\nDemographics metrics (require timeframe parameter):\n- engaged_audience_demographics, reached_audience_demographics, follower_demographics\n\nThreads metrics (for Threads integration):\n- threads_likes, threads_replies, reposts, quotes, threads_followers,\n  threads_follower_demographics, content_views, threads_views, threads_clicks, threads_reposts",
+              "title": "UserInsightMetric",
+              "properties": {},
+              "enum": [
+                "reach",
+                "follower_count",
+                "profile_views",
+                "website_clicks",
+                "online_followers",
+                "accounts_engaged",
+                "total_interactions",
+                "likes",
+                "comments",
+                "shares",
+                "saves",
+                "replies",
+                "follows_and_unfollows",
+                "profile_links_taps",
+                "views",
+                "engaged_audience_demographics",
+                "reached_audience_demographics",
+                "follower_demographics",
+                "threads_likes",
+                "threads_replies",
+                "reposts",
+                "quotes",
+                "threads_followers",
+                "threads_follower_demographics",
+                "content_views",
+                "threads_views",
+                "threads_clicks",
+                "threads_reposts"
+              ]
+            }
+          },
+          "metric_type": {
+            "type": "string",
+            "description": "Aggregation type for results. Allowed values: time_series, total_value.",
+            "title": "Metric Type",
+            "default": null,
+            "nullable": true
+          },
+          "period": {
+            "type": "string",
+            "description": "Aggregation period for insights. Allowed values: day, week, days_28, lifetime. Allowed values depend on metric.",
+            "title": "Period",
+            "default": "day",
+            "nullable": true
+          },
+          "since": {
+            "type": "integer",
+            "description": "Start of time range (inclusive) as a Unix timestamp (seconds). Accepts date strings (YYYY-MM-DD) which will be converted to timestamps.",
+            "title": "Since",
+            "default": null,
+            "nullable": true
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Timeframe for demographics-related metrics; overrides since/until for those metrics. Common values: last_14_days, last_30_days, last_90_days, prev_month, this_month, this_week.",
+            "title": "Timeframe",
+            "default": null,
+            "nullable": true
+          },
+          "until": {
+            "type": "integer",
+            "description": "End of time range (inclusive) as a Unix timestamp (seconds). Accepts date strings (YYYY-MM-DD) which will be converted to timestamps.",
+            "title": "Until",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "title": "GetUserInsightsRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of insight metric objects containing the requested metrics data",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Instagram user insight metric data.",
+              "title": "UserInsightData",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "Detailed description explaining what the metric measures",
+                  "title": "Description"
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for this insight metric in the format '{ig-user-id}/insights/{metric-name}/{period}'",
+                  "title": "Id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the metric (e.g., impressions, reach, follower_count, profile_views, email_contacts, phone_call_clicks, text_message_clicks, get_directions_clicks, website_clicks, audience_gender_age, audience_locale, audience_country, audience_city, online_followers, accounts_engaged, total_interactions, likes, comments, shares, saved, replies, engaged_audience_demographics, reached_audience_demographics, follower_demographics, follows_and_unfollows, profile_links_taps)",
+                  "title": "Name"
+                },
+                "period": {
+                  "type": "string",
+                  "description": "The time period for which the metric is calculated. Possible values: 'lifetime' (for media metrics), 'day', 'week', 'days_28' (for user metrics). Note: Not all metrics support all period types",
+                  "title": "Period"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Human-readable title of the metric",
+                  "title": "Title"
+                },
+                "total_value": {
+                  "type": "object",
+                  "description": "Total value object for demographic metrics containing breakdown data.",
+                  "title": "TotalValue",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "breakdowns": {
+                      "type": "array",
+                      "description": "Array of breakdown objects containing dimensional analysis of the audience",
+                      "title": "Breakdowns",
+                      "items": {
+                        "type": "object",
+                        "description": "Breakdown containing dimensional analysis of audience metrics.",
+                        "title": "Breakdown",
+                        "properties": {
+                          "dimension_keys": {
+                            "type": "array",
+                            "description": "Array of dimension names for the breakdown (e.g., ['timeframe', 'country'], ['age'], ['gender'], ['city'])",
+                            "title": "Dimension Keys",
+                            "items": {
+                              "type": "string",
+                              "properties": {}
+                            }
+                          },
+                          "results": {
+                            "type": "array",
+                            "description": "Array of result objects containing the actual breakdown values",
+                            "title": "Results",
+                            "items": {
+                              "type": "object",
+                              "description": "Individual result within a breakdown showing dimensional values and count.",
+                              "title": "BreakdownResult",
+                              "properties": {
+                                "dimension_values": {
+                                  "type": "array",
+                                  "description": "Array of values corresponding to dimension_keys. For example, ['LAST_90_DAYS', 'AR'] for timeframe and country, or age ranges like '13-17', '18-24', '25-34', '35-44', '45-54', '55-64', '65+'",
+                                  "title": "Dimension Values",
+                                  "items": {
+                                    "type": "string",
+                                    "properties": {}
+                                  }
+                                },
+                                "value": {
+                                  "type": "integer",
+                                  "description": "The numeric count for this particular dimensional breakdown",
+                                  "title": "Value"
+                                }
+                              },
+                              "required": [
+                                "dimension_values",
+                                "value"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "dimension_keys",
+                          "results"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "breakdowns"
+                  ],
+                  "additionalProperties": false
+                },
+                "values": {
+                  "type": "array",
+                  "description": "Array of value objects containing the metric data. For lifetime metrics, this contains a single value object. For time-based periods (day, week, days_28), this can contain multiple value objects with timestamps",
+                  "title": "Values",
+                  "items": {
+                    "type": "object",
+                    "description": "Individual metric value at a specific time point.",
+                    "title": "InsightValue",
+                    "properties": {
+                      "end_time": {
+                        "type": "string",
+                        "description": "ISO 8601 formatted timestamp indicating when this metric value was recorded (e.g., '2019-12-20T08:00:00+0000'). Only present for time-based periods (day, week, days_28), not for lifetime metrics",
+                        "title": "End Time",
+                        "default": null,
+                        "nullable": true
+                      },
+                      "value": {
+                        "type": "integer",
+                        "description": "The numeric value of the metric at the specified time",
+                        "title": "Value"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "period",
+                "title",
+                "description",
+                "id"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "paging": {
+            "type": "object",
+            "description": "Pagination object for navigating through multiple pages of results.",
+            "title": "Paging",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "cursors": {
+                "type": "object",
+                "description": "Cursor-based pagination tokens.",
+                "title": "PagingCursors",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "after": {
+                    "type": "string",
+                    "description": "Cursor pointing to the start of the next page of data",
+                    "title": "After",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "before": {
+                    "type": "string",
+                    "description": "Cursor pointing to the start of the previous page of data",
+                    "title": "Before",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "next": {
+                "type": "string",
+                "description": "Full URL to retrieve the next page of results",
+                "title": "Next",
+                "default": null,
+                "nullable": true
+              },
+              "previous": {
+                "type": "string",
+                "description": "Full URL to retrieve the previous page of results",
+                "title": "Previous",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "successful"
+        ],
+        "title": "GetUserInsightsResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_GET_USER_MEDIA",
+      "name": "Get User Media",
+      "description": "Get Instagram user's media (posts, photos, videos).",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "after": {
+            "type": "string",
+            "description": "Cursor for pagination - get media after this cursor",
+            "title": "After",
+            "default": null,
+            "nullable": true
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID (optional, defaults to current user)",
+            "title": "Ig User Id",
+            "default": null,
+            "nullable": true
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of media items to return (max 100)",
+            "title": "Limit",
+            "default": 25,
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "title": "GetUserMediaRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of media objects belonging to the user",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Instagram media object with all available fields.",
+              "title": "MediaItem",
+              "properties": {
+                "caption": {
+                  "type": "string",
+                  "description": "The caption text of the media object",
+                  "title": "Caption",
+                  "default": null,
+                  "nullable": true
+                },
+                "children": {
+                  "type": "object",
+                  "description": "Container for child media items in a carousel.",
+                  "title": "ChildrenData",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of child media objects in the carousel",
+                      "title": "Data",
+                      "items": {
+                        "type": "object",
+                        "description": "Child media item in a carousel album.",
+                        "title": "ChildMedia",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Unique identifier of the child media object",
+                            "title": "Id"
+                          },
+                          "media_type": {
+                            "type": "string",
+                            "description": "The type of the child media (IMAGE or VIDEO)",
+                            "title": "Media Type",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "media_url": {
+                            "type": "string",
+                            "description": "The URL of the child media object",
+                            "title": "Media Url",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "thumbnail_url": {
+                            "type": "string",
+                            "description": "The thumbnail URL of the child media (for videos)",
+                            "title": "Thumbnail Url",
+                            "default": null,
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "comments_count": {
+                  "type": "integer",
+                  "description": "The number of comments on the media object",
+                  "title": "Comments Count",
+                  "default": null,
+                  "nullable": true
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier of the media object",
+                  "title": "Id"
+                },
+                "ig_id": {
+                  "type": "string",
+                  "description": "The Instagram media identifier (legacy ID format)",
+                  "title": "Ig Id",
+                  "default": null,
+                  "nullable": true
+                },
+                "is_comment_enabled": {
+                  "type": "boolean",
+                  "description": "Whether comments are enabled on the media object",
+                  "title": "Is Comment Enabled",
+                  "default": null,
+                  "nullable": true
+                },
+                "like_count": {
+                  "type": "integer",
+                  "description": "The number of likes on the media object. Note: Only available when querying individual media by ID, not when fetching a list of media",
+                  "title": "Like Count",
+                  "default": null,
+                  "nullable": true
+                },
+                "media_product_type": {
+                  "type": "string",
+                  "description": "Surface where the media is published. Possible values: AD, FEED, IGTV, REELS, STORY",
+                  "title": "Media Product Type",
+                  "default": null,
+                  "nullable": true,
+                  "enum": [
+                    "AD",
+                    "FEED",
+                    "IGTV",
+                    "REELS",
+                    "STORY"
+                  ]
+                },
+                "media_type": {
+                  "type": "string",
+                  "description": "The type of the media object. Possible values: IMAGE, VIDEO, CAROUSEL_ALBUM",
+                  "title": "Media Type",
+                  "default": null,
+                  "nullable": true,
+                  "enum": [
+                    "IMAGE",
+                    "VIDEO",
+                    "CAROUSEL_ALBUM"
+                  ]
+                },
+                "media_url": {
+                  "type": "string",
+                  "description": "The URL of the media object (image or video file)",
+                  "title": "Media Url",
+                  "default": null,
+                  "nullable": true
+                },
+                "owner": {
+                  "type": "object",
+                  "description": "Owner information for media objects.",
+                  "title": "Owner",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Instagram user ID of the media owner",
+                      "title": "Id"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "additionalProperties": false
+                },
+                "permalink": {
+                  "type": "string",
+                  "description": "The permanent URL link to the media on Instagram",
+                  "title": "Permalink",
+                  "default": null,
+                  "nullable": true
+                },
+                "shortcode": {
+                  "type": "string",
+                  "description": "The shortcode of the media object, used to construct Instagram URLs (can be concatenated to https://www.instagram.com/p/)",
+                  "title": "Shortcode",
+                  "default": null,
+                  "nullable": true
+                },
+                "thumbnail_url": {
+                  "type": "string",
+                  "description": "The thumbnail URL of the media object. Only available for VIDEO media type",
+                  "title": "Thumbnail Url",
+                  "default": null,
+                  "nullable": true
+                },
+                "timestamp": {
+                  "type": "string",
+                  "description": "The timestamp when the media was published, in ISO 8601 format",
+                  "title": "Timestamp",
+                  "default": null,
+                  "nullable": true
+                },
+                "username": {
+                  "type": "string",
+                  "description": "The username of the media object owner",
+                  "title": "Username",
+                  "default": null,
+                  "nullable": true
+                },
+                "video_title": {
+                  "type": "string",
+                  "description": "IGTV media title. Only applicable for IGTV content",
+                  "title": "Video Title",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "paging": {
+            "type": "object",
+            "description": "Pagination information for navigating through multiple pages of results.",
+            "title": "Paging",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "cursors": {
+                "type": "object",
+                "description": "Cursor values for pagination navigation.",
+                "title": "PagingCursors",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "after": {
+                    "type": "string",
+                    "description": "Cursor pointing to the end of the page of data (used for forward pagination)",
+                    "title": "After",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "before": {
+                    "type": "string",
+                    "description": "Cursor pointing to the start of the page of data (used for backward pagination)",
+                    "title": "Before",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "next": {
+                "type": "string",
+                "description": "Complete URL to retrieve the next page of results",
+                "title": "Next",
+                "default": null,
+                "nullable": true
+              },
+              "previous": {
+                "type": "string",
+                "description": "Complete URL to retrieve the previous page of results",
+                "title": "Previous",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "successful"
+        ],
+        "title": "GetUserMediaResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_LIST_ALL_CONVERSATIONS",
+      "name": "List All Conversations",
+      "description": "List all Instagram DM conversations for the authenticated user.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "after": {
+            "type": "string",
+            "description": "Cursor for pagination",
+            "title": "After",
+            "default": null,
+            "nullable": true
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID (optional for /me/conversations)",
+            "title": "Ig User Id",
+            "default": null,
+            "nullable": true
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "default": 25,
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "title": "ListInstagramConversationsRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of conversation objects returned by the API",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Instagram conversation object.",
+              "title": "Conversation",
+              "properties": {
+                "can_reply": {
+                  "type": "boolean",
+                  "description": "Indicates whether the page can reply to the conversation",
+                  "title": "Can Reply",
+                  "default": null,
+                  "nullable": true
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the conversation",
+                  "title": "Id"
+                },
+                "is_subscribed": {
+                  "type": "boolean",
+                  "description": "Indicates whether the page is subscribed to the conversation",
+                  "title": "Is Subscribed",
+                  "default": null,
+                  "nullable": true
+                },
+                "link": {
+                  "type": "string",
+                  "description": "Reference link to the conversation",
+                  "title": "Link",
+                  "default": null,
+                  "nullable": true
+                },
+                "message_count": {
+                  "type": "integer",
+                  "description": "Total number of messages in the conversation",
+                  "title": "Message Count",
+                  "default": null,
+                  "nullable": true
+                },
+                "messages": {
+                  "type": "object",
+                  "description": "Wrapper for messages array.",
+                  "title": "MessagesData",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of message objects",
+                      "title": "Data",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "Individual message within a conversation.",
+                        "title": "Message",
+                        "properties": {
+                          "attachments": {
+                            "type": "object",
+                            "description": "Wrapper for message attachments array.",
+                            "title": "MessageAttachmentsData",
+                            "default": null,
+                            "nullable": true,
+                            "properties": {
+                              "data": {
+                                "type": "array",
+                                "description": "Array of attachment objects",
+                                "title": "Data",
+                                "default": null,
+                                "nullable": true,
+                                "items": {
+                                  "type": "object",
+                                  "description": "Message attachment object.",
+                                  "title": "MessageAttachment",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Unique identifier for the attachment",
+                                      "title": "Id",
+                                      "default": null,
+                                      "nullable": true
+                                    },
+                                    "image_data": {
+                                      "type": "object",
+                                      "description": "Image data for attachments.",
+                                      "title": "AttachmentImageData",
+                                      "default": null,
+                                      "nullable": true,
+                                      "properties": {
+                                        "height": {
+                                          "type": "integer",
+                                          "description": "Height of the image in pixels",
+                                          "title": "Height",
+                                          "default": null,
+                                          "nullable": true
+                                        },
+                                        "url": {
+                                          "type": "string",
+                                          "description": "URL of the image",
+                                          "title": "Url",
+                                          "default": null,
+                                          "nullable": true
+                                        },
+                                        "width": {
+                                          "type": "integer",
+                                          "description": "Width of the image in pixels",
+                                          "title": "Width",
+                                          "default": null,
+                                          "nullable": true
+                                        }
+                                      },
+                                      "additionalProperties": false
+                                    },
+                                    "mime_type": {
+                                      "type": "string",
+                                      "description": "MIME type of the attachment",
+                                      "title": "Mime Type",
+                                      "default": null,
+                                      "nullable": true
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Name of the attachment file",
+                                      "title": "Name",
+                                      "default": null,
+                                      "nullable": true
+                                    },
+                                    "size": {
+                                      "type": "integer",
+                                      "description": "Size of the attachment in bytes",
+                                      "title": "Size",
+                                      "default": null,
+                                      "nullable": true
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "created_time": {
+                            "type": "string",
+                            "description": "ISO 8601 timestamp indicating when the message was created",
+                            "title": "Created Time",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "from": {
+                            "type": "object",
+                            "description": "Sender information for a message.",
+                            "title": "MessageSender",
+                            "default": null,
+                            "nullable": true,
+                            "properties": {
+                              "email": {
+                                "type": "string",
+                                "description": "Email of the message sender",
+                                "title": "Email",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "id": {
+                                "type": "string",
+                                "description": "ID of the message sender",
+                                "title": "Id",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the message sender",
+                                "title": "Name",
+                                "default": null,
+                                "nullable": true
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the message",
+                            "title": "Id",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Text content of the message",
+                            "title": "Message",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "to": {
+                            "type": "object",
+                            "description": "Wrapper for message recipients array.",
+                            "title": "MessageRecipientsData",
+                            "default": null,
+                            "nullable": true,
+                            "properties": {
+                              "data": {
+                                "type": "array",
+                                "description": "Array of recipient objects",
+                                "title": "Data",
+                                "default": null,
+                                "nullable": true,
+                                "items": {
+                                  "type": "object",
+                                  "description": "Recipient information for a message.",
+                                  "title": "MessageRecipient",
+                                  "properties": {
+                                    "email": {
+                                      "type": "string",
+                                      "description": "Email of the message recipient",
+                                      "title": "Email",
+                                      "default": null,
+                                      "nullable": true
+                                    },
+                                    "id": {
+                                      "type": "string",
+                                      "description": "ID of the message recipient",
+                                      "title": "Id",
+                                      "default": null,
+                                      "nullable": true
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Name of the message recipient",
+                                      "title": "Name",
+                                      "default": null,
+                                      "nullable": true
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "participants": {
+                  "type": "object",
+                  "description": "Wrapper for participants array.",
+                  "title": "ParticipantsData",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of participant objects",
+                      "title": "Data",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "User participant or sender information in a conversation.",
+                        "title": "ParticipantOrSender",
+                        "properties": {
+                          "email": {
+                            "type": "string",
+                            "description": "Email address of the participant or sender",
+                            "title": "Email",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "Page-scoped ID (PSID) of the participant or sender",
+                            "title": "Id",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the participant or sender",
+                            "title": "Name",
+                            "default": null,
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "senders": {
+                  "type": "object",
+                  "description": "Wrapper for senders array.",
+                  "title": "SendersData",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of sender objects",
+                      "title": "Data",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "User participant or sender information in a conversation.",
+                        "title": "ParticipantOrSender",
+                        "properties": {
+                          "email": {
+                            "type": "string",
+                            "description": "Email address of the participant or sender",
+                            "title": "Email",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "Page-scoped ID (PSID) of the participant or sender",
+                            "title": "Id",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the participant or sender",
+                            "title": "Name",
+                            "default": null,
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "snippet": {
+                  "type": "string",
+                  "description": "Preview text of the most recent message in the conversation",
+                  "title": "Snippet",
+                  "default": null,
+                  "nullable": true
+                },
+                "tags": {
+                  "type": "object",
+                  "description": "Wrapper for tags array.",
+                  "title": "TagsData",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of tag objects for conversation categorization",
+                      "title": "Data",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "Conversation tag object.",
+                        "title": "Tag",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the tag (e.g., 'inbox', 'sent')",
+                            "title": "Name",
+                            "default": null,
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "unread_count": {
+                  "type": "integer",
+                  "description": "Number of unread messages in the conversation",
+                  "title": "Unread Count",
+                  "default": null,
+                  "nullable": true
+                },
+                "updated_time": {
+                  "type": "string",
+                  "description": "ISO 8601 timestamp indicating when the conversation was last updated",
+                  "title": "Updated Time",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "paging": {
+            "type": "object",
+            "description": "Pagination information for navigating through multiple pages of results.",
+            "title": "Paging",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "cursors": {
+                "type": "object",
+                "description": "Cursor values for pagination.",
+                "title": "PagingCursors",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "after": {
+                    "type": "string",
+                    "description": "Cursor pointing to the end of the current page of data",
+                    "title": "After",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "before": {
+                    "type": "string",
+                    "description": "Cursor pointing to the start of the current page of data",
+                    "title": "Before",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "next": {
+                "type": "string",
+                "description": "URL to retrieve the next page of results",
+                "title": "Next",
+                "default": null,
+                "nullable": true
+              },
+              "previous": {
+                "type": "string",
+                "description": "URL to retrieve the previous page of results",
+                "title": "Previous",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "successful"
+        ],
+        "title": "ListInstagramConversationsResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_LIST_ALL_MESSAGES",
+      "name": "List All Messages",
+      "description": "List all messages from a specific Instagram DM conversation.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "after": {
+            "type": "string",
+            "description": "Cursor for pagination",
+            "title": "After",
+            "default": null,
+            "nullable": true
+          },
+          "conversation_id": {
+            "type": "string",
+            "description": "Conversation ID",
+            "title": "Conversation Id"
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "default": 25,
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "conversation_id"
+        ],
+        "title": "ListInstagramMessagesRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "Array of message objects",
+            "title": "Data",
+            "items": {
+              "type": "object",
+              "description": "Instagram message object",
+              "title": "InstagramMessage",
+              "properties": {
+                "attachments": {
+                  "type": "object",
+                  "description": "Container for message attachments",
+                  "title": "MessageAttachments",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of attachment objects",
+                      "title": "Data",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "Attachment object for messages",
+                        "title": "MessageAttachment",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the attachment",
+                            "title": "Id",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "image_data": {
+                            "type": "object",
+                            "description": "Image-specific data for image attachments",
+                            "title": "ImageData",
+                            "default": null,
+                            "nullable": true,
+                            "properties": {
+                              "height": {
+                                "type": "integer",
+                                "description": "Height of the image in pixels",
+                                "title": "Height",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "image_type": {
+                                "type": "string",
+                                "description": "Type classification of the image",
+                                "title": "Image Type",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "max_height": {
+                                "type": "integer",
+                                "description": "Maximum height of the image",
+                                "title": "Max Height",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "max_width": {
+                                "type": "integer",
+                                "description": "Maximum width of the image",
+                                "title": "Max Width",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "preview_url": {
+                                "type": "string",
+                                "description": "URL to access the image preview",
+                                "title": "Preview Url",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "render_as_sticker": {
+                                "type": "boolean",
+                                "description": "Whether the image should be rendered as a sticker",
+                                "title": "Render As Sticker",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "url": {
+                                "type": "string",
+                                "description": "URL to access the full image",
+                                "title": "Url",
+                                "default": null,
+                                "nullable": true
+                              },
+                              "width": {
+                                "type": "integer",
+                                "description": "Width of the image in pixels",
+                                "title": "Width",
+                                "default": null,
+                                "nullable": true
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "mime_type": {
+                            "type": "string",
+                            "description": "MIME type of the attachment",
+                            "title": "Mime Type",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Filename of the attachment",
+                            "title": "Name",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "payload": {
+                            "type": "object",
+                            "description": "Payload containing attachment data",
+                            "title": "AttachmentPayload",
+                            "default": null,
+                            "nullable": true,
+                            "properties": {
+                              "url": {
+                                "type": "string",
+                                "description": "URL to access the attachment content",
+                                "title": "Url",
+                                "default": null,
+                                "nullable": true
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "size": {
+                            "type": "integer",
+                            "description": "Size of the attachment in bytes",
+                            "title": "Size",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Type of attachment (e.g., 'image', 'video', 'audio', 'share')",
+                            "title": "Type",
+                            "default": null,
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "created_time": {
+                  "type": "string",
+                  "description": "Timestamp in ISO 8601 format when the message was created",
+                  "title": "Created Time"
+                },
+                "from": {
+                  "type": "object",
+                  "description": "Participant (sender or recipient) in a message",
+                  "title": "MessageParticipant",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Instagram Scoped User ID (IGSID) of the participant",
+                      "title": "Id"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the participant",
+                      "title": "Name",
+                      "default": null,
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "additionalProperties": false
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the message",
+                  "title": "Id"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Text content of the message",
+                  "title": "Message",
+                  "default": null,
+                  "nullable": true
+                },
+                "shares": {
+                  "type": "object",
+                  "description": "Container for shared content in messages",
+                  "title": "MessageShares",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Array of shared content objects",
+                      "title": "Data",
+                      "default": null,
+                      "nullable": true,
+                      "items": {
+                        "type": "object",
+                        "description": "Shared content object",
+                        "title": "ShareData",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Identifier of the shared content",
+                            "title": "Id",
+                            "default": null,
+                            "nullable": true
+                          },
+                          "link": {
+                            "type": "string",
+                            "description": "URL link to the shared content",
+                            "title": "Link",
+                            "default": null,
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "to": {
+                  "type": "object",
+                  "description": "Participant (sender or recipient) in a message",
+                  "title": "MessageParticipant",
+                  "default": null,
+                  "nullable": true,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Instagram Scoped User ID (IGSID) of the participant",
+                      "title": "Id"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the participant",
+                      "title": "Name",
+                      "default": null,
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "created_time"
+              ]
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "paging": {
+            "type": "object",
+            "description": "Pagination information",
+            "title": "Paging",
+            "default": null,
+            "nullable": true,
+            "properties": {
+              "cursors": {
+                "type": "object",
+                "description": "Cursor values for pagination",
+                "title": "PaginationCursors",
+                "default": null,
+                "nullable": true,
+                "properties": {
+                  "after": {
+                    "type": "string",
+                    "description": "Cursor pointing to the end of the page of data (base64-encoded)",
+                    "title": "After",
+                    "default": null,
+                    "nullable": true
+                  },
+                  "before": {
+                    "type": "string",
+                    "description": "Cursor pointing to the start of the page of data (base64-encoded)",
+                    "title": "Before",
+                    "default": null,
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "next": {
+                "type": "string",
+                "description": "URL to retrieve the next page of results",
+                "title": "Next",
+                "default": null,
+                "nullable": true
+              },
+              "previous": {
+                "type": "string",
+                "description": "URL to retrieve the previous page of results",
+                "title": "Previous",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "successful"
+        ],
+        "title": "ListInstagramMessagesResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_MARK_SEEN",
+      "name": "Mark Seen",
+      "description": "Mark Instagram DM messages as read/seen for a specific user.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "recipient_id": {
+            "type": "string",
+            "description": "Recipient PSID",
+            "title": "Recipient Id"
+          }
+        },
+        "required": [
+          "recipient_id"
+        ],
+        "title": "MarkSeenRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Indicates whether the API call was successful. Returns 'ok' on success.",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "MarkSeenResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_REPLY_TO_COMMENT",
+      "name": "Reply To Comment",
+      "description": "Reply to a comment on Instagram media.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_comment_id": {
+            "type": "string",
+            "description": "Instagram Comment ID to reply to",
+            "title": "Ig Comment Id"
+          },
+          "message": {
+            "type": "string",
+            "description": "Reply message text",
+            "title": "Message"
+          }
+        },
+        "required": [
+          "ig_comment_id",
+          "message"
+        ],
+        "title": "ReplyToCommentRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The unique identifier of the newly created comment reply. This ID can be used for further operations like retrieving, editing, or deleting the specific reply.",
+                "title": "Id"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "ReplyToCommentResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_SEND_IMAGE",
+      "name": "Send Image",
+      "description": "Send an image via Instagram DM to a specific user.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "default": null,
+            "nullable": true
+          },
+          "graph_api_version": {
+            "type": "string",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Publicly accessible image URL",
+            "title": "Image Url"
+          },
+          "recipient_id": {
+            "type": "string",
+            "description": "Recipient PSID",
+            "title": "Recipient Id"
+          }
+        },
+        "required": [
+          "recipient_id",
+          "image_url"
+        ],
+        "title": "SendImageRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "attachment_id": {
+                "type": "string",
+                "description": "Returned when sending an attachment with the is_reusable parameter set to true. This ID can be used to send the same file again without re-uploading, improving efficiency for commonly sent media.",
+                "title": "Attachment Id",
+                "default": null,
+                "nullable": true
+              },
+              "message_id": {
+                "type": "string",
+                "description": "Unique identifier for the sent message. Typically starts with 'mid.' prefix (e.g., 'mid.1464375085492:b9606c00ca33c12345'). Used to track message delivery and reference the message in subsequent operations.",
+                "title": "Message Id"
+              },
+              "recipient_id": {
+                "type": "string",
+                "description": "The Instagram Scoped User ID (IGSID) or Page-Scoped ID (PSID) of the message recipient. This is a unique identifier assigned to each user for the specific Instagram Business account or Facebook Page.",
+                "title": "Recipient Id"
+              }
+            },
+            "required": [
+              "recipient_id",
+              "message_id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "SendImageResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    },
+    {
+      "slug": "INSTAGRAM_SEND_TEXT_MESSAGE",
+      "name": "Send Text Message",
+      "description": "Send a text message to an Instagram user via DM.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "graph_api_version": {
+            "type": "string",
+            "description": "Instagram Graph API version",
+            "title": "Graph Api Version",
+            "default": "v21.0",
+            "nullable": true
+          },
+          "ig_user_id": {
+            "type": "string",
+            "description": "Instagram Business Account ID (optional when using /me/messages)",
+            "title": "Ig User Id",
+            "default": null,
+            "nullable": true
+          },
+          "recipient_id": {
+            "type": "string",
+            "description": "Recipient PSID (Instagram-scoped ID)",
+            "title": "Recipient Id"
+          },
+          "reply_to_message_id": {
+            "type": "string",
+            "description": "Optional message ID to reply to",
+            "title": "Reply To Message Id",
+            "default": null,
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "description": "Message text to send",
+            "title": "Text"
+          }
+        },
+        "required": [
+          "recipient_id",
+          "text"
+        ],
+        "title": "SendInstagramMessageRequest",
+        "description": "Send a message to an Instagram user via the Messenger API for Instagram.\n\nRequires a valid IG business account token with messaging permissions and the\nrecipient's PSID (Instagram scoped ID) obtained from prior interactions."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "attachment_id": {
+                "type": "string",
+                "description": "Unique identifier for reusable attachments. This field is only present when sending media attachments and can be used to send the same attachment again without re-uploading.",
+                "title": "Attachment Id",
+                "default": null,
+                "nullable": true
+              },
+              "message_id": {
+                "type": "string",
+                "description": "Unique identifier for the sent message. The format follows the pattern 'mid.$' followed by an encoded string (e.g., 'mid.$cAAJoUiFKdHJi-Oj9r1cx6O1cpi6C').",
+                "title": "Message Id"
+              },
+              "recipient_id": {
+                "type": "string",
+                "description": "The Instagram-Scoped User ID (IGSID) of the message recipient. This ID is unique for each Instagram Business account. Note: This field is not returned when using recipient.user_ref or recipient.phone_number to identify the message recipient.",
+                "title": "Recipient Id",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "required": [
+              "message_id"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "SendInstagramMessageResponseWrapper"
+      },
+      "toolkitSlug": "instagram"
+    }
+  ],
+  "toolCount": 16
+}

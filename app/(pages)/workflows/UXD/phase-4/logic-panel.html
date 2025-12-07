@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logic Panel - Phase 4 UXD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            background: '#0a0a0a',
+            foreground: '#fafafa',
+            card: '#18181b',
+            border: '#27272a',
+            muted: '#71717a',
+            primary: '#3b82f6',
+            accent: '#22c55e',
+            warning: '#f59e0b',
+            purple: '#a855f7',
+            pink: '#ec4899',
+            cyan: '#06b6d4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen p-8">
+  
+  <div class="max-w-sm mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-lg font-semibold mb-1">Logic Panel</h1>
+      <p class="text-sm text-muted">Control flow primitives for workflow orchestration</p>
+    </div>
+
+    <!-- Panel Container (simulating right sidebar) -->
+    <div class="bg-card border border-border rounded-lg overflow-hidden">
+      
+      <!-- Tab Bar -->
+      <div class="flex border-b border-border overflow-x-auto">
+        <button class="px-3 py-2 text-xs font-medium text-muted hover:text-foreground whitespace-nowrap">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            Tools
+          </span>
+        </button>
+        <button class="px-3 py-2 text-xs font-medium text-foreground border-b-2 border-primary whitespace-nowrap">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+            Logic
+          </span>
+        </button>
+        <button class="px-3 py-2 text-xs font-medium text-muted hover:text-foreground whitespace-nowrap">Inputs</button>
+        <button class="px-3 py-2 text-xs font-medium text-muted hover:text-foreground whitespace-nowrap">Config</button>
+        <button class="px-3 py-2 text-xs font-medium text-muted hover:text-foreground whitespace-nowrap">Connect</button>
+        <button class="px-3 py-2 text-xs font-medium text-muted hover:text-foreground whitespace-nowrap">Test</button>
+      </div>
+
+      <!-- Logic Panel Content -->
+      <div class="p-3">
+        
+        <!-- Section: Routing -->
+        <div class="mb-4">
+          <div class="text-[10px] uppercase tracking-wider text-muted font-medium mb-2 px-1">Routing</div>
+          
+          <!-- Branch -->
+          <button class="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left group">
+            <div class="w-9 h-9 rounded-lg bg-purple/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm text-foreground group-hover:text-purple transition-colors">Branch</div>
+              <div class="text-xs text-muted mt-0.5">Route to different paths based on conditions</div>
+            </div>
+            <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+
+          <!-- Parallel -->
+          <button class="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left group">
+            <div class="w-9 h-9 rounded-lg bg-cyan/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm text-foreground group-hover:text-cyan transition-colors">Parallel</div>
+              <div class="text-xs text-muted mt-0.5">Execute multiple branches concurrently</div>
+            </div>
+            <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+        </div>
+
+        <!-- Section: Iteration -->
+        <div class="mb-4">
+          <div class="text-[10px] uppercase tracking-wider text-muted font-medium mb-2 px-1">Iteration</div>
+          
+          <!-- Loop -->
+          <button class="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left group">
+            <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm text-foreground group-hover:text-accent transition-colors">Loop</div>
+              <div class="text-xs text-muted mt-0.5">Repeat steps until/while condition</div>
+            </div>
+            <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+
+          <!-- ForEach -->
+          <button class="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left group">
+            <div class="w-9 h-9 rounded-lg bg-pink/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm text-foreground group-hover:text-pink transition-colors">ForEach</div>
+              <div class="text-xs text-muted mt-0.5">Iterate over array items</div>
+            </div>
+            <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+        </div>
+
+        <!-- Section: Timing & Events -->
+        <div class="mb-4">
+          <div class="text-[10px] uppercase tracking-wider text-muted font-medium mb-2 px-1">Timing & Events</div>
+          
+          <!-- Wait -->
+          <button class="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left group">
+            <div class="w-9 h-9 rounded-lg bg-warning/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm text-foreground group-hover:text-warning transition-colors">Wait</div>
+              <div class="text-xs text-muted mt-0.5">Pause for duration or until time</div>
+            </div>
+            <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+
+          <!-- Wait for Event -->
+          <button class="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left group">
+            <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm text-foreground group-hover:text-primary transition-colors">Wait for Event</div>
+              <div class="text-xs text-muted mt-0.5">Pause until external event arrives</div>
+            </div>
+            <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+        </div>
+
+        <!-- Section: Human-in-the-Loop -->
+        <div>
+          <div class="text-[10px] uppercase tracking-wider text-muted font-medium mb-2 px-1">Human-in-the-Loop</div>
+          
+          <!-- Suspend -->
+          <button class="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left group">
+            <div class="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm text-foreground group-hover:text-red-500 transition-colors">Suspend</div>
+              <div class="text-xs text-muted mt-0.5">Await human approval or input</div>
+            </div>
+            <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Footer Tip -->
+      <div class="px-3 py-2 border-t border-border bg-white/[0.02]">
+        <p class="text-[10px] text-muted">
+          <span class="text-foreground/60">Tip:</span> Select steps first, then add Loop or ForEach to wrap them
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-6 p-4 bg-card border border-border rounded-lg">
+      <div class="text-xs font-medium mb-3">Control Flow Types</div>
+      <div class="space-y-2 text-xs">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-purple"></div>
+          <span class="text-muted">Routing</span>
+          <span class="text-foreground/60">— Directs flow to different paths</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-accent"></div>
+          <span class="text-muted">Iteration</span>
+          <span class="text-foreground/60">— Repeats or iterates over data</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-warning"></div>
+          <span class="text-muted">Timing</span>
+          <span class="text-foreground/60">— Controls when execution continues</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-red-500"></div>
+          <span class="text-muted">Human</span>
+          <span class="text-foreground/60">— Requires human interaction</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
+

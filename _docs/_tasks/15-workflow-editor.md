@@ -19,6 +19,7 @@ Create a workflow editor from scratch that aligns with Mastra and Composio.
 4. **Connection requirements** are first-class (workflow declares what Composio integrations it needs)
 5. **Configs** are first-class (user-settable values that persist across executions)
 6. **Composio is central** - tools from Composio are the primary building blocks
+7. **Table integration** - workflows can read from and write to Records (structured data tables)
 
 ### Approach
 
@@ -410,6 +411,106 @@ interface TestCase {
 | **Timeout** | External API too slow | Increase timeout or handle gracefully |
 
 **Open Question:** How does Mastra handle step errors? Can we retry individual steps? Research needed.
+
+### 2.12 Table Integration (Records)
+
+**Definition:** Workflows can read from and write to structured data tables (Records feature).
+
+**Why it matters:** Tables become a "referenceable brain" for workflows. Workflows can query existing data for context (RAG), store results for future use, or maintain state across executions.
+
+**Two Flavors of Table Access:**
+
+| Purpose | Description | Example |
+|---------|-------------|---------|
+| **Read** | Query table data as input or RAG context | "Find similar jobs" queries saved job listings |
+| **Write** | Insert/update rows in a table | "Job Scraper" adds new job postings daily |
+
+**Requirements:**
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| PR-12.1 | Workflow can declare table requirements (read/write/readwrite purpose) | P0 |
+| PR-12.2 | Table requirements specify required columns with types | P0 |
+| PR-12.3 | Multiple table requirements per workflow supported | P0 |
+| PR-12.4 | When assigning workflow to agent, user selects table for each requirement | P0 |
+| PR-12.5 | User can auto-create new table with required schema during assignment | P0 |
+| PR-12.6 | Table reference accessible to nodes via `{{configs.tableKey}}` | P0 |
+| PR-12.7 | Column mapping at assignment time (if workflow columns ≠ table columns) | P1 |
+| PR-12.8 | Dedicated "Query Table" node type | P1 |
+| PR-12.9 | Dedicated "Write to Table" node type | P1 |
+| PR-12.10 | Table can be RAG source for AI decision steps | P2 |
+
+**Table Requirement Structure:**
+
+```typescript
+interface TableRequirement {
+  key: string;                    // Internal reference: "output_table"
+  purpose: "read" | "write" | "readwrite";
+  description: string;            // "Table to store scraped job listings"
+  
+  requiredColumns: Array<{
+    key: string;                  // How workflow references it: "job_title"
+    suggestedName: string;        // Suggested column name: "Job Title"
+    type: "text" | "number" | "date" | "boolean" | "select";
+    required: boolean;
+  }>;
+  
+  canAutoCreate: boolean;         // Show "Create new table" option
+  autoCreateName?: string;        // Suggested name for new table
+}
+```
+
+**Assignment Flow:**
+
+When assigning a workflow with table requirements:
+
+1. UI shows each table requirement with its purpose and required columns
+2. For each requirement, user can:
+   - Select an existing compatible table (has required columns or superset)
+   - Create a new table with the required schema (if `canAutoCreate: true`)
+3. If column names differ, user maps workflow columns → table columns
+4. Table binding stored as config (like connection bindings)
+
+**Example - Job Scraper Workflow:**
+
+```
+Workflow: "Daily Job Scraper"
+
+Table Requirements:
+  output_table (write):
+    - job_title: text (required)
+    - company: text (required)
+    - url: text (required)
+    - scraped_at: date (required)
+    Can auto-create: Yes
+    Suggested name: "Job Listings"
+
+When assigning to agent:
+  User selects existing "My Job Tracker" table
+  Maps: job_title → Title, company → Company Name, url → Link, scraped_at → Date Added
+```
+
+**Table Node Types (MVP):**
+
+| Node Type | Purpose | Inputs | Outputs |
+|-----------|---------|--------|---------|
+| **Query Table** | Read rows from table | tableRef, filter?, sort?, limit? | rows[] |
+| **Write to Table** | Insert row(s) to table | tableRef, data | insertedRow |
+
+**Schema Evolution:**
+
+- **Superset OK**: Table can have more columns than workflow requires (extras ignored)
+- **Missing optional columns**: Get null/default values
+- **Missing required columns**: Block assignment, prompt to add columns or select different table
+
+**Out of Scope for Table Integration MVP:**
+
+- Update existing row (use Code node + Records API)
+- Delete row (use Code node + Records API)
+- Upsert mode (insert-only for MVP)
+- Batch insert (single row per Write node; use loop for batches)
+- Runtime table selection (tables bound at assignment time only)
+- RAG/semantic search (requires vector infrastructure)
 
 ---
 
@@ -870,314 +971,567 @@ The current tool editor uses WebContainers for isolated code execution.
 
 ### 5.1 Technical Architecture Decisions
 
-| # | Question | Options | Current Lean | Decision Made? |
-|---|----------|---------|--------------|----------------|
-| OQ-1 | Do we generate code or interpret at runtime? | Code-gen vs Runtime | TBD after research | ❌ |
-| OQ-2 | How do we validate types between JSON Schemas? | Library (ajv) vs Custom logic | Library | ❌ |
-| OQ-3 | Do we need data transforms in mappings? | Yes (inline) vs No (use Code nodes) | No (simpler) | ❌ |
-| OQ-4 | How do we store workflow state during editing? | Zustand only vs Zustand + auto-save | Zustand + auto-save | ❌ |
-| OQ-5 | If Composio doesn't expose output schemas, what do we do? | Infer from execution vs Manual definition vs Skip validation | TBD after research | ❌ |
-| OQ-6 | How do we handle step-level errors in UI? | Inline error vs Modal vs Panel | Panel (Test tab) | ❌ |
+| # | Question | Options | Decision | Decision Made? |
+|---|----------|---------|----------|----------------|
+| OQ-1 | Do we generate code or interpret at runtime? | Code-gen vs Runtime | **Hybrid** | ✅ See Decision Log |
+| OQ-2 | How do we validate types between JSON Schemas? | Library (ajv) vs Custom logic | **Use Composio outputParameters** | ✅ See Decision Log |
+| OQ-3 | Do we need data transforms in mappings? | Yes (inline) vs No (use Code nodes) | **No (MVP), Yes (v2)** | ✅ See Decision Log |
+| OQ-4 | How do we store workflow state during editing? | Zustand only vs Zustand + auto-save | **Zustand + auto-save** | ✅ See Decision Log |
+| OQ-5 | If Composio doesn't expose output schemas, what do we do? | Infer vs Manual vs Skip | **Use outputParameters + fallback** | ✅ See Decision Log |
+| OQ-6 | How do we handle step-level errors in UI? | Inline error vs Modal vs Panel | **Panel (Test tab)** | ✅ See Decision Log |
 
 ### 5.2 Product Decisions
 
-| # | Question | Options | Current Lean | Decision Made? |
-|---|----------|---------|--------------|----------------|
-| OQ-7 | Can workflows call other workflows? | Yes vs No | No (start simple, add P2) | ❌ |
-| OQ-8 | Can workflows be forked/copied? | Fork (link) vs Copy (independent) | Copy (independent) | ❌ |
-| OQ-9 | Can configs be changed after assignment? | Yes vs No | Yes | ✅ |
-| OQ-10 | What happens if user disconnects a required connection? | Block execution vs Warn vs Disable workflow | Disable + prompt to reconnect | ❌ |
-| OQ-11 | Can test cases be shared between workflows? | Yes vs No | No (per-workflow) | ❌ |
-| OQ-12 | Can agents pass partial runtime inputs? | Yes (use defaults) vs No (require all) | No (require all required) | ❌ |
-| OQ-13 | Where do test results get logged? | Test panel only vs Also agent activity | Test panel only (start simple) | ❌ |
-| OQ-14 | Should auto-map matching field names by default? | Yes (opt-out) vs No (explicit) | Yes (opt-out) | ❌ |
+| # | Question | Options | Decision | Decision Made? |
+|---|----------|---------|----------|----------------|
+| OQ-7 | Can workflows call other workflows? | Yes vs No | No (P2 backlog) | ❌ Deferred |
+| OQ-8 | Can workflows be forked/copied? | Fork (link) vs Copy (independent) | Copy (independent) | ❌ Deferred |
+| OQ-9 | Can configs be changed after assignment? | Yes vs No | **Yes** | ✅ |
+| OQ-10 | What happens if user disconnects a required connection? | Block vs Warn vs Disable | Disable + prompt to reconnect | ❌ Deferred |
+| OQ-11 | Can test cases be shared between workflows? | Yes vs No | No (per-workflow) | ❌ Deferred |
+| OQ-12 | Can agents pass partial runtime inputs? | Yes (use defaults) vs No (require all) | No (require all required) | ❌ Deferred |
+| OQ-13 | Where do test results get logged? | Test panel only vs Also agent activity | Test panel only (start simple) | ❌ Deferred |
+| OQ-14 | Should auto-map matching field names by default? | Yes (opt-out) vs No (explicit) | **Yes (opt-out)** | ✅ See Decision Log |
 
 ### 5.3 Decision Log
 
-*Record decisions here as they're made during implementation.*
+Decisions made based on research findings (see `15.2-workflow-research.md` for full context).
 
 | Date | Question | Decision | Rationale |
 |------|----------|----------|-----------|
-| - | - | - | - |
+| 2025-12-06 | OQ-1: Code-gen vs Runtime? | **Hybrid** - Runtime for testing, code-gen for production | Mastra requires execute functions (can't serialize); hybrid gives fast iteration + reliable prod |
+| 2025-12-06 | OQ-2: Type validation approach? | **Use Composio's outputParameters + z.record() fallback** | Composio DOES expose output schemas; verified via live query |
+| 2025-12-06 | OQ-3: Data transforms in mappings? | **Direct mapping MVP, transforms v2** | Keep MVP simple; Code nodes handle complex transforms |
+| 2025-12-06 | OQ-4: Zustand + auto-save? | **Yes** | Consistent with existing patterns |
+| 2025-12-06 | OQ-5: Missing output schemas? | **Use outputParameters when available; z.record() fallback for terminals** | Terminal nodes don't need output validation |
+| 2025-12-06 | OQ-6: Step error display? | **Panel (Test tab)** | Keeps canvas clean; errors visible with context |
+| 2025-12-06 | OQ-9: Configs changeable after assignment? | **Yes** | Flexibility for users |
+| 2025-12-06 | OQ-14: Auto-map matching names? | **Yes (opt-out)** | Reduces manual work; user can override |
+| 2025-12-06 | Visual editor views | **Both list AND canvas from start** | Core requirement from product owner |
+| 2025-12-06 | Step composability | **Support importing steps from other tools/workflows** | Enables marketplace model |
 
 ---
 
-## 6. Implementation Phases
+## 6. Implementation Phases (Overview)
 
-### Phase 0: Research (Current)
+> **Note:** Detailed implementation plan is in `15.3-workflow-implementation.md`. This section provides a high-level overview.
 
-**Goal:** Answer all research questions, document primitives, make architectural decisions.
+### Phase Status
 
-**Deliverables:**
-- [x] **Create `_docs/_tasks/15.1-workflow-research.md`** - Central place for all research findings ✅
-- [x] **URL Validation** - All documentation URLs validated (Dec 6, 2025) ✅
-  - Mastra URLs: All validated and working
-  - Composio URLs: Updated to reflect new documentation structure (old URLs redirect)
-- [ ] Document all discovered primitives with code examples
+| Phase | Name | Status | Description |
+|-------|------|--------|-------------|
+| 0 | Research | ✅ Complete | All RQ questions answered in 15.1/15.2 |
+| 1 | UXD Mockups | ✅ Complete | Flight A/B variations created |
+| 2 | Foundation | Pending | File structure, types, basic CRUD |
+| 3 | List View | Pending | Sequential step editor |
+| 4 | Tool Palette | Pending | Composio tool discovery |
+| 5 | Data Mapping | Pending | Edge creation, field mapping |
+| 6 | Testing Suite | Pending | Test execution, saved tests |
+| 7 | Code Generation | Pending | workflow.json → workflow.ts |
+| 8 | Agent Integration | Pending | Workflow assignment + execution |
 
----
+### Research Completion Summary
 
-#### Mastra Documentation to Read
+All research questions answered (see `15.2-workflow-research.md`):
 
-> ✅ **URL Validation (Dec 6, 2025):** All Mastra URLs below have been validated and are working.
+| Category | Questions | Status |
+|----------|-----------|--------|
+| Mastra Workflows | RQ-1 through RQ-9 | ✅ All verified |
+| Composio Schemas | RQ-10 through RQ-12 | ✅ All verified |
+| Architecture Decisions | OQ-1 through OQ-6 | ✅ All decided |
 
-**Core Concepts (Start Here):**
-- [ ] [Getting Started](https://mastra.ai/docs/getting-started) ✓ - Installation, basic concepts
-- [ ] [Workflows Overview](https://mastra.ai/docs/workflows/overview) ✓ - Core workflow concepts
+**Key Findings:**
+- Composio DOES expose `outputParameters` (verified via live query)
+- Mastra supports in-memory workflow construction (hybrid approach viable)
+- `.map()` is the primitive for data mapping between steps
+- Official `@composio/mastra` package incompatible with current Mastra version (manual wrapping required)
 
-**Workflow Building:**
-- [ ] [Creating Workflows](https://mastra.ai/docs/workflows/creating-workflows) ✓ - How to define workflows
-- [ ] [Steps](https://mastra.ai/docs/workflows/steps) ✓ - Defining individual steps
-- [ ] [Input/Output Schemas](https://mastra.ai/docs/workflows/input-output) ✓ - Schema definitions (RQ-1, RQ-2)
-- [ ] [Variables & Context](https://mastra.ai/docs/workflows/variables) ✓ - Data passing between steps (RQ-3)
+### UXD Mockup Completion Summary
 
-**Control Flow:**
-- [ ] [Sequential Execution](https://mastra.ai/docs/workflows/sequential) ✓ - `.then()` chaining (RQ-4)
-- [ ] [Parallel Execution](https://mastra.ai/docs/workflows/parallel) ✓ - Running steps in parallel (RQ-5)
-- [ ] [Branching & Conditions](https://mastra.ai/docs/workflows/branching) ✓ - If/else logic (RQ-6)
-- [ ] [Loops](https://mastra.ai/docs/workflows/loops) ✓ - Iterating over data
-- [ ] [Suspend & Resume](https://mastra.ai/docs/workflows/suspend-and-resume) - Human-in-the-loop
+| Flight | Variation | Purpose | Location |
+|--------|-----------|---------|----------|
+| A | 1 | Canvas-first, prescribed layout | `Flight A/variation-1/` |
+| A | 2 | Alternative panel arrangement | `Flight A/variation-2/` |
+| A | 3 | **List view emphasis (STARTING POINT)** | `Flight A/variation-3/` |
+| B | 1 | Timeline approach | `Flight B/variation-1/` |
+| B | 2 | Minimal UI | `Flight B/variation-2/` |
+| B | 3 | Progressive disclosure | `Flight B/variation-3/` |
 
-**Execution & Errors:**
-- [ ] [Running Workflows](https://mastra.ai/docs/workflows/running) - Execution methods (RQ-8)
-- [ ] [Error Handling](https://mastra.ai/docs/workflows/error-handling) - Catching and handling errors (RQ-7)
-- [ ] [Retries](https://mastra.ai/docs/workflows/retries) - Retry configuration
-- [ ] [Timeouts](https://mastra.ai/docs/workflows/timeouts) - Timeout settings
+### Implementation Plan Reference
 
-**API Reference:**
-- [ ] [Workflow Class](https://mastra.ai/reference/workflows/workflow-class) ✓ - Full API
-- [ ] [Step Class](https://mastra.ai/reference/workflows/step-class) - Step API
-- [ ] [createWorkflow()](https://mastra.ai/reference/workflows/create-workflow) - Factory function
-- [ ] [createStep()](https://mastra.ai/reference/workflows/create-step) - Step factory
-- [ ] [Workflow Methods: .then()](https://mastra.ai/reference/workflows/workflow-methods/then)
-- [ ] [Workflow Methods: .parallel()](https://mastra.ai/reference/workflows/workflow-methods/parallel)
-- [ ] [Workflow Methods: .branch()](https://mastra.ai/reference/workflows/workflow-methods/branch)
+For detailed phase breakdowns, file impact analysis, and per-phase acceptance criteria, see:
 
-**Examples:**
-- [ ] [Workflow Examples](https://mastra.ai/examples/workflows) - Real-world examples
-- [ ] [Mastra GitHub Examples](https://github.com/mastra-ai/mastra/tree/main/examples) - Code samples
-
-**Critical Questions from Mastra Docs:**
-- [ ] RQ-1: How does workflow define input schema?
-- [ ] RQ-2: How does step define input/output?
-- [ ] RQ-3: How does data pass between steps?
-- [ ] RQ-4: `.then()` signature and usage
-- [ ] RQ-5: `.parallel()` signature and output merging
-- [ ] RQ-6: `.branch()` or conditional syntax
-- [ ] RQ-7: Error handling patterns
-- [ ] RQ-8: Workflow execution method
-- [ ] RQ-9: Code files vs runtime definition
+- **`15.3-workflow-implementation.md`** - Full implementation plan
+- **`15.3a-workflow-json-schema.md`** - Dedicated workflow.json schema design
 
 ---
 
-#### Composio Documentation to Read
+## 7. Acceptance Criteria (MECE)
 
-> ⚠️ **URL Validation Note (Dec 6, 2025):** Composio's documentation structure has changed. Many old `/framework/*`, `/tools`, and `/introduction/*` URLs now redirect to `/docs/welcome`. The URLs below have been updated to reflect the new structure.
+Comprehensive, testable criteria organized by category. Each criterion is mutually exclusive but collectively exhaustive of all product requirements.
 
-**Getting Started (New Structure):**
-- [ ] [Welcome / Docs](https://docs.composio.dev/docs/welcome) - Main entry point
-- [ ] [Quickstart](https://docs.composio.dev/docs/quickstart) - First agent setup
+### 7.1 Node Discovery & Palette (7 criteria)
 
-**Provider Integrations (Critical):**
-- [ ] [Mastra Provider](https://docs.composio.dev/providers/mastra) - **Critical** (RQ-12) ✅ VALIDATED
-- [ ] [Vercel AI SDK Provider](https://docs.composio.dev/providers/vercel-ai) - Reference for patterns
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-1.1 | Palette displays all Composio tools from user's connected integrations | PR-1.1 | Open editor → see tools grouped by toolkit |
+| AC-1.2 | Palette displays NO_AUTH tools available to all users | PR-1.2 | Open editor without connections → browser_tool visible |
+| AC-1.3 | Each tool shows its input schema (parameter names, types, required) | PR-1.3 | Click tool → see input fields |
+| AC-1.4 | Each tool shows its output schema (field names, types) | PR-1.4 | Click tool → see output fields |
+| AC-1.5 | Tools are grouped by toolkit (Gmail, GitHub, etc.) | PR-1.5 | Visual grouping in palette |
+| AC-1.6 | Tools can be searched/filtered by name | PR-1.6 | Type "send" → filter results |
+| AC-1.7 | Drag tool from palette to canvas creates node | PR-2.3 | Drag and drop interaction |
 
-**Toolkits & Actions:**
-- [ ] [Composio Tools Catalog](https://composio.dev/tools) - Available tools (Marketing site)
-- [ ] Browse via docs sidebar → "Toolkit" tab for individual toolkit docs
+### 7.2 IPO Model & Nodes (6 criteria)
 
-**API Reference:**
-- [ ] [API Reference](https://docs.composio.dev/api-reference) - Full API docs (via "API Reference" tab)
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-2.1 | Each node displays its input schema | PR-2.1 | Node shows input fields in UI |
+| AC-2.2 | Each node displays its output schema (or "unknown" indicator) | PR-2.2 | Node shows output fields or fallback |
+| AC-2.3 | Nodes connect via edges | PR-2.3 | Draw line between nodes |
+| AC-2.4 | Clicking edge opens data mapping UI | PR-2.4 | Click edge → mapping modal opens |
+| AC-2.5 | Terminal nodes (no downstream) display correctly without output handles | PR-2.5 | Add terminal node → no output port |
+| AC-2.6 | Node inspector shows full I/O details for selected node | PR-2.1, PR-2.2 | Click node → see details in panel |
 
-**Auth & Connections:**
-- [ ] Explore via docs sidebar → Authentication section
+### 7.3 Connection Validation (4 criteria)
 
-**Note:** For detailed SDK methods like `getTools()`, `executeAction()`, and connection management, explore the docs interactively as the URL structure has changed. Use the search function at docs.composio.dev.
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-3.1 | Type validation runs when creating edge | PR-3.1 | Connect mismatched types → warning |
+| AC-3.2 | Invalid connections show visual indicator (red edge) | PR-3.2 | Mismatched types → edge turns red |
+| AC-3.3 | Coercible types show warning but allow connection | PR-3.3 | number→string → yellow warning |
+| AC-3.4 | Incompatible types block connection or show error | PR-3.4 | object→boolean → error shown |
 
-**Critical Questions from Composio Docs:**
-- [ ] RQ-10: Does Composio expose output schemas? Where?
-- [ ] RQ-11: How to get toolkit slug from tool ID?
-- [ ] RQ-12: Official Mastra integration pattern
+### 7.4 Connection Requirements (4 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-4.1 | Adding tool node auto-detects required connection | PR-4.1 | Add Gmail tool → "Requires: Gmail" |
+| AC-4.2 | Required connections displayed in Connections panel | PR-4.2 | Panel shows toolkit list with icons |
+| AC-4.3 | When assigning to agent, validate required connections exist | PR-4.3 | Assign workflow → check user has Gmail connected |
+| AC-4.4 | Block execution if connections missing | PR-4.4 | Execute without Gmail → error message |
+
+### 7.5 Configs (5 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-5.1 | Author can define configs (name, type, required, default) | PR-5.1 | Config panel → add config |
+| AC-5.2 | Node parameters can reference configs via `{{configs.x}}` | PR-5.2 | Set node param → reference config |
+| AC-5.3 | Config values requested when assigning workflow to agent | PR-5.3 | Assign workflow → config form shown |
+| AC-5.4 | Config values stored per agent-workflow binding | PR-5.4 | Same workflow, different agents, different configs |
+| AC-5.5 | Supported config types: text, number, boolean, select | PR-5.5 | Create each type → works correctly |
+
+### 7.6 Runtime Inputs (5 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-6.1 | Author can define runtime inputs (name, type, required, description) | PR-8.1 | Inputs panel → add input |
+| AC-6.2 | Runtime inputs have schema (type validation) | PR-8.2 | Define input as number → validation enforced |
+| AC-6.3 | Agent passes runtime input values when calling workflow | PR-8.3 | Agent chat → calls workflow with args |
+| AC-6.4 | Node parameters can reference inputs via `{{inputs.x}}` | PR-8.4 | Set node param → reference input |
+| AC-6.5 | Runtime inputs validated before execution | PR-8.5 | Missing required input → error before run |
+
+### 7.7 Data Mapping (6 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-7.1 | Data mapping UI shows source output fields | PR-9.2 | Click edge → see source fields |
+| AC-7.2 | Data mapping UI shows target input fields | PR-9.3 | Click edge → see target fields |
+| AC-7.3 | User can map output field → input field | PR-9.4 | Drag or select mapping |
+| AC-7.4 | Nested field access supported (e.g., `user.email`) | PR-9.5 | Map nested field → works |
+| AC-7.5 | Auto-map matching field names (optional) | PR-9.6 | Enable auto-map → matching names connected |
+| AC-7.6 | Type mismatches shown as warnings | PR-9.7 | Map string→number → warning shown |
+
+### 7.8 Testing Suite (7 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-8.1 | Test button runs workflow with user-provided inputs | PR-10.1 | Click Test → fill form → run |
+| AC-8.2 | User can create and save named test cases | PR-10.2 | Create "Basic test" → saved |
+| AC-8.3 | Test cases store runtime inputs + config values | PR-10.3 | Save test → reopen → values restored |
+| AC-8.4 | Test execution shows step-by-step progress | PR-10.4 | Run test → see each step execute |
+| AC-8.5 | Test execution shows errors clearly (which node, why) | PR-10.5 | Step fails → error message + node highlighted |
+| AC-8.6 | Saved test case can be re-run with one click | PR-10.6 | Select test → click Run → executes |
+| AC-8.7 | Test history available (past runs + results) | PR-10.7 | View test history list |
+
+### 7.9 Error Handling (6 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-9.1 | Tool execution errors caught and surfaced | PR-11.1 | API timeout → error shown |
+| AC-9.2 | Error display shows which node failed + message | PR-11.2 | Failed node highlighted + message |
+| AC-9.3 | Error types distinguished (auth/API/validation) | PR-11.3 | Auth error → specific message |
+| AC-9.4 | Auth errors prompt reconnection | PR-11.4 | Expired token → "Reconnect Gmail" |
+| AC-9.5 | Failed node retry possible (P2) | PR-11.5 | Retry button on failed step |
+| AC-9.6 | Errors logged for debugging | PR-11.6 | Errors visible in test panel |
+
+### 7.10 Control Flow (4 criteria - P1/P2)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-10.1 | Branch node: if/else based on condition | PR-6.1 | Add branch → define condition → works |
+| AC-10.2 | Parallel node: run multiple paths simultaneously | PR-6.2 | Add parallel → both branches execute |
+| AC-10.3 | Loop node: repeat until condition (P2) | PR-6.3 | Add loop → repeats correctly |
+| AC-10.4 | Wait node: pause for human approval (P2) | PR-6.4 | Add wait → execution suspends |
+
+### 7.11 Custom Code Nodes (4 criteria - P1)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-11.1 | User can add Code node with custom JS/TS | PR-7.1 | Add Code node → write code |
+| AC-11.2 | User defines input schema for code node | PR-7.2 | Define input fields in UI |
+| AC-11.3 | User defines output schema for code node | PR-7.3 | Define output fields in UI |
+| AC-11.4 | Code editor with syntax highlighting | PR-7.4 | Editor has highlighting |
+
+### 7.12 Visual Editor Views (4 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-12.1 | Canvas view (ReactFlow) displays workflow as graph | Architecture | Open editor → see nodes/edges |
+| AC-12.2 | List view displays workflow as sequential steps | Architecture | Switch to list → see ordered steps |
+| AC-12.3 | Both views read/write same underlying state | Architecture | Edit in canvas → list updates |
+| AC-12.4 | View toggle persists user preference | UX | Refresh → same view selected |
+
+### 7.13 Persistence & Storage (3 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-13.1 | Workflow saved to `_tables/workflows/[id]/workflow.json` | Architecture | Save → file exists |
+| AC-13.2 | Generated code saved to `workflow.ts` | Architecture | Save → TypeScript file generated |
+| AC-13.3 | Auto-save during editing | OQ-4 | Edit → state persisted |
+
+### 7.14 Agent Integration (4 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-14.1 | Workflow can be assigned to agent | Success | Assignment UI works |
+| AC-14.2 | Agent can call workflow with runtime inputs | Success | Agent chat → workflow executes |
+| AC-14.3 | Workflow results returned to agent | Success | Agent receives output |
+| AC-14.4 | No WebContainers required | Architecture | Runs server-side only |
+
+### 7.15 Table Integration (12 criteria)
+
+| # | Criterion | Maps To | Testable By |
+|---|-----------|---------|-------------|
+| AC-15.1 | Workflow author can add table requirement in editor | PR-12.1 | Add table req in Tables panel |
+| AC-15.2 | Table requirement specifies purpose (read/write/readwrite) | PR-12.1 | Select purpose dropdown |
+| AC-15.3 | Table requirement specifies required columns with types | PR-12.2 | Add column requirements |
+| AC-15.4 | Multiple table requirements per workflow | PR-12.3 | Add 2+ table requirements |
+| AC-15.5 | Assignment UI shows table requirements section | PR-12.4 | See table section in modal |
+| AC-15.6 | User can select compatible existing table | PR-12.4 | Dropdown shows compatible tables |
+| AC-15.7 | User can create new table with required schema | PR-12.5 | Click create → table created |
+| AC-15.8 | Table reference accessible via `{{configs.tableKey}}` | PR-12.6 | Reference in node → resolves |
+| AC-15.9 | Column mapping available when names differ | PR-12.7 | Map workflow→table columns |
+| AC-15.10 | Query Table node returns filtered rows | PR-12.8 | Configure query → results |
+| AC-15.11 | Write to Table node inserts row | PR-12.9 | Run workflow → row in table |
+| AC-15.12 | Incompatible table blocked at assignment | PR-12.2 | Missing required column → error |
+
+**Total: 81 acceptance criteria** covering all product requirements.
 
 ---
 
-#### Existing Codebase Review
+## 8. User Flows
 
-**Our Composio Integration:**
-- [ ] `app/api/tools/services/composio-tools.ts` - Current tool fetching
-- [ ] `app/api/connections/services/tools.ts` - Connection tool handling
-- [ ] `app/api/tools/services/runtime.ts` - Tool execution wrapper
-- [ ] `_tables/types.ts` - ConnectionToolBinding type
+Explicit user journeys that exercise the acceptance criteria.
 
-**Our Mastra Integration:**
-- [ ] `app/api/workforce/[agentId]/chat/route.ts` - Agent using Mastra
-- [ ] `app/api/workforce/[agentId]/chat/services/memory.ts` - Mastra Memory usage
+### Flow 1: Create New Workflow (Happy Path)
+
+```
+1. User navigates to Workflows page from header
+2. User clicks "New Workflow" button
+3. Editor opens with empty canvas + default name "Untitled Workflow"
+4. User renames workflow to "Job Application Helper"
+5. System auto-saves name
+```
+
+### Flow 2: Add First Node from Palette
+
+```
+1. User sees Palette panel on right (default tab)
+2. Palette shows tools grouped by toolkit (Gmail, GitHub, Firecrawl, etc.)
+3. User searches "scrape" in palette search
+4. User drags "FIRECRAWL_SCRAPE" tool to canvas
+5. Node appears with input/output schemas visible
+6. Connections panel updates: "Requires: Firecrawl"
+```
+
+### Flow 3: Add Second Node and Connect
+
+```
+1. User drags "Custom Code" node to canvas (right of first)
+2. User drags edge from first node output → second node input
+3. Data mapping modal opens automatically
+4. User sees source fields: data, error, successful
+5. User maps data.title → jobTitle
+6. User maps data.company → companyName
+7. User clicks "Save Mapping"
+8. Edge appears with mapping indicator
+```
+
+### Flow 4: Define Runtime Inputs
+
+```
+1. User clicks "Inputs" tab in right panel
+2. User clicks "+ Add Input"
+3. User fills: name="jobUrl", type="string", required=true
+4. User adds description: "URL of job listing to scrape"
+5. User references input in first node: url = {{inputs.jobUrl}}
+6. System validates reference exists
+```
+
+### Flow 5: Define Configs
+
+```
+1. User clicks "Config" tab in right panel
+2. User clicks "+ Add Config"
+3. User fills: name="resumeTemplate", type="select", options=["modern", "classic"]
+4. User sets default="modern"
+5. Config appears in list
+```
+
+### Flow 6: Test Workflow - New Test Case
+
+```
+1. User clicks "Test" tab in right panel
+2. No saved tests exist → form shows
+3. User fills runtime inputs: jobUrl = "https://example.com/job/123"
+4. User clicks "Run Test"
+5. Execution panel shows: Step 1 running...
+6. Step 1 completes ✓ → shows output preview
+7. Step 2 running... → completes ✓
+8. Status: PASSED (2.3s)
+9. User clicks "Save as Test Case" → names it "Basic flow"
+```
+
+### Flow 7: Test Workflow - Saved Test Case
+
+```
+1. User opens Test tab
+2. Saved tests shown: "Basic flow"
+3. User clicks "Run" on "Basic flow"
+4. Test executes with saved inputs
+5. Results displayed
+```
+
+### Flow 8: Handle Test Failure
+
+```
+1. User runs test with invalid jobUrl
+2. Step 1 fails ✗ with red highlight
+3. Error panel shows: "Invalid URL format"
+4. User can edit test inputs and retry
+```
+
+### Flow 9: Switch Between Canvas and List Views
+
+```
+1. User is in canvas view (default)
+2. User clicks "List" toggle in toolbar
+3. View switches to sequential list of steps
+4. Same steps shown in execution order
+5. User can reorder steps by drag-drop in list
+6. Changes reflected when switching back to canvas
+```
+
+### Flow 10: Connection Missing Error
+
+```
+1. User tries to test workflow with Gmail node
+2. User doesn't have Gmail connected
+3. Error: "Missing required connection: Gmail"
+4. "Connect Gmail" button shown
+5. User connects Gmail in modal
+6. Returns to editor → can now test
+```
+
+### Flow 11: Save and Close Workflow
+
+```
+1. User clicks "Save" button
+2. workflow.json saved to _tables/workflows/[id]/
+3. workflow.ts generated from JSON
+4. User navigates away
+5. Returning later → workflow loads with all state
+```
+
+### Flow 12: Assign Workflow to Agent
+
+```
+1. User goes to Agent detail page
+2. User clicks "Add Workflow"
+3. Selects "Job Application Helper"
+4. System checks: User has Firecrawl connected? ✓
+5. Config form shown: Select resumeTemplate
+6. User sets config values
+7. Workflow assigned to agent
+```
+
+### Flow 13: Agent Executes Workflow
+
+```
+1. User chats with agent
+2. User: "Tailor my resume for this job: [url]"
+3. Agent recognizes workflow trigger
+4. Agent calls workflow with runtime input: jobUrl = [url]
+5. Workflow executes server-side
+6. Result returned to agent
+7. Agent responds with tailored resume
+```
+
+### Flow 14: Data Mapping with Nested Fields
+
+```
+1. User connects two nodes
+2. Source output has nested structure: { user: { contact: { email: "..." } } }
+3. Target input expects: recipientEmail (string)
+4. User types in source path: user.contact.email
+5. Maps to recipientEmail
+6. Type validation: string → string ✓
+```
+
+### Flow 15: Add Branch Control Flow (P1)
+
+```
+1. User drags "Branch" control node to canvas
+2. User connects input edge
+3. User defines condition: if inputData.priority === "high"
+4. User connects "true" branch to urgent step
+5. User connects "false" branch to normal step
+6. Test shows only one branch executed
+```
+
+### Flow 16: Add Table Requirement
+
+```
+1. User opens "Tables" panel in editor
+2. User clicks "+ Add Table Requirement"
+3. User fills:
+   - Key: "output_table"
+   - Purpose: "write"
+   - Description: "Table to store scraped jobs"
+4. User adds required columns:
+   - job_title (text, required)
+   - company (text, required)
+   - url (text, required)
+5. User enables "Allow auto-create"
+6. User sets suggested name: "Job Listings"
+7. Table requirement appears in Tables panel
+```
+
+### Flow 17: Assign Workflow with Table (Select Existing)
+
+```
+1. User clicks "Assign to Agent" on workflow
+2. Modal shows: Connections, Tables, Configs sections
+3. Tables section shows: "output_table (write)"
+   - Required columns: job_title, company, url
+4. Dropdown shows compatible tables:
+   - "My Job Tracker" (compatible ✓)
+   - "Leads" (missing: url ⚠️)
+5. User selects "My Job Tracker"
+6. Column mapping UI appears:
+   - job_title → "Title" column
+   - company → "Company Name" column
+   - url → "Link" column
+7. User saves mapping
+8. User completes assignment
+```
+
+### Flow 18: Assign Workflow with Table (Auto-Create)
+
+```
+1. User clicks "Assign to Agent" on workflow
+2. Tables section shows requirement
+3. User clicks "+ Create 'Job Listings' table"
+4. Table created with exact required schema
+5. No column mapping needed (names match)
+6. User completes assignment
+```
+
+### Flow 19: Use Query Table Node
+
+```
+1. User drags "Query Table" node to canvas
+2. User configures:
+   - Table: {{configs.reference_table}}
+   - Filter: company contains "Acme"
+   - Limit: 10
+3. User connects output to next node
+4. At runtime, node queries table and returns matching rows
+```
+
+### Flow 20: Use Write to Table Node
+
+```
+1. User drags "Write to Table" node to canvas
+2. User configures:
+   - Table: {{configs.output_table}}
+   - Data: {{previous.scrapedJob}}
+3. At runtime, node inserts row to table
+4. Inserted row ID returned as output
+```
 
 ---
 
-#### Architectural Decisions to Make
+## 9. UXD Requirements
 
-After research, decide:
-- [ ] OQ-1: Code-gen vs Runtime interpretation
-- [ ] OQ-2: Type validation approach (ajv vs custom)
-- [ ] OQ-3: Data transforms (inline vs Code nodes)
-- [ ] OQ-5: Output schema handling if Composio doesn't expose
-- [ ] WebContainers: Needed or not?
+### 9.1 Mockup Location
 
-Update Section 5.3 Decision Log with all decisions.
+All UXD mockups for the Workflow Editor are located at:
 
----
+```
+_docs/UXD/Pages/workflow/
+├── index.html              # Overview linking all variations
+├── Flight A/               # Canvas-centric designs
+│   ├── index.html
+│   ├── variation-1/        # Prescribed layout
+│   ├── variation-2/        # Alternative panels
+│   └── variation-3/        # List view emphasis ← STARTING POINT
+└── Flight B/               # List-centric designs  
+    ├── index.html
+    ├── variation-1/        # Timeline approach
+    ├── variation-2/        # Minimal UI
+    └── variation-3/        # Progressive disclosure
+```
 
-#### Exit Criteria
+### 9.2 Starting Direction
 
-- [ ] All RQ questions answered in 15.1
-- [ ] All critical OQ decisions made
-- [ ] Primitives table in 15.1 complete
-- [ ] No unresolved blockers
+**Flight A, Variation 3 (List View Emphasis)** is the recommended starting point.
 
----
+**Rationale:**
+- List view is more approachable for non-technical users
+- Canvas view adds complexity that can be surfaced progressively
+- Both views share the same underlying `workflow.json` state
+- Can evolve to full dual-view support
 
-### Phase 1: UXD Mockups
+### 9.3 Key UX Principles
 
-**Goal:** Create high-fidelity HTML mockups before writing any code.
+| Principle | Implementation |
+|-----------|----------------|
+| **Progressive disclosure** | Start with list view, unlock canvas for power users |
+| **Same state, different views** | workflow.json supports both `listIndex` and `position` |
+| **Clear data flow** | List view uses inline badges for data source references |
+| **Terminal node distinction** | Visual difference for nodes without outputs |
+| **Connection awareness** | Always visible which integrations are required |
 
-**Location:** `_docs/UXD/Pages/workflow/`
+### 9.4 Mockup Requirements
 
-**Deliverables:**
+Each mockup must demonstrate:
 
-1. **`index.html`** - Parent file that links to all variations, easy to open in browser
-   - Links to each variation with brief description
-   - Summary of which requirements each variation addresses
-
-2. **`variation-1/index.html`** - Close to Prescribed Design
-   - Follows the layout from Section 4.3 exactly (Chat left, Canvas center, Panels right)
-   - All tabs: Palette, Inputs, Config, Connect, Test
-   - Shows: Node with I/O schema, Data mapping modal, Test results panel
-   - **Closest to what we've documented**
-
-3. **`variation-2/index.html`** - Alternative Layout
-   - Different panel arrangement (e.g., panels at bottom, or floating)
-   - Still meets all PR requirements
-   - May emphasize canvas more
-
-4. **`variation-3/index.html`** - Simplified Version
-   - Minimal UI, progressive disclosure
-   - Hides complexity until needed
-   - Still meets all PR requirements
-
-**Each variation must show:**
 - [ ] Tool Palette (grouped by toolkit)
-- [ ] Node on canvas with I/O schema visible
-- [ ] Edge between nodes
-- [ ] Data mapping UI (output → input)
-- [ ] Inputs Panel (define runtime inputs)
-- [ ] Config Panel (define configs)
-- [ ] Connections Panel (required integrations)
-- [ ] Test Panel (saved tests, execution results)
+- [ ] Node with I/O schema visible
+- [ ] Edge between nodes (or sequential indicator in list view)
+- [ ] Data mapping UI
+- [ ] Inputs Panel
+- [ ] Config Panel
+- [ ] Connections Panel
+- [ ] Test Panel with execution results
 - [ ] Error state (failed node)
-
-**Exit Criteria:**
-- All three variations complete
-- Each variation meets all P0 requirements visually
-- Parent index.html links to all variations
-- Review with stakeholder to pick preferred direction
+- [ ] Both list and canvas views
 
 ---
 
-### Phase 2: Foundation
-
-- [ ] Create `app/api/workflows/` folder structure
-- [ ] Create `app/(pages)/workflows/` folder structure  
-- [ ] Create `_tables/workflows/` storage pattern
-- [ ] Define `WorkflowDefinition` TypeScript type (including inputs, configs)
-- [ ] Define `WorkflowTestCase` TypeScript type
-- [ ] Basic CRUD endpoints (create, list, read, update, delete)
-- [ ] Stub out editor page with ReactFlow canvas
-- [ ] Implement chosen UXD variation as base layout
-
----
-
-### Phase 3: Tool Palette & Nodes
-
-- [ ] Fetch available Composio tools with schemas
-- [ ] Implement Tool Palette component (grouped by toolkit)
-- [ ] Implement ToolNode component (displays I/O schemas)
-- [ ] Drag from palette to canvas
-- [ ] Node inspector panel (view selected node's details)
-
----
-
-### Phase 4: Connections & Data Mapping
-
-- [ ] Implement edge creation between nodes
-- [ ] Implement type validation on edge creation
-- [ ] Show validation errors visually (red edges, warnings)
-- [ ] Implement data mapping UI (output field → input field)
-- [ ] Auto-detect required connections
-
----
-
-### Phase 5: Inputs & Configs
-
-- [ ] Implement Inputs Panel (define runtime inputs)
-- [ ] Implement Config Panel (define configs)
-- [ ] Allow referencing inputs in node parameters: `{{inputs.x}}`
-- [ ] Allow referencing configs in node parameters: `{{configs.y}}`
-- [ ] Implement Connections Panel (show required integrations)
-
----
-
-### Phase 6: Testing Suite
-
-- [ ] Implement "Test" button with input form
-- [ ] Implement test execution with step-by-step results
-- [ ] Implement error display (which node failed, why)
-- [ ] Implement saved test cases (create, edit, delete)
-- [ ] Implement test case selector dropdown
-- [ ] Store test cases in `_tables/workflows/[id]/tests.json`
-
----
-
-### Phase 7: Code Generation / Execution
-
-- [ ] Based on research, implement code generator OR runtime interpreter
-- [ ] Handle tool nodes → Composio execution
-- [ ] Handle control nodes → Mastra control flow (if implementing)
-- [ ] Error handling: catch, categorize, surface
-
----
-
-### Phase 8: Agent Integration
-
-- [ ] Workflow assignment UI in agent modal
-- [ ] Config value storage per agent-workflow binding
-- [ ] Runtime input passing from agent to workflow
-- [ ] Workflow execution from agent chat
-- [ ] Error handling and surfacing in agent chat
-
----
-
-## 7. Success Criteria
-
-| Criteria | Validation | Priority |
-|----------|------------|----------|
-| **Composio tools visible** | Palette shows all available tools with I/O schemas | P0 |
-| **Nodes have I/O** | Each node displays its input and output schema | P0 |
-| **Connections validated** | Invalid type connections show error | P0 |
-| **Data mapping works** | User can map output fields to input fields via UI | P0 |
-| **Connection requirements work** | Add Gmail node → "Requires Gmail" shown | P0 |
-| **Runtime inputs work** | Define inputs → agent passes values → workflow receives them | P0 |
-| **Configs work** | Define config → reference in node → set at assignment | P0 |
-| **Testing works** | Hit Test → fill inputs → see step-by-step results | P0 |
-| **Saved test cases** | Create test case → run it again later with one click | P1 |
-| **Errors surface clearly** | Node fails → user sees which node + error message | P0 |
-| **Agent can use workflow** | Assign to agent → agent calls it with inputs | P0 |
-| **No WebContainers** | Workflows run server-side without browser sandbox | Goal |
-| **Resume Agent buildable** | End-to-end: scrape job → tailor resume | North Star |
-
----
-
-## 8. Files Changed
+## 10. Files Changed
 
 ### Completed
 

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Branch Configuration Modal - Phase 4 UXD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { 
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            background: '#0a0a0a',
+            foreground: '#fafafa',
+            card: '#18181b',
+            border: '#27272a',
+            muted: '#71717a',
+            primary: '#3b82f6',
+            accent: '#22c55e',
+            warning: '#f59e0b',
+            purple: '#a855f7',
+            pink: '#ec4899',
+            cyan: '#06b6d4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen p-8 flex items-center justify-center">
+  
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black/60"></div>
+
+  <!-- Modal Container -->
+  <div class="relative bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-border">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-purple/10 flex items-center justify-center">
+          <svg class="w-4 h-4 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold">Configure Branch</h2>
+          <p class="text-xs text-muted">Route workflow based on conditions</p>
+        </div>
+      </div>
+      <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-muted hover:text-foreground transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-5 max-h-[60vh] overflow-y-auto">
+      
+      <!-- Conditions List -->
+      <div class="space-y-3">
+        
+        <!-- Condition 1 -->
+        <div class="bg-background border border-border rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-accent"></div>
+              <span class="text-xs font-medium text-muted uppercase tracking-wide">Condition 1</span>
+            </div>
+            <button class="text-xs text-muted hover:text-red-500 transition-colors">Remove</button>
+          </div>
+          
+          <!-- Label -->
+          <div class="mb-3">
+            <label class="text-xs text-muted block mb-1.5">Label</label>
+            <input type="text" value="High Score" class="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple focus:border-purple" placeholder="e.g., Gold Tier">
+          </div>
+          
+          <!-- Expression -->
+          <div class="mb-3">
+            <label class="text-xs text-muted block mb-1.5">Condition Expression</label>
+            <div class="relative">
+              <input type="text" value="score >= 90" class="w-full bg-card border border-border rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-purple focus:border-purple" placeholder="e.g., status === 'approved'">
+              <div class="absolute right-2 top-1/2 -translate-y-1/2">
+                <span class="text-[10px] text-muted bg-background px-1.5 py-0.5 rounded">JS</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target -->
+          <div>
+            <label class="text-xs text-muted block mb-1.5">Then go to</label>
+            <select class="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple focus:border-purple appearance-none cursor-pointer">
+              <option value="">Create new step...</option>
+              <option value="step-1">Step 1: Fetch User Data</option>
+              <option value="step-2" selected>Step 2: Send Premium Email</option>
+              <option value="step-3">Step 3: Update Database</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Condition 2 -->
+        <div class="bg-background border border-border rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-warning"></div>
+              <span class="text-xs font-medium text-muted uppercase tracking-wide">Condition 2</span>
+            </div>
+            <button class="text-xs text-muted hover:text-red-500 transition-colors">Remove</button>
+          </div>
+          
+          <div class="mb-3">
+            <label class="text-xs text-muted block mb-1.5">Label</label>
+            <input type="text" value="Medium Score" class="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple focus:border-purple" placeholder="e.g., Silver Tier">
+          </div>
+          
+          <div class="mb-3">
+            <label class="text-xs text-muted block mb-1.5">Condition Expression</label>
+            <div class="relative">
+              <input type="text" value="score >= 70" class="w-full bg-card border border-border rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-purple focus:border-purple">
+              <div class="absolute right-2 top-1/2 -translate-y-1/2">
+                <span class="text-[10px] text-muted bg-background px-1.5 py-0.5 rounded">JS</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-xs text-muted block mb-1.5">Then go to</label>
+            <select class="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple focus:border-purple appearance-none cursor-pointer">
+              <option value="">Create new step...</option>
+              <option value="step-1">Step 1: Fetch User Data</option>
+              <option value="step-2">Step 2: Send Premium Email</option>
+              <option value="step-3" selected>Step 3: Send Standard Email</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Else (Default) -->
+        <div class="bg-background border border-dashed border-border rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-muted"></div>
+              <span class="text-xs font-medium text-muted uppercase tracking-wide">Else (Default)</span>
+            </div>
+          </div>
+          
+          <p class="text-xs text-muted mb-3">If no conditions match, go to:</p>
+
+          <select class="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple focus:border-purple appearance-none cursor-pointer">
+            <option value="">Create new step...</option>
+            <option value="step-1">Step 1: Fetch User Data</option>
+            <option value="step-4" selected>Step 4: Send Basic Email</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Add Condition Button -->
+      <button class="w-full mt-3 py-2.5 border border-dashed border-border rounded-lg text-sm text-muted hover:text-foreground hover:border-purple/50 transition-colors flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Add Another Condition
+      </button>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-between px-5 py-4 border-t border-border bg-white/[0.02]">
+      <div class="text-xs text-muted">
+        <span class="text-foreground/60">3 branches</span> will be created
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="px-4 py-2 text-sm text-muted hover:text-foreground transition-colors">Cancel</button>
+        <button class="px-4 py-2 text-sm font-medium bg-purple hover:bg-purple/90 text-white rounded-lg transition-colors">Create Branch</button>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
+

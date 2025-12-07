@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 7 - Details Tab (Step Selected)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 p-8">
+  
+  <div class="max-w-md mx-auto">
+    <h1 class="text-lg font-semibold mb-2">Details Tab - Middle Step Selected</h1>
+    <p class="text-sm text-gray-500 mb-6">Shows when user selects "Fetch Webpage Content" (Step 2) - has both inputs and outputs to configure</p>
+    
+    <!-- Right Panel Simulation -->
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+      
+      <!-- Tab Bar - Details is FIRST (AC-D.1) -->
+      <div class="flex border-b border-gray-200">
+        <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500 transition-colors">
+          Details
+        </button>
+        <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+          Tools
+        </button>
+        <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+          Logic
+        </button>
+        <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+          Inputs
+        </button>
+        <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+          Config
+        </button>
+      </div>
+      
+      <!-- Panel Content -->
+      <div class="p-4 space-y-5">
+        
+        <!-- Step Header (AC-D.2) -->
+        <div class="space-y-2">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
+                <span class="text-orange-600 text-sm font-bold">BR</span>
+              </div>
+              <div>
+                <h2 class="text-sm font-semibold text-gray-900">Fetch Webpage Content</h2>
+                <p class="text-xs text-gray-500">browser_tool • BROWSER_TOOL_FETCH_WEBPAGE</p>
+              </div>
+            </div>
+            <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded font-medium">Step 2 of 3</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">
+            Fetches and returns the content of a webpage in the specified format (HTML or Markdown).
+          </p>
+        </div>
+        
+        <div class="border-t border-gray-100"></div>
+        
+        <!-- ============================================ -->
+        <!-- INPUT BINDINGS SECTION (AC-D.3, D.4, D.5-D.10) -->
+        <!-- ============================================ -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Input Bindings</h3>
+              <p class="text-[10px] text-gray-500 mt-0.5">Configure where this step gets its data</p>
+            </div>
+            <!-- AC-D.10: Mapping count -->
+            <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">2 of 6 mapped</span>
+          </div>
+          
+          <!-- Input from: showing source step (CLICKABLE) -->
+          <button class="w-full bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 flex items-center gap-2 text-xs hover:bg-blue-50 hover:border-blue-200 transition-colors group text-left">
+            <svg class="h-4 w-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+            <span class="text-blue-700">Receiving data from</span>
+            <span class="text-blue-700 font-semibold underline decoration-blue-300 group-hover:decoration-blue-500">Step 1: Navigate to URL</span>
+            <svg class="h-3 w-3 text-blue-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </button>
+          
+          <!-- Field Binding Rows (AC-D.3) -->
+          <div class="space-y-2">
+            
+            <!-- URL field - mapped from step (AC-D.5, D.8) -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-medium text-gray-900">url</span>
+                    <!-- AC-D.4: Required badge -->
+                    <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">required</span>
+                    <span class="text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">string</span>
+                  </div>
+                  <p class="text-[10px] text-gray-500 mt-1">The URL to fetch content from</p>
+                </div>
+              </div>
+              <!-- AC-D.8: Mapped field shows binding -->
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md text-xs hover:border-gray-300 transition-colors group">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span class="text-gray-500">Step 1:</span>
+                  <code class="text-gray-900 font-mono font-medium">data.url</code>
+                </span>
+                <div class="flex items-center gap-1">
+                  <span class="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100">Change</span>
+                  <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </button>
+            </div>
+            
+            <!-- Format field - mapped as literal (AC-D.7) -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-medium text-gray-900">format</span>
+                    <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-medium">optional</span>
+                    <span class="text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">string</span>
+                  </div>
+                  <p class="text-[10px] text-gray-500 mt-1">Output format: "html" or "markdown"</p>
+                </div>
+              </div>
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md text-xs hover:border-gray-300 transition-colors group">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  <span class="text-gray-500">Literal:</span>
+                  <code class="text-gray-900 font-mono font-medium">"markdown"</code>
+                </span>
+                <div class="flex items-center gap-1">
+                  <span class="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100">Change</span>
+                  <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </button>
+            </div>
+            
+            <!-- Wait field - not mapped (AC-D.9) -->
+            <div class="bg-white rounded-lg p-3 border border-gray-100">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-medium text-gray-500">wait</span>
+                    <span class="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded font-medium">optional</span>
+                    <span class="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded">integer</span>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1">Wait time in ms before fetching</p>
+                </div>
+              </div>
+              <!-- AC-D.9: Unmapped shows "Select source" -->
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-gray-50 border border-dashed border-gray-300 rounded-md text-xs hover:border-gray-400 transition-colors">
+                <span class="text-gray-400">Select source...</span>
+                <svg class="h-3 w-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            
+            <!-- idleTtlSec - not mapped -->
+            <div class="bg-white rounded-lg p-3 border border-gray-100">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-medium text-gray-500">idleTtlSec</span>
+                    <span class="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded font-medium">optional</span>
+                    <span class="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded">integer</span>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1">Session idle timeout in seconds</p>
+                </div>
+              </div>
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-gray-50 border border-dashed border-gray-300 rounded-md text-xs hover:border-gray-400 transition-colors">
+                <span class="text-gray-400">Select source...</span>
+                <svg class="h-3 w-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            
+            <!-- Show more -->
+            <button class="w-full py-2 text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center justify-center gap-1">
+              <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              Show 2 more optional fields
+            </button>
+            
+          </div>
+        </div>
+        
+        <div class="border-t border-gray-100"></div>
+        
+        <!-- ============================================ -->
+        <!-- OUTPUT BINDINGS SECTION (NEW - per feedback) -->
+        <!-- ============================================ -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Output Bindings</h3>
+              <p class="text-[10px] text-gray-500 mt-0.5">Configure where this step sends its data</p>
+            </div>
+            <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded">3 connected</span>
+          </div>
+          
+          <!-- Output to: showing destination step (CLICKABLE) -->
+          <button class="w-full bg-emerald-50/50 border border-emerald-100 rounded-lg p-2.5 flex items-center gap-2 text-xs hover:bg-emerald-50 hover:border-emerald-200 transition-colors group text-left">
+            <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+            </svg>
+            <span class="text-emerald-700">Sending data to</span>
+            <span class="text-emerald-700 font-semibold underline decoration-emerald-300 group-hover:decoration-emerald-500">Step 3: Send Email</span>
+            <svg class="h-3 w-3 text-emerald-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </button>
+          
+          <!-- Output fields with their destinations -->
+          <div class="space-y-2">
+            
+            <!-- data.title - connected to subject -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <code class="text-xs font-mono text-gray-900 bg-white px-2 py-1 rounded border border-gray-200">data.title</code>
+                  <span class="text-[10px] text-gray-400">string</span>
+                </div>
+                <svg class="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+              <div class="mt-2 flex items-center gap-2">
+                <span class="text-[10px] text-gray-500">Connected to:</span>
+                <button class="flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 rounded text-xs hover:border-gray-300">
+                  <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                  <span class="text-gray-700">Step 3:</span>
+                  <code class="font-mono text-gray-900">subject</code>
+                  <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- data.content - connected to body -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <code class="text-xs font-mono text-gray-900 bg-white px-2 py-1 rounded border border-gray-200">data.content</code>
+                  <span class="text-[10px] text-gray-400">string</span>
+                </div>
+                <svg class="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+              <div class="mt-2 flex items-center gap-2">
+                <span class="text-[10px] text-gray-500">Connected to:</span>
+                <button class="flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 rounded text-xs hover:border-gray-300">
+                  <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                  <span class="text-gray-700">Step 3:</span>
+                  <code class="font-mono text-gray-900">body</code>
+                  <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- data.url - not connected -->
+            <div class="bg-white rounded-lg p-3 border border-gray-100">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <code class="text-xs font-mono text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-100">data.url</code>
+                  <span class="text-[10px] text-gray-400">string</span>
+                </div>
+                <svg class="h-4 w-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+              <div class="mt-2 flex items-center gap-2">
+                <span class="text-[10px] text-gray-400">Not connected</span>
+                <button class="text-[10px] text-blue-600 hover:text-blue-700 font-medium">+ Connect</button>
+              </div>
+            </div>
+            
+            <!-- Show more outputs -->
+            <button class="w-full py-2 text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center justify-center gap-1">
+              <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              Show 3 more outputs (successful, error, data.format)
+            </button>
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <!-- Legend - Below panel -->
+    <div class="mt-6 p-4 bg-white border border-gray-200 rounded-lg">
+      <h3 class="text-xs font-semibold text-gray-700 mb-3">Source Type Legend</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+          <span class="text-gray-600">Step Output</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+          <span class="text-gray-600">Workflow Input</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+          <span class="text-gray-600">Literal Value</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="w-2 h-2 bg-gray-300 rounded-full"></span>
+          <span class="text-gray-600">Not Mapped</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Acceptance Criteria Checklist -->
+    <div class="mt-6 p-4 bg-gray-100 border border-gray-200 rounded-lg">
+      <h3 class="text-xs font-semibold text-gray-700 mb-3">Acceptance Criteria Covered</h3>
+      <div class="space-y-1.5 text-[10px] text-gray-600">
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.1: Details tab appears when selected</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.2: Shows step name, type, description</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.3: Lists ALL input fields with types</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.4: Required fields marked with badge</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.5: Step Output binding shown</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.7: Literal binding shown</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.8: Mapped fields show binding details</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.9: Unmapped fields show "Select source"</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.10: Mapping count displayed</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.13: Output bindings with destinations</div>
+        <div class="flex items-center gap-2"><span class="text-emerald-500">✓</span> AC-D.14: Outputs editable from this tab</div>
+      </div>
+    </div>
+    
+  </div>
+  
+</body>
+</html>

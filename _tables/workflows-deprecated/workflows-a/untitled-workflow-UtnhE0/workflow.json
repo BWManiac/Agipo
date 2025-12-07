@@ -1,0 +1,30 @@
+{
+  "id": "untitled-workflow-UtnhE0",
+  "name": "Untitled Workflow",
+  "description": "",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "steps": [],
+  "mappings": [],
+  "controlFlow": {
+    "type": "sequential",
+    "order": []
+  },
+  "connections": {},
+  "tableRequirements": [],
+  "tables": {},
+  "runtimeInputs": [],
+  "configs": [],
+  "createdAt": "2025-12-07T07:29:12.030Z",
+  "lastModified": "2025-12-07T07:29:12.031Z",
+  "createdBy": "user",
+  "published": false
+}

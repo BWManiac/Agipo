@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflows F - Editor Layout Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
+            secondary: {
+              DEFAULT: "hsl(var(--secondary))",
+              foreground: "hsl(var(--secondary-foreground))",
+            },
+            muted: {
+              DEFAULT: "hsl(var(--muted))",
+              foreground: "hsl(var(--muted-foreground))",
+            },
+            accent: {
+              DEFAULT: "hsl(var(--accent))",
+              foreground: "hsl(var(--accent-foreground))",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 217.2 32.6% 17.5%;
+      --secondary-foreground: 210 40% 98%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --accent: 217.2 32.6% 17.5%;
+      --accent-foreground: 210 40% 98%;
+      --border: 217.2 32.6% 17.5%;
+      --input: 217.2 32.6% 17.5%;
+      --ring: 224.3 76.3% 48%;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white">
+  <div class="h-screen flex flex-col">
+    <!-- Header -->
+    <header class="h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
+      <!-- Left: Back button and workflow name -->
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <button class="h-8 w-8 flex items-center justify-center rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div class="flex items-center gap-2">
+          <h1 class="text-sm font-semibold text-white">Job Application Workflow</h1>
+          <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Unsaved</span>
+        </div>
+      </div>
+
+      <!-- Right: View mode and actions -->
+      <div class="flex items-center gap-3">
+        <!-- View mode toggle -->
+        <div class="flex items-center rounded-lg border border-slate-800 bg-slate-950 p-1">
+          <button class="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium bg-primary text-primary-foreground">
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            List
+          </button>
+          <button class="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium text-slate-400 hover:text-white">
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
+            Canvas
+          </button>
+        </div>
+
+        <!-- Test button -->
+        <button class="h-8 px-3 text-xs font-medium bg-slate-800 border border-slate-700 text-white rounded-md hover:bg-slate-700 transition-colors flex items-center gap-2">
+          <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Test
+        </button>
+
+        <!-- Save button -->
+        <button class="h-8 px-3 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity flex items-center gap-2">
+          <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+          </svg>
+          Save
+        </button>
+      </div>
+    </header>
+
+    <!-- Main content: 3-panel layout -->
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Left Panel: Chat -->
+      <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+        <!-- Chat header -->
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-800">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center">
+            <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-white">AI Assistant</h3>
+            <p class="text-xs text-slate-400">Build workflows with natural language</p>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <!-- Empty state -->
+          <div class="text-center py-8">
+            <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-violet-500/10 mb-3">
+              <svg class="h-6 w-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+            </div>
+            <p class="text-sm text-slate-400 max-w-[200px] mx-auto">
+              Describe what you want to automate, and I'll help you build it.
+            </p>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="p-3 border-t border-slate-800">
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="Describe your workflow..."
+              class="w-full h-11 pl-4 pr-12 bg-slate-800/50 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-transparent"
+            />
+            <button class="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white">
+              <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Panel: Workflow Editor -->
+      <main class="flex-1 bg-slate-950 overflow-hidden flex flex-col">
+        <!-- Step Timeline -->
+        <div class="flex-1 overflow-y-auto p-6">
+          <div class="max-w-4xl mx-auto space-y-4">
+            <!-- Step 1 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 hover:border-slate-700 transition-colors">
+              <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                  <span class="text-xs font-semibold text-violet-400">1</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-semibold text-white">Scrape Job Listing</h3>
+                    <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Firecrawl</span>
+                  </div>
+                  <p class="text-xs text-slate-400 mb-3">Extract job details from URL</p>
+                  <!-- IPO Model: Explicit Input/Output -->
+                  <div class="space-y-2 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="text-indigo-400 font-medium">Input:</span>
+                      <code class="text-indigo-300">jobUrl: string</code>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-emerald-400 font-medium">Output:</span>
+                      <code class="text-emerald-300">title, company, requirements</code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Data Mapping Badge (between steps) -->
+            <div class="flex justify-center py-2">
+              <button class="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-full text-xs text-slate-400 hover:text-white transition-colors">
+                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                </svg>
+                3 fields mapped
+              </button>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 hover:border-slate-700 transition-colors">
+              <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                  <span class="text-xs font-semibold text-violet-400">2</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-semibold text-white">Generate Cover Letter</h3>
+                    <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Custom Code</span>
+                  </div>
+                  <p class="text-xs text-slate-400 mb-3">Create personalized cover letter</p>
+                  <!-- IPO Model: Explicit Input/Output -->
+                  <div class="space-y-2 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="text-indigo-400 font-medium">Input:</span>
+                      <code class="text-indigo-300">jobTitle, companyName, targetSkills</code>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-emerald-400 font-medium">Output:</span>
+                      <code class="text-emerald-300">coverLetter: string</code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add Step Button -->
+            <button class="w-full border-2 border-dashed border-slate-700 rounded-lg p-4 text-center hover:border-slate-600 transition-colors">
+              <div class="flex items-center justify-center gap-2 text-sm text-slate-400">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Add Step</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Panel: Settings/Inspector -->
+      <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0">
+        <!-- Tab bar -->
+        <div class="flex border-b border-slate-800">
+          <button data-tab="tools" class="tab-btn flex-1 px-3 py-2 text-xs font-medium text-white border-b-2 border-primary transition-colors">
+            Tools
+          </button>
+          <button data-tab="inputs" class="tab-btn flex-1 px-3 py-2 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white transition-colors">
+            Inputs
+          </button>
+          <button data-tab="config" class="tab-btn flex-1 px-3 py-2 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white transition-colors">
+            Config
+          </button>
+          <button data-tab="connect" class="tab-btn flex-1 px-3 py-2 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white transition-colors">
+            Connect
+          </button>
+          <button data-tab="test" class="tab-btn flex-1 px-3 py-2 text-xs font-medium text-slate-400 border-b-2 border-transparent hover:text-white transition-colors">
+            Test
+          </button>
+        </div>
+        
+        <!-- Tab content container -->
+        <div class="flex-1 overflow-y-auto">
+          <!-- Tools Tab (shown above) -->
+          
+          <!-- Inputs Tab (Runtime Inputs) -->
+          <div id="tab-inputs" class="hidden p-4">
+            <p class="text-xs text-slate-500 mb-4">Define inputs that agents provide when calling this workflow (per execution).</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-white">jobUrl <span class="text-red-400">*</span></span>
+                  <span class="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded">string</span>
+                </div>
+                <p class="text-xs text-slate-400">URL of the job listing to scrape</p>
+              </div>
+              <button class="w-full px-4 py-2 text-sm border border-dashed border-slate-700 hover:border-primary text-slate-400 hover:text-white rounded-lg flex items-center justify-center gap-2">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Runtime Input
+              </button>
+            </div>
+          </div>
+          
+          <!-- Config Tab (Persistent Settings) -->
+          <div id="tab-config" class="hidden p-4">
+            <p class="text-xs text-slate-500 mb-4">Define configs that users set when assigning this workflow to an agent (persistent).</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-white">resumeTemplate</span>
+                  <span class="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded">select</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-2">Which resume style to use</p>
+                <div class="text-xs text-slate-500">Options: modern, classic</div>
+              </div>
+              <button class="w-full px-4 py-2 text-sm border border-dashed border-slate-700 hover:border-primary text-slate-400 hover:text-white rounded-lg flex items-center justify-center gap-2">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Config
+              </button>
+            </div>
+          </div>
+          
+          <!-- Connect Tab (Connection Requirements) -->
+          <div id="tab-connect" class="hidden p-4">
+            <p class="text-xs text-slate-500 mb-4">Required Composio integrations (auto-detected from steps).</p>
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-800/50 rounded-lg border border-green-500/30">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">🔥</span>
+                    <div>
+                      <span class="text-sm text-white">Firecrawl</span>
+                      <p class="text-xs text-slate-400">Used by: Scrape Job Listing</p>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Connected</span>
+                </div>
+              </div>
+              <div class="p-3 bg-slate-800/50 rounded-lg border border-amber-500/30">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">📧</span>
+                    <div>
+                      <span class="text-sm text-white">Gmail</span>
+                      <p class="text-xs text-slate-400">Used by: Send Email</p>
+                    </div>
+                  </div>
+                  <button class="px-3 py-1 text-xs bg-primary hover:opacity-90 text-white rounded">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Test Tab (Testing Suite) -->
+          <div id="tab-test" class="hidden p-4">
+            <p class="text-xs text-slate-500 mb-4">Run test cases to validate your workflow.</p>
+            <div class="space-y-3 mb-4">
+              <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-white">Basic flow</span>
+                  <span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Passed</span>
+                </div>
+                <p class="text-xs text-slate-500">Last run: 2 min ago</p>
+              </div>
+              <div class="p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-white">Edge case: empty job</span>
+                  <span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded">Failed</span>
+                </div>
+                <p class="text-xs text-slate-500">Last run: 1 hour ago</p>
+              </div>
+            </div>
+            <button class="w-full px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-center gap-2">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              </svg>
+              Run Quick Test
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab content: Tool Palette (default shown) -->
+        <div id="tab-tools" class="flex-1 overflow-y-auto p-4">
+          <div class="space-y-4">
+            <!-- Search -->
+            <input
+              type="text"
+              placeholder="Search tools..."
+              class="w-full h-9 px-3 bg-slate-800/50 border border-slate-700 rounded-md text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+
+            <!-- Tool Groups (grouped by toolkit) -->
+            <div>
+              <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Firecrawl</h4>
+              <div class="space-y-1">
+                <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors">
+                  <div class="text-sm text-white">Scrape Page</div>
+                  <div class="text-xs text-slate-400 mt-0.5">Extract content from URL</div>
+                </button>
+                <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors">
+                  <div class="text-sm text-white">Crawl Site</div>
+                  <div class="text-xs text-slate-400 mt-0.5">Crawl entire website</div>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Gmail</h4>
+              <div class="space-y-1">
+                <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors">
+                  <div class="text-sm text-white">Send Email</div>
+                  <div class="text-xs text-slate-400 mt-0.5">Send emails via Gmail</div>
+                </button>
+                <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors">
+                  <div class="text-sm text-white">List Emails</div>
+                  <div class="text-xs text-slate-400 mt-0.5">Get email list</div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Control Flow -->
+            <div>
+              <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Control Flow</h4>
+              <div class="space-y-1">
+                <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors">
+                  <div class="text-sm text-white">Branch (If/Else)</div>
+                  <div class="text-xs text-slate-400 mt-0.5">Conditional execution</div>
+                </button>
+                <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors">
+                  <div class="text-sm text-white">Parallel</div>
+                  <div class="text-xs text-slate-400 mt-0.5">Run steps concurrently</div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Custom Code -->
+            <div>
+              <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Custom</h4>
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 transition-colors">
+                <div class="text-sm text-white">Custom Code Block</div>
+                <div class="text-xs text-slate-400 mt-0.5">Write custom TypeScript code</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  
+  <!-- JavaScript for interactivity -->
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        
+        // Update active tab
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('text-white', 'border-primary');
+          b.classList.add('text-slate-400', 'border-transparent');
+        });
+        btn.classList.add('text-white', 'border-primary');
+        btn.classList.remove('text-slate-400', 'border-transparent');
+        
+        // Show/hide tab content
+        document.querySelectorAll('[id^="tab-"]').forEach(content => {
+          content.classList.add('hidden');
+        });
+        document.getElementById(`tab-${tab}`)?.classList.remove('hidden');
+      });
+    });
+  </script>
+</body>
+</html>
+

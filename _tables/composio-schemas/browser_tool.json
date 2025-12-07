@@ -1,0 +1,1763 @@
+{
+  "slug": "browser_tool",
+  "name": "Browser tool",
+  "logo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master//composio-logo.png",
+  "tools": [
+    {
+      "slug": "BROWSER_TOOL_COPY_SELECTED_TEXT",
+      "name": "Copy Selected Text",
+      "description": "Copy currently selected text on the page to clipboard - ideal for extracting highlighted content, copying form data, or harvesting visible text selections.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "CopySelectedTextRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'copy_selected_text'",
+                "title": "Action"
+              },
+              "copiedText": {
+                "type": "string",
+                "description": "Text content that was copied from the page selection",
+                "title": "Copied Text"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "textLength": {
+                "type": "integer",
+                "description": "Number of characters in the copied text",
+                "title": "Text Length"
+              },
+              "wasTextSelected": {
+                "type": "boolean",
+                "description": "Whether text was actually selected and copied",
+                "title": "Was Text Selected"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "copiedText",
+              "textLength",
+              "wasTextSelected"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CopySelectedTextResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_DRAG_AND_DROP",
+      "name": "Drag and Drop",
+      "description": "Execute precise drag and drop operations - essential for file uploads, list reordering, element moving, and complex UI interactions that require drag-based manipulation.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "button": {
+            "type": "string",
+            "description": "Mouse button for drag operation (almost always 'left' for standard drag-drop, 'right' for special contexts)",
+            "title": "Button",
+            "default": "left",
+            "pattern": "^(left|middle|right)$"
+          },
+          "endX": {
+            "type": "integer",
+            "description": "Ending X coordinate for drop operation (where to release the element)",
+            "title": "End X",
+            "minimum": 0
+          },
+          "endY": {
+            "type": "integer",
+            "description": "Ending Y coordinate for drop operation (where to release the element)",
+            "title": "End Y",
+            "minimum": 0
+          },
+          "startX": {
+            "type": "integer",
+            "description": "Starting X coordinate for drag operation (where to grab the element)",
+            "title": "Start X",
+            "minimum": 0
+          },
+          "startY": {
+            "type": "integer",
+            "description": "Starting Y coordinate for drag operation (where to grab the element)",
+            "title": "Start Y",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "startX",
+          "startY",
+          "endX",
+          "endY"
+        ],
+        "title": "DragAndDropRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'drag_and_drop'",
+                "title": "Action"
+              },
+              "dragDistance": {
+                "type": "string",
+                "description": "Total distance and direction of the drag operation",
+                "title": "Drag Distance"
+              },
+              "dragType": {
+                "type": "string",
+                "description": "Inferred type of drag operation based on movement pattern",
+                "title": "Drag Type"
+              },
+              "endCoordinates": {
+                "type": "string",
+                "description": "Ending coordinates where drop completed",
+                "title": "End Coordinates"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "startCoordinates": {
+                "type": "string",
+                "description": "Starting coordinates where drag began",
+                "title": "Start Coordinates"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the drag and drop operation",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "startCoordinates",
+              "endCoordinates",
+              "dragDistance",
+              "dragType",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "DragAndDropResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_FETCH_WEBPAGE",
+      "name": "Fetch Webpage Content",
+      "description": "DECISION BRAIN: Essential for analysis, planning, and information gathering. PRIMARY USES: Understand page state, locate elements, verify changes, plan next actions FALLBACK ROLE: When screenshot blocked/fails, use this diligently for information FORMAT: html=element discovery & coordinates | markdown=content analysis HYBRID WORKFLOW: Use for decisions → AI agent for precision clicking",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "description": "Output format for content (markdown or html)",
+            "title": "Format",
+            "default": "markdown",
+            "pattern": "^(markdown|html)$"
+          },
+          "idleTtlSec": {
+            "type": "integer",
+            "description": "Optional idle TTL for new sessions (seconds)",
+            "title": "Idle Ttl Sec",
+            "default": null,
+            "nullable": true,
+            "minimum": 60,
+            "maximum": 86400
+          },
+          "newPage": {
+            "type": "boolean",
+            "description": "Whether to create a new page for the content",
+            "title": "New Page",
+            "default": false
+          },
+          "returnPartialOnTimeout": {
+            "type": "boolean",
+            "description": "Whether to return partial content if timeout occurs",
+            "title": "Return Partial On Timeout",
+            "default": true
+          },
+          "url": {
+            "type": "string",
+            "description": "URL to fetch content from. If not provided, uses current page",
+            "title": "Url",
+            "default": null,
+            "nullable": true
+          },
+          "wait": {
+            "type": "integer",
+            "description": "Time to wait for dynamic content to load (milliseconds)",
+            "title": "Wait",
+            "default": 1000,
+            "minimum": 0,
+            "maximum": 10000
+          }
+        },
+        "title": "FetchWebpageRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "content": {
+                "type": "string",
+                "description": "Content of the webpage in requested format",
+                "title": "Content"
+              },
+              "contentLength": {
+                "type": "integer",
+                "description": "Length of the content in characters",
+                "title": "Content Length"
+              },
+              "format": {
+                "type": "string",
+                "description": "Format of the returned content",
+                "title": "Format"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "title": {
+                "type": "string",
+                "description": "Title of the webpage",
+                "title": "Title"
+              },
+              "url": {
+                "type": "string",
+                "description": "URL of the fetched webpage",
+                "title": "Url"
+              }
+            },
+            "required": [
+              "sessionId",
+              "url",
+              "title",
+              "content",
+              "format",
+              "contentLength"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "FetchWebpageResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_GET_CLIPBOARD",
+      "name": "Get Clipboard Content",
+      "description": "Read current content from the system clipboard - essential for data transfer workflows, extracting copied text, and reading user-copied data for processing.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "GetClipboardRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'get_clipboard'",
+                "title": "Action"
+              },
+              "clipboardContent": {
+                "type": "string",
+                "description": "Text content currently stored in the system clipboard",
+                "title": "Clipboard Content"
+              },
+              "contentLength": {
+                "type": "integer",
+                "description": "Number of characters in the clipboard content",
+                "title": "Content Length"
+              },
+              "hasContent": {
+                "type": "boolean",
+                "description": "Whether clipboard contains any text content",
+                "title": "Has Content"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "clipboardContent",
+              "contentLength",
+              "hasContent"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetClipboardResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_KEYBOARD_SHORTCUT",
+      "name": "Keyboard Shortcut",
+      "description": "Execute keyboard shortcuts and key combinations - essential for copy/paste, navigation, and application commands that agents need for efficient browser automation.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "holdTime": {
+            "type": "integer",
+            "description": "Milliseconds to hold keys down (0=quick press like normal shortcuts, 100+=sustained press for special actions)",
+            "title": "Hold Time",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 5000
+          },
+          "keys": {
+            "type": "array",
+            "description": "Array of keys to press simultaneously (e.g., ['Ctrl', 'c'] for copy, ['Alt', 'Tab'] for window switching, ['Ctrl', 'Shift', 'I'] for dev tools)",
+            "title": "Keys",
+            "items": {
+              "type": "string",
+              "properties": {}
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "keys"
+        ],
+        "title": "KeyboardShortcutRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'keyboard_shortcut'",
+                "title": "Action"
+              },
+              "keyCombination": {
+                "type": "string",
+                "description": "Key combination that was executed",
+                "title": "Key Combination"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "shortcutType": {
+                "type": "string",
+                "description": "Type of shortcut performed (copy, paste, navigation, etc.)",
+                "title": "Shortcut Type"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the keyboard shortcut",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "keyCombination",
+              "shortcutType",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "KeyboardShortcutResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_MOUSE_CLICK",
+      "name": "Mouse Click",
+      "description": "MANUAL PRECISION: Coordinate-based clicking - less efficient than AI agent for complex clicks. WHEN TO USE: Simple single clicks when you have exact coordinates BETTER ALTERNATIVE: Use PerformWebTask AI agent for complex/precise clicking PATTERN: FetchWebpage(html) → estimate coordinates → click → verify HINTS: Center ~(640,350) | Header ~y=150 | Content ~y=300-500 | SUCCESS RATE: 85%",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "button": {
+            "type": "string",
+            "description": "Mouse button to use for clicking",
+            "title": "Button",
+            "default": "left",
+            "pattern": "^(left|middle|right)$"
+          },
+          "x": {
+            "type": "integer",
+            "description": "X coordinate to click",
+            "title": "X",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y coordinate to click",
+            "title": "Y",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "MouseClickRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "button": {
+                "type": "string",
+                "description": "Mouse button that was used",
+                "title": "Button"
+              },
+              "coordinates": {
+                "type": "string",
+                "description": "Coordinates where click was performed",
+                "title": "Coordinates"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Status of the click operation",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "sessionId",
+              "status",
+              "coordinates",
+              "button"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "MouseClickResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_MOUSE_DOUBLE_CLICK",
+      "name": "Mouse Double Click",
+      "description": "Execute a precise double click at specified screen coordinates - ideal for opening files, selecting text, or activating UI elements that require double click gestures.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "button": {
+            "type": "string",
+            "description": "Mouse button for double click action - use 'left' for most UI elements, 'right' for context menus",
+            "title": "Button",
+            "default": "left",
+            "pattern": "^(left|middle|right)$"
+          },
+          "x": {
+            "type": "integer",
+            "description": "Horizontal pixel position for double click (0 = left edge, increases rightward)",
+            "title": "X",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "description": "Vertical pixel position for double click (0 = top edge, increases downward)",
+            "title": "Y",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "MouseDoubleClickRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'double_click'",
+                "title": "Action"
+              },
+              "button": {
+                "type": "string",
+                "description": "Mouse button used for the double click",
+                "title": "Button"
+              },
+              "coordinates": {
+                "type": "string",
+                "description": "Coordinates where double click was executed",
+                "title": "Coordinates"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the double click operation",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "coordinates",
+              "button",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "MouseDoubleClickResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_MOUSE_DOWN",
+      "name": "Mouse Down (Press and Hold)",
+      "description": "Press and hold mouse button at coordinates - use for starting custom drag operations, text selections, or long-press interactions. Must be followed by MouseUp action to complete.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "button": {
+            "type": "string",
+            "description": "Mouse button to press and hold (usually 'left' for selections and drags, 'right' for context menus)",
+            "title": "Button",
+            "default": "left",
+            "pattern": "^(left|middle|right)$"
+          },
+          "x": {
+            "type": "integer",
+            "description": "X coordinate to press mouse button down (where to start the press-and-hold operation)",
+            "title": "X",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y coordinate to press mouse button down (where to start the press-and-hold operation)",
+            "title": "Y",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "MouseDownRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'mouse_down'",
+                "title": "Action"
+              },
+              "button": {
+                "type": "string",
+                "description": "Mouse button that was pressed down",
+                "title": "Button"
+              },
+              "coordinates": {
+                "type": "string",
+                "description": "Coordinates where mouse button was pressed down",
+                "title": "Coordinates"
+              },
+              "reminder": {
+                "type": "string",
+                "description": "Reminder about completing the mouse sequence with mouse_up",
+                "title": "Reminder"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the mouse down operation",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "coordinates",
+              "button",
+              "reminder",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "MouseDownResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_MOUSE_MOVE",
+      "name": "Mouse Move",
+      "description": "Move mouse cursor to precise coordinates without clicking - perfect for triggering hover effects, revealing tooltips, and positioning for subsequent interactions.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "description": "Target X coordinate for mouse cursor (0 = left edge, increases rightward, typical screen: 0-1440px)",
+            "title": "X",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "description": "Target Y coordinate for mouse cursor (0 = top edge, increases downward, typical screen: 0-900px)",
+            "title": "Y",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "MouseMoveRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'mouse_move'",
+                "title": "Action"
+              },
+              "purpose": {
+                "type": "string",
+                "description": "Likely purpose of the mouse movement based on UI interaction patterns",
+                "title": "Purpose"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the mouse move operation",
+                "title": "Status"
+              },
+              "targetCoordinates": {
+                "type": "string",
+                "description": "Coordinates where mouse cursor was moved",
+                "title": "Target Coordinates"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "targetCoordinates",
+              "purpose",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "MouseMoveResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_MOUSE_UP",
+      "name": "Mouse Up (Release Button)",
+      "description": "Release mouse button at coordinates - completes drag operations, text selections, and long-press interactions. Should be used after MouseDown to finish mouse button sequences.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "button": {
+            "type": "string",
+            "description": "Mouse button to release (should match the button used in previous MouseDown action)",
+            "title": "Button",
+            "default": "left",
+            "pattern": "^(left|middle|right)$"
+          },
+          "x": {
+            "type": "integer",
+            "description": "X coordinate to release mouse button (where to end the press-and-hold operation or complete a drag)",
+            "title": "X",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y coordinate to release mouse button (where to end the press-and-hold operation or complete a drag)",
+            "title": "Y",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "MouseUpRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'mouse_up'",
+                "title": "Action"
+              },
+              "button": {
+                "type": "string",
+                "description": "Mouse button that was released",
+                "title": "Button"
+              },
+              "coordinates": {
+                "type": "string",
+                "description": "Coordinates where mouse button was released",
+                "title": "Coordinates"
+              },
+              "operationType": {
+                "type": "string",
+                "description": "Type of operation completed (drag_completion, selection_end, long_press_end)",
+                "title": "Operation Type"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the mouse up operation",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "coordinates",
+              "button",
+              "operationType",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "MouseUpResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_NAVIGATE",
+      "name": "Navigate to URL",
+      "description": "SESSION FOUNDATION: Always start here - creates browser session and navigates to URL. WORKFLOW: Navigate() → FetchWebpage() → Analysis/Planning → AI Agent or Manual interactions → Verify PROVIDES: Live debugUrl for user, initial page snapshot, persistent session TIP: Always show debugUrl to user before proceeding",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "idleTtlSec": {
+            "type": "integer",
+            "description": "Optional idle TTL for the session (seconds)",
+            "title": "Idle Ttl Sec",
+            "default": null,
+            "nullable": true,
+            "minimum": 60,
+            "maximum": 86400
+          },
+          "url": {
+            "type": "string",
+            "description": "URL to navigate the cloud browser to",
+            "title": "Url"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "NavigateRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "debugUrl": {
+                "type": "string",
+                "description": "URL to view the browser session, the user can view the session live with this so always show it to them before moving forward",
+                "title": "Debug Url"
+              },
+              "navigatedUrl": {
+                "type": "string",
+                "title": "Navigated Url"
+              },
+              "pageSnapshot": {
+                "type": "string",
+                "description": "Markdown-formatted page content",
+                "title": "Page Snapshot"
+              },
+              "pageTitle": {
+                "type": "string",
+                "description": "Title of the page after navigation",
+                "title": "Page Title"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "wsEndpoint": {
+                "type": "string",
+                "title": "Ws Endpoint"
+              }
+            },
+            "required": [
+              "sessionId",
+              "wsEndpoint",
+              "debugUrl",
+              "navigatedUrl",
+              "pageTitle",
+              "pageSnapshot"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "NavigateResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_PASTE_TEXT",
+      "name": "Paste Text",
+      "description": "Paste text content at the current cursor position - perfect for filling forms, inserting data into text fields, or quick content insertion at focused elements.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text content to paste at current cursor location (form data, URLs, structured content)",
+            "title": "Text",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "PasteTextRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'paste_text'",
+                "title": "Action"
+              },
+              "insertionPoint": {
+                "type": "string",
+                "description": "Where the text was inserted (cursor position description)",
+                "title": "Insertion Point"
+              },
+              "pastedText": {
+                "type": "string",
+                "description": "Text content that was pasted into the browser",
+                "title": "Pasted Text"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the paste operation",
+                "title": "Status"
+              },
+              "textLength": {
+                "type": "integer",
+                "description": "Number of characters that were pasted",
+                "title": "Text Length"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "pastedText",
+              "textLength",
+              "insertionPoint",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "PasteTextResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_PERFORM_WEB_TASK",
+      "name": "AI Perform Web Task",
+      "description": "AI AGENT: BEST for precise clicking and complex interactions. PREFERRED FOR: Button clicks, form interactions, precise targeting (coordinates handled well) HYBRID WORKFLOW: Use after FetchWebpage analysis for informed AI interactions WHEN TO USE: Any clicking task, multi-step workflows, dynamic content STRATEGY: AI handles precision → regular tools for verification",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "aiAgent": {
+            "type": "string",
+            "description": "AI agent engine to use ('browser-use'=robust multi-step automation, 'openai-cua'=OpenAI-optimized tasks)",
+            "title": "Ai Agent",
+            "default": "browser-use",
+            "pattern": "^(browser-use|openai-cua)$"
+          },
+          "aiModel": {
+            "type": "string",
+            "description": "Specific AI model to use ('gpt-5'=latest flagship, 'gpt-5-mini'=efficient flagship, 'gpt-5-nano'=ultra-fast, 'gpt-4o'=advanced OpenAI, 'gpt-4o-mini'=efficient, 'gpt-4.1'=enhanced, 'gpt-4.1-mini'=compact enhanced)",
+            "title": "Ai Model",
+            "default": "gpt-5-nano",
+            "nullable": true
+          },
+          "aiProvider": {
+            "type": "string",
+            "description": "AI provider for task execution ('openai'=GPT models, 'gemini'=Google AI, 'groq'=fast inference, 'azure'=enterprise, 'xai'=experimental)",
+            "title": "Ai Provider",
+            "default": "openai",
+            "nullable": true,
+            "pattern": "^(openai|gemini|groq|azure|xai)$"
+          },
+          "highlightElements": {
+            "type": "boolean",
+            "description": "Show visual highlights during task execution for transparency and debugging (True=show interaction highlights, False=hidden execution)",
+            "title": "Highlight Elements",
+            "default": true
+          },
+          "idleTtlSec": {
+            "type": "integer",
+            "description": "Optional idle TTL for new sessions if sessionId not provided (seconds)",
+            "title": "Idle Ttl Sec",
+            "default": null,
+            "nullable": true,
+            "minimum": 60,
+            "maximum": 86400
+          },
+          "outputSchema": {
+            "type": "object",
+            "description": "Optional JSON Schema to structure the output for data extraction tasks (provides structured data instead of text description)",
+            "title": "Output Schema",
+            "default": null,
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Natural language description of the web task to perform autonomously (e.g., 'Log into Gmail and send an email', 'Fill out contact form', 'Find and download the PDF')",
+            "title": "Prompt",
+            "minLength": 10
+          },
+          "url": {
+            "type": "string",
+            "description": "Optional URL to perform task on (if not provided, uses current page in existing session)",
+            "title": "Url",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "title": "PerformWebTaskRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'perform_web_task'",
+                "title": "Action"
+              },
+              "aiAgent": {
+                "type": "string",
+                "description": "AI agent that performed the task",
+                "title": "Ai Agent"
+              },
+              "aiModel": {
+                "type": "string",
+                "description": "AI model used for task execution",
+                "title": "Ai Model"
+              },
+              "executionResult": {
+                "type": "string",
+                "description": "Detailed result or outcome of the autonomous web task",
+                "title": "Execution Result"
+              },
+              "executionTime": {
+                "type": "string",
+                "description": "ISO timestamp when task execution completed",
+                "title": "Execution Time"
+              },
+              "highlightsUsed": {
+                "type": "boolean",
+                "description": "Whether visual highlights were shown during execution",
+                "title": "Highlights Used"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id",
+                "nullable": true
+              },
+              "taskComplexity": {
+                "type": "string",
+                "description": "Assessed complexity of the executed task",
+                "title": "Task Complexity"
+              },
+              "taskPrompt": {
+                "type": "string",
+                "description": "Natural language task that was executed",
+                "title": "Task Prompt"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "taskPrompt",
+              "aiAgent",
+              "aiModel",
+              "executionResult",
+              "taskComplexity",
+              "executionTime",
+              "highlightsUsed"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "PerformWebTaskResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_SCREENSHOT_WEBPAGE",
+      "name": "Screenshot Webpage",
+      "description": "Capture high-quality screenshot of any webpage with extensive customization options - perfect for archiving, visual documentation, full-page captures, and cross-device viewport testing.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "captureFullHeight": {
+            "type": "boolean",
+            "description": "Capture entire page height ignoring viewport (True=full page length, False=viewport height only)",
+            "title": "Capture Full Height",
+            "default": false
+          },
+          "height": {
+            "type": "integer",
+            "description": "Browser viewport height in pixels for capture (720=standard, 900=tall desktop, 667=mobile)",
+            "title": "Height",
+            "default": 720,
+            "minimum": 240,
+            "maximum": 1080
+          },
+          "idleTtlSec": {
+            "type": "integer",
+            "description": "Optional idle TTL for new sessions if sessionId not provided (seconds)",
+            "title": "Idle Ttl Sec",
+            "default": null,
+            "nullable": true,
+            "minimum": 60,
+            "maximum": 86400
+          },
+          "imageQuality": {
+            "type": "integer",
+            "description": "Image quality percentage (100=no compression/max quality, 80=good balance, 50=smaller file size)",
+            "title": "Image Quality",
+            "default": 80,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "scrollAllContent": {
+            "type": "boolean",
+            "description": "Scroll through entire page to capture all content (True=captures everything, False=viewport only)",
+            "title": "Scroll All Content",
+            "default": false
+          },
+          "url": {
+            "type": "string",
+            "description": "URL of the webpage to capture (can be any publicly accessible website)",
+            "title": "Url"
+          },
+          "wait": {
+            "type": "integer",
+            "description": "Milliseconds to wait after page load for JS/animations (1000=default, 3000+=heavy sites, 5000+=very dynamic)",
+            "title": "Wait",
+            "default": 1000,
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "width": {
+            "type": "integer",
+            "description": "Browser viewport width in pixels for capture (1280=standard desktop, 1440=large desktop, 375=mobile)",
+            "title": "Width",
+            "default": 1280,
+            "minimum": 320,
+            "maximum": 1920
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "ScreenshotWebpageRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "description": "Base64 encoded image data",
+            "title": "Data"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the image",
+            "title": "Mime Type"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "mimeType",
+          "successful"
+        ],
+        "title": "ScreenshotWebpageResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_SCROLL",
+      "name": "Scroll Page",
+      "description": "PAGE NAVIGATION: Smooth scrolling. USE: When target element not visible after FetchWebpage() DISTANCE: 200px=fine | 400px=sections | 800px=quick traverse ALWAYS: Scroll → FetchWebpage() → verify | SUCCESS RATE: 99%",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "deltaX": {
+            "type": "integer",
+            "description": "Horizontal scroll distance in pixels (positive=scroll right, negative=scroll left, usually 0 for vertical scrolling)",
+            "title": "Delta X",
+            "default": 0
+          },
+          "deltaY": {
+            "type": "integer",
+            "description": "Vertical scroll distance in pixels (positive=scroll down toward bottom, negative=scroll up toward top, typical range: 100-500px per scroll)",
+            "title": "Delta Y"
+          },
+          "steps": {
+            "type": "integer",
+            "description": "Number of steps to break scroll into for smoothness (1=instant jump, 3-5=smooth animation, 10+=very smooth but slower)",
+            "title": "Steps",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 20
+          },
+          "useOs": {
+            "type": "boolean",
+            "description": "Use OS-level scrolling (True=more reliable, works with all apps) vs browser scrolling (False=web-specific, may fail on some sites)",
+            "title": "Use Os",
+            "default": true
+          },
+          "x": {
+            "type": "integer",
+            "description": "X coordinate where scroll originates (center of viewport recommended: 640 for 1280px width, 720 for 1440px width)",
+            "title": "X",
+            "default": 640,
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y coordinate where scroll originates (center of viewport recommended: 360 for 720px height, 400 for 800px height)",
+            "title": "Y",
+            "default": 360,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "deltaY"
+        ],
+        "title": "ScrollRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'scroll'",
+                "title": "Action"
+              },
+              "coordinates": {
+                "type": "string",
+                "description": "Origin coordinates where scroll was initiated",
+                "title": "Coordinates"
+              },
+              "scrollDirection": {
+                "type": "string",
+                "description": "Primary scroll direction (down/up/left/right)",
+                "title": "Scroll Direction"
+              },
+              "scrollDistance": {
+                "type": "string",
+                "description": "Description of scroll distance and smoothness",
+                "title": "Scroll Distance"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the scroll operation",
+                "title": "Status"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "scrollDirection",
+              "scrollDistance",
+              "coordinates",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "ScrollResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_SET_CLIPBOARD",
+      "name": "Set Clipboard Content",
+      "description": "Store text content in the system clipboard for later paste operations - perfect for preparing data transfers, staging content for forms, or cross-application data sharing.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text content to store in system clipboard (URLs, data, structured text, form content)",
+            "title": "Text",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "SetClipboardRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'set_clipboard'",
+                "title": "Action"
+              },
+              "contentLength": {
+                "type": "integer",
+                "description": "Number of characters stored in clipboard",
+                "title": "Content Length"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of clipboard set operation",
+                "title": "Status"
+              },
+              "textSet": {
+                "type": "string",
+                "description": "Text content that was stored in clipboard",
+                "title": "Text Set"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "textSet",
+              "contentLength",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "SetClipboardResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_TAKE_SCREENSHOT",
+      "name": "Take Screenshot",
+      "description": "VISUAL VERIFICATION: Capture screenshot - MUST BE CALLED ALONE in multi_execute. 🚨 CRITICAL: Screenshot cannot be combined with other tools in same multi_execute call FALLBACK: If screenshot blocked/fails, use FetchWebpage diligently for information USE: Debug UI, verify states, document results after page changes RENDERS: Inline visual feedback | SUCCESS RATE: 99%",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "TakeScreenshotRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "content": {
+                "type": "array",
+                "description": "MCP content blocks with inline image",
+                "title": "Content",
+                "items": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "TakeScreenshotResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    },
+    {
+      "slug": "BROWSER_TOOL_TYPE_TEXT",
+      "name": "Type Text",
+      "description": "CONTROLLED INPUT: Human-like typing. PATTERN: Click to focus → TypeText() → verify SPEED: delay=0 (fast) | delay=50 (human-like) | delay=100+ (careful) Must focus input field first | SUCCESS RATE: 95%",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "delay": {
+            "type": "integer",
+            "description": "Milliseconds delay between each keystroke for natural human-like typing (0=instant, 50-100=realistic human speed, 200+=slow deliberate typing)",
+            "title": "Delay",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "text": {
+            "type": "string",
+            "description": "Text content to type into the browser (supports unicode, special characters, newlines, form data)",
+            "title": "Text",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "TypeTextRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Action performed: 'type_text'",
+                "title": "Action"
+              },
+              "sessionId": {
+                "type": "string",
+                "title": "Session Id"
+              },
+              "status": {
+                "type": "string",
+                "description": "Execution status of the text typing operation",
+                "title": "Status"
+              },
+              "textLength": {
+                "type": "integer",
+                "description": "Number of characters that were typed",
+                "title": "Text Length"
+              },
+              "typingSpeed": {
+                "type": "string",
+                "description": "Typing speed description based on delay setting",
+                "title": "Typing Speed"
+              }
+            },
+            "required": [
+              "sessionId",
+              "action",
+              "textLength",
+              "typingSpeed",
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "TypeTextResponseWrapper"
+      },
+      "toolkitSlug": "browser_tool"
+    }
+  ],
+  "toolCount": 18
+}

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swimlane View - Node Types</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .swimlane {
+      border-left: 3px solid;
+      background: linear-gradient(to right, rgba(255,255,255,0.02), transparent);
+    }
+    .node-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">Swimlane View - Node Types</h1>
+      <p class="text-slate-400">Vertical flow with horizontal lanes for parallel execution. Each lane is an independent track.</p>
+      <p class="text-slate-500 text-sm mt-2">Key principle: <strong>Lanes for parallelism</strong> - concurrent work gets its own vertical track.</p>
+    </div>
+
+    <div class="space-y-12">
+      
+      <!-- SEQUENTIAL STEP (Single Lane) -->
+      <div>
+        <h3 class="text-sm font-semibold text-blue-400 mb-4">.then() - Sequential Step (Single Lane)</h3>
+        <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+          <div class="flex justify-center">
+            <div class="swimlane border-l-blue-500 pl-6 py-4">
+              <div class="text-xs text-blue-400 mb-3 font-medium">MAIN</div>
+              
+              <div class="node-card p-4 min-w-[250px]">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-slate-900">Scrape URL</div>
+                    <div class="text-sm text-slate-500">Firecrawl</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="w-0.5 h-6 bg-blue-400 mx-auto my-2"></div>
+              
+              <div class="node-card p-4 min-w-[250px]">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-slate-900">Transform</div>
+                    <div class="text-sm text-slate-500">Custom</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Single lane. Steps flow vertically within the lane.</p>
+      </div>
+
+      <!-- PARALLEL (Multiple Lanes) -->
+      <div>
+        <h3 class="text-sm font-semibold text-cyan-400 mb-4">.parallel() - Fork into Lanes</h3>
+        <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+          
+          <!-- Pre-fork (single lane) -->
+          <div class="flex justify-center mb-4">
+            <div class="node-card p-3 min-w-[200px]">
+              <div class="flex items-center gap-2 justify-center">
+                <span class="font-medium text-slate-900">Start</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Fork indicator -->
+          <div class="flex justify-center mb-4">
+            <div class="bg-cyan-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+              ⑃ FORK
+            </div>
+          </div>
+          
+          <!-- Parallel Lanes -->
+          <div class="flex justify-center gap-4">
+            <!-- Lane A -->
+            <div class="swimlane border-l-cyan-500 pl-4 py-4 min-w-[180px]">
+              <div class="text-xs text-cyan-400 mb-3 font-medium">LANE A</div>
+              <div class="node-card p-3 border-cyan-200">
+                <div class="flex items-center gap-2">
+                  <div class="h-8 w-8 rounded bg-cyan-100 flex items-center justify-center">
+                    <span class="text-cyan-600 text-xs">👤</span>
+                  </div>
+                  <div>
+                    <div class="font-medium text-sm text-slate-900">Fetch Users</div>
+                    <div class="text-xs text-slate-500">API</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Lane B -->
+            <div class="swimlane border-l-cyan-500 pl-4 py-4 min-w-[180px]">
+              <div class="text-xs text-cyan-400 mb-3 font-medium">LANE B</div>
+              <div class="node-card p-3 border-cyan-200">
+                <div class="flex items-center gap-2">
+                  <div class="h-8 w-8 rounded bg-cyan-100 flex items-center justify-center">
+                    <span class="text-cyan-600 text-xs">📦</span>
+                  </div>
+                  <div>
+                    <div class="font-medium text-sm text-slate-900">Fetch Orders</div>
+                    <div class="text-xs text-slate-500">API</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Lane C -->
+            <div class="swimlane border-l-cyan-500 pl-4 py-4 min-w-[180px]">
+              <div class="text-xs text-cyan-400 mb-3 font-medium">LANE C</div>
+              <div class="node-card p-3 border-cyan-200">
+                <div class="flex items-center gap-2">
+                  <div class="h-8 w-8 rounded bg-cyan-100 flex items-center justify-center">
+                    <span class="text-cyan-600 text-xs">⚙</span>
+                  </div>
+                  <div>
+                    <div class="font-medium text-sm text-slate-900">Fetch Config</div>
+                    <div class="text-xs text-slate-500">API</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Join indicator -->
+          <div class="flex justify-center mt-4 mb-4">
+            <div class="bg-cyan-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+              ⊕ JOIN
+            </div>
+          </div>
+          
+          <!-- Post-join (single lane) -->
+          <div class="flex justify-center">
+            <div class="node-card p-3 min-w-[200px]">
+              <div class="flex items-center gap-2 justify-center">
+                <span class="font-medium text-slate-900">Merge Results</span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Fork creates lanes. Each lane runs independently. Join merges back to single lane.</p>
+      </div>
+
+      <!-- BRANCH (Lanes with Labels) -->
+      <div>
+        <h3 class="text-sm font-semibold text-amber-400 mb-4">.branch() - Conditional Lanes</h3>
+        <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+          
+          <!-- Branch node -->
+          <div class="flex justify-center mb-4">
+            <div class="node-card p-3 min-w-[220px] border-amber-300">
+              <div class="flex items-center gap-2 justify-center">
+                <div class="h-8 w-8 rounded bg-amber-100 flex items-center justify-center">
+                  <svg class="h-4 w-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-medium text-amber-900">Branch</div>
+                  <div class="text-xs text-amber-600">on: score</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Conditional Lanes (only ONE executes) -->
+          <div class="flex justify-center gap-4">
+            <!-- Lane: score >= 90 -->
+            <div class="swimlane border-l-green-500 pl-4 py-4 min-w-[160px] opacity-50">
+              <div class="text-xs text-green-400 mb-2 font-medium">IF score ≥ 90</div>
+              <div class="node-card p-3 border-green-200">
+                <div class="text-sm text-slate-900">Award Gold</div>
+              </div>
+            </div>
+            
+            <!-- Lane: score >= 70 (active) -->
+            <div class="swimlane border-l-blue-500 pl-4 py-4 min-w-[160px] bg-blue-500/5">
+              <div class="text-xs text-blue-400 mb-2 font-medium">IF score ≥ 70 ✓</div>
+              <div class="node-card p-3 border-blue-300 ring-2 ring-blue-400">
+                <div class="text-sm text-slate-900 font-medium">Award Silver</div>
+              </div>
+            </div>
+            
+            <!-- Lane: else -->
+            <div class="swimlane border-l-slate-500 pl-4 py-4 min-w-[160px] opacity-50">
+              <div class="text-xs text-slate-400 mb-2 font-medium">ELSE</div>
+              <div class="node-card p-3">
+                <div class="text-sm text-slate-900">Log Result</div>
+              </div>
+            </div>
+          </div>
+          
+          <p class="text-xs text-slate-400 text-center mt-4">Only ONE lane executes based on condition. Others shown dimmed.</p>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Branch shows all possible lanes, highlights active one.</p>
+      </div>
+
+      <!-- LOOP (Contained within Lane) -->
+      <div>
+        <h3 class="text-sm font-semibold text-violet-400 mb-4">.dountil() - Loop within Lane</h3>
+        <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+          <div class="flex justify-center">
+            <div class="swimlane border-l-violet-500 pl-6 py-4">
+              <div class="text-xs text-violet-400 mb-3 font-medium">MAIN</div>
+              
+              <!-- Pre-loop step -->
+              <div class="node-card p-3 min-w-[250px] mb-4">
+                <div class="text-sm text-slate-900">Get Status</div>
+              </div>
+              
+              <!-- Loop container -->
+              <div class="border-2 border-dashed border-violet-400 rounded-xl p-4 bg-violet-950/20 relative">
+                <div class="absolute -top-3 left-4 bg-slate-900 px-2">
+                  <span class="text-xs font-semibold text-violet-400">🔄 DO UNTIL: status === 'done'</span>
+                </div>
+                
+                <div class="mt-2 space-y-3">
+                  <div class="node-card p-3 border-violet-200">
+                    <div class="text-sm text-slate-900">Check Status</div>
+                  </div>
+                  <div class="w-0.5 h-4 bg-violet-400 mx-auto"></div>
+                  <div class="node-card p-3 border-violet-200">
+                    <div class="text-sm text-slate-900">Sleep 5s</div>
+                  </div>
+                </div>
+                
+                <div class="absolute -bottom-3 right-4 bg-slate-900 px-2">
+                  <span class="text-[10px] text-violet-400">max: 10 iterations</span>
+                </div>
+              </div>
+              
+              <!-- Post-loop step -->
+              <div class="node-card p-3 min-w-[250px] mt-4">
+                <div class="text-sm text-slate-900">Continue</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Loop is a container within the lane. Steps inside iterate.</p>
+      </div>
+
+      <!-- FOR EACH (Spawns Temporary Lanes) -->
+      <div>
+        <h3 class="text-sm font-semibold text-pink-400 mb-4">.foreach() - Iteration Lanes</h3>
+        <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+          
+          <!-- Input array -->
+          <div class="flex justify-center mb-4">
+            <div class="node-card p-3 min-w-[250px]">
+              <div class="flex items-center gap-2 justify-center">
+                <span class="font-medium text-slate-900">Get Items</span>
+                <span class="text-xs text-pink-500 bg-pink-100 px-2 py-0.5 rounded">→ items[15]</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- ForEach indicator -->
+          <div class="flex justify-center mb-4">
+            <div class="bg-pink-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+              🔁 FOR EACH item (×3 concurrent)
+            </div>
+          </div>
+          
+          <!-- Iteration Lanes (showing 3 concurrent) -->
+          <div class="flex justify-center gap-3">
+            <div class="swimlane border-l-pink-400 pl-3 py-3 min-w-[140px]">
+              <div class="text-[10px] text-pink-400 mb-2">item[0]</div>
+              <div class="space-y-2">
+                <div class="node-card p-2 text-xs border-pink-200">Validate</div>
+                <div class="node-card p-2 text-xs border-pink-200">Transform</div>
+                <div class="node-card p-2 text-xs border-pink-200">Save</div>
+              </div>
+            </div>
+            <div class="swimlane border-l-pink-400 pl-3 py-3 min-w-[140px]">
+              <div class="text-[10px] text-pink-400 mb-2">item[1]</div>
+              <div class="space-y-2">
+                <div class="node-card p-2 text-xs border-pink-200">Validate</div>
+                <div class="node-card p-2 text-xs border-pink-200">Transform</div>
+                <div class="node-card p-2 text-xs border-pink-200">Save</div>
+              </div>
+            </div>
+            <div class="swimlane border-l-pink-400 pl-3 py-3 min-w-[140px]">
+              <div class="text-[10px] text-pink-400 mb-2">item[2]</div>
+              <div class="space-y-2">
+                <div class="node-card p-2 text-xs border-pink-200">Validate</div>
+                <div class="node-card p-2 text-xs border-pink-200">Transform</div>
+                <div class="node-card p-2 text-xs border-pink-200">Save</div>
+              </div>
+            </div>
+            <div class="flex items-center text-slate-500 text-sm px-4">
+              ... +12 more
+            </div>
+          </div>
+          
+          <!-- Collect -->
+          <div class="flex justify-center mt-4">
+            <div class="node-card p-3 min-w-[250px]">
+              <div class="flex items-center gap-2 justify-center">
+                <span class="font-medium text-slate-900">Aggregate</span>
+                <span class="text-xs text-pink-500 bg-pink-100 px-2 py-0.5 rounded">results[15]</span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <p class="text-xs text-slate-500 mt-4">ForEach shows concurrent iteration lanes. Indicates remaining count.</p>
+      </div>
+
+      <!-- SUSPEND -->
+      <div>
+        <h3 class="text-sm font-semibold text-rose-400 mb-4">suspend() - Lane Pauses</h3>
+        <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+          <div class="flex justify-center">
+            <div class="swimlane border-l-rose-500 pl-6 py-4">
+              <div class="text-xs text-rose-400 mb-3 font-medium">MAIN</div>
+              
+              <div class="node-card p-3 min-w-[250px] mb-4">
+                <div class="text-sm text-slate-900">Generate Report</div>
+              </div>
+              
+              <!-- Suspend node -->
+              <div class="node-card p-4 min-w-[250px] border-rose-300 bg-rose-50">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-lg bg-rose-100 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-rose-900">Suspend</div>
+                    <div class="text-sm text-rose-600">⏸ Awaiting approval</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Paused indicator -->
+              <div class="border-l-2 border-dashed border-rose-400 h-12 ml-6 my-2"></div>
+              <div class="text-xs text-rose-400 ml-4 mb-2">⏸ workflow paused</div>
+              
+              <div class="node-card p-3 min-w-[250px] opacity-50">
+                <div class="text-sm text-slate-900">Send Report</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Lane shows pause state. Subsequent steps dimmed until resumed.</p>
+      </div>
+
+    </div>
+
+    <!-- LEGEND -->
+    <div class="mt-12 p-6 bg-slate-900/50 border border-slate-800 rounded-xl">
+      <h3 class="text-sm font-semibold text-white mb-4">Swimlane View Principles</h3>
+      <div class="grid grid-cols-3 gap-6 text-sm">
+        <div>
+          <div class="font-medium text-slate-300 mb-2">🏊 Lanes = Parallelism</div>
+          <p class="text-slate-500">Each concurrent execution gets its own vertical lane.</p>
+        </div>
+        <div>
+          <div class="font-medium text-slate-300 mb-2">⬇️ Vertical Flow</div>
+          <p class="text-slate-500">Time flows downward. Steps execute top-to-bottom.</p>
+        </div>
+        <div>
+          <div class="font-medium text-slate-300 mb-2">🔀 Fork/Join</div>
+          <p class="text-slate-500">Clear visual for when lanes split and merge.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

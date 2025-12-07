@@ -11,7 +11,8 @@ import {
   LayoutGrid, 
   Bell,
   Menu,
-  User
+  User,
+  GitBranch,
 } from "lucide-react";
 import {
   SignInButton,
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { href: "/workforce", label: "Workforce", icon: Users },
   { href: "/records", label: "Records", icon: Database },
   { href: "/tools", label: "Tools", icon: Wrench },
+  { href: "/workflows", label: "Workflows", icon: GitBranch },
   { href: "/marketplace", label: "Marketplace", icon: LayoutGrid },
 ];
 

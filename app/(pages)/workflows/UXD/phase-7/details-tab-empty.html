@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 7 - Details Tab (Edge States)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 p-8">
+  
+  <div class="max-w-md mx-auto space-y-16">
+    
+    <!-- ============================================ -->
+    <!-- STATE 1: NO SELECTION (AC-D.12) -->
+    <!-- ============================================ -->
+    <div>
+      <h1 class="text-lg font-semibold mb-2">State 1: No Selection</h1>
+      <p class="text-sm text-gray-500 mb-6">Shows when no step is selected in the workflow (AC-D.12)</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        
+        <!-- Tab Bar - Details is FIRST -->
+        <div class="flex border-b border-gray-200">
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500">
+            Details
+          </button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Tools</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Logic</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Inputs</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Config</button>
+        </div>
+        
+        <!-- Empty State Content -->
+        <div class="p-8 flex flex-col items-center justify-center text-center min-h-[350px]">
+          <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="h-7 w-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-medium text-gray-700 mb-2">No step selected</h3>
+          <p class="text-xs text-gray-500 max-w-[240px] leading-relaxed">
+            Click on a step in the workflow canvas to view its details and configure data bindings.
+          </p>
+          <div class="mt-6 px-4 py-2 bg-gray-50 rounded-lg">
+            <p class="text-[10px] text-gray-500">
+              <span class="font-medium">Tip:</span> Press <kbd class="px-1.5 py-0.5 bg-white border border-gray-200 rounded text-[9px] font-mono">Enter</kbd> to edit a selected step
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ============================================ -->
+    <!-- STATE 2: FIRST STEP (Navigate to URL) -->
+    <!-- ============================================ -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">State 2: First Step Selected</h2>
+      <p class="text-sm text-gray-500 mb-6">No previous steps to receive data from. Can only use Workflow Inputs or Literals.</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        <div class="flex border-b border-gray-200">
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500">Details</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Tools</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Logic</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Inputs</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Config</button>
+        </div>
+        
+        <div class="p-4 space-y-5">
+          <!-- Step Header -->
+          <div class="space-y-2">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
+                  <span class="text-orange-600 text-sm font-bold">BR</span>
+                </div>
+                <div>
+                  <h2 class="text-sm font-semibold text-gray-900">Navigate to URL</h2>
+                  <p class="text-xs text-gray-500">browser_tool • BROWSER_TOOL_NAVIGATE</p>
+                </div>
+              </div>
+              <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">Step 1 of 3</span>
+            </div>
+            <p class="text-xs text-gray-600 leading-relaxed">
+              Creates a browser session and navigates to the specified URL.
+            </p>
+          </div>
+          
+          <div class="border-t border-gray-100"></div>
+          
+          <!-- INPUT BINDINGS - First Step -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Input Bindings</h3>
+                <p class="text-[10px] text-gray-500 mt-0.5">Configure where this step gets its data</p>
+              </div>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">1 of 2 mapped</span>
+            </div>
+            
+            <!-- FIRST STEP INFO BANNER -->
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <div class="flex items-start gap-2">
+                <svg class="h-4 w-4 text-amber-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div>
+                  <p class="text-xs text-amber-800 font-medium">This is the first step</p>
+                  <p class="text-[10px] text-amber-700 mt-0.5">No previous steps available. Use <strong>Workflow Inputs</strong> or <strong>Literal Values</strong> only.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- URL field - mapped from workflow input (AC-D.6) -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-medium text-gray-900">url</span>
+                    <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">required</span>
+                    <span class="text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">string</span>
+                  </div>
+                  <p class="text-[10px] text-gray-500 mt-1">The URL to navigate to</p>
+                </div>
+              </div>
+              <!-- Mapped from Workflow Input (AC-D.6) -->
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md text-xs hover:border-gray-300 transition-colors group">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                  <span class="text-gray-500">Workflow Input:</span>
+                  <code class="text-gray-900 font-mono font-medium">url</code>
+                </span>
+                <div class="flex items-center gap-1">
+                  <span class="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100">Change</span>
+                  <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </button>
+            </div>
+            
+            <!-- idleTtlSec - optional, not mapped -->
+            <div class="bg-white rounded-lg p-3 border border-gray-100">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-medium text-gray-500">idleTtlSec</span>
+                    <span class="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded font-medium">optional</span>
+                    <span class="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded">integer</span>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1">Session idle timeout in seconds</p>
+                </div>
+              </div>
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-gray-50 border border-dashed border-gray-300 rounded-md text-xs hover:border-gray-400 transition-colors">
+                <span class="text-gray-400">Select source...</span>
+                <svg class="h-3 w-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="border-t border-gray-100"></div>
+          
+          <!-- OUTPUT BINDINGS - First Step -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Output Bindings</h3>
+                <p class="text-[10px] text-gray-500 mt-0.5">Where this step sends its data</p>
+              </div>
+              <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded">1 connected</span>
+            </div>
+            
+            <!-- CLICKABLE step link -->
+            <button class="w-full bg-emerald-50/50 border border-emerald-100 rounded-lg p-2.5 flex items-center gap-2 text-xs hover:bg-emerald-50 hover:border-emerald-200 transition-colors group text-left">
+              <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+              </svg>
+              <span class="text-emerald-700">Sending data to</span>
+              <span class="text-emerald-700 font-semibold underline decoration-emerald-300 group-hover:decoration-emerald-500">Step 2: Fetch Webpage Content</span>
+              <svg class="h-3 w-3 text-emerald-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </button>
+            
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <code class="text-xs font-mono text-gray-900 bg-white px-2 py-1 rounded border border-gray-200">data.url</code>
+                  <span class="text-[10px] text-gray-400">string</span>
+                </div>
+                <svg class="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+              <div class="mt-2 flex items-center gap-2">
+                <span class="text-[10px] text-gray-500">Connected to:</span>
+                <button class="flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 rounded text-xs hover:border-gray-300">
+                  <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                  <span class="text-gray-700">Step 2:</span>
+                  <code class="font-mono text-gray-900">url</code>
+                  <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <button class="w-full py-2 text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center justify-center gap-1">
+              <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              Show 3 more outputs
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ============================================ -->
+    <!-- STATE 3: LAST STEP (Send Email) -->
+    <!-- ============================================ -->
+    <div>
+      <h2 class="text-lg font-semibold mb-2">State 3: Last Step Selected</h2>
+      <p class="text-sm text-gray-500 mb-6">No subsequent steps. Outputs become the workflow's final result.</p>
+      
+      <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+        <div class="flex border-b border-gray-200">
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500">Details</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Tools</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Logic</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Inputs</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500">Config</button>
+        </div>
+        
+        <div class="p-4 space-y-5">
+          <!-- Step Header -->
+          <div class="space-y-2">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center shrink-0">
+                  <span class="text-red-600 text-sm font-bold">GM</span>
+                </div>
+                <div>
+                  <h2 class="text-sm font-semibold text-gray-900">Send Email</h2>
+                  <p class="text-xs text-gray-500">gmail • GMAIL_SEND_EMAIL</p>
+                </div>
+              </div>
+              <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-medium">Step 3 of 3</span>
+            </div>
+            <p class="text-xs text-gray-600 leading-relaxed">
+              Sends an email via Gmail API using the authenticated user's account.
+            </p>
+          </div>
+          
+          <div class="border-t border-gray-100"></div>
+          
+          <!-- INPUT BINDINGS -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Input Bindings</h3>
+                <p class="text-[10px] text-gray-500 mt-0.5">Configure where this step gets its data</p>
+              </div>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">3 of 9 mapped</span>
+            </div>
+            
+            <!-- CLICKABLE step link -->
+            <button class="w-full bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 flex items-center gap-2 text-xs hover:bg-blue-50 hover:border-blue-200 transition-colors group text-left">
+              <svg class="h-4 w-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+              </svg>
+              <span class="text-blue-700">Receiving data from</span>
+              <span class="text-blue-700 font-semibold underline decoration-blue-300 group-hover:decoration-blue-500">Step 2: Fetch Webpage Content</span>
+              <svg class="h-3 w-3 text-blue-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </button>
+            
+            <!-- recipient_email - from workflow input -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-center gap-1.5 mb-2">
+                <span class="text-xs font-medium text-gray-900">recipient_email</span>
+                <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">required</span>
+                <span class="text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">string</span>
+              </div>
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md text-xs">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                  <span class="text-gray-500">Workflow Input:</span>
+                  <code class="text-gray-900 font-mono font-medium">recipient</code>
+                </span>
+                <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            
+            <!-- subject - from step 2 -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-center gap-1.5 mb-2">
+                <span class="text-xs font-medium text-gray-900">subject</span>
+                <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-medium">optional</span>
+                <span class="text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">string</span>
+              </div>
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md text-xs">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span class="text-gray-500">Step 2:</span>
+                  <code class="text-gray-900 font-mono font-medium">data.title</code>
+                </span>
+                <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            
+            <!-- body - from step 2 -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+              <div class="flex items-center gap-1.5 mb-2">
+                <span class="text-xs font-medium text-gray-900">body</span>
+                <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-medium">optional</span>
+                <span class="text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">string</span>
+              </div>
+              <button class="w-full flex items-center justify-between px-3 py-2 bg-white border border-gray-200 rounded-md text-xs">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span class="text-gray-500">Step 2:</span>
+                  <code class="text-gray-900 font-mono font-medium">data.content</code>
+                </span>
+                <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            
+            <button class="w-full py-2 text-xs text-gray-500 hover:text-gray-700">
+              Show 6 more fields (cc, bcc, attachment...)
+            </button>
+          </div>
+          
+          <div class="border-t border-gray-100"></div>
+          
+          <!-- OUTPUT BINDINGS - TERMINAL STATE -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Output Bindings</h3>
+                <p class="text-[10px] text-gray-500 mt-0.5">This step's outputs</p>
+              </div>
+            </div>
+            
+            <!-- LAST STEP INFO BANNER -->
+            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+              <div class="flex items-start gap-2">
+                <svg class="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p class="text-xs text-emerald-800 font-medium">This is the final step</p>
+                  <p class="text-[10px] text-emerald-700 mt-0.5">Outputs from this step become the <strong>workflow's return value</strong>.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Output fields - showing they go to workflow output -->
+            <div class="space-y-2">
+              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <code class="text-xs font-mono text-gray-900 bg-white px-2 py-1 rounded border border-gray-200">data.id</code>
+                    <span class="text-[10px] text-gray-400">string</span>
+                  </div>
+                  <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-medium">→ Workflow Output</span>
+                </div>
+              </div>
+              
+              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <code class="text-xs font-mono text-gray-900 bg-white px-2 py-1 rounded border border-gray-200">data.threadId</code>
+                    <span class="text-[10px] text-gray-400">string</span>
+                  </div>
+                  <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-medium">→ Workflow Output</span>
+                </div>
+              </div>
+              
+              <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <code class="text-xs font-mono text-gray-900 bg-white px-2 py-1 rounded border border-gray-200">successful</code>
+                    <span class="text-[10px] text-gray-400">boolean</span>
+                  </div>
+                  <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-medium">→ Workflow Output</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Acceptance Criteria Summary -->
+    <div class="p-4 bg-gray-100 border border-gray-200 rounded-lg">
+      <h3 class="text-xs font-semibold text-gray-700 mb-3">Edge Cases & Acceptance Criteria</h3>
+      <div class="space-y-3 text-[10px]">
+        <div>
+          <p class="font-medium text-gray-700 mb-1">State 1: No Selection (AC-D.12)</p>
+          <p class="text-gray-500">Empty state with helpful message and tip</p>
+        </div>
+        <div>
+          <p class="font-medium text-gray-700 mb-1">State 2: First Step</p>
+          <p class="text-gray-500">• Input: Step Output disabled (no previous steps)</p>
+          <p class="text-gray-500">• Input: Workflow Input & Literal available (AC-D.6, D.7)</p>
+          <p class="text-gray-500">• Output: Shows connections to next step (NEW)</p>
+        </div>
+        <div>
+          <p class="font-medium text-gray-700 mb-1">State 3: Last Step</p>
+          <p class="text-gray-500">• Input: All sources available (AC-D.5, D.6, D.7)</p>
+          <p class="text-gray-500">• Output: Terminal state - becomes workflow output (NEW)</p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+</body>
+</html>

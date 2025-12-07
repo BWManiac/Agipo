@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loop Configuration Modal - Phase 4 UXD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { 
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            background: '#0a0a0a',
+            foreground: '#fafafa',
+            card: '#18181b',
+            border: '#27272a',
+            muted: '#71717a',
+            primary: '#3b82f6',
+            accent: '#22c55e',
+            warning: '#f59e0b',
+            purple: '#a855f7',
+            pink: '#ec4899',
+            cyan: '#06b6d4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen p-8 flex items-center justify-center">
+  
+  <!-- Modal Backdrop -->
+  <div class="fixed inset-0 bg-black/60"></div>
+
+  <!-- Modal Container -->
+  <div class="relative bg-card border border-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-border">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold">Configure Loop</h2>
+          <p class="text-xs text-muted">Repeat steps until condition is met</p>
+        </div>
+      </div>
+      <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-muted hover:text-foreground transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-5">
+      
+      <!-- Visual Preview -->
+      <div class="bg-background border border-border rounded-lg p-4 mb-5">
+        <div class="flex items-center justify-center">
+          <div class="relative">
+            <!-- Loop Container -->
+            <div class="border-2 border-dashed border-accent/30 rounded-lg p-4 min-w-[180px]">
+              <div class="text-[10px] uppercase tracking-wider text-accent font-medium mb-2">Do Until</div>
+              <div class="space-y-2">
+                <div class="px-3 py-2 bg-card border border-border rounded text-xs text-muted">Step 1: Check Status</div>
+                <div class="px-3 py-2 bg-card border border-border rounded text-xs text-muted">Step 2: Wait 5s</div>
+              </div>
+            </div>
+            <!-- Loop Arrow -->
+            <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+              <svg class="w-6 h-12 text-accent/50" viewBox="0 0 24 48" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 0 L12 8 L20 8 L20 40 L12 40 L12 48" stroke-linecap="round"/>
+                <path d="M12 48 L8 44 M12 48 L16 44" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loop Type -->
+      <div class="mb-5">
+        <label class="text-sm font-medium block mb-2">Loop Type</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button class="p-3 bg-accent/10 border-2 border-accent rounded-lg text-left">
+            <div class="text-sm font-medium text-accent">Do Until</div>
+            <div class="text-[10px] text-muted mt-1">Execute, then check condition</div>
+          </button>
+          <button class="p-3 bg-background border border-border rounded-lg text-left hover:border-accent/50 transition-colors">
+            <div class="text-sm font-medium">Do While</div>
+            <div class="text-[10px] text-muted mt-1">Check condition, then execute</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Condition -->
+      <div class="mb-5">
+        <label class="text-sm font-medium block mb-2">Exit Condition</label>
+        <p class="text-xs text-muted mb-2">Loop exits when this expression returns <code class="text-accent">true</code></p>
+        <div class="relative">
+          <input type="text" value="status === 'completed'" class="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent" placeholder="e.g., retryCount >= 3">
+          <div class="absolute right-2 top-1/2 -translate-y-1/2">
+            <span class="text-[10px] text-muted bg-card px-1.5 py-0.5 rounded">JS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Max Iterations -->
+      <div class="mb-5">
+        <label class="text-sm font-medium block mb-2">Maximum Iterations</label>
+        <p class="text-xs text-muted mb-2">Safety limit to prevent infinite loops</p>
+        <div class="flex items-center gap-3">
+          <input type="number" value="10" class="w-24 bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-center focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent">
+          <span class="text-sm text-muted">iterations max</span>
+        </div>
+      </div>
+
+      <!-- Selected Steps Info -->
+      <div class="bg-background border border-border rounded-lg p-3">
+        <div class="flex items-center gap-2 text-xs text-muted">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span><strong class="text-foreground">2 steps</strong> will be wrapped in this loop</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-end gap-2 px-5 py-4 border-t border-border bg-white/[0.02]">
+      <button class="px-4 py-2 text-sm text-muted hover:text-foreground transition-colors">Cancel</button>
+      <button class="px-4 py-2 text-sm font-medium bg-accent hover:bg-accent/90 text-white rounded-lg transition-colors">Create Loop</button>
+    </div>
+
+  </div>
+
+</body>
+</html>
+

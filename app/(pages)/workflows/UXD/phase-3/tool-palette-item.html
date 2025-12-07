@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Palette Item - Component Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --border: 217.2 32.6% 17.5%;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">ToolPaletteItem Component</h1>
+      <p class="text-slate-400">Individual tool item showing name, description, and input/output schema counts. Clickable to add as workflow step.</p>
+    </div>
+
+    <!-- Component States -->
+    <div class="grid grid-cols-3 gap-6">
+      
+      <!-- State 1: Default -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Default State</h3>
+        <div class="w-64 bg-slate-800/20 border-b border-slate-700/30">
+          <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-white font-medium">Scrape URL</span>
+              <span class="text-xs text-slate-500">3 in, 5 out</span>
+            </div>
+            <p class="text-xs text-slate-400 line-clamp-2">Scrape content from any URL and extract structured data</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- State 2: Hover -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Hover State</h3>
+        <div class="w-64 bg-slate-800/20 border-b border-slate-700/30">
+          <button class="w-full text-left px-3 py-2.5 bg-primary/10 border-l-2 border-primary transition-colors">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-white font-medium">Scrape URL</span>
+              <span class="text-xs text-primary">3 in, 5 out</span>
+            </div>
+            <p class="text-xs text-slate-300 line-clamp-2">Scrape content from any URL and extract structured data</p>
+            <div class="mt-2 flex items-center gap-1 text-xs text-primary">
+              <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Click to add step
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- State 3: Active/Pressed -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Active/Pressed</h3>
+        <div class="w-64 bg-slate-800/20 border-b border-slate-700/30">
+          <button class="w-full text-left px-3 py-2.5 bg-primary/20 border-l-2 border-primary scale-[0.98] transition-all">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-white font-medium">Scrape URL</span>
+              <span class="text-xs text-primary">3 in, 5 out</span>
+            </div>
+            <p class="text-xs text-slate-300 line-clamp-2">Scrape content from any URL and extract structured data</p>
+            <div class="mt-2 flex items-center gap-1 text-xs text-primary">
+              <svg class="h-3 w-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Adding...
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- State 4: Long Description -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Long Description (Truncated)</h3>
+        <div class="w-64 bg-slate-800/20 border-b border-slate-700/30">
+          <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-white font-medium">Send Email</span>
+              <span class="text-xs text-slate-500">4 in, 2 out</span>
+            </div>
+            <p class="text-xs text-slate-400 line-clamp-2">Send an email via Gmail with support for attachments, HTML body content, CC recipients, BCC recipients, and custom headers for advanced email delivery options</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- State 5: Many Inputs/Outputs -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Many I/O Fields</h3>
+        <div class="w-64 bg-slate-800/20 border-b border-slate-700/30">
+          <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-white font-medium">Create Issue</span>
+              <span class="text-xs text-slate-500">12 in, 8 out</span>
+            </div>
+            <p class="text-xs text-slate-400 line-clamp-2">Create a new issue in a GitHub repository</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- State 6: Zero I/O -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wide">Zero Inputs</h3>
+        <div class="w-64 bg-slate-800/20 border-b border-slate-700/30">
+          <button class="w-full text-left px-3 py-2.5 hover:bg-slate-800/50 transition-colors">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-white font-medium">Get Current User</span>
+              <span class="text-xs text-slate-500">0 in, 4 out</span>
+            </div>
+            <p class="text-xs text-slate-400 line-clamp-2">Get information about the authenticated user</p>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anatomy Breakdown -->
+    <div class="mt-12 p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+      <h2 class="text-lg font-semibold mb-4">Component Anatomy</h2>
+      
+      <div class="flex gap-8">
+        <!-- Visual breakdown -->
+        <div class="w-72">
+          <div class="border border-dashed border-slate-600 rounded p-3 space-y-2">
+            <!-- Row 1: Name + Schema counts -->
+            <div class="flex items-center justify-between">
+              <div class="border border-dashed border-blue-500/50 px-2 py-0.5 rounded">
+                <span class="text-sm text-blue-400 font-medium">Tool Name</span>
+              </div>
+              <div class="border border-dashed border-green-500/50 px-2 py-0.5 rounded">
+                <span class="text-xs text-green-400">X in, Y out</span>
+              </div>
+            </div>
+            
+            <!-- Row 2: Description -->
+            <div class="border border-dashed border-yellow-500/50 rounded p-1">
+              <p class="text-xs text-yellow-400 line-clamp-2">Description text (max 2 lines, truncated with ellipsis)</p>
+            </div>
+            
+            <!-- Row 3: Action hint (hover only) -->
+            <div class="border border-dashed border-purple-500/50 rounded p-1 opacity-50">
+              <div class="flex items-center gap-1 text-xs text-purple-400">
+                <span>+</span>
+                <span>Click to add step</span>
+              </div>
+            </div>
+          </div>
+          
+          <p class="text-xs text-slate-500 mt-2 text-center">Row 3 only visible on hover</p>
+        </div>
+        
+        <!-- Props table -->
+        <div class="flex-1">
+          <h3 class="text-sm font-medium text-white mb-3">Props</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-800">
+                <th class="pb-2">Prop</th>
+                <th class="pb-2">Type</th>
+                <th class="pb-2">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              <tr class="border-b border-slate-800/50">
+                <td class="py-2 text-primary">tool</td>
+                <td class="py-2 font-mono text-xs">ComposioTool</td>
+                <td class="py-2 text-slate-400">Tool data (id, name, description, schemas)</td>
+              </tr>
+              <tr>
+                <td class="py-2 text-primary">onAdd</td>
+                <td class="py-2 font-mono text-xs">() =&gt; void</td>
+                <td class="py-2 text-slate-400">Called when user clicks the item</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <h3 class="text-sm font-medium text-white mt-6 mb-3">Computed Values</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-800">
+                <th class="pb-2">Value</th>
+                <th class="pb-2">Derived From</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              <tr class="border-b border-slate-800/50">
+                <td class="py-2">inputCount</td>
+                <td class="py-2 font-mono text-xs text-slate-400">Object.keys(tool.inputSchema.properties).length</td>
+              </tr>
+              <tr>
+                <td class="py-2">outputCount</td>
+                <td class="py-2 font-mono text-xs text-slate-400">Object.keys(tool.outputSchema.properties).length</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <h3 class="text-sm font-medium text-white mt-6 mb-3">Behavior</h3>
+          <ul class="text-sm text-slate-400 space-y-1">
+            <li>• Click → calls onAdd() → creates WorkflowStep</li>
+            <li>• Hover → shows "Click to add step" hint</li>
+            <li>• Hover → schema counts turn primary color</li>
+            <li>• Description truncated at 2 lines</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- IPO Model Connection -->
+    <div class="mt-8 p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+      <h2 class="text-lg font-semibold mb-4">IPO Model: Why "X in, Y out" Matters</h2>
+      
+      <div class="grid grid-cols-2 gap-8">
+        <div>
+          <p class="text-sm text-slate-400 mb-4">
+            The input/output counts preview the <strong class="text-white">IPO model</strong> (Input-Process-Output) 
+            that's central to workflow building. Users need to know:
+          </p>
+          <ul class="text-sm text-slate-400 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-indigo-400 mt-0.5">→</span>
+              <span><strong class="text-indigo-400">Inputs (X in):</strong> How many fields need to be mapped from previous steps or runtime inputs</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 mt-0.5">→</span>
+              <span><strong class="text-emerald-400">Outputs (Y out):</strong> How many fields are available to map to subsequent steps</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <p class="text-sm text-slate-500 mb-3">When this tool becomes a step, the step card will show:</p>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center">
+                <span class="text-[10px] font-semibold text-violet-400">1</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-medium text-white">Scrape URL</span>
+                  <span class="text-[10px] text-slate-500">Firecrawl</span>
+                </div>
+                <div class="space-y-1 text-[10px]">
+                  <div class="flex items-center gap-1">
+                    <span class="text-indigo-400">Input:</span>
+                    <code class="text-indigo-300">url, formats, onlyMainContent</code>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="text-emerald-400">Output:</span>
+                    <code class="text-emerald-300">title, content, markdown, html, links</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

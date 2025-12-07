@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas View - Edge Types</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">Canvas View - Edge Types</h1>
+      <p class="text-slate-400">Edges connect nodes and represent data flow. Different edge types for different purposes.</p>
+    </div>
+
+    <!-- EDGE TYPES -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-4 text-primary">Edge Types</h2>
+      
+      <div class="grid grid-cols-2 gap-8">
+        <!-- Sequential Edge (.then) -->
+        <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+          <h3 class="text-sm font-medium text-white mb-4">Sequential Edge (.then)</h3>
+          <div class="flex flex-col items-center">
+            <!-- Source node -->
+            <div class="bg-white rounded-lg border-2 border-slate-200 px-4 py-2">
+              <span class="text-sm text-slate-900">Step A</span>
+            </div>
+            <!-- Edge -->
+            <div class="relative h-16 w-px">
+              <div class="absolute inset-0 bg-gradient-to-b from-blue-500 to-blue-400"></div>
+              <!-- Animated dots -->
+              <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-blue-400 animate-bounce"></div>
+            </div>
+            <!-- Target node -->
+            <div class="bg-white rounded-lg border-2 border-slate-200 px-4 py-2">
+              <span class="text-sm text-slate-900">Step B</span>
+            </div>
+          </div>
+          <p class="mt-4 text-xs text-slate-500 text-center">Simple connection, animated to show data flow direction</p>
+          <code class="block mt-2 text-xs text-center text-primary">.then(stepA).then(stepB)</code>
+        </div>
+
+        <!-- Data Mapping Edge (.map) -->
+        <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+          <h3 class="text-sm font-medium text-white mb-4">Data Mapping Edge (.map)</h3>
+          <div class="flex flex-col items-center">
+            <!-- Source node -->
+            <div class="bg-white rounded-lg border-2 border-slate-200 px-4 py-2">
+              <span class="text-sm text-slate-900">Scrape URL</span>
+              <div class="text-[10px] text-emerald-600 mt-1">out: title, company</div>
+            </div>
+            <!-- Edge with label -->
+            <div class="relative h-20 w-px">
+              <div class="absolute inset-0 bg-gradient-to-b from-emerald-500 to-indigo-500"></div>
+              <!-- Mapping label -->
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-800 border border-slate-700 rounded-full px-3 py-1 whitespace-nowrap">
+                <span class="text-[10px] text-slate-300">title → jobTitle</span>
+              </div>
+            </div>
+            <!-- Target node -->
+            <div class="bg-white rounded-lg border-2 border-slate-200 px-4 py-2">
+              <span class="text-sm text-slate-900">Generate Email</span>
+              <div class="text-[10px] text-indigo-600 mt-1">in: jobTitle</div>
+            </div>
+          </div>
+          <p class="mt-4 text-xs text-slate-500 text-center">Shows field mapping, gradient indicates transformation</p>
+          <code class="block mt-2 text-xs text-center text-primary">.map({ jobTitle: { step: scrape, path: 'title' } })</code>
+        </div>
+
+        <!-- Branch Edges -->
+        <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+          <h3 class="text-sm font-medium text-white mb-4">Branch Edges (.branch)</h3>
+          <div class="flex flex-col items-center">
+            <!-- Branch node -->
+            <div class="bg-amber-50 rounded-lg border-2 border-amber-300 px-4 py-2">
+              <span class="text-sm text-amber-900">Branch</span>
+            </div>
+            <!-- Split edges -->
+            <div class="relative h-16 w-48">
+              <!-- IF edge -->
+              <svg class="absolute inset-0" viewBox="0 0 200 60">
+                <path d="M100 0 L50 60" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="4 2" />
+                <path d="M100 0 L150 60" stroke="#6b7280" stroke-width="2" fill="none" />
+              </svg>
+              <!-- Labels -->
+              <div class="absolute left-4 top-1/2 -translate-y-1/2 bg-amber-500 text-white text-[8px] px-1.5 rounded">IF</div>
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-500 text-white text-[8px] px-1.5 rounded">ELSE</div>
+            </div>
+            <!-- Target nodes -->
+            <div class="flex gap-8">
+              <div class="bg-white rounded-lg border-2 border-amber-200 px-3 py-1.5">
+                <span class="text-xs text-slate-900">Path A</span>
+              </div>
+              <div class="bg-white rounded-lg border-2 border-slate-200 px-3 py-1.5">
+                <span class="text-xs text-slate-900">Path B</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-4 text-xs text-slate-500 text-center">Dashed for conditional, labels show which path</p>
+          <code class="block mt-2 text-xs text-center text-primary">.branch([[cond, pathA], [() => true, pathB]])</code>
+        </div>
+
+        <!-- Parallel Edges -->
+        <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+          <h3 class="text-sm font-medium text-white mb-4">Parallel Edges (.parallel)</h3>
+          <div class="flex flex-col items-center">
+            <!-- Fork indicator -->
+            <div class="bg-cyan-500 text-white text-[10px] px-2 py-1 rounded mb-2">FORK</div>
+            <!-- Source -->
+            <div class="bg-white rounded-lg border-2 border-slate-200 px-4 py-2 mb-2">
+              <span class="text-sm text-slate-900">Previous Step</span>
+            </div>
+            <!-- Split edges -->
+            <svg class="h-8 w-48" viewBox="0 0 200 30">
+              <path d="M100 0 L50 30" stroke="#06b6d4" stroke-width="2" fill="none" />
+              <path d="M100 0 L100 30" stroke="#06b6d4" stroke-width="2" fill="none" />
+              <path d="M100 0 L150 30" stroke="#06b6d4" stroke-width="2" fill="none" />
+            </svg>
+            <!-- Parallel nodes -->
+            <div class="flex gap-4">
+              <div class="bg-white rounded border-2 border-cyan-200 px-2 py-1">
+                <span class="text-xs text-slate-900">A</span>
+              </div>
+              <div class="bg-white rounded border-2 border-cyan-200 px-2 py-1">
+                <span class="text-xs text-slate-900">B</span>
+              </div>
+              <div class="bg-white rounded border-2 border-cyan-200 px-2 py-1">
+                <span class="text-xs text-slate-900">C</span>
+              </div>
+            </div>
+            <!-- Join edges -->
+            <svg class="h-8 w-48" viewBox="0 0 200 30">
+              <path d="M50 0 L100 30" stroke="#06b6d4" stroke-width="2" fill="none" />
+              <path d="M100 0 L100 30" stroke="#06b6d4" stroke-width="2" fill="none" />
+              <path d="M150 0 L100 30" stroke="#06b6d4" stroke-width="2" fill="none" />
+            </svg>
+            <!-- Join indicator -->
+            <div class="bg-cyan-500 text-white text-[10px] px-2 py-1 rounded mb-2">JOIN</div>
+            <!-- Target -->
+            <div class="bg-white rounded-lg border-2 border-slate-200 px-4 py-2">
+              <span class="text-sm text-slate-900">Next Step</span>
+            </div>
+          </div>
+          <p class="mt-4 text-xs text-slate-500 text-center">All paths run simultaneously, join waits for all</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDGE STATES -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold mb-4 text-slate-400">Edge States (Runtime)</h2>
+      <p class="text-sm text-slate-500 mb-4">Edges change appearance during workflow execution:</p>
+      
+      <div class="grid grid-cols-4 gap-4">
+        <!-- Pending -->
+        <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-lg text-center">
+          <div class="h-12 flex items-center justify-center">
+            <div class="w-1 h-full bg-slate-600 rounded"></div>
+          </div>
+          <p class="mt-2 text-xs text-slate-400">Pending</p>
+          <p class="text-[10px] text-slate-600">Gray, no animation</p>
+        </div>
+
+        <!-- Running -->
+        <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-lg text-center">
+          <div class="h-12 flex items-center justify-center">
+            <div class="w-1 h-full bg-blue-500 rounded relative overflow-hidden">
+              <div class="absolute w-full h-2 bg-blue-300 animate-pulse"></div>
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-blue-400">Running</p>
+          <p class="text-[10px] text-slate-600">Blue, animated pulse</p>
+        </div>
+
+        <!-- Completed -->
+        <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-lg text-center">
+          <div class="h-12 flex items-center justify-center">
+            <div class="w-1 h-full bg-emerald-500 rounded"></div>
+          </div>
+          <p class="mt-2 text-xs text-emerald-400">Completed</p>
+          <p class="text-[10px] text-slate-600">Green, solid</p>
+        </div>
+
+        <!-- Error -->
+        <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-lg text-center">
+          <div class="h-12 flex items-center justify-center">
+            <div class="w-1 h-full bg-red-500 rounded" style="background: repeating-linear-gradient(45deg, #ef4444, #ef4444 2px, #fca5a5 2px, #fca5a5 4px);"></div>
+          </div>
+          <p class="mt-2 text-xs text-red-400">Error</p>
+          <p class="text-[10px] text-slate-600">Red, striped pattern</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDGE INTERACTION -->
+    <section>
+      <h2 class="text-lg font-semibold mb-4 text-slate-400">Edge Interactions</h2>
+      <div class="grid grid-cols-2 gap-8">
+        <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-lg">
+          <h3 class="text-sm font-medium text-white mb-2">Click Edge → Open Mapping Modal</h3>
+          <p class="text-xs text-slate-400">Clicking an edge between nodes opens the data mapping UI where users configure field mappings.</p>
+        </div>
+        <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-lg">
+          <h3 class="text-sm font-medium text-white mb-2">Drag Handle → Create Edge</h3>
+          <p class="text-xs text-slate-400">Dragging from output handle to input handle creates a new edge (and prompts for mapping configuration).</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
+

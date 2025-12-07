@@ -1,0 +1,363 @@
+{
+  "slug": "linkedin",
+  "name": "Linkedin",
+  "logo": "https://logos.composio.dev/api/linkedin",
+  "tools": [
+    {
+      "slug": "LINKEDIN_CREATE_LINKED_IN_POST",
+      "name": "Create a LinkedIn post",
+      "description": "Creates a new post on LinkedIn for the authenticated user or an organization they manage; ensure the user has necessary permissions if posting for an organization.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "author": {
+            "type": "string",
+            "description": "The URN of the LinkedIn member or organization creating the post. Use the GET_USER_INFO action to retrieve the 'author_id' (URN) for the authenticated user. For an organization, the URN will be in the format 'urn:li:organization:{id}'.",
+            "title": "Author",
+            "examples": [
+              "urn:li:person:123456789",
+              "urn:li:organization:987654321"
+            ]
+          },
+          "commentary": {
+            "type": "string",
+            "description": "The main text content of the post. This field supports plain text and @-mentions (e.g., @[LinkedIn Member](urn:li:person:xxxx)). Maximum length: 3000 characters.",
+            "title": "Commentary",
+            "maxLength": 3000,
+            "examples": [
+              "Excited to share our new product update!",
+              "Check out this insightful article: [link]"
+            ]
+          },
+          "distribution": {
+            "type": "object",
+            "description": "Specifies distribution rules for the post, including feed distribution and targeting.",
+            "title": "Distribution",
+            "properties": {
+              "feedDistribution": {
+                "type": "string",
+                "description": "Specifies how the post is distributed on the LinkedIn feed. 'MAIN_FEED' distributes to the main feed, 'NONE' creates Direct Sponsored Content and requires adContext.dscAdAccount (adContext parameter not exposed in this action).",
+                "title": "Feed Distribution",
+                "default": "MAIN_FEED",
+                "enum": [
+                  "MAIN_FEED",
+                  "NONE"
+                ]
+              },
+              "targetEntities": {
+                "type": "array",
+                "description": "A list of entities to target with this post. Each entity should be a dictionary. This is often used for targeted distribution, e.g., to specific groups or GeoLocations. For GeoLocations, provide a dictionary like: `{'geoLocations': [{'geo': 'urn:li:geo:103644278'}]}`. Refer to LinkedIn documentation for specific URN formats.",
+                "title": "Target Entities",
+                "items": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "thirdPartyDistributionChannels": {
+                "type": "array",
+                "description": "A list of third-party channels where the post should be distributed, e.g., Twitter. Refer to LinkedIn documentation for supported channels.",
+                "title": "Third Party Distribution Channels",
+                "items": {
+                  "type": "string",
+                  "properties": {}
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "isReshareDisabledByAuthor": {
+            "type": "boolean",
+            "description": "Set to true to prevent others from resharing this post.",
+            "title": "Is Reshare Disabled By Author",
+            "default": false
+          },
+          "lifecycleState": {
+            "type": "string",
+            "description": "The state of the post. Use 'PUBLISHED' to post directly, 'DRAFT' to save as a draft, or 'PUBLISH_REQUESTED' if the post requires review before publishing.",
+            "title": "Lifecycle State",
+            "default": "PUBLISHED",
+            "examples": [
+              "PUBLISHED",
+              "DRAFT",
+              "PUBLISH_REQUESTED"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Controls who can see the post. 'PUBLIC' makes it visible to everyone, 'CONNECTIONS' to connections only, 'LOGGED_IN' to signed-in LinkedIn members, and 'CONTAINER' for specific group/event posts.",
+            "title": "Visibility",
+            "default": "PUBLIC",
+            "enum": [
+              "PUBLIC",
+              "CONNECTIONS",
+              "LOGGED_IN",
+              "CONTAINER"
+            ]
+          }
+        },
+        "required": [
+          "author",
+          "commentary"
+        ],
+        "title": "CreateLinkedInPostRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "response_data": {
+                "type": "object",
+                "description": "A dictionary containing the full response from the LinkedIn API. This typically includes the 'status_code', 'reason' for the status, the raw 'content' of the response, and the 'share_id' (or post ID, often found in 'x-restli-id' header) of the created post.",
+                "title": "Response Data",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "response_data"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "CreateLinkedInPostResponseWrapper"
+      },
+      "toolkitSlug": "linkedin"
+    },
+    {
+      "slug": "LINKEDIN_DELETE_LINKED_IN_POST",
+      "name": "Delete LinkedIn Post",
+      "description": "Deletes a specific LinkedIn post (share) by its unique `share_id`, which must correspond to an existing share.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "share_id": {
+            "type": "string",
+            "description": "Unique identifier of the LinkedIn share (post) to be deleted.",
+            "title": "Share Id",
+            "examples": [
+              "7245341016004718592"
+            ]
+          }
+        },
+        "required": [
+          "share_id"
+        ],
+        "title": "DeleteLinkedInPostRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "response_data": {
+                "type": "object",
+                "description": "Indicates deletion outcome. Contains a 'deleted' key: `True` if the post deletion was successfully processed, `False` otherwise.",
+                "title": "Response Data",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "DeleteLinkedInPostResponseWrapper"
+      },
+      "toolkitSlug": "linkedin"
+    },
+    {
+      "slug": "LINKEDIN_GET_COMPANY_INFO",
+      "name": "Get company info",
+      "description": "Retrieves organizations where the authenticated user has specific roles (ACLs), to determine their management or content posting capabilities for LinkedIn company pages.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "The number of organization ACLs to return per page.",
+            "title": "Count",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100,
+            "examples": [
+              "10",
+              "50",
+              "100"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "description": "The specific role to filter organization ACLs by.",
+            "title": "Role",
+            "default": "ADMINISTRATOR",
+            "enum": [
+              "ADMINISTRATOR",
+              "DIRECT_SPONSORED_CONTENT_POSTER"
+            ],
+            "examples": [
+              "ADMINISTRATOR",
+              "DIRECT_SPONSORED_CONTENT_POSTER"
+            ]
+          },
+          "start": {
+            "type": "integer",
+            "description": "The starting index for pagination, representing the number of initial ACLs to skip.",
+            "title": "Start",
+            "default": 0,
+            "minimum": 0,
+            "examples": [
+              "0",
+              "10",
+              "20"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "description": "The approval state of the role to filter by.",
+            "title": "State",
+            "default": "APPROVED",
+            "enum": [
+              "APPROVED",
+              "REQUESTED"
+            ],
+            "examples": [
+              "APPROVED",
+              "REQUESTED"
+            ]
+          }
+        },
+        "title": "GetCompanyInfoRequest",
+        "description": "Parameters for listing organizations where the authenticated user has specific roles and permissions (ACLs)."
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "response_data": {
+                "type": "object",
+                "description": "Raw API response dictionary, typically listing organization ACLs that match request criteria, detailing organizations and user roles.",
+                "title": "Response Data",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "response_data"
+            ],
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetCompanyInfoResponseWrapper"
+      },
+      "toolkitSlug": "linkedin"
+    },
+    {
+      "slug": "LINKEDIN_GET_MY_INFO",
+      "name": "Get my info",
+      "description": "Fetches the authenticated LinkedIn user's profile, notably including the 'author_id' required for attributing content such as posts or articles.",
+      "inputParameters": {
+        "type": "object",
+        "properties": {},
+        "title": "GetMyInfoRequest"
+      },
+      "outputParameters": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Data from the action execution",
+            "title": "Data",
+            "properties": {
+              "response_dict": {
+                "type": "object",
+                "description": "The authenticated user's profile data from LinkedIn's `/v2/userinfo` endpoint; includes 'author_id' (derived from 'sub'), vital for attributing content like posts or articles.",
+                "title": "Response Dict",
+                "default": null,
+                "nullable": true,
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error if any occurred during the execution of the action",
+            "title": "Error",
+            "default": null,
+            "nullable": true
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "Whether or not the action execution was successful or not",
+            "title": "Successful"
+          }
+        },
+        "required": [
+          "data",
+          "successful"
+        ],
+        "title": "GetMyInfoResponseWrapper"
+      },
+      "toolkitSlug": "linkedin"
+    }
+  ],
+  "toolCount": 4
+}

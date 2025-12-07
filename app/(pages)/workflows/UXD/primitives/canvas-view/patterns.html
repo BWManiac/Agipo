@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas View - Common Patterns</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .node {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #1e293b;
+      text-align: center;
+      min-width: 100px;
+    }
+    .node.selected { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+    .node.control { background: #fef3c7; border-color: #fcd34d; }
+    .node.parallel { background: #cffafe; border-color: #22d3ee; }
+    .node.loop { background: #ede9fe; border-color: #a78bfa; }
+  </style>
+</head>
+<body class="bg-slate-950 text-white p-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">Canvas View - Common Patterns</h1>
+      <p class="text-slate-400">How common workflow patterns appear on the ReactFlow canvas.</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8">
+      <!-- Pattern 1: Simple Sequential -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-primary mb-2">Pattern 1: Simple Sequential</h3>
+        <p class="text-xs text-slate-500 mb-4">.then(A).then(B).then(C)</p>
+        
+        <div class="flex flex-col items-center gap-2 py-4">
+          <div class="node">Scrape URL</div>
+          <svg class="h-6 w-6 text-blue-500"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          <div class="node">Transform Data</div>
+          <svg class="h-6 w-6 text-blue-500"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          <div class="node">Save to Table</div>
+        </div>
+        
+        <p class="text-xs text-slate-400 mt-4">Simplest pattern - vertical stack with arrows.</p>
+      </div>
+
+      <!-- Pattern 2: Branch (Multi-Condition Router) -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-amber-400 mb-2">Pattern 2: Branch (Router)</h3>
+        <p class="text-xs text-slate-500 mb-4">.branch([[cond1, A], [cond2, B], [cond3, C], [else, D]])</p>
+        
+        <div class="flex flex-col items-center py-4">
+          <div class="node">Get Score</div>
+          <svg class="h-5 w-5 text-blue-500"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          
+          <!-- Branch router node showing conditions -->
+          <div class="node control px-3 py-2 min-w-[160px]">
+            <div class="font-medium mb-1">Branch</div>
+            <div class="text-[9px] text-left space-y-0.5">
+              <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> score ≥ 90</div>
+              <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> score ≥ 70</div>
+              <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> score ≥ 50</div>
+              <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> else</div>
+            </div>
+          </div>
+          
+          <!-- Outputs fan out to downstream steps -->
+          <div class="flex items-start mt-3 gap-2">
+            <div class="flex flex-col items-center">
+              <svg class="h-5 w-5 text-green-500 rotate-[60deg]"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node text-[10px] px-2 py-1" style="background: #dcfce7; border-color: #22c55e;">Gold</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg class="h-5 w-5 text-blue-500 rotate-[30deg]"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node text-[10px] px-2 py-1" style="background: #dbeafe; border-color: #3b82f6;">Silver</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg class="h-5 w-5 text-yellow-500 -rotate-[30deg]"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node text-[10px] px-2 py-1" style="background: #fef9c3; border-color: #eab308;">Bronze</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg class="h-5 w-5 text-slate-400 -rotate-[60deg]"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node text-[10px] px-2 py-1">Log</div>
+            </div>
+          </div>
+        </div>
+        
+        <p class="text-xs text-slate-400 mt-4">Router lists conditions inside, outputs connect to downstream steps.</p>
+      </div>
+
+      <!-- Pattern 3: Parallel + Join + Continue -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-cyan-400 mb-2">Pattern 3: Parallel + Join + Branch Out</h3>
+        <p class="text-xs text-slate-500 mb-4">.parallel([A, B, C]).then(merge).branch([...])</p>
+        
+        <div class="flex flex-col items-center py-4">
+          <div class="node">Start</div>
+          <div class="bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded mt-2">⑃ FORK</div>
+          
+          <!-- Parallel branches -->
+          <div class="flex gap-4 mt-3">
+            <div class="flex flex-col items-center">
+              <svg class="h-4 w-4 text-cyan-400 rotate-45"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node parallel">Fetch A</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg class="h-4 w-4 text-cyan-400"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node parallel">Fetch B</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg class="h-4 w-4 text-cyan-400 -rotate-45"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node parallel">Fetch C</div>
+            </div>
+          </div>
+          
+          <!-- Join -->
+          <div class="flex gap-4 mt-2">
+            <svg class="h-4 w-4 text-cyan-400 -rotate-45"><path fill="currentColor" d="M12 4v12"/></svg>
+            <svg class="h-4 w-4 text-cyan-400"><path fill="currentColor" d="M12 4v12"/></svg>
+            <svg class="h-4 w-4 text-cyan-400 rotate-45"><path fill="currentColor" d="M12 4v12"/></svg>
+          </div>
+          <div class="bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded">⊕ JOIN</div>
+          
+          <!-- Merged result then branches out -->
+          <div class="node mt-2">Merge Results</div>
+          <svg class="h-4 w-4 text-blue-500 mt-1"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          
+          <!-- Outputs branching to subsequent nodes -->
+          <div class="flex gap-6 mt-2">
+            <div class="flex flex-col items-center">
+              <svg class="h-4 w-4 text-blue-400 rotate-45"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node text-xs">Save to DB</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg class="h-4 w-4 text-blue-400 -rotate-45"><path fill="currentColor" d="M12 4v12"/></svg>
+              <div class="node text-xs">Send Notification</div>
+            </div>
+          </div>
+        </div>
+        
+        <p class="text-xs text-slate-400 mt-4">Fork splits, join waits for all, then outputs can branch to subsequent steps.</p>
+      </div>
+
+      <!-- Pattern 4: Loop with Contained Nodes -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-violet-400 mb-2">Pattern 4: DoUntil Loop (Container)</h3>
+        <p class="text-xs text-slate-500 mb-4">.dountil([stepA, stepB], condition)</p>
+        
+        <div class="flex flex-col items-center py-4">
+          <div class="node">Start</div>
+          <svg class="h-6 w-6 text-blue-500"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          <div class="relative">
+            <!-- Container node that holds child nodes -->
+            <div class="border-2 border-violet-400 rounded-xl p-4 bg-violet-950/30 min-w-[180px]">
+              <div class="text-[10px] font-semibold text-violet-400 absolute -top-2.5 left-3 bg-slate-950 px-2 rounded">
+                🔄 DO UNTIL: status === 'success'
+              </div>
+              <!-- Child nodes inside the container -->
+              <div class="flex flex-col items-center gap-2 pt-2">
+                <div class="node loop">API Call</div>
+                <svg class="h-4 w-4 text-violet-300"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+                <div class="node loop">Check Response</div>
+              </div>
+              <!-- Condition badge -->
+              <div class="absolute -bottom-2.5 right-3 bg-violet-500 text-white text-[9px] px-2 py-0.5 rounded-full">
+                loops back if false
+              </div>
+            </div>
+            <!-- Loop arrow showing repeat -->
+            <svg class="absolute -right-10 top-1/2 -translate-y-1/2 h-16 w-10 text-violet-400" viewBox="0 0 40 64">
+              <path d="M4 12 C32 12 32 52 4 52" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
+              <path d="M4 52 L10 46 M4 52 L10 58" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+          </div>
+          <svg class="h-6 w-6 text-green-500 mt-2"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          <div class="text-[9px] text-green-400 -mt-1 mb-1">exits when true</div>
+          <div class="node">Continue</div>
+        </div>
+        
+        <p class="text-xs text-slate-400 mt-4">Container node holds all loop body steps. Loop arrow shows repeat path.</p>
+      </div>
+
+      <!-- Pattern 5: ForEach with Contained Nodes -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-pink-400 mb-2">Pattern 5: ForEach (Container)</h3>
+        <p class="text-xs text-slate-500 mb-4">.foreach([stepA, stepB], { concurrency: 3 })</p>
+        
+        <div class="flex flex-col items-center py-4">
+          <div class="node">Get Items</div>
+          <div class="flex items-center gap-1 mt-2">
+            <span class="text-[10px] text-pink-400">items[]</span>
+            <span class="text-[8px] text-slate-500">(15 items)</span>
+          </div>
+          <svg class="h-5 w-5 text-pink-400"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          
+          <!-- ForEach Container with child nodes inside -->
+          <div class="relative">
+            <div class="border-2 border-pink-400 rounded-xl p-4 bg-pink-950/30 min-w-[180px]">
+              <div class="text-[10px] font-semibold text-pink-400 absolute -top-2.5 left-3 bg-slate-950 px-2 rounded">
+                🔁 FOR EACH item
+              </div>
+              <div class="text-[9px] text-pink-300 absolute -top-2.5 right-3 bg-pink-900 px-2 rounded-full">
+                ×3 concurrent
+              </div>
+              <!-- Child nodes inside -->
+              <div class="flex flex-col items-center gap-2 pt-2">
+                <div class="node" style="background: #fdf2f8; border-color: #f9a8d4;">Validate Item</div>
+                <svg class="h-4 w-4 text-pink-300"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+                <div class="node" style="background: #fdf2f8; border-color: #f9a8d4;">Transform Item</div>
+                <svg class="h-4 w-4 text-pink-300"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+                <div class="node" style="background: #fdf2f8; border-color: #f9a8d4;">Save Item</div>
+              </div>
+            </div>
+          </div>
+          
+          <svg class="h-5 w-5 text-pink-400 mt-2"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          <div class="text-[10px] text-pink-400">results[]</div>
+          <div class="node mt-1">Aggregate Results</div>
+        </div>
+        
+        <p class="text-xs text-slate-400 mt-4">Container holds all iteration steps. Runs for each item in array.</p>
+      </div>
+
+      <!-- Pattern 6: Human-in-the-Loop -->
+      <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-rose-400 mb-2">Pattern 6: Human Approval</h3>
+        <p class="text-xs text-slate-500 mb-4">suspend() → wait → resume()</p>
+        
+        <div class="flex flex-col items-center py-4">
+          <div class="node">Generate Report</div>
+          <svg class="h-6 w-6 text-blue-500"><path fill="currentColor" d="M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
+          <div class="node" style="background: #fff1f2; border-color: #fda4af;">
+            <div class="flex items-center gap-2 justify-center">
+              <svg class="h-3 w-3 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Await Approval</span>
+            </div>
+          </div>
+          <div class="text-[10px] text-rose-400 my-2 px-2 py-1 border border-rose-400 border-dashed rounded">
+            ⏸ Paused for human
+          </div>
+          <div class="node">Send Report</div>
+        </div>
+        
+        <p class="text-xs text-slate-400 mt-4">Pause indicator shows workflow waiting for input.</p>
+      </div>
+
+      <!-- Pattern 7: Complex Nested -->
+      <div class="col-span-2 p-6 bg-slate-900/50 border border-slate-800 rounded-lg">
+        <h3 class="text-sm font-semibold text-white mb-2">Pattern 7: Complex (Nested Control Flow)</h3>
+        <p class="text-xs text-slate-500 mb-4">Parallel with branches inside - why canvas view shines</p>
+        
+        <div class="flex flex-col items-center py-4">
+          <div class="node">Input</div>
+          <div class="bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded mt-2">FORK</div>
+          
+          <div class="flex gap-8 mt-4">
+            <!-- Left parallel branch -->
+            <div class="flex flex-col items-center">
+              <div class="node parallel">Fetch Data A</div>
+            </div>
+            
+            <!-- Right parallel branch with nested branch -->
+            <div class="flex flex-col items-center">
+              <div class="border-2 border-dashed border-amber-300 rounded-lg p-3 bg-amber-50/10">
+                <div class="text-[10px] text-amber-400 mb-2">Branch: hasFeature?</div>
+                <div class="flex gap-4">
+                  <div class="node control text-xs">Feature A</div>
+                  <div class="node text-xs">Default</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded mt-4">JOIN</div>
+          <div class="node mt-2">Merge All</div>
+        </div>
+        
+        <p class="text-xs text-slate-400 mt-4">Canvas view handles nested complexity through spatial layout - branches inside parallel are clear.</p>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-8 p-4 bg-slate-900/50 border border-slate-800 rounded-lg">
+      <h3 class="text-sm font-semibold text-white mb-3">Node Color Legend</h3>
+      <div class="flex flex-wrap gap-4 text-xs">
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-white border-2 border-slate-200 rounded"></div>
+          <span class="text-slate-400">Default step</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-amber-100 border-2 border-amber-300 rounded"></div>
+          <span class="text-slate-400">Branch/conditional</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-cyan-100 border-2 border-cyan-300 rounded"></div>
+          <span class="text-slate-400">Parallel</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-violet-100 border-2 border-violet-300 rounded"></div>
+          <span class="text-slate-400">Loop</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-pink-100 border-2 border-pink-300 rounded"></div>
+          <span class="text-slate-400">ForEach</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-rose-100 border-2 border-rose-300 rounded"></div>
+          <span class="text-slate-400">Human-in-loop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
