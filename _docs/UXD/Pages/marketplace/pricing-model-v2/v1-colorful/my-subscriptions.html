@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Subscribed Agents - AGIPO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg-secondary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* Page Header */
+        .page-header {
+            max-width: 1400px;
+            margin: 3rem auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .header-left h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .browse-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .browse-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Stats Overview */
+        .stats-overview {
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.neutral {
+            color: var(--text-muted);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+
+        .subscriptions-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Subscription Card */
+        .subscription-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 2rem;
+            align-items: start;
+            transition: all 0.2s;
+        }
+
+        .subscription-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .agent-icon-large {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+        }
+
+        .subscription-info {
+            flex: 1;
+        }
+
+        .agent-name-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.trial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .plan-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .usage-section {
+            margin-top: 1.5rem;
+        }
+
+        .usage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .usage-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .usage-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .usage-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .usage-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .usage-fill.low {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+
+        .usage-fill.medium {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .usage-fill.high {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .usage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Billing Info */
+        .billing-info {
+            text-align: right;
+        }
+
+        .next-billing {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .billing-date {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .billing-amount {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .trial-ends {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: #92400e;
+        }
+
+        .trial-ends strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .btn-danger {
+            background: var(--bg);
+            color: var(--error);
+            border: 1px solid var(--border);
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+            border-color: var(--error);
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: var(--bg);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Upgrade Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text);
+        }
+
+        .tier-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .tier-option {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tier-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .tier-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .tier-name {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .tier-price {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .tier-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .tier-features li::before {
+            content: '• ';
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">agipo</div>
+            <div class="nav-links">
+                <a href="#">Workforce</a>
+                <a href="#" class="active">My Subscriptions</a>
+                <a href="#">Marketplace</a>
+                <a href="#">Profile</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>My Subscribed Agents</h1>
+                <p class="header-subtitle">Manage your agent subscriptions and track usage</p>
+            </div>
+            <a href="#" class="browse-btn">+ Browse Marketplace</a>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-label">Active Subscriptions</div>
+            <div class="stat-value">3</div>
+            <div class="stat-change positive">↑ 1 this month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Spend</div>
+            <div class="stat-value">$197</div>
+            <div class="stat-change neutral">per month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Workflow Runs</div>
+            <div class="stat-value">342</div>
+            <div class="stat-change positive">↑ 12% vs last month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Tool Calls</div>
+            <div class="stat-value">1.8K</div>
+            <div class="stat-change positive">↑ 8% vs last month</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="subscriptions-grid">
+            <!-- Subscription Card 1: PM Agent (Trial) -->
+            <div class="subscription-card">
+                <div class="agent-icon-large">🧭</div>
+
+                <div class="subscription-info">
+                    <div class="agent-name-row">
+                        <h2 class="agent-name">PM Agent</h2>
+                        <span class="status-badge trial">Free Trial</span>
+                    </div>
+                    <div class="plan-info">
+                        Professional Plan • $99/month after trial • by Sarah Chen
+                    </div>
+
+                    <div class="usage-section">
+                        <div class="usage-grid">
+                            <div>
+                                <div class="usage-header">
+                                    <span class="usage-label">Workflow Runs</span>
+                                    <span class="usage-value">45 / 500</span>
+                                </div>
+                                <div class="usage-bar">
+                                    <div class="usage-fill low" style="width: 9%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="usage-header">
+                                    <span class="usage-label">Tool Calls</span>
+                                    <span class="usage-value">234 / 2,500</span>
+                                </div>
+                                <div class="usage-bar">
+                                    <div class="usage-fill low" style="width: 9%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="billing-info">
+                    <div class="next-billing">Trial Ends</div>
+                    <div class="billing-date">Dec 15</div>
+                    <div class="billing-amount">5 days remaining</div>
+                    <div class="trial-ends">
+                        <strong>After trial:</strong>
+                        $99.00/month starting Dec 15, 2025
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="#" class="action-btn btn-primary">Open Agent</a>
+                    <button class="action-btn btn-secondary">View Details</button>
+                    <button class="action-btn btn-danger">Cancel Trial</button>
+                </div>
+            </div>
+
+            <!-- Subscription Card 2: Data Ops Agent (Active, High Usage) -->
+            <div class="subscription-card">
+                <div class="agent-icon-large" style="background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%);">📊</div>
+
+                <div class="subscription-info">
+                    <div class="agent-name-row">
+                        <h2 class="agent-name">Data Ops Agent</h2>
+                        <span class="status-badge active">Active</span>
+                    </div>
+                    <div class="plan-info">
+                        Professional Plan • $49/month • by Mike Torres
+                    </div>
+
+                    <div class="usage-section">
+                        <div class="usage-grid">
+                            <div>
+                                <div class="usage-header">
+                                    <span class="usage-label">Workflow Runs</span>
+                                    <span class="usage-value">438 / 500</span>
+                                </div>
+                                <div class="usage-bar">
+                                    <div class="usage-fill high" style="width: 88%;"></div>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--warning); margin-top: 0.5rem;">
+                                    ⚠️ Approaching quota limit
+                                </div>
+                            </div>
+                            <div>
+                                <div class="usage-header">
+                                    <span class="usage-label">Tool Calls</span>
+                                    <span class="usage-value">1,967 / 2,500</span>
+                                </div>
+                                <div class="usage-bar">
+                                    <div class="usage-fill medium" style="width: 79%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="billing-info">
+                    <div class="next-billing">Next Billing</div>
+                    <div class="billing-date">Dec 28</div>
+                    <div class="billing-amount">$49.00</div>
+                    <div class="trial-ends" style="background: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                        <strong>Consider upgrading</strong>
+                        You're at 88% of your quota. Upgrade to unlimited for $149/mo.
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="#" class="action-btn btn-primary">Open Agent</a>
+                    <button class="action-btn btn-secondary" onclick="document.getElementById('upgrade-modal').classList.add('active')">Upgrade Plan</button>
+                    <button class="action-btn btn-secondary">Manage</button>
+                </div>
+            </div>
+
+            <!-- Subscription Card 3: Content Agent (Active, Low Usage) -->
+            <div class="subscription-card">
+                <div class="agent-icon-large" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);">✍️</div>
+
+                <div class="subscription-info">
+                    <div class="agent-name-row">
+                        <h2 class="agent-name">Content Writer Agent</h2>
+                        <span class="status-badge active">Active</span>
+                    </div>
+                    <div class="plan-info">
+                        Starter Plan • $49/month • by Emma Rodriguez
+                    </div>
+
+                    <div class="usage-section">
+                        <div class="usage-grid">
+                            <div>
+                                <div class="usage-header">
+                                    <span class="usage-label">Workflow Runs</span>
+                                    <span class="usage-value">23 / 100</span>
+                                </div>
+                                <div class="usage-bar">
+                                    <div class="usage-fill low" style="width: 23%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="usage-header">
+                                    <span class="usage-label">Tool Calls</span>
+                                    <span class="usage-value">142 / 500</span>
+                                </div>
+                                <div class="usage-bar">
+                                    <div class="usage-fill low" style="width: 28%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="billing-info">
+                    <div class="next-billing">Next Billing</div>
+                    <div class="billing-date">Jan 5</div>
+                    <div class="billing-amount">$49.00</div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="#" class="action-btn btn-primary">Open Agent</a>
+                    <button class="action-btn btn-secondary">View Details</button>
+                    <button class="action-btn btn-danger">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div class="modal-overlay" id="upgrade-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Upgrade Data Ops Agent</h2>
+                <button class="close-btn" onclick="document.getElementById('upgrade-modal').classList.remove('active')">×</button>
+            </div>
+
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                You're currently on the Professional plan at 88% usage. Choose a new plan:
+            </p>
+
+            <div class="tier-options">
+                <div class="tier-option">
+                    <div class="tier-header">
+                        <div class="tier-name">Professional (Current)</div>
+                        <div class="tier-price">$49/mo</div>
+                    </div>
+                    <ul class="tier-features">
+                        <li>500 workflow runs per month</li>
+                        <li>2,500 tool calls included</li>
+                        <li>Priority support</li>
+                    </ul>
+                </div>
+
+                <div class="tier-option selected">
+                    <div class="tier-header">
+                        <div class="tier-name">Enterprise</div>
+                        <div class="tier-price">$149/mo</div>
+                    </div>
+                    <ul class="tier-features">
+                        <li>Unlimited workflow runs</li>
+                        <li>Unlimited tool calls</li>
+                        <li>Dedicated support</li>
+                        <li>Custom SLA</li>
+                    </ul>
+                    <div style="margin-top: 0.75rem; padding: 0.75rem; background: #eff6ff; border-radius: var(--radius); font-size: 0.75rem; color: var(--primary);">
+                        💡 Recommended: No more quota worries
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="document.getElementById('upgrade-modal').classList.remove('active')">Cancel</button>
+                <button class="btn-primary">Upgrade to Enterprise</button>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius); font-size: 0.75rem; color: var(--text-secondary);">
+                <strong>Prorated billing:</strong> You'll be charged $100 today (prorated for 20 days remaining).
+                Starting next billing cycle, you'll be charged $149/month.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

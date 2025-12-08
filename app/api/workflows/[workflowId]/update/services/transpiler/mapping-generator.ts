@@ -42,7 +42,8 @@ function generateSourceExpression(binding: FieldBinding): string {
 
     case "workflow-input":
       if (binding.workflowInputName) {
-        return `inputData.${binding.workflowInputName}`;
+        // Use bracket notation for workflow input names with spaces/special chars
+        return `inputData["${binding.workflowInputName}"]`;
       }
       return "undefined";
 

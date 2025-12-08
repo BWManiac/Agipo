@@ -102,7 +102,7 @@ function generateImports(context: TranspilerContext): string {
   ];
 
   if (context.usedImports.has("composio")) {
-    lines.push('import { composio } from "@/lib/composio";');
+    lines.push('import { getComposioClient } from "@/app/api/connections/services/composio";');
   }
 
   return lines.join("\n");

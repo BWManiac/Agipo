@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Dashboard - PM Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg-secondary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Page Header */
+        .page-header {
+            max-width: 1400px;
+            margin: 3rem auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .header-left {
+            display: flex;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .agent-icon-large {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+        }
+
+        .header-info h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .agent-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Revenue Cards */
+        .revenue-overview {
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .revenue-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .revenue-card.highlight {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+        }
+
+        .revenue-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .revenue-card.highlight .revenue-label {
+            opacity: 0.9;
+        }
+
+        .revenue-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .revenue-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .revenue-card.highlight .revenue-change {
+            opacity: 0.9;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Content Sections */
+        .section-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* Pricing Configuration */
+        .pricing-tiers {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tier-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .tier-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .tier-details {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tier-stats {
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .tier-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .tier-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .tier-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .tier-actions button {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Subscriber List */
+        .subscriber-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .subscriber-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+        }
+
+        .subscriber-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .subscriber-info h5 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .subscriber-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .usage-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .usage-bar-mini {
+            width: 60px;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .usage-fill-mini {
+            height: 100%;
+            background: var(--success);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Usage Analytics */
+        .usage-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .usage-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+        }
+
+        .usage-item-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .usage-item-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        /* Payout Schedule */
+        .payout-info {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid #10b981;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .payout-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        .payout-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .payout-date {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            padding: 0.75rem;
+            background: white;
+            border-radius: var(--radius);
+        }
+
+        /* Recommendations */
+        .recommendation-card {
+            padding: 1rem;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-card h5 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-card p {
+            font-size: 0.75rem;
+            color: #92400e;
+            line-height: 1.6;
+        }
+
+        /* Chart Placeholder */
+        .chart-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">agipo</div>
+            <div class="nav-tabs">
+                <a href="#" class="nav-tab active">Dashboard</a>
+                <a href="#" class="nav-tab">Analytics</a>
+                <a href="#" class="nav-tab">Subscribers</a>
+                <a href="#" class="nav-tab">Pricing</a>
+                <a href="#" class="nav-tab">Settings</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="agent-icon-large">🧭</div>
+                <div class="header-info">
+                    <h1>PM Agent</h1>
+                    <div class="status-row">
+                        <span class="status-badge">● Published</span>
+                        <span style="font-size: 0.875rem; color: var(--text-muted);">Last updated 2 days ago</span>
+                    </div>
+                    <div class="agent-meta">
+                        <span>⭐ 4.8 rating (234 reviews)</span>
+                        <span>500+ active subscribers</span>
+                        <span>Product Management</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary">Edit Agent</button>
+                <a href="#" class="btn btn-primary">View in Marketplace</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Overview -->
+    <div class="revenue-overview">
+        <div class="revenue-card highlight">
+            <div class="revenue-label">Total Revenue (This Month)</div>
+            <div class="revenue-value">$34,650</div>
+            <div class="revenue-change">↑ 12% vs last month</div>
+        </div>
+        <div class="revenue-card">
+            <div class="revenue-label" style="color: var(--text-muted);">Active Subscribers</div>
+            <div class="revenue-value" style="color: var(--text);">523</div>
+            <div class="revenue-change" style="color: var(--success);">↑ 47 this month</div>
+        </div>
+        <div class="revenue-card">
+            <div class="revenue-label" style="color: var(--text-muted);">Avg Revenue per User</div>
+            <div class="revenue-value" style="color: var(--text);">$66.25</div>
+            <div class="revenue-change" style="color: var(--text-muted);">vs $64.12 last month</div>
+        </div>
+        <div class="revenue-card">
+            <div class="revenue-label" style="color: var(--text-muted);">Trial Conversions</div>
+            <div class="revenue-value" style="color: var(--text);">78%</div>
+            <div class="revenue-change" style="color: var(--success);">↑ 5% vs last month</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Column -->
+        <div>
+            <!-- Pricing Tiers Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Pricing Tiers</h2>
+                    <button class="btn btn-secondary">Edit Pricing</button>
+                </div>
+
+                <div class="pricing-tiers">
+                    <!-- Starter Tier -->
+                    <div class="tier-card">
+                        <div class="tier-info">
+                            <h4>Starter - $29/month</h4>
+                            <div class="tier-details">
+                                • 100 workflow runs per month<br>
+                                • 500 tool calls included<br>
+                                • Email support<br>
+                                • Basic analytics
+                            </div>
+                        </div>
+                        <div class="tier-stats">
+                            <div class="tier-stat-label">Subscribers</div>
+                            <div class="tier-stat-value">127</div>
+                        </div>
+                        <div class="tier-actions">
+                            <button class="btn-secondary">Edit Tier</button>
+                        </div>
+                    </div>
+
+                    <!-- Professional Tier -->
+                    <div class="tier-card" style="border-color: var(--primary); background: #eff6ff;">
+                        <div class="tier-info">
+                            <h4>Professional - $99/month <span style="background: #fbbf24; color: white; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.625rem; margin-left: 0.5rem;">MOST POPULAR</span></h4>
+                            <div class="tier-details">
+                                • 500 workflow runs per month<br>
+                                • 2,500 tool calls included<br>
+                                • Priority support<br>
+                                • Advanced analytics<br>
+                                • Custom integrations
+                            </div>
+                        </div>
+                        <div class="tier-stats">
+                            <div class="tier-stat-label">Subscribers</div>
+                            <div class="tier-stat-value">348</div>
+                        </div>
+                        <div class="tier-actions">
+                            <button class="btn-secondary">Edit Tier</button>
+                        </div>
+                    </div>
+
+                    <!-- Enterprise Tier -->
+                    <div class="tier-card">
+                        <div class="tier-info">
+                            <h4>Enterprise - $299/month</h4>
+                            <div class="tier-details">
+                                • Unlimited workflow runs<br>
+                                • Unlimited tool calls<br>
+                                • Dedicated support & onboarding<br>
+                                • Custom SLA<br>
+                                • Team collaboration<br>
+                                • White-label option
+                            </div>
+                        </div>
+                        <div class="tier-stats">
+                            <div class="tier-stat-label">Subscribers</div>
+                            <div class="tier-stat-value">48</div>
+                        </div>
+                        <div class="tier-actions">
+                            <button class="btn-secondary">Edit Tier</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-card">
+                    <h5>💡 Pricing Recommendation</h5>
+                    <p>
+                        Your average user consumes 420 runs/month. Consider adding a $149 "Pro Plus" tier
+                        with 1,000 runs to capture users between Professional and Enterprise.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Revenue Trend</h2>
+                    <select style="padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.875rem;">
+                        <option>Last 30 days</option>
+                        <option>Last 90 days</option>
+                        <option>Last 12 months</option>
+                    </select>
+                </div>
+                <div class="chart-placeholder">
+                    📈 Revenue chart (Line graph showing monthly revenue growth)
+                </div>
+            </div>
+
+            <!-- Recent Subscribers -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Subscribers</h2>
+                    <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 600;">View all →</a>
+                </div>
+
+                <div class="subscriber-list">
+                    <div class="subscriber-row">
+                        <div class="subscriber-avatar">MJ</div>
+                        <div class="subscriber-info">
+                            <h5>Maya Johnson</h5>
+                            <div class="subscriber-meta">Professional • Subscribed 3 days ago</div>
+                        </div>
+                        <div class="usage-indicator">
+                            <div class="usage-bar-mini">
+                                <div class="usage-fill-mini" style="width: 23%;"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">23% used</span>
+                        </div>
+                        <div style="font-size: 0.875rem; font-weight: 600;">$99/mo</div>
+                    </div>
+
+                    <div class="subscriber-row">
+                        <div class="subscriber-avatar">RL</div>
+                        <div class="subscriber-info">
+                            <h5>Robert Lee</h5>
+                            <div class="subscriber-meta">Starter → Professional • Upgraded 5 days ago</div>
+                        </div>
+                        <div class="usage-indicator">
+                            <div class="usage-bar-mini">
+                                <div class="usage-fill-mini" style="width: 67%;"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">67% used</span>
+                        </div>
+                        <div style="font-size: 0.875rem; font-weight: 600;">$99/mo</div>
+                    </div>
+
+                    <div class="subscriber-row">
+                        <div class="subscriber-avatar">AK</div>
+                        <div class="subscriber-info">
+                            <h5>Aisha Khan</h5>
+                            <div class="subscriber-meta">Enterprise • Subscribed 1 week ago</div>
+                        </div>
+                        <div class="usage-indicator">
+                            <div class="usage-bar-mini">
+                                <div class="usage-fill-mini" style="width: 89%; background: var(--warning);"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">89% used</span>
+                        </div>
+                        <div style="font-size: 0.875rem; font-weight: 600;">$299/mo</div>
+                    </div>
+
+                    <div class="subscriber-row">
+                        <div class="subscriber-avatar">TC</div>
+                        <div class="subscriber-info">
+                            <h5>Tom Chen</h5>
+                            <div class="subscriber-meta">Professional • Trial ending in 2 days</div>
+                        </div>
+                        <div class="usage-indicator">
+                            <div class="usage-bar-mini">
+                                <div class="usage-fill-mini" style="width: 12%;"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">12% used</span>
+                        </div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--warning);">Trial</div>
+                    </div>
+
+                    <div class="subscriber-row">
+                        <div class="subscriber-avatar">EP</div>
+                        <div class="subscriber-info">
+                            <h5>Emma Patel</h5>
+                            <div class="subscriber-meta">Starter • Subscribed 2 weeks ago</div>
+                        </div>
+                        <div class="usage-indicator">
+                            <div class="usage-bar-mini">
+                                <div class="usage-fill-mini" style="width: 45%;"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">45% used</span>
+                        </div>
+                        <div style="font-size: 0.875rem; font-weight: 600;">$29/mo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <!-- Payout Info -->
+            <div class="section-card" style="padding: 0; overflow: hidden;">
+                <div class="payout-info">
+                    <div class="payout-amount">$24,255</div>
+                    <div class="payout-label">Next Payout (70% of revenue)</div>
+                    <div class="payout-date">
+                        <strong>December 31, 2025</strong><br>
+                        Direct deposit to •••• 4532
+                    </div>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.875rem;">
+                        <span style="color: var(--text-secondary);">Total Revenue</span>
+                        <span style="font-weight: 600;">$34,650</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.875rem;">
+                        <span style="color: var(--text-secondary);">Platform Fee (30%)</span>
+                        <span style="font-weight: 600; color: var(--error);">-$10,395</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.875rem;">
+                        <span style="color: var(--text); font-weight: 600;">Your Earnings</span>
+                        <span style="font-weight: 700; color: var(--success);">$24,255</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Analytics -->
+            <div class="section-card">
+                <div class="section-header" style="margin-bottom: 1rem;">
+                    <h2 class="section-title" style="font-size: 1rem;">Platform Costs</h2>
+                </div>
+                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    These are the infrastructure costs passed through to you from integrations and API calls.
+                </p>
+                <div class="usage-breakdown">
+                    <div class="usage-item">
+                        <div>
+                            <div class="usage-item-label">Composio API Calls</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Gmail, Linear, Slack</div>
+                        </div>
+                        <div class="usage-item-value">$847</div>
+                    </div>
+                    <div class="usage-item">
+                        <div>
+                            <div class="usage-item-label">LLM Costs</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">OpenAI API usage</div>
+                        </div>
+                        <div class="usage-item-value">$1,234</div>
+                    </div>
+                    <div class="usage-item">
+                        <div>
+                            <div class="usage-item-label">Storage</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Memory & logs</div>
+                        </div>
+                        <div class="usage-item-value">$23</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius); font-size: 0.75rem; color: var(--text-secondary);">
+                    <strong>Total Platform Costs:</strong> $2,104/month<br>
+                    <strong>Cost per Subscriber:</strong> $4.02/month<br>
+                    <strong>Profit Margin:</strong> 94%
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="section-card">
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 1rem;">Quick Actions</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <button class="btn btn-secondary" style="width: 100%; text-align: left;">📊 Download Revenue Report</button>
+                    <button class="btn btn-secondary" style="width: 100%; text-align: left;">💬 Message All Subscribers</button>
+                    <button class="btn btn-secondary" style="width: 100%; text-align: left;">📝 Update Agent Description</button>
+                    <button class="btn btn-secondary" style="width: 100%; text-align: left;">⚙️ Manage Integrations</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

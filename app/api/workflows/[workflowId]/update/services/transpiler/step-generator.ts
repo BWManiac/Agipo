@@ -43,12 +43,16 @@ export function generateStepCode(
  * Generates execute body for Composio tool steps.
  */
 function generateComposioExecuteBody(toolId: string, toolkitSlug: string): string {
-  return `const connections = runtimeContext.get("connections") as Record<string, string> | undefined;
+  return `const client = getComposioClient();
+    const connections = runtimeContext.get("connections") as Record<string, string> | undefined;
     const connectionId = connections?.["${toolkitSlug}"];
-    const result = await composio.executeAction(
+    const result = await client.tools.execute(
       "${toolId}",
-      inputData,
-      { connectedAccountId: connectionId }
+      {
+        arguments: inputData,
+        connectedAccountId: connectionId,
+        dangerouslySkipVersionCheck: true
+      }
     );
     if (!result.successful) {
       throw new Error(result.error || "Tool execution failed");

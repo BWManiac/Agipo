@@ -25,6 +25,11 @@ export {
   convertComposioSchemaToZod,
 } from "./composio-tools";
 
+// Re-export workflow tools functions
+export { 
+  getWorkflowToolExecutable,
+} from "./workflow-tools";
+
 // Import for unified function
 import { getCustomToolById } from "./custom-tools";
 import { getComposioToolById, isComposioToolId } from "./composio-tools";

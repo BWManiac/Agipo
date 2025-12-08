@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to PM Agent - Checkout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg-secondary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Checkout Container */
+        .checkout-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: -1;
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Main Checkout Form */
+        .checkout-main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .section-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .edit-link {
+            font-size: 0.875rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Selected Tier Display */
+        .selected-tier {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tier-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .tier-details {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .tier-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Integration Setup */
+        .integration-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .integration-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .integration-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .integration-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+        }
+
+        .integration-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .integration-status {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .connect-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .connect-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .connect-btn.connected {
+            background: var(--success);
+            cursor: default;
+        }
+
+        .connect-btn.connected::before {
+            content: '✓ ';
+        }
+
+        /* Payment Method */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .payment-option {
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-option.selected .radio {
+            border-color: var(--primary);
+        }
+
+        .payment-option.selected .radio::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .payment-icons {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 24px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        /* Card Form */
+        .card-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-input {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Order Summary Sidebar */
+        .order-summary {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .summary-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .agent-icon {
+            font-size: 2rem;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .agent-summary-info h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .agent-creator {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .summary-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-section:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .summary-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .total-row {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .total-row .summary-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .total-row .summary-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .trial-notice {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .trial-notice h4 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .trial-notice p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .quota-display {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .quota-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .quota-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .quota-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .complete-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1.5rem;
+        }
+
+        .complete-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .terms-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.5;
+            margin-top: 1rem;
+        }
+
+        .terms-text a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Money-back badge */
+        .guarantee-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+        }
+
+        .guarantee-badge svg {
+            width: 20px;
+            height: 20px;
+            color: var(--success);
+        }
+
+        .guarantee-text {
+            font-size: 0.75rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* Success State (hidden by default, shown after payment) */
+        .success-container {
+            display: none;
+            max-width: 600px;
+            margin: 5rem auto;
+            padding: 3rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .success-container h1 {
+            font-size: 1.875rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+        }
+
+        .success-container p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .next-steps {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .next-steps h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .next-steps ol {
+            padding-left: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .next-steps li {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .cta-buttons button {
+            flex: 1;
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">agipo</div>
+            <div class="secure-badge">
+                🔒 Secure Checkout
+            </div>
+        </nav>
+    </header>
+
+    <!-- Checkout Container -->
+    <div class="checkout-container">
+        <!-- Main Checkout Flow -->
+        <div class="checkout-main">
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-label">Select Plan</div>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Connect Integrations</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Get Started</div>
+                </div>
+            </div>
+
+            <!-- Selected Plan -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Your Plan</h2>
+                    <a href="#" class="edit-link">Change plan</a>
+                </div>
+                <div class="selected-tier">
+                    <div class="tier-info">
+                        <h4>Professional Plan</h4>
+                        <div class="tier-details">
+                            500 workflow runs/month • 2,500 tool calls • Priority support
+                        </div>
+                    </div>
+                    <div class="tier-price">$99/mo</div>
+                </div>
+            </div>
+
+            <!-- Integration Setup -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Connect Integrations</h2>
+                </div>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                    PM Agent needs access to these services to work. You can skip optional integrations and add them later.
+                </p>
+                <div class="integration-list">
+                    <div class="integration-item">
+                        <div class="integration-info">
+                            <div class="integration-icon"></div>
+                            <div>
+                                <div class="integration-name">Gmail</div>
+                                <div class="integration-status">Required • For stakeholder updates</div>
+                            </div>
+                        </div>
+                        <button class="connect-btn connected">Connected</button>
+                    </div>
+                    <div class="integration-item">
+                        <div class="integration-info">
+                            <div class="integration-icon"></div>
+                            <div>
+                                <div class="integration-name">Linear</div>
+                                <div class="integration-status">Required • For roadmap tracking</div>
+                            </div>
+                        </div>
+                        <button class="connect-btn">Connect</button>
+                    </div>
+                    <div class="integration-item">
+                        <div class="integration-info">
+                            <div class="integration-icon"></div>
+                            <div>
+                                <div class="integration-name">Notion</div>
+                                <div class="integration-status">Optional • For documentation sync</div>
+                            </div>
+                        </div>
+                        <button class="connect-btn">Connect</button>
+                    </div>
+                    <div class="integration-item">
+                        <div class="integration-info">
+                            <div class="integration-icon"></div>
+                            <div>
+                                <div class="integration-name">Slack</div>
+                                <div class="integration-status">Optional • For team notifications</div>
+                            </div>
+                        </div>
+                        <button class="connect-btn">Connect</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Payment Method</h2>
+                </div>
+
+                <div class="payment-methods">
+                    <div class="payment-option selected">
+                        <div class="radio"></div>
+                        <div>
+                            <div style="font-weight: 600;">Credit or Debit Card</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.125rem;">
+                                Visa, Mastercard, Amex, Discover
+                            </div>
+                        </div>
+                        <div class="payment-icons">
+                            <div class="card-icon"></div>
+                            <div class="card-icon"></div>
+                            <div class="card-icon"></div>
+                            <div class="card-icon"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-form">
+                    <div class="form-group">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-input" placeholder="1234 5678 9012 3456">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Expiration Date</label>
+                            <input type="text" class="form-input" placeholder="MM / YY">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CVV</label>
+                            <input type="text" class="form-input" placeholder="123">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cardholder Name</label>
+                        <input type="text" class="form-input" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Billing Zip Code</label>
+                        <input type="text" class="form-input" placeholder="94103">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <aside class="order-summary">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <div class="agent-icon">🧭</div>
+                    <div class="agent-summary-info">
+                        <h3>PM Agent</h3>
+                        <div class="agent-creator">by Sarah Chen</div>
+                    </div>
+                </div>
+
+                <div class="trial-notice">
+                    <h4>🎉 7-Day Free Trial</h4>
+                    <p>
+                        Your card will not be charged today. Your trial starts now and you can cancel anytime
+                        before Dec 15, 2025. After the trial, you'll be charged $99/month.
+                    </p>
+                </div>
+
+                <div class="summary-section">
+                    <h4 style="font-size: 0.875rem; font-weight: 700; margin-bottom: 1rem;">Plan Details</h4>
+                    <div class="quota-display">
+                        <div class="quota-item">
+                            <span>Workflow runs per month</span>
+                            <span class="quota-value">500</span>
+                        </div>
+                        <div class="quota-item">
+                            <span>Tool calls included</span>
+                            <span class="quota-value">2,500</span>
+                        </div>
+                        <div class="quota-item">
+                            <span>Est. daily usage</span>
+                            <span class="quota-value">~3 hours/day</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h4 style="font-size: 0.875rem; font-weight: 700; margin-bottom: 1rem;">Order Summary</h4>
+                    <div class="summary-row">
+                        <span class="summary-label">Professional Plan</span>
+                        <span class="summary-value">$99.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">7-Day Trial</span>
+                        <span class="summary-value" style="color: var(--success);">-$99.00</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span class="summary-label">Due Today</span>
+                        <span class="summary-value">$0.00</span>
+                    </div>
+                </div>
+
+                <div style="padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted);">
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>Starting Dec 15, 2025:</strong><br>
+                        $99.00/month until you cancel
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">
+                        Creator receives: $69.30 (70%)<br>
+                        Platform fee: $29.70 (30%)
+                    </div>
+                </div>
+
+                <button class="complete-btn">Start 7-Day Free Trial</button>
+
+                <div class="guarantee-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span class="guarantee-text">Cancel anytime during trial</span>
+                </div>
+
+                <div class="terms-text">
+                    By subscribing, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                    You can cancel your subscription at any time.
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Success State (shown after payment completes) -->
+    <div class="success-container">
+        <div class="success-icon">✓</div>
+        <h1>Welcome to PM Agent!</h1>
+        <p>
+            Your 7-day free trial has started. All integrations are connected and ready to use.
+            You can start using your agent right away.
+        </p>
+
+        <div class="next-steps">
+            <h3>What's Next?</h3>
+            <ol>
+                <li><strong>Chat with your agent</strong> - Ask it to generate your first stakeholder update</li>
+                <li><strong>Review your usage</strong> - Track workflow runs and tool calls in your dashboard</li>
+                <li><strong>Customize workflows</strong> - Adjust prompts and integrations to fit your needs</li>
+                <li><strong>Set up notifications</strong> - Get alerts when important tasks complete</li>
+            </ol>
+        </div>
+
+        <div class="cta-buttons">
+            <button class="btn-primary">Go to My Workforce</button>
+            <button class="btn-secondary">View Documentation</button>
+        </div>
+    </div>
+</body>
+</html>

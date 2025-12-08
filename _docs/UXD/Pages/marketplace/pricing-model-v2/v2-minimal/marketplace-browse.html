@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Marketplace - Agipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        accent: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        destructive: {
+                            DEFAULT: 'rgb(239 68 68)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        card: {
+                            DEFAULT: 'rgb(255 255 255)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-foreground">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4 flex-1 max-w-2xl">
+                    <h1 class="text-xl font-semibold">Agent Marketplace</h1>
+                    <div class="flex-1">
+                        <input
+                            type="text"
+                            placeholder="Search agents..."
+                            class="w-full h-9 px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button class="inline-flex items-center justify-center gap-2 h-9 px-4 py-2 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        My Subscriptions
+                    </button>
+                    <button class="inline-flex items-center justify-center gap-2 h-9 px-4 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-sm font-medium transition-all">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Left Sidebar: Filters -->
+            <div class="lg:col-span-1">
+                <div class="bg-card rounded-xl border p-6 space-y-6 sticky top-24">
+                    <div>
+                        <h3 class="text-sm font-semibold mb-3">Categories</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" checked />
+                                <span>All Agents</span>
+                                <span class="ml-auto text-xs text-muted-foreground">24</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>Product</span>
+                                <span class="ml-auto text-xs text-muted-foreground">8</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>Data & Analytics</span>
+                                <span class="ml-auto text-xs text-muted-foreground">5</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>Content & Marketing</span>
+                                <span class="ml-auto text-xs text-muted-foreground">6</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>Support</span>
+                                <span class="ml-auto text-xs text-muted-foreground">5</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t">
+                        <h3 class="text-sm font-semibold mb-3">Pricing</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>Free</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>Under $50/mo</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>$50-$100/mo</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>Over $100/mo</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t">
+                        <h3 class="text-sm font-semibold mb-3">Rating</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>★★★★★ 5 stars</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>★★★★☆ 4+ stars</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-primary">
+                                <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                                <span>★★★☆☆ 3+ stars</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="w-full h-9 px-4 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        Clear Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Content: Agent Grid -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Featured Section -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Featured Agents</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- PM Agent (Featured) -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex gap-3">
+                                        <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                            🧭
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold">PM Agent</h3>
+                                            <p class="text-xs text-muted-foreground">by Sarah Chen</p>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-amber-50 border-amber-600 text-amber-600">
+                                        Featured
+                                    </span>
+                                </div>
+
+                                <p class="text-sm text-muted-foreground line-clamp-2">
+                                    Synthesizes feedback, prioritizes roadmap items, and keeps delivery aligned with business goals.
+                                </p>
+
+                                <div class="flex items-center gap-4 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.8</span>
+                                    </div>
+                                    <div>500+ users</div>
+                                    <div class="ml-auto">
+                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
+                                            Product
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">From $29/mo</div>
+                                    <button class="inline-flex items-center justify-center h-8 px-4 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Ops Agent (Featured) -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex gap-3">
+                                        <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                            📊
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold">Data Ops Agent</h3>
+                                            <p class="text-xs text-muted-foreground">by Alex Kim</p>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-amber-50 border-amber-600 text-amber-600">
+                                        Featured
+                                    </span>
+                                </div>
+
+                                <p class="text-sm text-muted-foreground line-clamp-2">
+                                    Automates data pipelines, runs analytics workflows, and generates insights from complex datasets.
+                                </p>
+
+                                <div class="flex items-center gap-4 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.9</span>
+                                    </div>
+                                    <div>320+ users</div>
+                                    <div class="ml-auto">
+                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-secondary text-secondary-foreground">
+                                            Data
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">From $49/mo</div>
+                                    <button class="inline-flex items-center justify-center h-8 px-4 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Agents Section -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">All Agents (24)</h2>
+                        <select class="h-9 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option>Sort by: Popular</option>
+                            <option>Sort by: Newest</option>
+                            <option>Sort by: Price: Low to High</option>
+                            <option>Sort by: Price: High to Low</option>
+                            <option>Sort by: Rating</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Content Writer Agent -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-5 space-y-3">
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                        ✍️
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-sm">Content Agent</h3>
+                                        <p class="text-xs text-muted-foreground">by Maya Patel</p>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-muted-foreground line-clamp-2">
+                                    Creates blog posts, social content, and marketing copy with your brand voice.
+                                </p>
+
+                                <div class="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.7</span>
+                                    </div>
+                                    <div>280+ users</div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">$29/mo</div>
+                                    <button class="inline-flex items-center justify-center h-7 px-3 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Support Agent -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-5 space-y-3">
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                        🎧
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-sm">Support Agent</h3>
+                                        <p class="text-xs text-muted-foreground">by Jordan Lee</p>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-muted-foreground line-clamp-2">
+                                    Handles customer inquiries, routes tickets, and provides instant responses.
+                                </p>
+
+                                <div class="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.6</span>
+                                    </div>
+                                    <div>450+ users</div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">$49/mo</div>
+                                    <button class="inline-flex items-center justify-center h-7 px-3 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Research Agent -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-5 space-y-3">
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                        🔍
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-sm">Research Agent</h3>
+                                        <p class="text-xs text-muted-foreground">by Taylor Brooks</p>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-muted-foreground line-clamp-2">
+                                    Gathers competitive intelligence, market research, and industry insights.
+                                </p>
+
+                                <div class="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.8</span>
+                                    </div>
+                                    <div>190+ users</div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">$39/mo</div>
+                                    <button class="inline-flex items-center justify-center h-7 px-3 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sales Ops Agent -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-5 space-y-3">
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                        💼
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-sm">Sales Ops Agent</h3>
+                                        <p class="text-xs text-muted-foreground">by Chris Wong</p>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-muted-foreground line-clamp-2">
+                                    Manages CRM updates, lead scoring, and sales pipeline automation.
+                                </p>
+
+                                <div class="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.9</span>
+                                    </div>
+                                    <div>380+ users</div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">$79/mo</div>
+                                    <button class="inline-flex items-center justify-center h-7 px-3 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HR Assistant Agent -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-5 space-y-3">
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                        👥
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-sm">HR Assistant</h3>
+                                        <p class="text-xs text-muted-foreground">by Sam Rivera</p>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-muted-foreground line-clamp-2">
+                                    Automates onboarding, manages employee records, and handles HR workflows.
+                                </p>
+
+                                <div class="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.7</span>
+                                    </div>
+                                    <div>220+ users</div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">$59/mo</div>
+                                    <button class="inline-flex items-center justify-center h-7 px-3 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Code Review Agent -->
+                        <div class="bg-card rounded-xl border hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="p-5 space-y-3">
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                                        💻
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-sm">Code Review Agent</h3>
+                                        <p class="text-xs text-muted-foreground">by Alex Torres</p>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-muted-foreground line-clamp-2">
+                                    Reviews pull requests, suggests improvements, and enforces code standards.
+                                </p>
+
+                                <div class="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <div class="flex items-center gap-1">
+                                        <span>★</span>
+                                        <span class="font-semibold text-foreground">4.9</span>
+                                    </div>
+                                    <div>410+ users</div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2 border-t">
+                                    <div class="text-sm font-semibold">$69/mo</div>
+                                    <button class="inline-flex items-center justify-center h-7 px-3 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                        View
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center items-center gap-2 pt-6">
+                    <button class="inline-flex items-center justify-center w-9 h-9 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        ←
+                    </button>
+                    <button class="inline-flex items-center justify-center w-9 h-9 bg-primary text-primary-foreground rounded-md text-sm font-medium">
+                        1
+                    </button>
+                    <button class="inline-flex items-center justify-center w-9 h-9 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        2
+                    </button>
+                    <button class="inline-flex items-center justify-center w-9 h-9 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        3
+                    </button>
+                    <button class="inline-flex items-center justify-center w-9 h-9 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -35,13 +35,61 @@
       },
       "name": "Navigate to URL",
       "description": "SESSION FOUNDATION: Always start here - creates browser session and navigates to URL. WORKFLOW: Navigate() → FetchWebpage() → Analysis/Planning → AI Agent or Manual interactions → Verify PROVIDES: Live debugUrl for user, initial page snapshot, persistent session TIP: Always show debugUrl to user before proceeding"
+    },
+    {
+      "id": "vEIob8NhK-Cvh9Hq5Im11",
+      "type": "composio",
+      "position": {
+        "x": 0,
+        "y": 150
+      },
+      "listIndex": 1,
+      "toolId": "BROWSER_TOOL_FETCH_WEBPAGE",
+      "toolkitSlug": "browser_tool",
+      "toolkitName": "Browser tool",
+      "toolkitLogo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master//composio-logo.png",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "name": "Fetch Webpage Content",
+      "description": "DECISION BRAIN: Essential for analysis, planning, and information gathering. PRIMARY USES: Understand page state, locate elements, verify changes, plan next actions FALLBACK ROLE: When screenshot blocked/fails, use this diligently for information FORMAT: html=element discovery & coordinates | markdown=content analysis HYBRID WORKFLOW: Use for decisions → AI agent for precision clicking"
+    },
+    {
+      "id": "3qHrkky6fkTFw1iLsHJLt",
+      "type": "composio",
+      "position": {
+        "x": 0,
+        "y": 300
+      },
+      "listIndex": 2,
+      "toolId": "GMAIL_SEND_EMAIL",
+      "toolkitSlug": "gmail",
+      "toolkitName": "gmail-oxzcjt",
+      "toolkitLogo": "https://logos.composio.dev/api/gmail",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "name": "Send Email",
+      "description": "Sends an email via Gmail API using the authenticated user's Google profile display name. At least one of recipient_email, cc, or bcc must be provided. Atleast one of subject or body must be provided. Requires `is_html=True` if the body contains HTML and valid `s3key`, `mimetype`, `name` for any attachment."
     }
   ],
   "mappings": [],
   "controlFlow": {
     "type": "sequential",
     "order": [
-      "11IU9f9Xc4knMtwwJrnHi"
+      "11IU9f9Xc4knMtwwJrnHi",
+      "vEIob8NhK-Cvh9Hq5Im11",
+      "3qHrkky6fkTFw1iLsHJLt"
     ]
   },
   "connections": {},
@@ -52,6 +100,12 @@
       "key": "URL",
       "type": "string",
       "label": "URL",
+      "required": true
+    },
+    {
+      "key": "Email Address",
+      "type": "string",
+      "label": "Email Address",
       "required": true
     }
   ],
@@ -67,10 +121,47 @@
           "workflowInputName": "URL"
         }
       }
+    },
+    "vEIob8NhK-Cvh9Hq5Im11": {
+      "stepId": "vEIob8NhK-Cvh9Hq5Im11",
+      "inputBindings": {
+        "url": {
+          "targetStepId": "vEIob8NhK-Cvh9Hq5Im11",
+          "targetField": "url",
+          "sourceType": "step-output",
+          "sourceStepId": "11IU9f9Xc4knMtwwJrnHi",
+          "sourcePath": "data.navigatedUrl"
+        }
+      }
+    },
+    "3qHrkky6fkTFw1iLsHJLt": {
+      "stepId": "3qHrkky6fkTFw1iLsHJLt",
+      "inputBindings": {
+        "recipient_email": {
+          "targetStepId": "3qHrkky6fkTFw1iLsHJLt",
+          "targetField": "recipient_email",
+          "sourceType": "workflow-input",
+          "workflowInputName": "Email Address"
+        },
+        "body": {
+          "targetStepId": "3qHrkky6fkTFw1iLsHJLt",
+          "targetField": "body",
+          "sourceType": "step-output",
+          "sourceStepId": "vEIob8NhK-Cvh9Hq5Im11",
+          "sourcePath": "data.content"
+        },
+        "subject": {
+          "targetStepId": "3qHrkky6fkTFw1iLsHJLt",
+          "targetField": "subject",
+          "sourceType": "step-output",
+          "sourceStepId": "vEIob8NhK-Cvh9Hq5Im11",
+          "sourcePath": "data.url"
+        }
+      }
     }
   },
-  "createdAt": "2025-12-08T00:50:39.514Z",
-  "lastModified": "2025-12-08T00:50:39.613Z",
+  "createdAt": "2025-12-08T13:35:50.176Z",
+  "lastModified": "2025-12-08T13:35:50.197Z",
   "createdBy": "user",
   "published": false
 }

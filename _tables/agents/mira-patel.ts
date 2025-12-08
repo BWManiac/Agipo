@@ -22,6 +22,9 @@ export const miraPatelAgent: AgentConfig = {
     { toolId: "BROWSER_TOOL_FETCH_WEBPAGE", connectionId: "", toolkitSlug: "browser_tool" },
     { toolId: "GMAIL_SEND_DRAFT", connectionId: "ca_wudNUwXqrbtx", toolkitSlug: "gmail" },
   ],
+  workflowBindings: [
+    { workflowId: "wf-MSKSYrCZ-Tfc", connectionBindings: { "gmail": "ca_wudNUwXqrbtx" } },
+  ],
   quickPrompts: [
     "How confident are we in the onboarding launch?",
     "Summarise risks for the exec sync",

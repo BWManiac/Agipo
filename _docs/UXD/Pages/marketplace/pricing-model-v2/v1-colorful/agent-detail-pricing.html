@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM Agent by Sarah Chen - Agent Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg-secondary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb span {
+            color: var(--text-muted);
+        }
+
+        /* Hero Section */
+        .agent-hero {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 3rem 2rem;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .agent-avatar {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border);
+        }
+
+        .agent-title-group {
+            flex: 1;
+        }
+
+        .agent-title-group h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .creator-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .creator-info a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .badge.verified {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge.popular {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .agent-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 1.25rem;
+        }
+
+        .rating-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Pricing Section - Hero Right */
+        .pricing-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 120px;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .tier-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tier-option {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .tier-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .tier-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .tier-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .tier-name {
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: var(--text);
+        }
+
+        .tier-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tier-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .tier-price span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .tier-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tier-features li {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tier-features li::before {
+            content: '•';
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tier-recommendation {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            margin-top: 0.75rem;
+        }
+
+        .pricing-cta {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-cta:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .trial-notice {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-footer {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .content-section {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .capability-card {
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .capability-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .capability-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .integrations-list {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .integration-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .integration-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        /* Reviews Section */
+        .reviews-summary {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .rating-overview {
+            text-align: center;
+        }
+
+        .rating-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .rating-stars-large {
+            font-size: 1.5rem;
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-count {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .rating-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .rating-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .rating-bar-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            width: 60px;
+        }
+
+        .rating-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .rating-bar-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            width: 40px;
+            text-align: right;
+        }
+
+        .review-card {
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .reviewer-info {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .reviewer-details h5 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .reviewer-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .review-stars {
+            color: #fbbf24;
+            font-size: 0.875rem;
+        }
+
+        .review-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .helpful-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+        }
+
+        .helpful-btn:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Comparison Table */
+        .pricing-comparison {
+            margin-top: 3rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .comparison-table td {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .check-mark {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .x-mark {
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="breadcrumb">
+                <a href="#">← Marketplace</a>
+                <span>/</span>
+                <span>PM Agent</span>
+            </div>
+            <div>
+                <button class="pricing-cta" style="width: auto; padding: 0.5rem 1rem; font-size: 0.875rem;">
+                    Sign In
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="agent-hero">
+        <div class="hero-container">
+            <!-- Left Column: Agent Info -->
+            <div class="hero-left">
+                <div class="agent-header">
+                    <div class="agent-avatar">🧭</div>
+                    <div class="agent-title-group">
+                        <h1>PM Agent</h1>
+                        <div class="creator-info">
+                            by <a href="#">Sarah Chen</a>
+                        </div>
+                        <div class="badges">
+                            <span class="badge verified">✓ Verified Creator</span>
+                            <span class="badge popular">⭐ Popular</span>
+                            <span class="badge">Product Management</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="agent-description">
+                    Synthesizes feedback, prioritizes roadmap items, and keeps delivery aligned with business goals.
+                    This agent handles stakeholder communication, tracks launch readiness, and surfaces critical risks
+                    before they become blockers.
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="rating-display">
+                            <div class="stars">★★★★★</div>
+                        </div>
+                        <div class="stat-value">4.8</div>
+                        <div class="stat-label">Rating</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">500+</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">98%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">~3m</div>
+                        <div class="stat-label">Avg Runtime</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Pricing -->
+            <div class="pricing-card">
+                <h3>Choose Your Plan</h3>
+
+                <div class="tier-selector">
+                    <!-- Starter Tier -->
+                    <div class="tier-option">
+                        <div class="tier-header">
+                            <div class="tier-name">Starter</div>
+                        </div>
+                        <div class="tier-price">$29<span>/month</span></div>
+                        <ul class="tier-features">
+                            <li>100 workflow runs per month</li>
+                            <li>500 tool calls included</li>
+                            <li>Email support</li>
+                            <li>Basic analytics</li>
+                        </ul>
+                        <div class="tier-recommendation">
+                            💡 Best for individuals managing 1-2 projects
+                        </div>
+                    </div>
+
+                    <!-- Professional Tier (Most Popular) -->
+                    <div class="tier-option selected">
+                        <div class="tier-header">
+                            <div class="tier-name">Professional</div>
+                            <div class="tier-badge">Most Popular</div>
+                        </div>
+                        <div class="tier-price">$99<span>/month</span></div>
+                        <ul class="tier-features">
+                            <li>500 workflow runs per month</li>
+                            <li>2,500 tool calls included</li>
+                            <li>Priority support</li>
+                            <li>Advanced analytics</li>
+                            <li>Custom integrations</li>
+                        </ul>
+                        <div class="tier-recommendation">
+                            💡 Most users with 2-3 active projects choose Professional
+                        </div>
+                    </div>
+
+                    <!-- Enterprise Tier -->
+                    <div class="tier-option">
+                        <div class="tier-header">
+                            <div class="tier-name">Enterprise</div>
+                        </div>
+                        <div class="tier-price">$299<span>/month</span></div>
+                        <ul class="tier-features">
+                            <li>Unlimited workflow runs</li>
+                            <li>Unlimited tool calls</li>
+                            <li>Dedicated support & onboarding</li>
+                            <li>Custom SLA</li>
+                            <li>Team collaboration features</li>
+                            <li>White-label option</li>
+                        </ul>
+                        <div class="tier-recommendation">
+                            💡 For teams managing 5+ projects or high-volume usage
+                        </div>
+                    </div>
+                </div>
+
+                <button class="pricing-cta">Start 7-Day Free Trial</button>
+                <div class="trial-notice">
+                    No credit card required • Cancel anytime
+                </div>
+
+                <div class="pricing-footer">
+                    Platform fee: 30% • Creator receives 70% of subscription
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Capabilities Section -->
+        <section class="content-section">
+            <h2 class="section-title">What This Agent Can Do</h2>
+            <div class="capabilities-grid">
+                <div class="capability-card">
+                    <h4>📊 Weekly Voice of Customer Digest</h4>
+                    <p>Automatically aggregates customer feedback from support tickets, social media, and surveys into actionable insights for product planning.</p>
+                </div>
+                <div class="capability-card">
+                    <h4>🚀 Launch-Critical Risk Tracker</h4>
+                    <p>Monitors project dependencies, identifies blockers, and escalates risks before they impact launch timelines.</p>
+                </div>
+                <div class="capability-card">
+                    <h4>📝 Stakeholder Update Generation</h4>
+                    <p>Creates executive-ready status reports by synthesizing project metrics, team updates, and business impact data.</p>
+                </div>
+                <div class="capability-card">
+                    <h4>🎯 Roadmap Synthesis from Feedback</h4>
+                    <p>Analyzes customer requests, usage data, and market trends to recommend roadmap priorities aligned with business goals.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Integrations Required -->
+        <section class="content-section">
+            <h2 class="section-title">Integrations Used</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                This agent requires the following integrations. You'll connect them during setup.
+            </p>
+            <div class="integrations-list">
+                <div class="integration-badge">
+                    <div class="integration-icon"></div>
+                    <span>Gmail</span>
+                </div>
+                <div class="integration-badge">
+                    <div class="integration-icon"></div>
+                    <span>Linear</span>
+                </div>
+                <div class="integration-badge">
+                    <div class="integration-icon"></div>
+                    <span>Notion</span>
+                </div>
+                <div class="integration-badge">
+                    <div class="integration-icon"></div>
+                    <span>Slack</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="content-section">
+            <h2 class="section-title">Reviews (234)</h2>
+
+            <div class="reviews-summary">
+                <div class="rating-overview">
+                    <div class="rating-number">4.8</div>
+                    <div class="rating-stars-large">★★★★★</div>
+                    <div class="rating-count">234 reviews</div>
+                </div>
+
+                <div class="rating-bars">
+                    <div class="rating-bar-row">
+                        <div class="rating-bar-label">5 stars</div>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 85%;"></div>
+                        </div>
+                        <div class="rating-bar-count">199</div>
+                    </div>
+                    <div class="rating-bar-row">
+                        <div class="rating-bar-label">4 stars</div>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 10%;"></div>
+                        </div>
+                        <div class="rating-bar-count">23</div>
+                    </div>
+                    <div class="rating-bar-row">
+                        <div class="rating-bar-label">3 stars</div>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 3%;"></div>
+                        </div>
+                        <div class="rating-bar-count">7</div>
+                    </div>
+                    <div class="rating-bar-row">
+                        <div class="rating-bar-label">2 stars</div>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 1%;"></div>
+                        </div>
+                        <div class="rating-bar-count">3</div>
+                    </div>
+                    <div class="rating-bar-row">
+                        <div class="rating-bar-label">1 star</div>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 1%;"></div>
+                        </div>
+                        <div class="rating-bar-count">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Individual Reviews -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">MJ</div>
+                        <div class="reviewer-details">
+                            <h5>Maya Johnson</h5>
+                            <div class="reviewer-role">VP Product • Tech Startup</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                </div>
+                <p class="review-text">
+                    "This agent saves me 5+ hours per week on stakeholder updates and roadmap synthesis.
+                    The quality of insights from customer feedback analysis is impressive - it catches patterns
+                    I would have missed manually. Worth every penny for the Professional tier."
+                </p>
+                <div class="review-footer">
+                    <span>3 weeks ago</span>
+                    <button class="helpful-btn">👍 Helpful (24)</button>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">RL</div>
+                        <div class="reviewer-details">
+                            <h5>Robert Lee</h5>
+                            <div class="reviewer-role">Product Manager • Enterprise SaaS</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                </div>
+                <p class="review-text">
+                    "Started with Starter tier but quickly upgraded to Professional. The integration with Linear
+                    and Slack makes risk tracking seamless. Only minor issue was initial setup time for all
+                    integrations, but support was responsive."
+                </p>
+                <div class="review-footer">
+                    <span>1 month ago</span>
+                    <button class="helpful-btn">👍 Helpful (18)</button>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">AK</div>
+                        <div class="reviewer-details">
+                            <h5>Aisha Khan</h5>
+                            <div class="reviewer-role">Senior PM • Fintech</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★☆</div>
+                </div>
+                <p class="review-text">
+                    "Great for synthesizing feedback, though I wish it handled more complex prioritization frameworks.
+                    Still learning how to customize prompts for my specific workflow, but customer support has been
+                    excellent in helping me optimize."
+                </p>
+                <div class="review-footer">
+                    <span>2 months ago</span>
+                    <button class="helpful-btn">👍 Helpful (12)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Comparison -->
+        <section class="content-section pricing-comparison">
+            <h2 class="section-title">Compare Plans</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Starter ($29/mo)</th>
+                        <th>Professional ($99/mo)</th>
+                        <th>Enterprise ($299/mo)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Workflow runs per month</td>
+                        <td>100 runs</td>
+                        <td>500 runs</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Tool calls included</td>
+                        <td>500 calls</td>
+                        <td>2,500 calls</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Estimated daily usage</td>
+                        <td>~1 hour/day</td>
+                        <td>~3 hours/day</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Support response time</td>
+                        <td>48 hours</td>
+                        <td>24 hours</td>
+                        <td>4 hours + dedicated CSM</td>
+                    </tr>
+                    <tr>
+                        <td>Analytics & reporting</td>
+                        <td>Basic</td>
+                        <td>Advanced</td>
+                        <td>Custom dashboards</td>
+                    </tr>
+                    <tr>
+                        <td>Custom integrations</td>
+                        <td><span class="x-mark">✗</span></td>
+                        <td><span class="check-mark">✓</span></td>
+                        <td><span class="check-mark">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Team collaboration</td>
+                        <td><span class="x-mark">✗</span></td>
+                        <td><span class="x-mark">✗</span></td>
+                        <td><span class="check-mark">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>White-label option</td>
+                        <td><span class="x-mark">✗</span></td>
+                        <td><span class="x-mark">✗</span></td>
+                        <td><span class="check-mark">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Custom SLA</td>
+                        <td><span class="x-mark">✗</span></td>
+                        <td><span class="x-mark">✗</span></td>
+                        <td><span class="check-mark">✓</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</body>
+</html>

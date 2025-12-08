@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import type { AgentConfig, ConnectionToolBinding } from "@/_tables/types";
+import { useState, useEffect } from "react";
+import type { AgentConfig, ConnectionToolBinding, WorkflowBinding, WorkflowMetadata } from "@/_tables/types";
 import { useAgentDetails } from "../../hooks/useAgentDetails";
 import { ToolCard } from "../shared/ToolCard";
 import { WorkflowCard } from "../shared/WorkflowCard";
 import { ConnectionToolCard } from "../shared/ConnectionToolCard";
 import { ToolEditor } from "../../../ToolEditor";
 import { ConnectionToolEditorPanel } from "../../../ConnectionToolEditorPanel";
+import { WorkflowEditorPanel } from "../../../WorkflowEditorPanel";
 import { Link2 } from "lucide-react";
 import Link from "next/link";
 
@@ -15,12 +16,42 @@ interface CapabilitiesTabProps {
   agent: AgentConfig;
 }
 
-type ViewState = "list" | "connection-editor";
+type ViewState = "list" | "connection-editor" | "workflow-editor";
 
 export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
   const { tools, connectionBindings, workflows, isLoading } = useAgentDetails(agent);
   const [isCustomEditorOpen, setIsCustomEditorOpen] = useState(false);
   const [view, setView] = useState<ViewState>("list");
+  const [workflowBindings, setWorkflowBindings] = useState<WorkflowBinding[]>([]);
+  const [workflowMetadata, setWorkflowMetadata] = useState<WorkflowMetadata[]>([]);
+
+  // Fetch workflow bindings and metadata
+  useEffect(() => {
+    if (!agent.id) return;
+
+    const fetchWorkflowData = async () => {
+      try {
+        const [bindingsRes, availableRes] = await Promise.all([
+          fetch(`/api/workforce/${agent.id}/workflows`),
+          fetch(`/api/workforce/${agent.id}/workflows/available`),
+        ]);
+
+        if (bindingsRes.ok) {
+          const bindingsData = await bindingsRes.json();
+          setWorkflowBindings(bindingsData.bindings || []);
+        }
+
+        if (availableRes.ok) {
+          const availableData = await availableRes.json();
+          setWorkflowMetadata(availableData.workflows || []);
+        }
+      } catch (error) {
+        console.error("[CapabilitiesTab] Error fetching workflow data:", error);
+      }
+    };
+
+    fetchWorkflowData();
+  }, [agent.id]);
 
   const handleSaveCustomTools = async (toolIds: string[]) => {
     const response = await fetch(`/api/workforce/${agent.id}/tools/custom`, {
@@ -52,8 +83,38 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
     window.location.reload();
   };
 
+  const handleSaveWorkflows = async (bindings: WorkflowBinding[]) => {
+    const response = await fetch(`/api/workforce/${agent.id}/workflows`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bindings }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.details 
+        ? errorData.details.join("\n")
+        : errorData.error || "Failed to save workflows";
+      throw new Error(errorMessage);
+    }
+    
+    // Force a reload to refresh the workflows list
+    window.location.reload();
+  };
+
   if (isLoading) {
     return <div className="p-8 text-center text-gray-500">Loading capabilities...</div>;
+  }
+
+  // Workflow Editor - Full panel view
+  if (view === "workflow-editor") {
+    return (
+      <WorkflowEditorPanel
+        agent={agent}
+        onBack={() => setView("list")}
+        onSave={handleSaveWorkflows}
+      />
+    );
   }
 
   // Connection Tool Editor - Full panel view
@@ -146,14 +207,31 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
 
         {/* Workflows Section */}
         <div className="space-y-4">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Workflows</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {workflows.length === 0 ? (
-              <p className="text-sm text-gray-500 col-span-2 italic">No workflows assigned.</p>
-            ) : (
-              workflows.map((wf) => <WorkflowCard key={wf.id} workflow={wf} />)
-            )}
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              Workflows
+            </h3>
+            <button
+              onClick={() => setView("workflow-editor")}
+              className="px-3 py-1.5 bg-white border border-gray-200 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Manage
+            </button>
           </div>
+          {workflowBindings.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 p-6 text-center">
+              <p className="text-sm text-gray-500">No workflows assigned.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {workflowBindings.map((binding) => {
+                const workflow = workflowMetadata.find((w) => w.id === binding.workflowId);
+                return workflow ? (
+                  <WorkflowCard key={binding.workflowId} workflow={workflow} binding={binding} />
+                ) : null;
+              })}
+            </div>
+          )}
         </div>
       </div>
 

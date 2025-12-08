@@ -25,13 +25,14 @@ export type AgentConfig = {
   toolIds: string[];
   maxSteps?: number; // Optional: controls stopWhen for agent loop
   connectionToolBindings?: ConnectionToolBinding[]; // Optional: tools from connected accounts
+  workflowBindings?: WorkflowBinding[]; // Optional: workflows assigned to agent with connection bindings
   quickPrompts: string[];
   objectives: string[];
   guardrails: string[];
   highlight: string;
   lastActivity: string;
   metrics: Array<{ label: string; value: string }>;
-  assignedWorkflows: string[];
+  assignedWorkflows: string[]; // @deprecated - use workflowBindings instead
   capabilities: string[];
   insights: Array<{ title: string; detail: string; type: "question" | "opportunity" | "risk" }>;
   activities: Array<{ title: string; timestamp: string; summary: string; impact: string }>;
@@ -60,5 +61,27 @@ export type WorkflowSummary = {
   id: string;
   name: string;
   description: string;
+  lastModified?: string;
+};
+
+/**
+ * Represents a binding between an agent and a workflow.
+ * Stores the workflow ID and connection bindings for each required toolkit.
+ */
+export type WorkflowBinding = {
+  workflowId: string;
+  connectionBindings: Record<string, string>; // toolkitSlug → connectionId
+};
+
+/**
+ * Metadata about a workflow, extracted from transpiled workflow.ts files.
+ * Used for listing available workflows in the assignment UI.
+ */
+export type WorkflowMetadata = {
+  id: string;
+  name: string;
+  description?: string;
+  requiredConnections: string[]; // toolkit slugs like ["gmail", "slack"]
+  stepCount: number;
   lastModified?: string;
 };

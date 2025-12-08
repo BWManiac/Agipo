@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import type { AgentConfig, WorkflowSummary, ConnectionToolBinding } from "@/_tables/types";
-import { MOCK_TASKS, MOCK_JOBS, MOCK_TRIGGERS, MOCK_RECORDS, MOCK_WORKFLOWS } from "../data/mocks";
+import type { AgentConfig, WorkflowSummary, ConnectionToolBinding, WorkflowBinding } from "@/_tables/types";
+import { MOCK_TASKS, MOCK_JOBS, MOCK_TRIGGERS, MOCK_RECORDS } from "../data/mocks";
 
 /**
  * Normalizes tool ID by removing the "workflow-" prefix if present.
@@ -12,12 +12,14 @@ export const normalizeToolId = (id: string): string => {
 export function useAgentDetails(agent: AgentConfig | null) {
   const [tools, setTools] = useState<WorkflowSummary[]>([]);
   const [connectionBindings, setConnectionBindings] = useState<ConnectionToolBinding[]>([]);
+  const [workflows, setWorkflows] = useState<WorkflowBinding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!agent) {
       setTools([]);
       setConnectionBindings([]);
+      setWorkflows([]);
       setIsLoading(false);
       return;
     }
@@ -25,10 +27,11 @@ export function useAgentDetails(agent: AgentConfig | null) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch custom tools and connection bindings in parallel
-        const [toolsResponse, bindingsResponse] = await Promise.all([
+        // Fetch custom tools, connection bindings, and workflow bindings in parallel
+        const [toolsResponse, bindingsResponse, workflowsResponse] = await Promise.all([
           fetch("/api/tools/list"),
           fetch(`/api/workforce/${agent.id}/tools/connection`),
+          fetch(`/api/workforce/${agent.id}/workflows`),
         ]);
 
         // Process custom tools
@@ -51,10 +54,19 @@ export function useAgentDetails(agent: AgentConfig | null) {
         } else {
           setConnectionBindings([]);
         }
+
+        // Process workflow bindings
+        if (workflowsResponse.ok) {
+          const workflowsData = await workflowsResponse.json();
+          setWorkflows(workflowsData.bindings || []);
+        } else {
+          setWorkflows([]);
+        }
       } catch (error) {
         console.error("[useAgentDetails] Error loading data:", error);
         setTools([]);
         setConnectionBindings([]);
+        setWorkflows([]);
       } finally {
         setIsLoading(false);
       }
@@ -66,7 +78,7 @@ export function useAgentDetails(agent: AgentConfig | null) {
   return {
     tools,
     connectionBindings,
-    workflows: MOCK_WORKFLOWS,
+    workflows,
     tasks: MOCK_TASKS,
     jobs: MOCK_JOBS,
     triggers: MOCK_TRIGGERS,

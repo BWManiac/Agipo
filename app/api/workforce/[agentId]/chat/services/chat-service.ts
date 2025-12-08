@@ -10,6 +10,7 @@ import type { Tool } from "ai";
 import type { AgentConfig } from "@/_tables/types";
 import { getAgentById } from "@/_tables/agents";
 import { getExecutableToolById, getConnectionToolExecutable } from "@/app/api/tools/services";
+import { getWorkflowToolExecutable } from "@/app/api/tools/services/workflow-tools";
 import { getAgentMemory } from "./memory";
 
 // ============================================================================
@@ -91,6 +92,19 @@ export async function buildToolMap(
       continue;
     }
     toolMap[binding.toolId] = toolDef.run;
+  }
+
+  // Load workflow tools
+  const workflowBindings = agentConfig.workflowBindings || [];
+  for (const binding of workflowBindings) {
+    const toolDef = await getWorkflowToolExecutable(userId, binding);
+    if (!toolDef) {
+      console.warn(`[ChatService] Workflow tool not found: ${binding.workflowId}; skipping.`);
+      continue;
+    }
+    // Extract .run property (same pattern as connection tools)
+    toolMap[toolDef.id] = toolDef.run;
+    console.log(`[ChatService] Loaded workflow tool: ${toolDef.id}`);
   }
   
   console.log(`[ChatService] Loaded ${Object.keys(toolMap).length} tools: ${Object.keys(toolMap).join(", ") || "none"}`);

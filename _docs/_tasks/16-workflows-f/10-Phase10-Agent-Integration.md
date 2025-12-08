@@ -1,9 +1,23 @@
 # Phase 10: Agent Integration
 
 **Status:** 📋 Planned  
-**Depends On:** Phase 9 (Workflow Inputs Enhancement)  
+**Depends On:** Phase 9 (Workflow Inputs Enhancement), Phase 8 Transpiler Fixes (Prerequisites)  
 **Started:** TBD  
 **Completed:** TBD
+
+---
+
+## Prerequisites
+
+**Critical:** Before implementing Phase 10, the following transpiler fixes must be completed:
+
+| Issue | File | Fix Required | Why |
+|-------|------|--------------|-----|
+| **Input name sanitization** | `app/api/workflows/[workflowId]/update/services/transpiler/mapping-generator.ts` | Line 45: Use bracket notation for workflow input names with spaces/special chars | Prevents runtime errors when accessing `inputData["Email Address"]` instead of invalid `inputData.Email Address` |
+| **Composio import path** | `app/api/workflows/[workflowId]/update/services/transpiler/index.ts` | Line 105: Change import from `@/lib/composio` to `@/app/api/connections/services/composio` | File `@/lib/composio` doesn't exist. Correct path is `@/app/api/connections/services/composio` |
+| **Composio API call** | `app/api/workflows/[workflowId]/update/services/transpiler/step-generator.ts` | Lines 48-51: Generate `const client = getComposioClient(); await client.tools.execute(...)` instead of `composio.executeAction()` | Composio client uses `client.tools.execute()` API, not `composio.executeAction()` |
+
+**Note:** These fixes ensure generated `workflow.ts` files are executable and won't cause runtime errors when agents invoke workflows.
 
 ---
 
@@ -40,20 +54,48 @@ After this phase:
 
 ### Overall File Impact
 
+#### Types
+
 | File | Action | Purpose | Part |
 |------|--------|---------|------|
-| `_tables/types.ts` | Modify | Add `WorkflowBinding` type, update `AgentConfig` | A |
-| `app/api/workflows-f/services/workflow-loader.ts` | Create | List/load workflows from `_tables/workflows-f/` | A |
-| `app/api/workforce/[agentId]/workflows/route.ts` | Create | GET/POST workflow bindings for an agent | B |
-| `app/api/workforce/[agentId]/workflows/available/route.ts` | Create | GET all available workflows | B |
-| `app/api/workforce/services/agent-config.ts` | Modify | Add workflow binding CRUD functions | B |
-| `app/(pages)/workforce/components/WorkflowEditorPanel.tsx` | Create | Main panel for assigning workflows | C |
-| `app/(pages)/workforce/components/WorkflowCard.tsx` | Create | Workflow card with status indicator | C |
-| `app/(pages)/workforce/components/WorkflowConnectionSelector.tsx` | Create | Dropdown for binding connections | C |
-| `app/(pages)/workforce/components/agent-modal/hooks/useWorkflowAssignment.ts` | Create | Hook for workflow assignment data | C |
-| `app/(pages)/workforce/components/agent-modal/components/tabs/CapabilitiesTab.tsx` | Modify | Add workflow-editor view, show real data | D |
-| `app/api/tools/services/workflow-tools.ts` | Create | Wrap workflow as executable tool (stretch) | E |
-| `app/api/workforce/[agentId]/chat/services/chat-service.ts` | Modify | Add workflow tools to agent (stretch) | E |
+| `_tables/types.ts` | Modify | Add `WorkflowBinding` type definition and update `AgentConfig` to include `workflowBindings` field, replacing deprecated `assignedWorkflows` | A |
+
+#### Backend / Services
+
+| File | Action | Purpose | Part |
+|------|--------|---------|------|
+| `app/api/workflows/services/workflow-loader.ts` | Create | Service for listing, loading, and validating workflows from `_tables/workflows/`. Enables dynamic loading of transpiled workflows and metadata extraction for the assignment UI | A |
+| `app/api/workforce/services/agent-config.ts` | Modify | Add CRUD functions for workflow bindings (`getWorkflowBindings`, `updateWorkflowBindings`). Enables persistence of workflow assignments per agent | B |
+
+#### Backend / API
+
+| File | Action | Purpose | Part |
+|------|--------|---------|------|
+| `app/api/workforce/[agentId]/workflows/route.ts` | Create | GET/POST endpoint for managing an agent's workflow bindings. Returns current bindings and persists new assignments | B |
+| `app/api/workforce/[agentId]/workflows/available/route.ts` | Create | GET endpoint returning all available (transpiled) workflows. Powers the workflow selection UI in WorkflowEditorPanel | B |
+| `app/api/tools/services/workflow-tools.ts` | Create | Service wrapping workflows as executable tools for agent chat. Enables agents to invoke assigned workflows during conversations (stretch) | E |
+
+#### Frontend / State
+
+| File | Action | Purpose | Part |
+|------|--------|---------|------|
+| `app/(pages)/workforce/components/agent-modal/hooks/useWorkflowAssignment.ts` | Create | Hook for fetching and managing workflow assignment data (available workflows, user connections, current bindings). Provides data layer for WorkflowEditorPanel | C |
+
+#### Frontend / Components
+
+| File | Action | Purpose | Part |
+|------|--------|---------|------|
+| `app/(pages)/workforce/components/WorkflowEditorPanel.tsx` | Create | Main full-screen panel for assigning workflows to agents. Follows ConnectionToolEditorPanel pattern: header with back button, scrollable content, footer actions. Allows checkbox selection and connection binding | C |
+| `app/(pages)/workforce/components/agent-modal/components/shared/WorkflowCard.tsx` | Modify | Update existing WorkflowCard component to display workflow status (Ready/Needs Setup) based on connection bindings. Shows in Capabilities tab list view | C |
+| `app/(pages)/workforce/components/WorkflowConnectionSelector.tsx` | Create | Dropdown component for selecting user connections per toolkit requirement. Displays toolkit name, connection options, and "Add connection" link if none available | C |
+| `app/(pages)/workforce/components/agent-modal/components/tabs/CapabilitiesTab.tsx` | Modify | Add "workflow-editor" view state, integrate WorkflowEditorPanel, replace MOCK_WORKFLOWS with real data fetching. Add "Manage" button to Workflows section matching Connection Tools pattern | D |
+| `app/(pages)/workforce/components/agent-modal/hooks/useAgentDetails.ts` | Modify | Add workflow bindings fetching to replace MOCK_WORKFLOWS. Integrate real API calls for workflow assignment data | D |
+
+#### Backend / Services (Stretch)
+
+| File | Action | Purpose | Part |
+|------|--------|---------|------|
+| `app/api/workforce/[agentId]/chat/services/chat-service.ts` | Modify | Add workflow tools to agent's tool map during chat initialization. Enables agents to see and invoke assigned workflows as tools | E |
 
 ### Overall Acceptance Criteria
 
@@ -114,53 +156,84 @@ Add the data types for workflow bindings and create the service for loading work
 
 | File | Action | Purpose | Lines |
 |------|--------|---------|-------|
-| `_tables/types.ts` | Modify | Add `WorkflowBinding`, update `AgentConfig` | +20 |
-| `app/api/workflows-f/services/workflow-loader.ts` | Create | List/load/validate workflows | ~120 |
+| `_tables/types.ts` | Modify | Add `WorkflowBinding` type, add `WorkflowMetadata` type, update `AgentConfig` to replace `assignedWorkflows` with `workflowBindings` | +30 |
+| `app/api/workflows/services/workflow-loader.ts` | Create | List/load/validate workflows from `_tables/workflows/` with dynamic import pattern | ~150 |
 
 ### Pseudocode
 
 #### `_tables/types.ts` (additions)
 
 ```
-WorkflowBinding
-├── workflowId: string
-└── connectionBindings: Record<string, string>  // toolkitSlug → connectionId
+// NEW: WorkflowBinding type
+export type WorkflowBinding = {
+  workflowId: string;
+  connectionBindings: Record<string, string>;  // toolkitSlug → connectionId
+};
 
-AgentConfig (update)
+// NEW: WorkflowMetadata type (returned by workflow-loader)
+export type WorkflowMetadata = {
+  id: string;
+  name: string;
+  description?: string;
+  requiredConnections: string[];  // toolkit slugs like ["gmail", "slack"]
+  stepCount: number;
+  lastModified?: string;
+};
+
+// AgentConfig (update)
 ├── ... existing fields ...
 ├── connectionToolBindings?: ConnectionToolBinding[]
-└── workflowBindings?: WorkflowBinding[]  // NEW
+├── assignedWorkflows: string[]  // DEPRECATED - remove in favor of workflowBindings
+└── workflowBindings?: WorkflowBinding[]  // NEW - replaces assignedWorkflows
 ```
 
-#### `app/api/workflows-f/services/workflow-loader.ts`
+#### `app/api/workflows/services/workflow-loader.ts`
 
 ```
+import fs from "fs/promises";
+import path from "path";
+import type { WorkflowMetadata } from "@/_tables/types";
+
 listAvailableWorkflows(): Promise<WorkflowMetadata[]>
-├── Scan _tables/workflows-f/*/
+├── Scan _tables/workflows/*/
 ├── For each folder:
-│   ├── Check workflow.ts exists
-│   ├── If not: Skip
-│   ├── Dynamic import workflow.ts
-│   └── Extract workflowMetadata export
-└── Return sorted by lastModified
+│   ├── Check if workflow.ts exists
+│   ├── If not: Skip (not transpiled)
+│   ├── Build full path: _tables/workflows/{id}/workflow.ts
+│   ├── Try dynamic import:
+│   │   ├── const module = await import(fullPath)
+│   │   ├── If module.workflowMetadata exists:
+│   │   │   └── Extract metadata
+│   │   └── Else: Fallback to workflow.json for basic info
+│   └── Continue to next folder
+├── Sort by lastModified (descending)
+└── Return WorkflowMetadata[]
 
 getWorkflowMetadata(workflowId: string): Promise<WorkflowMetadata | null>
-├── Build path: _tables/workflows-f/{id}/workflow.ts
-├── If not exists: Return null
-├── Dynamic import
-└── Return workflowMetadata export
+├── Build path: _tables/workflows/{workflowId}/workflow.ts
+├── If file doesn't exist: Return null
+├── Try dynamic import:
+│   ├── const module = await import(path)
+│   └── If module.workflowMetadata exists:
+│       └── Return module.workflowMetadata
+├── Fallback: Read workflow.json and construct metadata
+└── Return WorkflowMetadata or null
 
 getWorkflowExecutable(workflowId: string): Promise<MastraWorkflow | null>
-├── Build path
-├── If not exists: Return null
-├── Dynamic import
-└── Return default workflow export
+├── Build path: _tables/workflows/{workflowId}/workflow.ts
+├── If file doesn't exist: Return null
+├── Dynamic import: const module = await import(path)
+├── Return module.default (the exported workflow)
+└── Handle import errors gracefully
 
 validateWorkflowBinding(binding: WorkflowBinding): Promise<ValidationResult>
-├── Check workflow exists
-├── Get requiredConnections from metadata
-├── Check all required connections are bound
-└── Return { valid, errors }
+├── Get workflow metadata via getWorkflowMetadata(binding.workflowId)
+├── If metadata is null: Return { valid: false, errors: ["Workflow not found"] }
+├── Get requiredConnections from metadata.requiredConnections
+├── For each required connection:
+│   ├── Check if binding.connectionBindings[toolkit] exists
+│   └── If missing: Add to errors array
+├── Return { valid: errors.length === 0, errors }
 ```
 
 ### Acceptance Criteria
@@ -176,11 +249,12 @@ validateWorkflowBinding(binding: WorkflowBinding): Promise<ValidationResult>
 
 ```
 1. System calls listAvailableWorkflows()
-2. Scans _tables/workflows-f/
-3. Finds: wf-abc123/, wf-xyz789/
-4. For wf-abc123: workflow.ts exists → load metadata
-5. For wf-xyz789: only workflow.json → skip
-6. Returns [{ id: "wf-abc123", name: "Email Digest", ... }]
+2. Scans _tables/workflows/ directory
+3. Finds: wf-abc123/, wf-xyz789/, wf-def456/
+4. For wf-abc123: workflow.ts exists → dynamic import → extract workflowMetadata
+5. For wf-xyz789: only workflow.json exists → skip (not transpiled)
+6. For wf-def456: workflow.ts exists but no metadata export → fallback to workflow.json
+7. Returns sorted array: [{ id: "wf-abc123", name: "Email Digest", requiredConnections: ["gmail"], ... }, ...]
 ```
 
 ---
@@ -229,13 +303,17 @@ GET /api/workforce/[agentId]/workflows/available
 
 ```
 getWorkflowBindings(agentId: string): WorkflowBinding[]
-├── Load agent config
-└── Return config.workflowBindings || []
+├── Load agent config via getAgentById(agentId)
+├── Return config.workflowBindings || []
+└── Handle missing agent gracefully
 
-updateWorkflowBindings(agentId: string, bindings: WorkflowBinding[]): void
-├── Load agent config
-├── config.workflowBindings = bindings
-└── Write config
+updateWorkflowBindings(agentId: string, bindings: WorkflowBinding[]): Promise<void>
+├── Get agent filename via getAgentFilename(agentId)
+├── Read agent config file from _tables/agents/{filename}.ts
+├── Validate each binding via validateWorkflowBinding()
+├── Update config.workflowBindings field (remove deprecated assignedWorkflows if present)
+├── Write updated config back to file
+└── Handle file write errors
 ```
 
 ### Acceptance Criteria
@@ -265,46 +343,125 @@ updateWorkflowBindings(agentId: string, bindings: WorkflowBinding[]): void
 
 ### Goal
 
-Build the UI for assigning workflows and binding connections.
+Build the UI for assigning workflows and binding connections, following the ConnectionToolEditorPanel pattern.
+
+### UI Pattern Specification
+
+**Based on ConnectionToolEditorPanel structure:**
+- **Layout**: Full-screen panel (not modal), flex column with `overflow-hidden`
+- **Header**: Fixed height, white background, border-bottom, contains back button (ChevronLeft icon) and title/description
+- **Search** (optional): Fixed height, white background, border-bottom, only shown if workflows exist
+- **Content**: `flex-1 overflow-y-auto` scrollable area with padding, contains workflow list
+- **Footer**: Fixed height, white background, border-top, contains Cancel and Save buttons
+
+**Workflow Expansion Behavior:**
+- Workflows are **collapsed by default**
+- Checkbox controls assignment (checked = assigned)
+- **When checked**: Workflow row expands to show connection selectors for each `requiredConnection`
+- **When unchecked**: Workflow row collapses, binding is removed
+- Status badge (Ready/Needs Setup) shown next to workflow name
+
+**Status Logic:**
+- **✅ Ready**: All `requiredConnections` have a bound connectionId in `binding.connectionBindings`
+- **⚠️ Needs Setup**: One or more `requiredConnections` are missing bindings
+- Badge shown inline with workflow name in collapsed state
 
 ### Files
 
 | File | Action | Purpose | Lines |
 |------|--------|---------|-------|
-| `app/(pages)/workforce/components/WorkflowEditorPanel.tsx` | Create | Main assignment panel | ~250 |
-| `app/(pages)/workforce/components/WorkflowCard.tsx` | Create | Workflow card with status | ~80 |
-| `app/(pages)/workforce/components/WorkflowConnectionSelector.tsx` | Create | Connection dropdown | ~100 |
-| `app/(pages)/workforce/components/agent-modal/hooks/useWorkflowAssignment.ts` | Create | Data fetching hook | ~100 |
+| `app/(pages)/workforce/components/WorkflowEditorPanel.tsx` | Create | Main assignment panel following ConnectionToolEditorPanel pattern | ~300 |
+| `app/(pages)/workforce/components/agent-modal/components/shared/WorkflowCard.tsx` | Modify | Update existing WorkflowCard to show status badge based on binding completeness | +40 |
+| `app/(pages)/workforce/components/WorkflowConnectionSelector.tsx` | Create | Dropdown component for selecting connections per toolkit requirement | ~120 |
+| `app/(pages)/workforce/components/agent-modal/hooks/useWorkflowAssignment.ts` | Create | Hook for fetching available workflows, user connections, and current bindings | ~120 |
 
 ### Pseudocode
+
+#### `useWorkflowAssignment.ts`
+
+```
+useWorkflowAssignment(agentId: string)
+├── State:
+│   ├── availableWorkflows: WorkflowMetadata[]
+│   ├── userConnections: Connection[]  // From listConnections(userId)
+│   ├── currentBindings: WorkflowBinding[]
+│   └── isLoading: boolean
+│
+├── useEffect on mount:
+│   ├── Fetch GET /api/workforce/{agentId}/workflows/available
+│   ├── Fetch GET /api/workforce/{agentId}/workflows
+│   ├── Fetch GET /api/connections/list (or use listConnections service)
+│   └── Set state
+│
+└── Return: { availableWorkflows, userConnections, currentBindings, isLoading }
+
+// Helper: Group connections by toolkit
+groupConnectionsByToolkit(connections: Connection[]): Map<toolkitSlug, Connection[]>
+```
 
 #### `WorkflowEditorPanel.tsx`
 
 ```
 WorkflowEditorPanel({ agent, onBack, onSave })
+├── Use useWorkflowAssignment(agent.id) hook
 ├── State:
-│   ├── availableWorkflows: WorkflowMetadata[]
-│   ├── assignedBindings: Map<workflowId, WorkflowBinding>
-│   └── userConnections: Map<toolkitSlug, Connection[]>
+│   ├── selectedBindings: Map<workflowId, WorkflowBinding>  // Local edits
+│   ├── expandedWorkflows: Set<workflowId>  // UI state for expansion
+│   └── isSaving: boolean
 │
-├── Load data on mount:
-│   ├── GET /workflows/available
-│   ├── GET /workflows (current bindings)
-│   └── GET user's connections
+├── Initialize selectedBindings from currentBindings on mount
 │
 ├── Handlers:
-│   ├── toggleWorkflow: Add/remove binding
-│   ├── changeConnection: Update binding.connectionBindings
-│   └── save: POST bindings
+│   ├── toggleWorkflow(workflowId):
+│   │   ├── If binding exists: Remove from selectedBindings, remove from expandedWorkflows
+│   │   └── Else: Create new binding with empty connectionBindings, add to expandedWorkflows
+│   │
+│   ├── changeConnection(workflowId, toolkitSlug, connectionId):
+│   │   └── Update selectedBindings[workflowId].connectionBindings[toolkitSlug] = connectionId
+│   │
+│   ├── getWorkflowStatus(workflowId):
+│   │   ├── Get binding from selectedBindings
+│   │   ├── Get workflow metadata
+│   │   ├── Check if all requiredConnections are bound
+│   │   └── Return "ready" | "needs-setup"
+│   │
+│   └── handleSave():
+│       ├── Convert selectedBindings Map to array
+│       ├── POST to /api/workforce/{agent.id}/workflows
+│       └── Call onSave callback
 │
-└── Render:
-    ├── Header: "Manage Workflows" [Back]
-    ├── For each workflow:
-    │   ├── ☐/☑ Checkbox
-    │   ├── Name + description
-    │   ├── Status badge
-    │   └── If expanded: connection selectors
-    └── Footer: [Cancel] [Save]
+└── Render (following ConnectionToolEditorPanel structure):
+    ├── Header (fixed):
+    │   ├── <ChevronLeft onClick={onBack} />
+    │   ├── <h2>Manage Workflows</h2>
+    │   └── <p>Select which workflows {agent.name} can use</p>
+    │
+    ├── Search (conditional, fixed):
+    │   └── <Input placeholder="Search workflows..." />
+    │
+    ├── Content (scrollable, flex-1):
+    │   ├── If isLoading: Loading spinner
+    │   ├── If no workflows: Empty state with message
+    │   └── Else: Workflow list
+    │       └── For each workflow:
+    │           ├── Collapsed row (always visible):
+    │           │   ├── <Checkbox checked={binding exists} onChange={toggleWorkflow} />
+    │           │   ├── Workflow name + description
+    │           │   ├── Status badge (Ready/Needs Setup)
+    │           │   └── <ChevronRight/Down> for expansion indicator
+    │           │
+    │           └── Expanded section (if checked):
+    │               └── For each requiredConnection:
+    │                   └── <WorkflowConnectionSelector
+    │                       toolkitSlug={...}
+    │                       selectedId={binding.connectionBindings[toolkitSlug]}
+    │                       connections={groupedConnections[toolkitSlug]}
+    │                       onChange={(id) => changeConnection(workflowId, toolkitSlug, id)}
+    │                   />
+    │
+    └── Footer (fixed):
+        ├── <Button variant="outline" onClick={onBack}>Cancel</Button>
+        └── <Button onClick={handleSave} disabled={isSaving}>Save Changes</Button>
 ```
 
 #### `WorkflowConnectionSelector.tsx`
@@ -312,12 +469,24 @@ WorkflowEditorPanel({ agent, onBack, onSave })
 ```
 WorkflowConnectionSelector({ toolkitSlug, selectedId, connections, onChange })
 ├── Render:
-│   ├── Toolkit logo + name
-│   ├── →
-│   ├── If connections exist:
-│   │   └── <Select> with connection options
-│   └── If no connections:
-│       └── ⚠️ "No connections" + Add link
+│   ├── <div className="flex items-center gap-3">
+│   │   ├── Toolkit logo (if available) or placeholder icon
+│   │   ├── <span>{toolkitSlug} (e.g., "Gmail")</span>
+│   │   ├── <span>→</span>
+│   │   ├── If connections.length > 0:
+│   │   │   └── <Select value={selectedId} onValueChange={onChange}>
+│   │   │       ├── <SelectTrigger>Select connection...</SelectTrigger>
+│   │   │       └── <SelectContent>
+│   │   │           └── connections.map(conn =>
+│   │   │               <SelectItem value={conn.id}>{conn.accountLabel}</SelectItem>
+│   │   │           )
+│   │   │       </SelectContent>
+│   │   │   </Select>
+│   │   │
+│   │   └── Else:
+│   │       ├── <span className="text-muted-foreground">No connections</span>
+│   │       └── <Link href="/profile">Add connection</Link>
+│   │   </div>
 ```
 
 ### Acceptance Criteria
@@ -335,15 +504,18 @@ WorkflowConnectionSelector({ toolkitSlug, selectedId, connections, onChange })
 
 ```
 1. User opens WorkflowEditorPanel
-2. Sees: ☐ Email Digest (requires: Gmail)
-3. Checks the checkbox
-4. Row expands: Gmail → [Select Connection ▼]
-5. User clicks dropdown, sees:
+2. Sees collapsed workflow list: ☐ Email Digest ⚠️ Needs Setup
+3. User checks the checkbox for "Email Digest"
+4. Row expands automatically, showing:
+   - Gmail → [Select Connection ▼]
+5. User clicks dropdown, sees available Gmail connections:
    - jen@company.com
    - work@company.com
-6. Selects "jen@company.com"
-7. Status: ✅ Ready
-8. Clicks Save
+6. User selects "jen@company.com"
+7. Status badge updates to: ✅ Ready (all required connections now bound)
+8. User clicks "Save Changes"
+9. Panel closes, returns to Capabilities tab
+10. Workflow card appears in list with ✅ Ready status
 ```
 
 ---
@@ -366,24 +538,86 @@ Wire up the WorkflowEditorPanel to the existing Capabilities tab.
 #### `CapabilitiesTab.tsx` (changes)
 
 ```
-// Add view state
+// Update ViewState type
 type ViewState = "list" | "connection-editor" | "workflow-editor"
 
-// Add workflow-editor view
+// Add workflow-editor view (full panel replaces tab content)
 if (view === "workflow-editor") {
-  return <WorkflowEditorPanel agent={agent} onBack={...} onSave={...} />
+  return (
+    <WorkflowEditorPanel
+      agent={agent}
+      onBack={() => setView("list")}
+      onSave={handleSaveWorkflows}
+    />
+  );
 }
 
-// Update list view Workflows section
-<div>
-  <h3>Workflows</h3>
-  <Badge>{workflowBindings.length}</Badge>
-  <Button onClick={() => setView("workflow-editor")}>Manage</Button>
+// Update list view Workflows section (matches Connection Tools pattern)
+<div className="space-y-4">
+  <div className="flex justify-between items-center">
+    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+      Workflows
+    </h3>
+    <button
+      onClick={() => setView("workflow-editor")}
+      className="px-3 py-1.5 bg-white border border-gray-200 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors"
+    >
+      Manage
+    </button>
+  </div>
   
-  {workflowBindings.map(binding => (
-    <WorkflowCard workflow={...} binding={binding} />
-  ))}
+  {workflowBindings.length === 0 ? (
+    <div className="bg-white rounded-xl border border-gray-200 p-6 text-center">
+      <p className="text-sm text-gray-500">No workflows assigned.</p>
+    </div>
+  ) : (
+    <div className="grid grid-cols-2 gap-4">
+      {workflowBindings.map(binding => {
+        const workflow = availableWorkflows.find(w => w.id === binding.workflowId);
+        return workflow ? (
+          <WorkflowCard key={binding.workflowId} workflow={workflow} binding={binding} />
+        ) : null;
+      })}
+    </div>
+  )}
 </div>
+
+// Add handler
+const handleSaveWorkflows = async (bindings: WorkflowBinding[]) => {
+  const response = await fetch(`/api/workforce/${agent.id}/workflows`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bindings }),
+  });
+  if (!response.ok) throw new Error("Failed to save workflows");
+  // Refresh data via useAgentDetails hook
+  window.location.reload(); // Or use state update pattern
+};
+```
+
+#### `useAgentDetails.ts` (changes)
+
+```
+// Replace MOCK_WORKFLOWS with real data
+const [workflows, setWorkflows] = useState<WorkflowBinding[]>([]);
+
+// In fetchData function:
+if (agent) {
+  // Add workflow bindings fetch
+  const workflowsResponse = await fetch(`/api/workforce/${agent.id}/workflows`);
+  if (workflowsResponse.ok) {
+    const data = await workflowsResponse.json();
+    setWorkflows(data.bindings || []);
+  } else {
+    setWorkflows([]);
+  }
+}
+
+// Return workflows instead of MOCK_WORKFLOWS
+return {
+  // ... existing fields ...
+  workflows,  // Changed from MOCK_WORKFLOWS
+};
 ```
 
 ### Acceptance Criteria
@@ -410,74 +644,21 @@ if (view === "workflow-editor") {
 
 ---
 
-## Part E: Runtime Integration (Stretch)
+## Out of Scope
 
-### Goal
-
-Enable agents to actually invoke assigned workflows during chat.
-
-### Files
-
-| File | Action | Purpose | Lines |
-|------|--------|---------|-------|
-| `app/api/tools/services/workflow-tools.ts` | Create | Wrap workflow as tool | ~120 |
-| `chat-service.ts` | Modify | Add workflow tools to agent | +50 |
-
-### Pseudocode
-
-#### `workflow-tools.ts`
-
-```
-getWorkflowToolExecutable(userId, binding): ToolDefinition | undefined
-├── Load workflow executable
-├── Load workflow metadata
-├── Create RuntimeContext with connections
-├── Return tool({
-│     description: metadata.description,
-│     parameters: workflow.inputSchema,
-│     execute: async (input) => {
-│       const run = await workflow.createRunAsync({ runtimeContext })
-│       return await run.start({ inputData: input })
-│     }
-│   })
-```
-
-#### `chat-service.ts` (changes)
-
-```
-buildToolMap(userId, agentConfig)
-├── ... load custom tools ...
-├── ... load connection tools ...
-├── NEW: For each workflowBinding:
-│   ├── getWorkflowToolExecutable(userId, binding)
-│   └── Add to toolMap
-└── Return toolMap
-```
-
-### Acceptance Criteria
-
-| # | Criterion | Test |
-|---|-----------|------|
-| AC-10.13 | Agent can invoke workflow | Chat → workflow executes |
-
-### User Flows
-
-#### Flow E.1: Agent Uses Workflow
-
-```
-1. Agent has "Email Digest" assigned with Gmail bound
-2. User: "Send me an email digest"
-3. Agent sees workflow tool, decides to use it
-4. Calls workflow with { recipient: "user@email.com" }
-5. Workflow executes:
-   - Gmail step uses bound connection
-6. Agent receives result, responds to user
-```
+- **Runtime workflow execution** → Moved to Phase 11 (Workflow Runtime Execution)
+  - Wrapping workflows as tools for agent chat
+  - Integrating workflow tools into chat service
+  - See Phase 11 for full implementation details
 
 ---
 
 ## Out of Scope
 
+- **Runtime workflow execution** → Moved to Phase 11 (Workflow Runtime Execution)
+  - Wrapping workflows as tools for agent chat
+  - Integrating workflow tools into chat service
+  - See Phase 11 for full implementation details
 - Workflow editing from agent modal → Use workflow editor
 - Workflow versioning → Always use latest
 - Workflow sharing → Each agent has own bindings
@@ -488,6 +669,7 @@ buildToolMap(userId, agentConfig)
 
 ## References
 
+- **Phase 11**: Workflow Runtime Execution - Runtime integration for agent workflow invocation
 - **Connection Tools Pattern**: `app/(pages)/workforce/components/ConnectionToolEditorPanel.tsx`
 - **Agent Config Service**: `app/api/workforce/services/agent-config.ts`
 - **Chat Service**: `app/api/workforce/[agentId]/chat/services/chat-service.ts`
@@ -501,6 +683,7 @@ buildToolMap(userId, agentConfig)
 | Date | Change | Author |
 |------|--------|--------|
 | 2025-12-07 | Rewritten using phase template | Assistant |
+| 2025-12-07 | Major update: Added Prerequisites section, fixed storage paths (`workflows-f/` → `workflows/`), reorganized File Impact by category, added WorkflowMetadata type, updated component paths, enhanced pseudocode with specific implementation details, added UI pattern specifications from ConnectionToolEditorPanel, clarified AgentConfig changes | Assistant |
 
 ---
 

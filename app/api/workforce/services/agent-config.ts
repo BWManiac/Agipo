@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { getAgentById } from "@/_tables/agents";
-import type { ConnectionToolBinding } from "@/_tables/types";
+import type { ConnectionToolBinding, WorkflowBinding } from "@/_tables/types";
 
 // Map agent ID to filename
 const idToFile: Record<string, string> = {
@@ -124,6 +124,82 @@ export async function updateConnectionToolBindings(
       `$1$2\n  connectionToolBindings: ${bindingsString},`
     );
     await fs.writeFile(agentFile, updatedContent, "utf-8");
+  }
+}
+
+/**
+ * Gets the workflow bindings assigned to an agent.
+ */
+export function getWorkflowBindings(agentId: string): WorkflowBinding[] {
+  const agent = getAgentById(agentId);
+  if (!agent) return [];
+  return agent.workflowBindings || [];
+}
+
+/**
+ * Updates the workflow bindings assigned to an agent by modifying the source file.
+ */
+export async function updateWorkflowBindings(
+  agentId: string,
+  bindings: WorkflowBinding[]
+): Promise<void> {
+  const filename = getAgentFilename(agentId);
+  if (!filename) {
+    throw new Error(`Agent not found or not mapped to file: ${agentId}`);
+  }
+
+  const agentFile = path.join(process.cwd(), "_tables", "agents", `${filename}.ts`);
+
+  let fileContent: string;
+  try {
+    fileContent = await fs.readFile(agentFile, "utf-8");
+  } catch (error) {
+    throw new Error(`Failed to read agent config file: ${filename}.ts`);
+  }
+
+  // Build bindings string
+  const bindingsString =
+    bindings.length === 0
+      ? "[]"
+      : `[\n    ${bindings
+          .map((b) => {
+            const connectionBindingsString = Object.entries(b.connectionBindings)
+              .map(([key, value]) => `"${key}": "${value}"`)
+              .join(", ");
+            return `{ workflowId: "${b.workflowId}", connectionBindings: { ${connectionBindingsString} } }`;
+          })
+          .join(",\n    ")},\n  ]`;
+
+  // Check if workflowBindings already exists
+  const existingPattern = /(workflowBindings:\s*)\[[^\]]*\](\s*,?)/;
+
+  if (fileContent.match(existingPattern)) {
+    // Update existing field
+    const updatedContent = fileContent.replace(
+      existingPattern,
+      `$1${bindingsString}$2`
+    );
+    await fs.writeFile(agentFile, updatedContent, "utf-8");
+  } else {
+    // Add new field after connectionToolBindings or toolIds
+    const connectionToolBindingsPattern = /(connectionToolBindings:\s*\[[^\]]*\])(\s*,?)/;
+    const toolIdsPattern = /(toolIds:\s*\[[^\]]*\])(\s*,?)/;
+
+    if (fileContent.match(connectionToolBindingsPattern)) {
+      const updatedContent = fileContent.replace(
+        connectionToolBindingsPattern,
+        `$1$2\n  workflowBindings: ${bindingsString},`
+      );
+      await fs.writeFile(agentFile, updatedContent, "utf-8");
+    } else if (fileContent.match(toolIdsPattern)) {
+      const updatedContent = fileContent.replace(
+        toolIdsPattern,
+        `$1$2\n  workflowBindings: ${bindingsString},`
+      );
+      await fs.writeFile(agentFile, updatedContent, "utf-8");
+    } else {
+      throw new Error("Could not find insertion point for workflowBindings in agent config file");
+    }
   }
 }
 

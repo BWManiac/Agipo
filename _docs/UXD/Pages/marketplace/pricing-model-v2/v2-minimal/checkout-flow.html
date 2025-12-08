@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to PM Agent - Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        accent: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        destructive: {
+                            DEFAULT: 'rgb(239 68 68)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        card: {
+                            DEFAULT: 'rgb(255 255 255)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-foreground">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3 text-sm">
+                    <a href="#" class="text-primary hover:underline">← Marketplace</a>
+                    <span class="text-muted-foreground">/</span>
+                    <span class="text-muted-foreground">PM Agent</span>
+                    <span class="text-muted-foreground">/</span>
+                    <span class="text-muted-foreground">Checkout</span>
+                </div>
+                <button class="inline-flex items-center justify-center gap-2 h-9 px-4 py-2 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-sm font-medium transition-all">
+                    Exit
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Progress Steps -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center max-w-3xl mx-auto">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
+                        1
+                    </div>
+                    <span class="text-sm font-medium">Select Plan</span>
+                </div>
+                <div class="flex-1 h-px bg-primary mx-3"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
+                        2
+                    </div>
+                    <span class="text-sm font-medium">Integrations</span>
+                </div>
+                <div class="flex-1 h-px bg-border mx-3"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full border-2 bg-white flex items-center justify-center text-sm font-medium text-muted-foreground">
+                        3
+                    </div>
+                    <span class="text-sm text-muted-foreground">Payment</span>
+                </div>
+                <div class="flex-1 h-px bg-border mx-3"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full border-2 bg-white flex items-center justify-center text-sm font-medium text-muted-foreground">
+                        4
+                    </div>
+                    <span class="text-sm text-muted-foreground">Done</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Checkout Form -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Integrations Section (Step 2 - Current) -->
+                <div class="bg-card rounded-xl border p-6 space-y-6">
+                    <div>
+                        <h2 class="text-lg font-semibold mb-1">Connect Required Integrations</h2>
+                        <p class="text-sm text-muted-foreground">PM Agent needs access to these services to function properly</p>
+                    </div>
+
+                    <!-- Integration Connection Cards -->
+                    <div class="space-y-3">
+                        <!-- Gmail - Connected -->
+                        <div class="border rounded-lg p-4 bg-secondary">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-white border flex items-center justify-center text-xl">
+                                        📧
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-sm">Gmail</div>
+                                        <div class="text-xs text-muted-foreground">Send emails and access inbox</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-white border-emerald-600 text-emerald-600">
+                                        ✓ Connected
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Linear - Not Connected -->
+                        <div class="border rounded-lg p-4 hover:border-foreground transition-colors">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-white border flex items-center justify-center text-xl">
+                                        📐
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-sm">Linear</div>
+                                        <div class="text-xs text-muted-foreground">Track issues and project progress</div>
+                                    </div>
+                                </div>
+                                <button class="inline-flex items-center justify-center h-8 px-4 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Notion - Not Connected -->
+                        <div class="border rounded-lg p-4 hover:border-foreground transition-colors">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-white border flex items-center justify-center text-xl">
+                                        📝
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-sm">Notion</div>
+                                        <div class="text-xs text-muted-foreground">Create and manage documentation</div>
+                                    </div>
+                                </div>
+                                <button class="inline-flex items-center justify-center h-8 px-4 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-xs font-medium transition-all">
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Slack - Connected -->
+                        <div class="border rounded-lg p-4 bg-secondary">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-white border flex items-center justify-center text-xl">
+                                        💬
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-sm">Slack</div>
+                                        <div class="text-xs text-muted-foreground">Post messages to channels</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-white border-emerald-600 text-emerald-600">
+                                        ✓ Connected
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-muted rounded-lg p-3 text-xs text-muted-foreground">
+                        <strong>Note:</strong> You can connect remaining integrations later from your profile settings. The agent will have limited functionality until all integrations are connected.
+                    </div>
+                </div>
+
+                <!-- Payment Section (Step 3 - Next) -->
+                <div class="bg-card rounded-xl border p-6 space-y-6 opacity-50">
+                    <div>
+                        <h2 class="text-lg font-semibold mb-1">Payment Information</h2>
+                        <p class="text-sm text-muted-foreground">Complete setup after connecting integrations</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Card Number -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Card Number</label>
+                            <input
+                                type="text"
+                                placeholder="1234 5678 9012 3456"
+                                disabled
+                                class="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            />
+                        </div>
+
+                        <!-- Expiry and CVV -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Expiry Date</label>
+                                <input
+                                    type="text"
+                                    placeholder="MM / YY"
+                                    disabled
+                                    class="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">CVV</label>
+                                <input
+                                    type="text"
+                                    placeholder="123"
+                                    disabled
+                                    class="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Name on Card -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Name on Card</label>
+                            <input
+                                type="text"
+                                placeholder="John Doe"
+                                disabled
+                                class="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            />
+                        </div>
+
+                        <!-- Billing Zip -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Billing ZIP Code</label>
+                            <input
+                                type="text"
+                                placeholder="10001"
+                                disabled
+                                class="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between items-center">
+                    <button class="inline-flex items-center justify-center h-10 px-6 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        ← Back to Plan
+                    </button>
+                    <button class="inline-flex items-center justify-center h-10 px-6 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-sm font-medium transition-all">
+                        Continue to Payment →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-card rounded-xl border p-6 sticky top-24 space-y-6">
+                    <!-- Agent Header -->
+                    <div class="flex gap-3 pb-4 border-b">
+                        <div class="w-12 h-12 rounded-lg bg-secondary border flex items-center justify-center text-2xl shrink-0">
+                            🧭
+                        </div>
+                        <div>
+                            <div class="font-semibold">PM Agent</div>
+                            <div class="text-xs text-muted-foreground">by Sarah Chen</div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Plan -->
+                    <div>
+                        <div class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Selected Plan</div>
+                        <div class="bg-secondary rounded-lg p-4 space-y-2">
+                            <div class="flex justify-between items-start">
+                                <div class="font-semibold">Professional</div>
+                                <div class="font-semibold">$99<span class="text-sm font-normal text-muted-foreground">/mo</span></div>
+                            </div>
+                            <ul class="space-y-1 text-xs text-muted-foreground">
+                                <li>• 500 workflow runs/month</li>
+                                <li>• 2,500 tool calls</li>
+                                <li>• Priority support</li>
+                                <li>• Advanced analytics</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Trial Information -->
+                    <div class="bg-muted rounded-lg p-4 space-y-2">
+                        <div class="text-sm font-semibold">7-Day Free Trial</div>
+                        <div class="text-xs text-muted-foreground">
+                            You won't be charged until your trial ends on <strong>Dec 15, 2025</strong>. Cancel anytime before then at no cost.
+                        </div>
+                    </div>
+
+                    <!-- Pricing Breakdown -->
+                    <div class="space-y-3 pb-4 border-b">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Subscription</span>
+                            <span>$99.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Platform fee (30%)</span>
+                            <span class="text-muted-foreground">$29.70</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Trial credit</span>
+                            <span class="text-emerald-600">-$99.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Due Today -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">Due Today</span>
+                            <span class="text-2xl font-bold">$0.00</span>
+                        </div>
+                        <div class="text-xs text-muted-foreground">
+                            Starting Dec 15: $99.00/month
+                        </div>
+                    </div>
+
+                    <!-- Revenue Split Info -->
+                    <div class="pt-4 border-t">
+                        <div class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Revenue Split</div>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-muted-foreground">Platform (30%)</span>
+                                <span>$29.70</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted-foreground">Creator (70%)</span>
+                                <span class="font-semibold">$69.30</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Note -->
+                    <div class="text-center text-xs text-muted-foreground pt-4 border-t">
+                        🔒 Secure checkout • Cancel anytime
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
