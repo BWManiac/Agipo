@@ -3,15 +3,15 @@ import { z } from "zod";
 import { composio } from "@/lib/composio";
 
 // Step definitions
-const bulkRunTasks = createStep({
-  id: "kGJqeLnyllYOO0M82-92B",
+const navigateToUrl = createStep({
+  id: "11IU9f9Xc4knMtwwJrnHi",
   inputSchema: z.object({}),
   outputSchema: z.object({}),
   execute: async ({ inputData, runtimeContext }) => {
     const connections = runtimeContext.get("connections") as Record<string, string> | undefined;
-    const connectionId = connections?.["browseai"];
+    const connectionId = connections?.["browser_tool"];
     const result = await composio.executeAction(
-      "BROWSEAI_BULK_RUN_TASKS",
+      "BROWSER_TOOL_NAVIGATE",
       inputData,
       { connectedAccountId: connectionId }
     );
@@ -23,25 +23,25 @@ const bulkRunTasks = createStep({
 });
 
 // Workflow composition
-export const testWorkflow = createWorkflow({
-  id: "wf-jG1tgkcezZDi",
+export const summarizeSiteEmailWorkflow = createWorkflow({
+  id: "wf-MSKSYrCZ-Tfc",
   inputSchema: z.object({
-  input_UqxY: z.string()
+  URL: z.string()
 }),
   outputSchema: z.any()
 })
   .map(async ({ inputData, getStepResult }) => {
     return {
-      robot_id: inputData.input_UqxY
+      url: inputData.URL
     };
   })
-  .then(bulkRunTasks)
+  .then(navigateToUrl)
   .commit();
 
 // Metadata for runtime
 export const workflowMetadata = {
   "requiredConnections": [
-    "browseai"
+    "browser_tool"
   ],
   "stepCount": 1
 };

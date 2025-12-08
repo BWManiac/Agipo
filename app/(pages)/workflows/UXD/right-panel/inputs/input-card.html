@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 9 - Input Card Component</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 217.2 91.2% 59.8%;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .input-card {
+      transition: all 0.2s ease;
+    }
+    .input-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .delete-btn {
+      opacity: 0.4;
+      transition: all 0.2s ease;
+    }
+    .input-card:hover .delete-btn {
+      opacity: 1;
+    }
+    .delete-btn:hover {
+      background-color: #fef2f2;
+      color: #dc2626;
+    }
+    .type-badge {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 p-8">
+  
+  <div class="max-w-4xl mx-auto space-y-12">
+    
+    <!-- Header -->
+    <div>
+      <h1 class="text-2xl font-bold mb-2">Input Card Component</h1>
+      <p class="text-gray-600">Detailed mockup of the single input card component showing all fields, type variations, and interaction states.</p>
+      <div class="flex gap-2 mt-3 text-xs">
+        <span class="px-2 py-1 bg-blue-500/20 text-blue-600 rounded">Default State</span>
+        <span class="px-2 py-1 bg-green-500/20 text-green-600 rounded">Type Variations</span>
+        <span class="px-2 py-1 bg-amber-500/20 text-amber-600 rounded">Focus States</span>
+        <span class="px-2 py-1 bg-purple-500/20 text-purple-600 rounded">Default Values</span>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CARD 1: STRING TYPE - Complete Example (AC-F.1-F.6) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="bg-green-50 border border-green-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span>
+          <span class="text-sm font-semibold text-green-900">Card 1: String Type - Complete</span>
+          <span class="text-xs text-green-600 ml-auto">AC-F.1 through F.6, AC-9.3, AC-T.1</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-lg">
+        <div class="input-card bg-white rounded-lg border-2 border-gray-200 p-4 space-y-3 max-w-md mx-auto">
+          
+          <!-- Row 1: Name + Type + Delete (AC-F.1, F.2, F.6) -->
+          <div class="flex items-center gap-2">
+            <!-- Name Input (AC-F.1) -->
+            <input 
+              type="text" 
+              value="Website" 
+              class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+              placeholder="Input name"
+            />
+            
+            <!-- Type Dropdown (AC-F.2) -->
+            <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 type-badge">
+              <option>string</option>
+              <option>number</option>
+              <option>boolean</option>
+              <option>array</option>
+              <option>object</option>
+            </select>
+            
+            <!-- Delete Button (AC-F.6) -->
+            <button 
+              class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded transition-colors"
+              aria-label="Delete input Website"
+              title="Delete input"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Row 2: Required Checkbox (AC-F.3) -->
+          <div class="flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              id="required-string-1" 
+              checked 
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+            />
+            <label 
+              for="required-string-1" 
+              class="text-xs text-gray-700 cursor-pointer font-medium"
+            >
+              Required
+            </label>
+            <span class="text-[10px] text-red-500 ml-1" aria-label="Required field indicator">*</span>
+          </div>
+          
+          <!-- Row 3: Description Field (AC-F.4) -->
+          <div>
+            <input 
+              type="text" 
+              placeholder="Description (optional)"
+              value="URL to navigate the browser to"
+              class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 placeholder:text-gray-400"
+            />
+            <p class="text-[10px] text-gray-400 mt-1 ml-1">Helpful description for this input parameter</p>
+          </div>
+          
+          <!-- Row 4: Default Value Field (NEW - AC-9.3, AC-F.5, AC-T.1) -->
+          <div class="pt-2 border-t border-gray-100">
+            <label class="text-xs font-medium text-gray-600 mb-1.5 block">
+              Default value
+              <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            
+            <!-- String default input (AC-T.1) -->
+            <input 
+              type="text" 
+              value="https://example.com"
+              placeholder="Enter default value..."
+              class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 placeholder:text-gray-400"
+            />
+            
+            <div class="flex items-start gap-2 mt-1.5">
+              <svg class="h-3 w-3 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-[10px] text-gray-500 leading-relaxed">
+                This value will be used if not provided when the workflow is invoked. For string type, enter any text value.
+              </p>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Card Notes -->
+        <div class="mt-4 p-3 bg-green-50/50 border border-green-100 rounded-lg text-xs text-green-900">
+          <p class="font-medium mb-1">String Type Features:</p>
+          <ul class="list-disc list-inside space-y-0.5 text-green-800">
+            <li>Name field: Text input with monospace font (AC-F.1)</li>
+            <li>Type selector: Dropdown with 5 options (AC-F.2)</li>
+            <li>Required checkbox: Toggles required status (AC-F.3)</li>
+            <li>Description: Optional text input (AC-F.4)</li>
+            <li>Default value: Text input for string type (AC-T.1)</li>
+            <li>Delete button: Visible on hover, red on hover (AC-F.6)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CARD 2: NUMBER TYPE (AC-T.2) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="bg-blue-50 border border-blue-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="text-sm font-semibold text-blue-900">Card 2: Number Type</span>
+          <span class="text-xs text-blue-600 ml-auto">AC-T.2</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-lg">
+        <div class="input-card bg-white rounded-lg border-2 border-gray-200 p-4 space-y-3 max-w-md mx-auto">
+          
+          <div class="flex items-center gap-2">
+            <input type="text" value="MaxRetries" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" />
+            <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md">
+              <option selected>number</option>
+              <option>string</option>
+              <option>boolean</option>
+            </select>
+            <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded" />
+            <label class="text-xs text-gray-600">Required</label>
+          </div>
+          
+          <input type="text" placeholder="Description (optional)" value="Maximum number of retry attempts" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+          
+          <!-- Default Value: Number Input (AC-T.2) -->
+          <div class="pt-2 border-t border-gray-100">
+            <label class="text-xs font-medium text-gray-600 mb-1.5 block">
+              Default value
+              <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            
+            <input 
+              type="number" 
+              value="3"
+              min="0"
+              step="1"
+              placeholder="Enter number..."
+              class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+            />
+            
+            <p class="text-[10px] text-gray-500 mt-1 ml-1">
+              Numeric value. Accepts integers and decimals based on step.
+            </p>
+          </div>
+          
+        </div>
+        
+        <div class="mt-4 p-3 bg-blue-50/50 border border-blue-100 rounded-lg text-xs text-blue-900">
+          <p class="font-medium mb-1">Number Type Features (AC-T.2):</p>
+          <ul class="list-disc list-inside space-y-0.5 text-blue-800">
+            <li>Default value field changes to <code>type="number"</code> input</li>
+            <li>Browser native number input with increment/decrement controls</li>
+            <li>Optional min/max validation (implementation detail)</li>
+            <li>Supports both integers and floating-point numbers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CARD 3: BOOLEAN TYPE (AC-T.3) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="bg-purple-50 border border-purple-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+          <span class="text-sm font-semibold text-purple-900">Card 3: Boolean Type</span>
+          <span class="text-xs text-purple-600 ml-auto">AC-T.3</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-lg">
+        <div class="input-card bg-white rounded-lg border-2 border-gray-200 p-4 space-y-3 max-w-md mx-auto">
+          
+          <div class="flex items-center gap-2">
+            <input type="text" value="EnableNotifications" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" />
+            <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md">
+              <option selected>boolean</option>
+              <option>string</option>
+              <option>number</option>
+            </select>
+            <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input type="checkbox" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded" />
+            <label class="text-xs text-gray-600">Required</label>
+          </div>
+          
+          <input type="text" placeholder="Description (optional)" value="Whether to send notification emails" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+          
+          <!-- Default Value: Boolean Checkbox (AC-T.3) -->
+          <div class="pt-2 border-t border-gray-100">
+            <label class="text-xs font-medium text-gray-600 mb-1.5 block">
+              Default value
+              <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            
+            <div class="flex items-center gap-3 p-2 bg-blue-50/50 border border-blue-200 rounded-md">
+              <input 
+                type="checkbox" 
+                id="default-bool-1"
+                checked
+                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+              />
+              <label 
+                for="default-bool-1" 
+                class="text-xs text-gray-700 cursor-pointer flex-1"
+              >
+                Default to <strong>true</strong> (checked) or <strong>false</strong> (unchecked)
+              </label>
+            </div>
+            
+            <div class="mt-2 flex items-start gap-2">
+              <svg class="h-3 w-3 text-purple-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-[10px] text-gray-500 leading-relaxed">
+                When boolean type is selected, default value becomes a checkbox. Checked = true, Unchecked = false.
+              </p>
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class="mt-4 p-3 bg-purple-50/50 border border-purple-100 rounded-lg text-xs text-purple-900">
+          <p class="font-medium mb-1">Boolean Type Features (AC-T.3):</p>
+          <ul class="list-disc list-inside space-y-0.5 text-purple-800">
+            <li>Default value field transforms into a checkbox UI</li>
+            <li>Checkbox checked = <code>true</code>, unchecked = <code>false</code></li>
+            <li>Visual indication shows current state clearly</li>
+            <li>Larger checkbox (20px) for better UX</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CARD 4: OPTIONAL INPUT (Not Required) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="bg-amber-50 border border-amber-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span class="text-sm font-semibold text-amber-900">Card 4: Optional Input (Not Required)</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-lg">
+        <div class="input-card bg-white rounded-lg border-2 border-gray-200 p-4 space-y-3 max-w-md mx-auto">
+          
+          <div class="flex items-center gap-2">
+            <input type="text" value="Timeout" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" />
+            <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md">
+              <option selected>number</option>
+            </select>
+            <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Not Required -->
+          <div class="flex items-center gap-2">
+            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded" />
+            <label class="text-xs text-gray-500">Required</label>
+            <span class="text-[10px] text-gray-400 italic ml-1">(optional)</span>
+          </div>
+          
+          <input type="text" placeholder="Description (optional)" value="Request timeout in milliseconds" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+          
+          <div class="pt-2 border-t border-gray-100">
+            <label class="text-xs font-medium text-gray-600 mb-1.5 block">
+              Default value
+              <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <input type="number" value="5000" class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md" />
+          </div>
+          
+        </div>
+        
+        <div class="mt-4 p-3 bg-amber-50/50 border border-amber-100 rounded-lg text-xs text-amber-900">
+          <p class="font-medium mb-1">Optional Input Visual Differences:</p>
+          <ul class="list-disc list-inside space-y-0.5 text-amber-800">
+            <li>Required checkbox is unchecked</li>
+            <li>Label shows muted gray color instead of dark</li>
+            <li>No red asterisk indicator</li>
+            <li>Input can be omitted when workflow is invoked</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CARD 5: FOCUSED STATE (Name field active) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="bg-indigo-50 border border-indigo-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+          <span class="text-sm font-semibold text-indigo-900">Card 5: Focused State (Editing)</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-lg">
+        <div class="input-card bg-white rounded-lg border-2 border-blue-500 p-4 space-y-3 max-w-md mx-auto shadow-lg ring-4 ring-blue-500/20">
+          
+          <div class="flex items-center gap-2">
+            <!-- Focused Name Input -->
+            <input 
+              type="text" 
+              value="RecipientEmail" 
+              class="flex-1 h-8 px-3 text-xs font-mono bg-blue-50 border-2 border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+              autofocus
+            />
+            <select class="h-8 px-2 text-xs bg-white border border-gray-300 rounded-md">
+              <option selected>string</option>
+            </select>
+            <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input type="checkbox" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded" />
+            <label class="text-xs text-gray-600">Required</label>
+          </div>
+          
+          <input type="text" placeholder="Description (optional)" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+          
+          <div class="pt-2 border-t border-gray-100">
+            <label class="text-xs font-medium text-gray-600 mb-1.5 block">
+              Default value
+              <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <input type="text" placeholder="Enter default value..." class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md" />
+          </div>
+          
+        </div>
+        
+        <div class="mt-4 p-3 bg-indigo-50/50 border border-indigo-100 rounded-lg text-xs text-indigo-900">
+          <p class="font-medium mb-1">Focus State Visual Indicators:</p>
+          <ul class="list-disc list-inside space-y-0.5 text-indigo-800">
+            <li>Card border changes to blue-500 (2px)</li>
+            <li>Ring effect around card (blue-500/20 opacity)</li>
+            <li>Active input has blue background (bg-blue-50)</li>
+            <li>Blue border on focused input field</li>
+            <li>Shadow increases for depth perception</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CARD 6: DEFAULT VALUE FOCUSED (AC-9.4) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+          <span class="text-sm font-semibold text-cyan-900">Card 6: Default Value Field Focused</span>
+          <span class="text-xs text-cyan-600 ml-auto">AC-9.4</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-lg">
+        <div class="input-card bg-white rounded-lg border-2 border-gray-200 p-4 space-y-3 max-w-md mx-auto">
+          
+          <div class="flex items-center gap-2">
+            <input type="text" value="ApiEndpoint" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" />
+            <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md">
+              <option selected>string</option>
+            </select>
+            <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input type="checkbox" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded" />
+            <label class="text-xs text-gray-600">Required</label>
+          </div>
+          
+          <input type="text" placeholder="Description (optional)" value="Base URL for API requests" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+          
+          <!-- Default Value Field - FOCUSED (AC-9.4) -->
+          <div class="pt-2 border-t border-gray-100">
+            <label class="text-xs font-medium text-gray-700 mb-1.5 block">
+              Default value
+              <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            
+            <!-- Focused default value input -->
+            <input 
+              type="text" 
+              value="https://api.example.com"
+              placeholder="Enter default value..."
+              class="w-full h-8 px-3 text-xs font-mono bg-blue-100 border-2 border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+              autofocus
+            />
+            
+            <!-- Save indicator (appears on blur - AC-9.4) -->
+            <div class="mt-1.5 flex items-center gap-1.5 opacity-0 transition-opacity" id="save-indicator">
+              <svg class="h-3 w-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <p class="text-[10px] text-green-600 font-medium">Saved</p>
+            </div>
+            
+            <p class="text-[10px] text-gray-500 mt-1 ml-1">
+              Value auto-saves when you click away (blur event)
+            </p>
+          </div>
+          
+        </div>
+        
+        <div class="mt-4 p-3 bg-cyan-50/50 border border-cyan-100 rounded-lg text-xs text-cyan-900">
+          <p class="font-medium mb-1">Default Value Focus Behavior (AC-9.4):</p>
+          <ul class="list-disc list-inside space-y-0.5 text-cyan-800">
+            <li>Field receives focus with blue border (border-blue-500)</li>
+            <li>Background becomes more prominent (bg-blue-100)</li>
+            <li>On blur: Value persists immediately to store</li>
+            <li>Visual feedback: Optional "Saved" indicator (implementation detail)</li>
+            <li>No explicit save button needed - auto-saves</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CARD 7: ARRAY/OBJECT TYPE (Future - Placeholder) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="bg-slate-100 border border-slate-300 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+          <span class="text-sm font-semibold text-slate-700">Card 7: Array/Object Type (Future - AC-T.4)</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-lg opacity-60">
+        <div class="input-card bg-white rounded-lg border-2 border-gray-200 p-4 space-y-3 max-w-md mx-auto">
+          
+          <div class="flex items-center gap-2">
+            <input type="text" value="Headers" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" disabled />
+            <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md" disabled>
+              <option selected>object</option>
+              <option>array</option>
+            </select>
+            <button class="h-8 w-8 flex items-center justify-center text-gray-300" disabled>
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded" disabled />
+            <label class="text-xs text-gray-400">Required</label>
+          </div>
+          
+          <input type="text" placeholder="Description (optional)" value="HTTP headers object" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" disabled />
+          
+          <div class="pt-2 border-t border-gray-100">
+            <label class="text-xs font-medium text-gray-400 mb-1.5 block">
+              Default value
+              <span class="text-gray-300 font-normal">(optional)</span>
+            </label>
+            
+            <textarea 
+              placeholder="Enter JSON object/array..."
+              rows="3"
+              class="w-full px-3 py-2 text-xs font-mono bg-gray-100 border border-gray-200 rounded-md resize-none"
+              disabled
+            ></textarea>
+            
+            <p class="text-[10px] text-gray-400 mt-1 ml-1 italic">
+              Array/Object default values coming in future phase. Will support JSON input with validation.
+            </p>
+          </div>
+          
+        </div>
+        
+        <div class="mt-4 p-3 bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-700">
+          <p class="font-medium mb-1">Future Enhancement (AC-T.4):</p>
+          <ul class="list-disc list-inside space-y-0.5 text-slate-600">
+            <li>Array/Object types will support JSON textarea for default values</li>
+            <li>JSON syntax validation</li>
+            <li>Syntax highlighting (optional enhancement)</li>
+            <li>Currently disabled/placeholder state</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="mt-8 p-6 bg-slate-900 text-white rounded-xl">
+      <h3 class="text-lg font-semibold mb-4">Input Card Component Summary</h3>
+      <div class="grid grid-cols-2 gap-6 text-sm text-gray-300">
+        <div>
+          <p class="font-medium text-white mb-2">Core Fields:</p>
+          <ul class="space-y-1">
+            <li>• Name input (AC-F.1) - Text, monospace, required</li>
+            <li>• Type selector (AC-F.2) - Dropdown, 5 options</li>
+            <li>• Required checkbox (AC-F.3) - Toggles required status</li>
+            <li>• Description field (AC-F.4) - Optional text input</li>
+            <li>• Default value (AC-F.5, AC-9.3) - Type-aware input</li>
+            <li>• Delete button (AC-F.6) - Hover to reveal</li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-medium text-white mb-2">Type-Specific Defaults:</p>
+          <ul class="space-y-1">
+            <li>• <strong>String:</strong> Text input (AC-T.1)</li>
+            <li>• <strong>Number:</strong> Number input (AC-T.2)</li>
+            <li>• <strong>Boolean:</strong> Checkbox (AC-T.3)</li>
+            <li>• <strong>Array/Object:</strong> JSON textarea (AC-T.4 - future)</li>
+          </ul>
+        </div>
+        <div class="col-span-2">
+          <p class="font-medium text-white mb-2">Interaction States:</p>
+          <ul class="space-y-1">
+            <li>• <strong>Default:</strong> Standard gray borders, white background</li>
+            <li>• <strong>Hover:</strong> Shadow increase, delete button opacity 1</li>
+            <li>• <strong>Focus:</strong> Blue border, ring effect, blue background on active field</li>
+            <li>• <strong>Editing:</strong> Immediate updates, auto-save on blur (AC-9.4)</li>
+            <li>• <strong>Error:</strong> Red border (future - validation)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
+

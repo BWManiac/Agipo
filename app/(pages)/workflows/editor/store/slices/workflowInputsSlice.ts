@@ -1,5 +1,6 @@
 import type { StateCreator } from "zustand";
 import type { WorkflowInputDefinition } from "@/app/api/workflows/types/bindings";
+import type { RuntimeInputConfig } from "@/app/api/workflows/types/workflow-settings";
 import type { WorkflowStore } from "../types";
 import { nanoid } from "nanoid";
 
@@ -72,3 +73,22 @@ export const createWorkflowInputsSlice: StateCreator<
 
   loadWorkflowInputs: (inputs) => set({ workflowInputs: inputs }),
 });
+
+/**
+ * Converts RuntimeInputConfig[] (from API) to WorkflowInputDefinition[] (for store).
+ * Used when loading workflows from the API.
+ * 
+ * @param configs - Array of RuntimeInputConfig from workflow.json
+ * @returns Array of WorkflowInputDefinition for the store
+ */
+export function convertFromRuntimeInputConfig(
+  configs: RuntimeInputConfig[]
+): WorkflowInputDefinition[] {
+  return configs.map((config) => ({
+    name: config.key,
+    type: config.type,
+    required: config.required,
+    description: config.description,
+    defaultValue: config.default,
+  }));
+}

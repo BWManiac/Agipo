@@ -5,6 +5,7 @@ import { DataMappingValidator } from "./step-connections";
 import { ControlFlowConfigValidator } from "./execution-flow";
 import { RuntimeInputConfigValidator, WorkflowConfigValidator } from "./workflow-settings";
 import { TableRequirementValidator, TableBindingValidator } from "./table-requirements";
+import { StepBindingsValidator } from "./bindings";
 
 /**
  * Complete workflow definition type representing a saved workflow.
@@ -41,6 +42,9 @@ export const WorkflowDefinitionValidator = z.object({
   // Runtime Configuration
   runtimeInputs: z.array(RuntimeInputConfigValidator),
   configs: z.array(WorkflowConfigValidator),
+  
+  // Data Bindings (editor state - how step inputs are bound to sources)
+  bindings: z.record(z.string(), StepBindingsValidator).optional(),
   
   // Metadata
   createdAt: z.string(),

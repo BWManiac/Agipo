@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 9 - Inputs Tab Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
+            secondary: {
+              DEFAULT: "hsl(var(--secondary))",
+              foreground: "hsl(var(--secondary-foreground))",
+            },
+            muted: {
+              DEFAULT: "hsl(var(--muted))",
+              foreground: "hsl(var(--muted-foreground))",
+            },
+            accent: {
+              DEFAULT: "hsl(var(--accent))",
+              foreground: "hsl(var(--accent-foreground))",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 210 40% 96.1%;
+      --secondary-foreground: 222.2 47.4% 11.2%;
+      --muted: 210 40% 96.1%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96.1%;
+      --accent-foreground: 222.2 47.4% 11.2%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 217.2 91.2% 59.8%;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    .input-card {
+      transition: all 0.2s ease;
+    }
+    .input-card:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    .delete-btn {
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+    }
+    .input-card:hover .delete-btn {
+      opacity: 1;
+    }
+    .state-indicator {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 p-8">
+  
+  <div class="max-w-2xl mx-auto space-y-12">
+    
+    <!-- Header -->
+    <div>
+      <h1 class="text-2xl font-bold mb-2">Inputs Tab - Panel States</h1>
+      <p class="text-gray-600">Comprehensive mockup showing all states of the Workflow Inputs panel, including empty state, populated list, and interaction states.</p>
+      <div class="flex gap-2 mt-3 text-xs">
+        <span class="px-2 py-1 bg-blue-500/20 text-blue-600 rounded">Empty State</span>
+        <span class="px-2 py-1 bg-green-500/20 text-green-600 rounded">Populated</span>
+        <span class="px-2 py-1 bg-amber-500/20 text-amber-600 rounded">Interaction</span>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STATE 1: EMPTY STATE (AC-E.1, E.2, E.3) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="state-indicator bg-blue-50 border border-blue-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="text-sm font-semibold text-blue-900">State 1: Empty State</span>
+          <span class="text-xs text-blue-600 ml-auto">AC-E.1, E.2, E.3</span>
+        </div>
+      </div>
+      
+      <!-- Right Panel Simulation -->
+      <div class="bg-white border border-gray-200 rounded-b-lg overflow-hidden shadow-lg">
+        
+        <!-- Tab Bar - Inputs is 4th tab (AC positioning) -->
+        <div class="flex border-b border-gray-200 bg-white">
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+            Details
+          </button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+            Tools
+          </button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+            Logic
+          </button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500 transition-colors">
+            Inputs
+          </button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+            Config
+          </button>
+        </div>
+        
+        <!-- Panel Content -->
+        <div class="flex flex-col h-[600px]">
+          
+          <!-- Header Section -->
+          <div class="p-4 border-b border-gray-100 bg-white">
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">Workflow Inputs</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Parameters this workflow accepts when invoked
+            </p>
+          </div>
+          
+          <!-- Content Area - Empty State (AC-E.1, E.2) -->
+          <div class="flex-1 overflow-y-auto bg-gray-50/50">
+            <div class="flex flex-col items-center justify-center h-full text-center p-8">
+              <!-- Icon (AC-E.2) -->
+              <div class="mb-4">
+                <svg class="h-16 w-16 text-gray-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              
+              <!-- Message (AC-E.2) -->
+              <p class="text-sm font-medium text-gray-700 mb-2">No inputs defined yet</p>
+              <p class="text-xs text-gray-500 mb-6 max-w-xs">
+                Define workflow parameters that can be used as binding sources in step configurations
+              </p>
+              
+              <!-- Add Button (AC-E.3) -->
+              <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors shadow-sm">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Input
+              </button>
+            </div>
+          </div>
+          
+          <!-- Footer - Hidden in empty state -->
+        </div>
+      </div>
+      
+      <!-- State Notes -->
+      <div class="mt-2 p-3 bg-blue-50/50 border border-blue-100 rounded-lg text-xs text-blue-900">
+        <p class="font-medium mb-1">Empty State Behavior:</p>
+        <ul class="list-disc list-inside space-y-0.5 text-blue-800">
+          <li>Centered icon and message for clarity</li>
+          <li>Primary "+ Add Input" button in empty state area</li>
+          <li>Footer "+ Add Input" button hidden when empty</li>
+          <li>Helpful description explains purpose of inputs</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STATE 2: SINGLE INPUT (Basic populated state) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="state-indicator bg-green-50 border border-green-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span>
+          <span class="text-sm font-semibold text-green-900">State 2: Single Input Defined</span>
+          <span class="text-xs text-green-600 ml-auto">AC-9.1</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg overflow-hidden shadow-lg">
+        <div class="flex border-b border-gray-200 bg-white">
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Details</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Tools</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Logic</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500">Inputs</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Config</button>
+        </div>
+        
+        <div class="flex flex-col h-[600px]">
+          <!-- Header -->
+          <div class="p-4 border-b border-gray-100 bg-white">
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">Workflow Inputs</h3>
+            <p class="text-xs text-gray-500">Parameters this workflow accepts when invoked</p>
+          </div>
+          
+          <!-- Content Area - Single Input Card -->
+          <div class="flex-1 overflow-y-auto bg-gray-50/50">
+            <div class="p-4 space-y-3">
+              
+              <!-- Input Card -->
+              <div class="input-card bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                
+                <!-- Name + Type + Delete Row -->
+                <div class="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    value="Website" 
+                    class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+                    placeholder="Input name"
+                  />
+                  
+                  <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500">
+                    <option>string</option>
+                    <option>number</option>
+                    <option>boolean</option>
+                    <option>array</option>
+                    <option>object</option>
+                  </select>
+                  
+                  <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded transition-colors">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <!-- Required Checkbox -->
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="req-1" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                  <label for="req-1" class="text-xs text-gray-600 cursor-pointer">Required</label>
+                </div>
+                
+                <!-- Description -->
+                <div>
+                  <input 
+                    type="text" 
+                    placeholder="Description (optional)"
+                    class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+                  />
+                </div>
+                
+                <!-- Default Value (NEW - AC-9.3) -->
+                <div class="pt-1 border-t border-gray-100">
+                  <label class="text-xs font-medium text-gray-500 mb-1.5 block">Default value (optional)</label>
+                  <input 
+                    type="text" 
+                    value="https://example.com"
+                    placeholder="Enter default value..."
+                    class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 placeholder:text-gray-400"
+                  />
+                  <p class="text-[10px] text-gray-400 mt-1">This value will be used if not provided at runtime</p>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          
+          <!-- Footer - "+ Add Input" Button (AC-9.1) -->
+          <div class="p-3 border-t border-gray-200 bg-white">
+            <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Input
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-2 p-3 bg-green-50/50 border border-green-100 rounded-lg text-xs text-green-900">
+        <p class="font-medium mb-1">Populated State Behavior:</p>
+        <ul class="list-disc list-inside space-y-0.5 text-green-800">
+          <li>Input card displays all fields in organized layout</li>
+          <li>Default value field visible below description (AC-9.3)</li>
+          <li>Footer "+ Add Input" button always visible when inputs exist (AC-9.1)</li>
+          <li>Delete button appears on hover</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STATE 3: MULTIPLE INPUTS (AC-9.2 interaction) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="state-indicator bg-amber-50 border border-amber-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span class="text-sm font-semibold text-amber-900">State 3: Multiple Inputs</span>
+          <span class="text-xs text-amber-600 ml-auto">AC-9.2</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg overflow-hidden shadow-lg">
+        <div class="flex border-b border-gray-200 bg-white">
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Details</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Tools</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Logic</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500">Inputs</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Config</button>
+        </div>
+        
+        <div class="flex flex-col h-[600px]">
+          <div class="p-4 border-b border-gray-100 bg-white">
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">Workflow Inputs</h3>
+            <p class="text-xs text-gray-500">Parameters this workflow accepts when invoked</p>
+          </div>
+          
+          <!-- Scrollable Content with Multiple Inputs -->
+          <div class="flex-1 overflow-y-auto bg-gray-50/50">
+            <div class="p-4 space-y-3">
+              
+              <!-- Input 1: Website (with default) -->
+              <div class="input-card bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                <div class="flex items-center gap-2">
+                  <input type="text" value="Website" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
+                  <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md">
+                    <option>string</option>
+                  </select>
+                  <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded">
+                  <label class="text-xs text-gray-600">Required</label>
+                </div>
+                <input type="text" placeholder="Description (optional)" value="URL to navigate to" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+                <div class="pt-1 border-t border-gray-100">
+                  <label class="text-xs font-medium text-gray-500 mb-1.5 block">Default value (optional)</label>
+                  <input type="text" value="https://example.com" class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md" />
+                </div>
+              </div>
+              
+              <!-- Input 2: Recipient (no default) -->
+              <div class="input-card bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                <div class="flex items-center gap-2">
+                  <input type="text" value="Recipient" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" />
+                  <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md">
+                    <option>string</option>
+                  </select>
+                  <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded">
+                  <label class="text-xs text-gray-600">Required</label>
+                </div>
+                <input type="text" placeholder="Description (optional)" value="Email address to send results to" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+                <div class="pt-1 border-t border-gray-100">
+                  <label class="text-xs font-medium text-gray-500 mb-1.5 block">Default value (optional)</label>
+                  <input type="text" placeholder="Enter default value..." class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md placeholder:text-gray-400" />
+                </div>
+              </div>
+              
+              <!-- Input 3: MaxRetries (number type) -->
+              <div class="input-card bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                <div class="flex items-center gap-2">
+                  <input type="text" value="MaxRetries" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" />
+                  <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md">
+                    <option>number</option>
+                    <option>string</option>
+                  </select>
+                  <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded">
+                  <label class="text-xs text-gray-600">Required</label>
+                </div>
+                <input type="text" placeholder="Description (optional)" value="Maximum number of retry attempts" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" />
+                <div class="pt-1 border-t border-gray-100">
+                  <label class="text-xs font-medium text-gray-500 mb-1.5 block">Default value (optional)</label>
+                  <input type="number" value="3" class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md" />
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          
+          <!-- Footer Button (AC-9.1) -->
+          <div class="p-3 border-t border-gray-200 bg-white">
+            <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Input
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-2 p-3 bg-amber-50/50 border border-amber-100 rounded-lg text-xs text-amber-900">
+        <p class="font-medium mb-1">Multiple Inputs Behavior:</p>
+        <ul class="list-disc list-inside space-y-0.5 text-amber-800">
+          <li>Multiple input cards stack vertically with spacing</li>
+          <li>Content area scrolls when inputs exceed viewport</li>
+          <li>Footer button stays fixed at bottom (AC-9.1)</li>
+          <li>Each input can have different types and configurations</li>
+          <li>Default values can be set per input independently</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STATE 4: INTERACTION STATES (Adding new input) -->
+    <!-- ============================================ -->
+    <div>
+      <div class="state-indicator bg-purple-50 border border-purple-200 rounded-t-lg px-4 py-2 mb-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+          <span class="text-sm font-semibold text-purple-900">State 4: Adding New Input (AC-9.2)</span>
+        </div>
+      </div>
+      
+      <div class="bg-white border border-gray-200 rounded-b-lg overflow-hidden shadow-lg">
+        <div class="flex border-b border-gray-200 bg-white">
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Details</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Tools</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Logic</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-900 bg-white border-b-2 border-blue-500">Inputs</button>
+          <button class="flex-1 px-3 py-2.5 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">Config</button>
+        </div>
+        
+        <div class="flex flex-col h-[600px]">
+          <div class="p-4 border-b border-gray-100 bg-white">
+            <h3 class="text-sm font-semibold text-gray-900 mb-1">Workflow Inputs</h3>
+            <p class="text-xs text-gray-500">Parameters this workflow accepts when invoked</p>
+          </div>
+          
+          <div class="flex-1 overflow-y-auto bg-gray-50/50">
+            <div class="p-4 space-y-3">
+              
+              <!-- Existing Input -->
+              <div class="input-card bg-white rounded-lg border border-gray-200 p-4 space-y-3 opacity-75">
+                <div class="flex items-center gap-2">
+                  <input type="text" value="Website" class="flex-1 h-8 px-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-md" disabled />
+                  <select class="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md" disabled>
+                    <option>string</option>
+                  </select>
+                  <button class="h-8 w-8 flex items-center justify-center text-gray-300" disabled>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded" disabled />
+                  <label class="text-xs text-gray-400">Required</label>
+                </div>
+                <input type="text" value="URL to navigate to" class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md" disabled />
+                <div class="pt-1 border-t border-gray-100">
+                  <label class="text-xs font-medium text-gray-400 mb-1.5 block">Default value (optional)</label>
+                  <input type="text" value="https://example.com" class="w-full h-8 px-3 text-xs font-mono bg-gray-100 border border-gray-200 rounded-md" disabled />
+                </div>
+              </div>
+              
+              <!-- NEW INPUT - Focused/Active (AC-9.2) -->
+              <div class="input-card bg-white rounded-lg border-2 border-blue-500 p-4 space-y-3 shadow-lg ring-4 ring-blue-500/20">
+                <!-- Focus indicator -->
+                <div class="absolute -top-2 left-4 bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full font-medium">
+                  New
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="Input name" 
+                    class="flex-1 h-8 px-3 text-xs font-mono bg-blue-50 border-2 border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    autofocus
+                  />
+                  
+                  <select class="h-8 px-2 text-xs bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    <option>string</option>
+                    <option>number</option>
+                    <option>boolean</option>
+                  </select>
+                  
+                  <button class="delete-btn h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-500 rounded">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                  <label class="text-xs text-gray-600">Required</label>
+                </div>
+                
+                <input 
+                  type="text" 
+                  placeholder="Description (optional)"
+                  class="w-full h-8 px-3 text-xs bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+                />
+                
+                <div class="pt-1 border-t border-gray-100">
+                  <label class="text-xs font-medium text-gray-500 mb-1.5 block">Default value (optional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="Enter default value..."
+                    class="w-full h-8 px-3 text-xs font-mono bg-blue-50/50 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="p-3 border-t border-gray-200 bg-white">
+            <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Input
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-2 p-3 bg-purple-50/50 border border-purple-100 rounded-lg text-xs text-purple-900">
+        <p class="font-medium mb-1">Interaction State Behavior (AC-9.2):</p>
+        <ul class="list-disc list-inside space-y-0.5 text-purple-800">
+          <li>Clicking "+ Add Input" immediately creates new input card</li>
+          <li>New input card appears with focus on name field</li>
+          <li>Existing inputs become visually de-emphasized (opacity)</li>
+          <li>New input has highlighted border and ring for focus</li>
+          <li>User can immediately start typing name</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Summary Notes -->
+    <div class="mt-8 p-6 bg-slate-900 text-white rounded-xl">
+      <h3 class="text-lg font-semibold mb-4">Implementation Notes</h3>
+      <div class="space-y-3 text-sm text-gray-300">
+        <div>
+          <p class="font-medium text-white mb-1">Key Features Demonstrated:</p>
+          <ul class="list-disc list-inside space-y-1 ml-2">
+            <li><strong>Empty State:</strong> Centered message with primary CTA button</li>
+            <li><strong>Footer Button:</strong> Always visible when inputs exist, allows adding more inputs (AC-9.1)</li>
+            <li><strong>Default Value Field:</strong> New optional field below description (AC-9.3)</li>
+            <li><strong>Type-Aware Defaults:</strong> Input type changes based on selected type (number → number input)</li>
+            <li><strong>Interaction:</strong> Click "+ Add Input" creates new card immediately (AC-9.2)</li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-medium text-white mb-1">Visual Hierarchy:</p>
+          <ul class="list-disc list-inside space-y-1 ml-2">
+            <li>Required checkbox: Prominent, always visible</li>
+            <li>Default value: Subtle blue background to indicate optionality</li>
+            <li>Delete button: Hidden until hover, red on hover</li>
+            <li>Focused input: Blue border with ring for accessibility</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
+

@@ -53,10 +53,14 @@ export async function PATCH(
     if (body.definition) {
       // Wrapped format: { definition: {...}, bindings: {...} }
       updates = body.definition;
-      bindings = body.bindings || {};
+      bindings = body.bindings || (updates.bindings as Record<string, StepBindings>) || {};
     } else {
       // Direct workflow format: { id, name, steps, ... }
       updates = body;
+      // If bindings are in the workflow definition, use them
+      if (body.bindings) {
+        bindings = body.bindings as Record<string, StepBindings>;
+      }
     }
     
     // Merge updates with existing workflow

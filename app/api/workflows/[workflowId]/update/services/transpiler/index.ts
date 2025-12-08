@@ -3,6 +3,7 @@ import type { StepBindings } from "@/app/api/workflows/types/bindings";
 import type { TranspilerContext, TranspilerResult, TranspilerMetadata } from "./types";
 import { generateStepCode } from "./step-generator";
 import { generateWorkflowComposition } from "./workflow-generator";
+import { generateInputSchemaFromRuntimeInputs } from "../input-schema-generator";
 
 /**
  * Transpiles a workflow definition into executable Mastra TypeScript code.
@@ -43,10 +44,26 @@ export function transpileWorkflow(
     }
   }
 
-  // Generate workflow composition
+  // Generate inputSchema from runtimeInputs (AC-9.8, AC-9.9, AC-9.10)
+  let inputSchema;
+  try {
+    inputSchema = generateInputSchemaFromRuntimeInputs(definition.runtimeInputs || []);
+  } catch (e) {
+    errors.push(`Failed to generate input schema: ${e}`);
+    // Fallback to empty schema
+    inputSchema = { type: "object", properties: {}, required: [] };
+  }
+
+  // Create definition with generated inputSchema
+  const definitionWithSchema: WorkflowDefinition = {
+    ...definition,
+    inputSchema,
+  };
+
+  // Generate workflow composition using definition with generated schema (AC-9.12)
   let workflowCode = "";
   try {
-    workflowCode = generateWorkflowComposition(definition, bindings, context);
+    workflowCode = generateWorkflowComposition(definitionWithSchema, bindings, context);
   } catch (e) {
     errors.push(`Failed to generate workflow composition: ${e}`);
   }

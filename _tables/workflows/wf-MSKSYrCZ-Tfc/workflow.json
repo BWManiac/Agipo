@@ -1,0 +1,76 @@
+{
+  "id": "wf-MSKSYrCZ-Tfc",
+  "name": "Summarize site email",
+  "description": "",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "steps": [
+    {
+      "id": "11IU9f9Xc4knMtwwJrnHi",
+      "type": "composio",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "listIndex": 0,
+      "toolId": "BROWSER_TOOL_NAVIGATE",
+      "toolkitSlug": "browser_tool",
+      "toolkitName": "Browser tool",
+      "toolkitLogo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master//composio-logo.png",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "name": "Navigate to URL",
+      "description": "SESSION FOUNDATION: Always start here - creates browser session and navigates to URL. WORKFLOW: Navigate() → FetchWebpage() → Analysis/Planning → AI Agent or Manual interactions → Verify PROVIDES: Live debugUrl for user, initial page snapshot, persistent session TIP: Always show debugUrl to user before proceeding"
+    }
+  ],
+  "mappings": [],
+  "controlFlow": {
+    "type": "sequential",
+    "order": [
+      "11IU9f9Xc4knMtwwJrnHi"
+    ]
+  },
+  "connections": {},
+  "tableRequirements": [],
+  "tables": {},
+  "runtimeInputs": [
+    {
+      "key": "URL",
+      "type": "string",
+      "label": "URL",
+      "required": true
+    }
+  ],
+  "configs": [],
+  "bindings": {
+    "11IU9f9Xc4knMtwwJrnHi": {
+      "stepId": "11IU9f9Xc4knMtwwJrnHi",
+      "inputBindings": {
+        "url": {
+          "targetStepId": "11IU9f9Xc4knMtwwJrnHi",
+          "targetField": "url",
+          "sourceType": "workflow-input",
+          "workflowInputName": "URL"
+        }
+      }
+    }
+  },
+  "createdAt": "2025-12-08T00:50:39.514Z",
+  "lastModified": "2025-12-08T00:50:39.613Z",
+  "createdBy": "user",
+  "published": false
+}

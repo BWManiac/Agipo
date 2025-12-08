@@ -47,10 +47,31 @@
   "connections": {},
   "tableRequirements": [],
   "tables": {},
-  "runtimeInputs": [],
+  "runtimeInputs": [
+    {
+      "key": "input_UqxY",
+      "type": "string",
+      "label": "input_UqxY",
+      "description": "tewt",
+      "required": true
+    }
+  ],
   "configs": [],
-  "createdAt": "2025-12-07T20:08:44.553Z",
-  "lastModified": "2025-12-07T20:08:44.577Z",
+  "bindings": {
+    "kGJqeLnyllYOO0M82-92B": {
+      "stepId": "kGJqeLnyllYOO0M82-92B",
+      "inputBindings": {
+        "robot_id": {
+          "targetStepId": "kGJqeLnyllYOO0M82-92B",
+          "targetField": "robot_id",
+          "sourceType": "workflow-input",
+          "workflowInputName": "input_UqxY"
+        }
+      }
+    }
+  },
+  "createdAt": "2025-12-08T00:50:01.953Z",
+  "lastModified": "2025-12-08T00:50:01.972Z",
   "createdBy": "user",
   "published": false
 }

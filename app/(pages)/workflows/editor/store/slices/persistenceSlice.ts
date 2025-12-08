@@ -1,6 +1,8 @@
 import type { StateCreator } from "zustand";
 import type { WorkflowDefinition } from "@/app/api/workflows/types";
+import type { RuntimeInputConfig } from "@/app/api/workflows/types/workflow-settings";
 import type { WorkflowStore } from "../types";
+import { convertFromRuntimeInputConfig } from "./workflowInputsSlice";
 
 /**
  * Handles saving and loading workflows to/from `workflow.json`.
@@ -50,10 +52,23 @@ export const createPersistenceSlice: StateCreator<
   saveWorkflow: async () => {
     set({ isSaving: true });
     try {
-      const { id, name, description, steps, mappings } = get();
+      const { id, name, description, steps, mappings, workflowInputs } = get();
       if (!id) {
         throw new Error("Cannot save workflow without ID");
       }
+
+      // Convert WorkflowInputDefinition[] to RuntimeInputConfig[] (AC-9.5)
+      const runtimeInputs: RuntimeInputConfig[] = workflowInputs.map((input) => ({
+        key: input.name,
+        type: input.type,
+        label: input.name, // Use name as label for now
+        description: input.description,
+        required: input.required,
+        default: input.defaultValue,
+      }));
+
+      // Get bindings from store to persist
+      const { bindings } = get();
 
       const workflow: WorkflowDefinition = {
         id,
@@ -67,18 +82,24 @@ export const createPersistenceSlice: StateCreator<
         connections: {},
         tableRequirements: [],
         tables: {},
-        runtimeInputs: [],
+        runtimeInputs, // Save converted inputs (AC-9.5)
         configs: [],
+        bindings: bindings, // Persist bindings so they survive reloads
         createdAt: new Date().toISOString(),
         lastModified: new Date().toISOString(),
         createdBy: "user",
         published: false,
       };
 
+      // Send in wrapped format: { definition: {...}, bindings: {...} }
+      // Bindings are included in workflow for persistence, but also sent separately for transpilation
       const response = await fetch(`/api/workflows/${id}/update`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(workflow),
+        body: JSON.stringify({
+          definition: workflow,
+          bindings: bindings, // Send bindings separately for transpilation (redundant but API route expects it)
+        }),
       });
       if (!response.ok) {
         throw new Error("Failed to save workflow");
@@ -102,6 +123,22 @@ export const createPersistenceSlice: StateCreator<
       get().loadWorkflow(workflow);
       get().loadSteps(workflow.steps || []);
       get().loadMappings(workflow.mappings || []);
+      
+      // Load workflow inputs from runtimeInputs (AC-9.6, AC-9.7, AC-9.11)
+      if (workflow.runtimeInputs && Array.isArray(workflow.runtimeInputs)) {
+        const workflowInputs = convertFromRuntimeInputConfig(workflow.runtimeInputs);
+        get().loadWorkflowInputs(workflowInputs);
+      } else {
+        get().loadWorkflowInputs([]);
+      }
+      
+      // Load bindings from workflow.json
+      if (workflow.bindings) {
+        get().loadBindings(workflow.bindings);
+      } else {
+        get().loadBindings({});
+      }
+      
       set({ isLoading: false });
     } catch (error) {
       console.error("Failed to load workflow:", error);
@@ -116,6 +153,8 @@ export const createPersistenceSlice: StateCreator<
     get().setWorkflowDescription("");
     get().loadSteps([]);
     get().loadMappings([]);
+    get().loadWorkflowInputs([]);
+    get().loadBindings({});
   },
 });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Trash2, ChevronDown } from "lucide-react";
 import { useWorkflowStore } from "../../../store";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,9 @@ export function WorkflowInputRow({ input }: WorkflowInputRowProps) {
   const { updateWorkflowInput, removeWorkflowInput } = useWorkflowStore();
   const [name, setName] = useState(input.name);
   const [description, setDescription] = useState(input.description || "");
+  const [defaultValue, setDefaultValue] = useState<string>(
+    input.defaultValue !== undefined ? String(input.defaultValue) : ""
+  );
 
   const handleNameBlur = () => {
     if (name !== input.name && name.trim()) {
@@ -40,6 +43,41 @@ export function WorkflowInputRow({ input }: WorkflowInputRowProps) {
     if (description !== input.description) {
       updateWorkflowInput(input.name, { description: description || undefined });
     }
+  };
+
+  // Sync defaultValue state when input.defaultValue changes (e.g., from type change)
+  useEffect(() => {
+    if (input.defaultValue !== undefined) {
+      setDefaultValue(String(input.defaultValue));
+    } else {
+      setDefaultValue("");
+    }
+  }, [input.defaultValue, input.type]);
+
+  const handleDefaultValueBlur = () => {
+    // Convert string value to appropriate type based on input.type
+    let parsedValue: unknown = undefined;
+    
+    if (defaultValue.trim() === "") {
+      parsedValue = undefined;
+    } else {
+      switch (input.type) {
+        case "number":
+          parsedValue = Number(defaultValue);
+          if (isNaN(parsedValue as number)) {
+            // Invalid number, don't save
+            return;
+          }
+          break;
+        case "boolean":
+          parsedValue = defaultValue.toLowerCase() === "true" || defaultValue === "1";
+          break;
+        default:
+          parsedValue = defaultValue;
+      }
+    }
+
+    updateWorkflowInput(input.name, { defaultValue: parsedValue });
   };
 
   return (
@@ -106,6 +144,60 @@ export function WorkflowInputRow({ input }: WorkflowInputRowProps) {
         placeholder="Description (optional)"
         className="h-8 text-xs"
       />
+
+      {/* Default Value (AC-9.3) - Below description, type-aware input */}
+      <div className="pt-2 border-t border-gray-100">
+        <label className="text-xs font-medium text-gray-600 mb-1.5 block">
+          Default value
+          <span className="text-gray-400 font-normal ml-1">(optional)</span>
+        </label>
+        
+        {input.type === "boolean" ? (
+          // Boolean: Checkbox (AC-9.4)
+          <div className="flex items-center gap-3 p-2 bg-blue-50/50 border border-blue-200 rounded-md">
+            <Checkbox
+              id={`default-${input.name}`}
+              checked={input.defaultValue === true}
+              onCheckedChange={(checked) => {
+                const boolValue = checked === true;
+                setDefaultValue(String(boolValue));
+                updateWorkflowInput(input.name, { defaultValue: boolValue });
+              }}
+              className="w-5 h-5"
+            />
+            <label
+              htmlFor={`default-${input.name}`}
+              className="text-xs text-gray-700 cursor-pointer flex-1"
+            >
+              Default to <strong>{input.defaultValue === true ? "true" : "false"}</strong>
+            </label>
+          </div>
+        ) : input.type === "number" ? (
+          // Number: Number input (AC-9.4)
+          <Input
+            type="number"
+            value={defaultValue}
+            onChange={(e) => setDefaultValue(e.target.value)}
+            onBlur={handleDefaultValueBlur}
+            placeholder="Enter number..."
+            className="h-8 text-xs font-mono bg-blue-50/50 border-blue-200 focus:border-blue-500"
+          />
+        ) : (
+          // String/Array/Object: Text input (AC-9.4)
+          <Input
+            type="text"
+            value={defaultValue}
+            onChange={(e) => setDefaultValue(e.target.value)}
+            onBlur={handleDefaultValueBlur}
+            placeholder="Enter default value..."
+            className="h-8 text-xs font-mono bg-blue-50/50 border-blue-200 focus:border-blue-500 placeholder:text-gray-400"
+          />
+        )}
+        
+        <p className="text-[10px] text-gray-400 mt-1 ml-1">
+          This value will be used if not provided when the workflow is invoked
+        </p>
+      </div>
     </div>
   );
 }
