@@ -33,7 +33,23 @@ Relevant findings from research that inform this phase:
 
 ### Overall File Impact
 
-Complete list of all files created/modified in this phase, organized by category:
+Complete list of all files created/modified in this phase, organized by category.
+
+**Common categories** (use as needed, remove empty sections):
+- **Types** - Shared type definitions
+- **Backend / API** - Route handlers
+- **Backend / Services** - Business logic and utilities
+- **Backend / Storage** - Data persistence
+- **Frontend / State** - Zustand slices and stores
+- **Frontend / Components** - React components (can sub-categorize)
+- **Config** - Configuration files
+- **Scripts** - Build or utility scripts
+
+#### Types
+
+| File | Action | Purpose | Part |
+|------|--------|---------|------|
+| `app/api/.../types/example.ts` | Create | Product-focused description | A |
 
 #### Backend / API
 
@@ -47,12 +63,6 @@ Complete list of all files created/modified in this phase, organized by category
 |------|--------|---------|------|
 | `app/api/.../services/example.ts` | Create | Product-focused description | A |
 
-#### Types
-
-| File | Action | Purpose | Part |
-|------|--------|---------|------|
-| `app/api/.../types/example.ts` | Create | Product-focused description | A |
-
 #### Frontend / State
 
 | File | Action | Purpose | Part |
@@ -65,7 +75,7 @@ Complete list of all files created/modified in this phase, organized by category
 |------|--------|---------|------|
 | `app/(pages)/.../components/Example.tsx` | Create | Product-focused description | B |
 
-*Note: Remove empty sections. Add other categories as needed (e.g., Scripts, Config, Tests).*
+*Note: Remove empty sections. Types should generally come first, then Backend, then Frontend.*
 
 ### Overall Acceptance Criteria
 

@@ -27,5 +27,3 @@ export type WorkflowStore = WorkflowSlice &
   BindingsSlice &
   WorkflowInputsSlice &
   DetailsSlice;
-
-

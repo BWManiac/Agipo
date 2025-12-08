@@ -15,8 +15,11 @@ import { DndProvider } from "./providers/DndProvider";
  */
 function WorkflowEditorContent() {
   useWorkflowLoader();
+  const workflowId = useWorkflowStore((state) => state.id);
   const workflowName = useWorkflowStore((state) => state.name);
   const { isSaving, isLoading, saveWorkflow } = usePersistence();
+
+  const canSave = !!workflowId && !isSaving && !isLoading;
 
   return (
     <DndProvider>
@@ -30,10 +33,10 @@ function WorkflowEditorContent() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => saveWorkflow()}
-                disabled={isSaving}
+                disabled={!canSave}
                 className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? "Saving..." : isLoading ? "Loading..." : "Save"}
               </button>
             </div>
           </div>

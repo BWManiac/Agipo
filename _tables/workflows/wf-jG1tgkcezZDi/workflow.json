@@ -1,0 +1,56 @@
+{
+  "id": "wf-jG1tgkcezZDi",
+  "name": "Test",
+  "description": "Test this",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "steps": [
+    {
+      "id": "kGJqeLnyllYOO0M82-92B",
+      "type": "composio",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "listIndex": 0,
+      "toolId": "BROWSEAI_BULK_RUN_TASKS",
+      "toolkitSlug": "browseai",
+      "toolkitName": "browseai-lwozyo",
+      "toolkitLogo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master/browseai.svg",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "name": "Bulk Run Tasks",
+      "description": "This action allows users to bulk run up to 50,000 tasks using a specified robot. It provides a POST endpoint at /v2/robots/{robotId}/bulk-tasks and supports parameters such as robot_id (required), title (required), and input_parameters (required). This bulk operation is essential for large-scale data extraction."
+    }
+  ],
+  "mappings": [],
+  "controlFlow": {
+    "type": "sequential",
+    "order": [
+      "kGJqeLnyllYOO0M82-92B"
+    ]
+  },
+  "connections": {},
+  "tableRequirements": [],
+  "tables": {},
+  "runtimeInputs": [],
+  "configs": [],
+  "createdAt": "2025-12-07T20:08:44.553Z",
+  "lastModified": "2025-12-07T20:08:44.577Z",
+  "createdBy": "user",
+  "published": false
+}

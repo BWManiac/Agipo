@@ -33,6 +33,51 @@
    - ❌ Bad: "WorkflowSummary type"
    - ✅ Good: "Lightweight workflow metadata for list views. Enables the workflow list page to display workflow cards (name, description, step count) without loading full workflow definitions, improving performance and user experience."
    
+   **Categorized File Impact Tables:**
+   
+   When documenting file impact in phase documents, organize files by category for clarity:
+   
+   ```markdown
+   ### Overall File Impact
+   
+   #### Types
+   | File | Action | Purpose | Part |
+   |------|--------|---------|------|
+   | `app/api/.../types/example.ts` | Create | Product-focused description | A |
+   
+   #### Backend / API
+   | File | Action | Purpose | Part |
+   |------|--------|---------|------|
+   | `app/api/.../route.ts` | Create | Product-focused description | A |
+   
+   #### Backend / Services
+   | File | Action | Purpose | Part |
+   |------|--------|---------|------|
+   | `app/api/.../services/example.ts` | Create | Product-focused description | A |
+   
+   #### Frontend / State
+   | File | Action | Purpose | Part |
+   |------|--------|---------|------|
+   | `app/(pages)/.../store/slices/exampleSlice.ts` | Create | Product-focused description | A |
+   
+   #### Frontend / Components
+   | File | Action | Purpose | Part |
+   |------|--------|---------|------|
+   | `app/(pages)/.../components/Example.tsx` | Create | Product-focused description | B |
+   ```
+   
+   Common categories include:
+   - **Types** - Shared type definitions
+   - **Backend / API** - Route handlers
+   - **Backend / Services** - Business logic and utilities
+   - **Backend / Storage** - Data persistence
+   - **Frontend / State** - Zustand slices and stores
+   - **Frontend / Components** - React components (can be further sub-categorized)
+   - **Config** - Configuration files
+   - **Scripts** - Build or utility scripts
+   
+   Remove empty sections. Add categories as needed for the specific phase.
+   
    **Acceptance Criteria:**
    - Which acceptance criteria (AC-X.X) it addresses
    - Which product requirements (PR-X) it supports

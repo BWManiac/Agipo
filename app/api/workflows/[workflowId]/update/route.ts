@@ -5,6 +5,9 @@ import {
   writeWorkflow,
 } from "@/app/api/workflows/services/storage";
 import { WorkflowDefinitionValidator } from "@/app/api/workflows/types";
+import type { StepBindings } from "@/app/api/workflows/types/bindings";
+import { transpileWorkflow } from "./services/transpiler";
+import { writeWorkflowCode } from "./services/storage/code-writer";
 
 export const runtime = "nodejs";
 
@@ -14,10 +17,17 @@ type RouteContext = {
 
 /**
  * PATCH /api/workflows/[workflowId]/update
- * Updates a workflow definition.
- * Enables users to save their workflow edits from the editor.
- * Merges updates with existing workflow, validates the result, and saves to workflow.json.
- * Returns 404 if workflow doesn't exist, 400 on validation errors, 500 on server errors.
+ * Updates a workflow definition and transpiles to executable code.
+ * 
+ * Accepts two formats:
+ * 1. Direct workflow object: { id, name, steps, ... }
+ * 2. Wrapped format: { definition: {...}, bindings: {...} }
+ * 
+ * Saves two files:
+ * - workflow.json: Editor state (steps, bindings, metadata)
+ * - workflow.ts: Executable Mastra code
+ * 
+ * Returns success even if transpilation fails (JSON is always saved).
  */
 export async function PATCH(
   request: NextRequest,
@@ -36,20 +46,64 @@ export async function PATCH(
     
     const body = await request.json();
     
+    // Support both direct workflow and wrapped { definition, bindings } format
+    let updates: Record<string, unknown>;
+    let bindings: Record<string, StepBindings> = {};
+    
+    if (body.definition) {
+      // Wrapped format: { definition: {...}, bindings: {...} }
+      updates = body.definition;
+      bindings = body.bindings || {};
+    } else {
+      // Direct workflow format: { id, name, steps, ... }
+      updates = body;
+    }
+    
     // Merge updates with existing workflow
     const updated = {
       ...existing,
-      ...body,
+      ...updates,
       id: workflowId, // Ensure ID cannot be changed
+      lastModified: new Date().toISOString(),
     };
     
     // Validate the merged result
     const validated = WorkflowDefinitionValidator.parse(updated);
     
-    // Save to workflow.json
+    // ALWAYS save workflow.json first (preserves editor state)
     const saved = await writeWorkflow(validated);
     
-    return NextResponse.json(saved);
+    // Attempt transpilation
+    const result: {
+      success: boolean;
+      workflow: typeof saved;
+      files: { json: boolean; ts: boolean };
+      warnings?: string[];
+    } = {
+      success: true,
+      workflow: saved,
+      files: { json: true, ts: false },
+    };
+
+    try {
+      const transpileResult = transpileWorkflow(validated, bindings);
+      
+      if (transpileResult.errors.length === 0) {
+        // Transpilation succeeded - write the code
+        await writeWorkflowCode(workflowId, transpileResult.code);
+        result.files.ts = true;
+      } else {
+        // Transpilation had errors but didn't throw
+        result.warnings = transpileResult.errors;
+      }
+    } catch (error) {
+      // Transpilation threw an error
+      result.warnings = [
+        `Transpilation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      ];
+    }
+    
+    return NextResponse.json(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -65,4 +119,3 @@ export async function PATCH(
     );
   }
 }
-

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { usePersistence } from "./usePersistence";
+import { useWorkflowStore } from "../store";
 
 /**
  * Hook that automatically loads a workflow when the editor page opens.
@@ -11,8 +12,17 @@ import { usePersistence } from "./usePersistence";
 export function useWorkflowLoader() {
   const searchParams = useSearchParams();
   const { fetchWorkflowById, isLoading } = usePersistence();
+  const setWorkflowId = useWorkflowStore((state) => state.setWorkflowId);
   const workflowId = searchParams.get("id");
   const hasLoadedRef = useRef<string | null>(null);
+
+  // Set the workflow ID from URL immediately (before fetch completes)
+  // This ensures the ID is available for save operations even during loading
+  useEffect(() => {
+    if (workflowId) {
+      setWorkflowId(workflowId);
+    }
+  }, [workflowId, setWorkflowId]);
 
   useEffect(() => {
     // Only load if we have a workflowId, we're not currently loading, and we haven't already loaded this ID
