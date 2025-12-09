@@ -93,8 +93,8 @@ export const createPersistenceSlice: StateCreator<
 
       // Send in wrapped format: { definition: {...}, bindings: {...} }
       // Bindings are included in workflow for persistence, but also sent separately for transpilation
-      const response = await fetch(`/api/workflows/${id}/update`, {
-        method: "PATCH",
+      const response = await fetch(`/api/workflows/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           definition: workflow,
@@ -114,7 +114,7 @@ export const createPersistenceSlice: StateCreator<
   fetchWorkflowById: async (workflowId: string) => {
     set({ isLoading: true });
     try {
-      const response = await fetch(`/api/workflows/${workflowId}/retrieve`);
+      const response = await fetch(`/api/workflows/${workflowId}`);
       if (!response.ok) {
         throw new Error("Failed to load workflow");
       }

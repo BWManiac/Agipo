@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { disconnectAccount } from "../services/composio";
+import { disconnectAccount } from "../connect/services/auth";
 
 export const runtime = "nodejs";
 

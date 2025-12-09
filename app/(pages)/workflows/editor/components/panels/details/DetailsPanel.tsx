@@ -32,7 +32,7 @@ export function DetailsPanel() {
       setError(null);
       try {
         const res = await fetch(
-          `/api/workflows/composio-schemas/${selectedStep.toolkitSlug}/${selectedStep.toolId}`
+          `/api/connections/schemas/composio/toolkits/${selectedStep.toolkitSlug}/${selectedStep.toolId}`
         );
         if (!res.ok) throw new Error("Failed to fetch schema");
         const data = await res.json();

@@ -96,7 +96,7 @@ OAuth Flow:
 3. Backend returns redirectUrl
 4. Frontend redirects user to OAuth provider
 5. User authorizes access
-6. Provider redirects to /api/connections/callback
+6. Provider redirects to /api/connections/connect/callback
 7. Callback redirects to /profile with status
 
 API Key Flow:

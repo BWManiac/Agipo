@@ -12,12 +12,12 @@ export {
   getComposioVercelClient 
 } from "./client";
 
-// Authentication
+// Authentication (co-located with connect route)
 export { 
   initiateConnection, 
   initiateApiKeyConnection, 
   disconnectAccount 
-} from "./auth";
+} from "../connect/services/auth";
 
 // Connections
 export { 
@@ -25,7 +25,7 @@ export {
   listConnections 
 } from "./connections";
 
-// Tools
+// Tools (co-located with toolkits routes)
 export {
   getAvailableTools,
   getToolAction,
@@ -36,4 +36,4 @@ export {
   getNoAuthToolkits,
   getConnectionToolsForMastra,
   getConnectionToolsVercel,
-} from "./tools";
+} from "../available/toolkits/services/tools";

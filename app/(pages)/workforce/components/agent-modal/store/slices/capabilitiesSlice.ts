@@ -308,7 +308,7 @@ export const createCapabilitiesSlice: StateCreator<
     console.log("[CapabilitiesSlice] Fetching user connections");
     
     try {
-      const response = await fetch(`/api/connections/list`);
+      const response = await fetch(`/api/connections`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch user connections");

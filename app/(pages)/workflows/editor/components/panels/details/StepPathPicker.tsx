@@ -31,7 +31,7 @@ export function StepPathPicker({ sourceStep, onSelect, onCancel }: StepPathPicke
 
       try {
         const res = await fetch(
-          `/api/workflows/composio-schemas/${sourceStep.toolkitSlug}/${sourceStep.toolId}`
+          `/api/connections/schemas/composio/toolkits/${sourceStep.toolkitSlug}/${sourceStep.toolId}`
         );
         if (!res.ok) throw new Error("Failed to fetch schema");
         const data = await res.json();

@@ -92,7 +92,7 @@ export const createPersistenceSlice: StateCreator<
     try {
       const url = isNewWorkflow
         ? "/api/tools/create"
-        : `/api/tools/${currentWorkflowId}/update`;
+        : `/api/tools/${currentWorkflowId}`;
       const method = isNewWorkflow ? "POST" : "PUT";
 
       const response = await fetch(url, {

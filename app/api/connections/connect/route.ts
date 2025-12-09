@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { initiateConnection, initiateApiKeyConnection } from "../services/composio";
+import { initiateConnection, initiateApiKeyConnection } from "./services/auth";
 
 export const runtime = "nodejs";
 

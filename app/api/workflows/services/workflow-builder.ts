@@ -13,7 +13,7 @@ import type { StepBindings, FieldBinding } from "@/app/api/workflows/types/bindi
 import type { WorkflowStep } from "@/app/api/workflows/types/workflow-step";
 import type { JSONSchema } from "@/app/api/workflows/types/schemas";
 import { getComposioClient } from "@/app/api/connections/services/composio";
-import { generateInputSchemaFromRuntimeInputs } from "@/app/api/workflows/[workflowId]/update/services/input-schema-generator";
+import { generateInputSchemaFromRuntimeInputs } from "@/app/api/workflows/[workflowId]/services/input-schema-generator";
 
 // ============================================================================
 // Helper Functions

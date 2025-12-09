@@ -179,7 +179,49 @@ This breaks the pattern: create should be `POST /workflows` (collection level).
 
 ---
 
-## 10. Edge Cases & Decisions
+## 10. Service Organization & Co-location
+
+**Principle:** Services should be co-located with their primary consumers. Ownership and usage should be immediately clear from the folder structure.
+
+**Rule 1: Co-locate with Single Consumer**
+- If a service is used by exactly one route → Place it under that route's `services/` folder
+- Example: `/workforce/[agentId]/chat/services/chat-service.ts` (only used by chat route)
+
+**Rule 2: Move Up One Level for Shared Services**
+- If a service is shared by 2+ routes within the same domain → Move to domain-level `services/` folder
+- Example: `/workflows/services/storage/` (shared by create, [workflowId], list, available routes)
+
+**Rule 3: Cross-Domain Services**
+- If a service is shared across multiple domains → Keep at domain level with clear documentation
+- Example: `/workflows/services/workflow-loader.ts` (used by workforce and tools domains for runtime execution)
+
+**Rule 4: Unused Services**
+- If a service has no consumers → Delete it or document why it exists
+
+**Benefits:**
+- Clear ownership: Services live with their primary consumer
+- Discoverability: Easy to find what a route uses
+- Maintainability: Changes to a route's services are localized
+- Consistency: Matches the workforce domain pattern
+
+**Example Structure:**
+```
+/workflows/
+  /[workflowId]/
+    /route.ts
+    /services/              ← Co-located (single consumer)
+      - transpiler/
+      - input-schema-generator.ts
+      - storage/
+        - code-writer.ts
+  /services/                ← Domain-level (shared)
+    - storage/              ← Shared by multiple routes
+    - workflow-loader.ts    ← Cross-domain usage
+```
+
+---
+
+## 11. Edge Cases & Decisions
 
 ### Composio Schemas Placement
 
@@ -241,6 +283,7 @@ For domains with complex CRUD logic, consider grouping in a `repository` subfold
 ## Next Steps
 
 1. Apply principles to current route structure
-2. Create migration plan for restructuring
-3. Document domain-specific patterns as they emerge
+2. Reorganize services to follow co-location principles
+3. Create migration plan for restructuring
+4. Document domain-specific patterns as they emerge
 

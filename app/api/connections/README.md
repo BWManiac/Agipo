@@ -7,23 +7,23 @@ This module provides API routes for managing Composio integrations - OAuth conne
 ```
 Frontend                          Backend                         Composio
 ────────                          ───────                         ────────
-useIntegrations hook  ──────►  /api/integrations/auth-configs  ──►  authConfigs.list()
-                      ──────►  /api/integrations/list          ──►  connectedAccounts.list()
+useConnections hook   ──────►  /api/connections/available/auth-configs  ──►  authConfigs.list()
+                      ──────►  /api/connections                        ──►  connectedAccounts.list()
 
-AddConnectionDialog   ──────►  /api/integrations/connect       ──►  connectedAccounts.initiate()
+AddConnectionDialog   ──────►  /api/connections/connect                 ──►  connectedAccounts.initiate()
                                       │
                                       ▼
                               Redirect to OAuth Provider
                                       │
                                       ▼
-                              /api/integrations/callback  ──►  Redirect to /profile
+                              /api/connections/connect/callback  ──►  Redirect to /profile
 ```
 
 ---
 
 ## Routes
 
-### GET `/api/integrations/auth-configs`
+### GET `/api/connections/available/auth-configs`
 
 Lists all available auth configurations from Composio. These are the pre-configured integrations (e.g., "gmail-oxzcjt", "github-ff-xrb") set up in your Composio workspace.
 
@@ -48,7 +48,7 @@ Lists all available auth configurations from Composio. These are the pre-configu
 
 ---
 
-### POST `/api/integrations/connect`
+### POST `/api/connections/connect`
 
 Initiates an OAuth connection flow for a user using a specific auth config.
 
@@ -79,7 +79,7 @@ Initiates an OAuth connection flow for a user using a specific auth config.
 
 ---
 
-### GET `/api/integrations/list`
+### GET `/api/connections`
 
 Lists all connected accounts for a user.
 
@@ -105,7 +105,7 @@ Lists all connected accounts for a user.
 
 ---
 
-### GET `/api/integrations/callback`
+### GET `/api/connections/connect/callback`
 
 OAuth callback handler. After a user authorizes with an external provider (Google, GitHub, etc.), Composio redirects here.
 

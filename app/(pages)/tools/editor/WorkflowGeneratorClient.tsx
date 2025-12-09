@@ -42,7 +42,7 @@ export default function WorkflowGeneratorClient() {
 
     const load = async () => {
       try {
-        const response = await fetch(`/api/tools/${workflowId}/read`);
+        const response = await fetch(`/api/tools/${workflowId}`);
         if (!response.ok) throw new Error("Workflow not found");
         const data = await response.json();
         if (!cancelled) {

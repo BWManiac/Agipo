@@ -1,0 +1,30 @@
+{
+  "id": "wf-XXnbyCA8-fG0",
+  "name": "ter",
+  "description": "tes",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "steps": [],
+  "mappings": [],
+  "controlFlow": {
+    "type": "sequential",
+    "order": []
+  },
+  "connections": {},
+  "tableRequirements": [],
+  "tables": {},
+  "runtimeInputs": [],
+  "configs": [],
+  "createdAt": "2025-12-09T21:18:12.088Z",
+  "lastModified": "2025-12-09T21:18:12.089Z",
+  "createdBy": "user",
+  "published": false
+}

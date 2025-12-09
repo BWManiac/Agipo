@@ -72,8 +72,8 @@ export function useConnections() {
 
     try {
       const [authConfigsRes, connectionsRes] = await Promise.all([
-        fetch("/api/connections/auth-configs"),
-        fetch("/api/connections/list"),
+        fetch("/api/connections/available/auth-configs"),
+        fetch("/api/connections"),
       ]);
 
       if (!authConfigsRes.ok) {
@@ -165,7 +165,7 @@ export function useConnections() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           authConfigId,
-          redirectUri: `${window.location.origin}/api/connections/callback`,
+          redirectUri: `${window.location.origin}/api/connections/connect/callback`,
         }),
       });
 

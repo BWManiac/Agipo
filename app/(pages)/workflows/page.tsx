@@ -53,7 +53,7 @@ export default function WorkflowsFPage() {
     description?: string;
   }) {
     try {
-      const response = await fetch("/api/workflows/new/create", {
+      const response = await fetch("/api/workflows/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -77,7 +77,7 @@ export default function WorkflowsFPage() {
     }
 
     try {
-      const response = await fetch(`/api/workflows/${id}/delete`, {
+      const response = await fetch(`/api/workflows/${id}`, {
         method: "DELETE",
       });
 

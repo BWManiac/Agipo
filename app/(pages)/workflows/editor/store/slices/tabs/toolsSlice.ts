@@ -45,7 +45,7 @@ export const createToolsSlice: StateCreator<any, [], [], ToolsSlice> = (
     set({ isLoadingTools: true, toolsError: null });
 
     try {
-      const response = await fetch("/api/workflows/composio-schemas/available-integrations");
+      const response = await fetch("/api/connections/available/integrations");
       if (!response.ok) {
         throw new Error(`Failed to fetch tools: ${response.statusText}`);
       }
