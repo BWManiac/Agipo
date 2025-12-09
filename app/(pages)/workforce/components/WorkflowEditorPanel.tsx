@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { useWorkflowAssignment } from "./agent-modal/hooks/useWorkflowAssignment";
+import { useAgentModalStore } from "./agent-modal/store";
 import { WorkflowConnectionSelector } from "./WorkflowConnectionSelector";
 import type { AgentConfig, WorkflowBinding } from "@/_tables/types";
 import { ChevronLeft, ChevronDown, ChevronRight, CheckCircle2, AlertCircle } from "lucide-react";
@@ -21,81 +21,53 @@ export function WorkflowEditorPanel({
   onBack,
   onSave,
 }: WorkflowEditorPanelProps) {
-  const {
-    availableWorkflows,
-    userConnections,
-    currentBindings,
-    isLoading,
-    fetchData,
-    groupConnectionsByToolkit,
-  } = useWorkflowAssignment(agent.id);
+  // Store state
+  const availableWorkflows = useAgentModalStore((state) => state.availableWorkflows);
+  const userConnections = useAgentModalStore((state) => state.userConnections);
+  const assignedWorkflowBindings = useAgentModalStore((state) => state.assignedWorkflowBindings);
+  const isLoadingWorkflows = useAgentModalStore((state) => state.isLoadingWorkflows);
+  const selectedWorkflowBindings = useAgentModalStore((state) => state.selectedWorkflowBindings);
+  const expandedWorkflows = useAgentModalStore((state) => state.expandedWorkflows);
+  const workflowSearchQuery = useAgentModalStore((state) => state.workflowSearchQuery);
+  const isSavingWorkflows = useAgentModalStore((state) => state.isSavingWorkflows);
 
-  const [selectedBindings, setSelectedBindings] = useState<Map<string, WorkflowBinding>>(
-    new Map()
-  );
-  const [expandedWorkflows, setExpandedWorkflows] = useState<Set<string>>(new Set());
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  // Store actions
+  const fetchWorkflows = useAgentModalStore((state) => state.fetchWorkflows);
+  const fetchUserConnections = useAgentModalStore((state) => state.fetchUserConnections);
+  const groupConnectionsByToolkit = useAgentModalStore((state) => state.groupConnectionsByToolkit);
+  const toggleWorkflow = useAgentModalStore((state) => state.toggleWorkflow);
+  const toggleExpandedWorkflow = useAgentModalStore((state) => state.toggleExpandedWorkflow);
+  const setWorkflowConnection = useAgentModalStore((state) => state.setWorkflowConnection);
+  const setWorkflowSearchQuery = useAgentModalStore((state) => state.setWorkflowSearchQuery);
 
   // Load data on mount
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchWorkflows(agent.id);
+    fetchUserConnections();
+  }, [agent.id, fetchWorkflows, fetchUserConnections]);
 
-  // Initialize selectedBindings from currentBindings
+  // Initialize selectedWorkflowBindings from assignedWorkflowBindings
   useEffect(() => {
-    if (currentBindings.length > 0) {
-      const initialBindings = new Map<string, WorkflowBinding>();
-      for (const binding of currentBindings) {
-        initialBindings.set(binding.workflowId, binding);
-        expandedWorkflows.add(binding.workflowId);
-      }
-      setSelectedBindings(initialBindings);
-      setExpandedWorkflows(new Set(expandedWorkflows));
+    if (assignedWorkflowBindings.length > 0 && selectedWorkflowBindings.size === 0) {
+      // Initialize store state with assigned bindings (only if store is empty)
+      // Use store actions to initialize instead of direct setState
+      assignedWorkflowBindings.forEach((binding) => {
+        // Toggle workflow to add it (this will also expand it)
+        toggleWorkflow(binding.workflowId);
+        // Set connections for each binding
+        Object.entries(binding.connectionBindings).forEach(([toolkitSlug, connectionId]) => {
+          setWorkflowConnection(binding.workflowId, toolkitSlug, connectionId);
+        });
+      });
     }
-  }, [currentBindings]);
+    // Only run when assignedWorkflowBindings changes, not when selectedWorkflowBindings changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assignedWorkflowBindings.length]);
 
   const groupedConnections = useMemo(() => groupConnectionsByToolkit(), [groupConnectionsByToolkit]);
 
-  const toggleWorkflow = (workflowId: string) => {
-    const newBindings = new Map(selectedBindings);
-    const newExpanded = new Set(expandedWorkflows);
-
-    if (newBindings.has(workflowId)) {
-      newBindings.delete(workflowId);
-      newExpanded.delete(workflowId);
-    } else {
-      const workflow = availableWorkflows.find((w) => w.id === workflowId);
-      if (workflow) {
-        newBindings.set(workflowId, {
-          workflowId,
-          connectionBindings: {},
-        });
-        newExpanded.add(workflowId);
-      }
-    }
-
-    setSelectedBindings(newBindings);
-    setExpandedWorkflows(newExpanded);
-  };
-
-  const changeConnection = (workflowId: string, toolkitSlug: string, connectionId: string) => {
-    const newBindings = new Map(selectedBindings);
-    const binding = newBindings.get(workflowId);
-    if (binding) {
-      newBindings.set(workflowId, {
-        ...binding,
-        connectionBindings: {
-          ...binding.connectionBindings,
-          [toolkitSlug]: connectionId,
-        },
-      });
-      setSelectedBindings(newBindings);
-    }
-  };
-
   const getWorkflowStatus = (workflowId: string): "ready" | "needs-setup" => {
-    const binding = selectedBindings.get(workflowId);
+    const binding = selectedWorkflowBindings.get(workflowId);
     const workflow = availableWorkflows.find((w) => w.id === workflowId);
 
     if (!binding || !workflow) return "needs-setup";
@@ -110,9 +82,8 @@ export function WorkflowEditorPanel({
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
     try {
-      const bindingsArray = Array.from(selectedBindings.values());
+      const bindingsArray = Array.from(selectedWorkflowBindings.values());
       await onSave(bindingsArray);
     } catch (error) {
       console.error("Failed to save workflows:", error);
@@ -131,23 +102,21 @@ export function WorkflowEditorPanel({
       }
       
       alert(errorMessage);
-    } finally {
-      setIsSaving(false);
     }
   };
 
   const filteredWorkflows = useMemo(() => {
-    if (!searchQuery) return availableWorkflows;
-    const query = searchQuery.toLowerCase();
+    if (!workflowSearchQuery) return availableWorkflows;
+    const query = workflowSearchQuery.toLowerCase();
     return availableWorkflows.filter(
       (w) =>
         w.name.toLowerCase().includes(query) ||
         w.description?.toLowerCase().includes(query) ||
         w.id.toLowerCase().includes(query)
     );
-  }, [availableWorkflows, searchQuery]);
+  }, [availableWorkflows, workflowSearchQuery]);
 
-  const hasNoWorkflows = availableWorkflows.length === 0 && !isLoading;
+  const hasNoWorkflows = availableWorkflows.length === 0 && !isLoadingWorkflows;
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
@@ -174,8 +143,8 @@ export function WorkflowEditorPanel({
         <div className="px-6 py-4 border-b border-gray-200 bg-white">
           <Input
             placeholder="Search workflows..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={workflowSearchQuery}
+            onChange={(e) => setWorkflowSearchQuery(e.target.value)}
             className="max-w-md"
           />
         </div>
@@ -183,7 +152,7 @@ export function WorkflowEditorPanel({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
-        {isLoading ? (
+        {isLoadingWorkflows ? (
           <div className="text-center text-gray-500 py-12">
             Loading workflows...
           </div>
@@ -204,10 +173,10 @@ export function WorkflowEditorPanel({
         ) : (
           <div className="space-y-2">
             {filteredWorkflows.map((workflow) => {
-              const isSelected = selectedBindings.has(workflow.id);
+              const isSelected = selectedWorkflowBindings.has(workflow.id);
               const isExpanded = expandedWorkflows.has(workflow.id);
               const status = getWorkflowStatus(workflow.id);
-              const binding = selectedBindings.get(workflow.id);
+              const binding = selectedWorkflowBindings.get(workflow.id);
 
               return (
                 <div
@@ -249,15 +218,7 @@ export function WorkflowEditorPanel({
                     </div>
                     {isSelected && (
                       <button
-                        onClick={() => {
-                          const newExpanded = new Set(expandedWorkflows);
-                          if (newExpanded.has(workflow.id)) {
-                            newExpanded.delete(workflow.id);
-                          } else {
-                            newExpanded.add(workflow.id);
-                          }
-                          setExpandedWorkflows(newExpanded);
-                        }}
+                        onClick={() => toggleExpandedWorkflow(workflow.id)}
                         className="p-1 hover:bg-gray-100 rounded"
                       >
                         {isExpanded ? (
@@ -283,7 +244,7 @@ export function WorkflowEditorPanel({
                             selectedId={selectedConnectionId}
                             connections={connections}
                             onChange={(connectionId) =>
-                              changeConnection(workflow.id, toolkitSlug, connectionId)
+                              setWorkflowConnection(workflow.id, toolkitSlug, connectionId)
                             }
                           />
                         );
@@ -305,11 +266,11 @@ export function WorkflowEditorPanel({
       {/* Footer */}
       {!hasNoWorkflows && (
         <div className="border-t border-gray-200 px-6 py-4 bg-white flex justify-end gap-3">
-          <Button variant="outline" onClick={onBack} disabled={isSaving}>
+          <Button variant="outline" onClick={onBack} disabled={isSavingWorkflows}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save Changes"}
+          <Button onClick={handleSave} disabled={isSavingWorkflows}>
+            {isSavingWorkflows ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       )}

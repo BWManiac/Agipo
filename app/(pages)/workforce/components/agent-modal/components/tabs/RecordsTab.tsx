@@ -11,14 +11,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { AgentConfig } from "@/_tables/types";
-import { useAgentDetails } from "../../hooks/useAgentDetails";
+import { useAgentModalStore } from "../../store";
 
 interface RecordsTabProps {
   agent: AgentConfig;
 }
 
 export function RecordsTab({ agent }: RecordsTabProps) {
-  const { records } = useAgentDetails(agent);
+  const records = useAgentModalStore((state) => state.records);
 
   return (
     <div className="flex-1 overflow-y-auto bg-gray-50 p-6">

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { useConnectionTools, type ConnectionWithTools, type PlatformToolkit } from "./agent-modal/hooks/useConnectionTools";
+import { useAgentModalStore, type ConnectionWithTools, type PlatformToolkit } from "./agent-modal/store";
 import type { AgentConfig, ConnectionToolBinding } from "@/_tables/types";
 import { ChevronLeft, ChevronDown, ChevronRight, AlertCircle, Link2, Zap } from "lucide-react";
 import Link from "next/link";
@@ -40,38 +40,42 @@ export function ConnectionToolEditorPanel({
   onBack,
   onSave,
 }: ConnectionToolEditorPanelProps) {
-  const {
-    availableConnections,
-    platformToolkits,
-    assignedBindings,
-    isLoading,
-    fetchData,
-  } = useConnectionTools(agent.id);
+  // Store state
+  const availableConnections = useAgentModalStore((state) => state.availableConnections);
+  const platformToolkits = useAgentModalStore((state) => state.platformToolkits);
+  const assignedConnectionBindings = useAgentModalStore((state) => state.assignedConnectionBindings);
+  const isLoadingConnectionTools = useAgentModalStore((state) => state.isLoadingConnectionTools);
+  const selectedConnectionBindings = useAgentModalStore((state) => state.selectedConnectionBindings);
+  const expandedToolkits = useAgentModalStore((state) => state.expandedToolkits);
+  const connectionSearchQuery = useAgentModalStore((state) => state.connectionSearchQuery);
+  const isSavingConnectionTools = useAgentModalStore((state) => state.isSavingConnectionTools);
 
-  const [selectedBindings, setSelectedBindings] = useState<Set<string>>(new Set());
-  const [expandedToolkits, setExpandedToolkits] = useState<Set<string>>(new Set());
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  // Store actions
+  const fetchConnectionTools = useAgentModalStore((state) => state.fetchConnectionTools);
+  const toggleConnectionBinding = useAgentModalStore((state) => state.toggleConnectionBinding);
+  const toggleToolkit = useAgentModalStore((state) => state.toggleToolkit);
+  const setConnectionSearchQuery = useAgentModalStore((state) => state.setConnectionSearchQuery);
 
   // Load data when panel mounts
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchConnectionTools(agent.id);
+  }, [agent.id, fetchConnectionTools]);
 
   // Initialize selected bindings (toolkits collapsed by default)
   useEffect(() => {
-    if (assignedBindings.length > 0 || availableConnections.length > 0 || platformToolkits.length > 0) {
-      const initialSelection = new Set(
-        assignedBindings.map((b) => {
-          // Platform tools have empty connectionId, use marker
-          const connId = b.connectionId || PLATFORM_TOOL_MARKER;
-          return bindingKey(connId, b.toolId);
-        })
-      );
-      setSelectedBindings(initialSelection);
-      // Keep toolkits collapsed by default - user can expand as needed
+    if (assignedConnectionBindings.length > 0 && selectedConnectionBindings.size === 0) {
+      // Initialize store state with selected bindings (only if store is empty)
+      // Use store actions to initialize instead of direct setState
+      assignedConnectionBindings.forEach((b) => {
+        // Platform tools have empty connectionId, use marker
+        const connId = b.connectionId || PLATFORM_TOOL_MARKER;
+        const key = bindingKey(connId, b.toolId);
+        toggleConnectionBinding(key);
+      });
     }
-  }, [assignedBindings, availableConnections, platformToolkits]);
+    // Only run when assignedConnectionBindings changes, not when selectedConnectionBindings changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assignedConnectionBindings.length]);
 
   const toolkitGroups = useMemo(
     () => groupByToolkit(availableConnections),
@@ -79,8 +83,8 @@ export function ConnectionToolEditorPanel({
   );
 
   const filterTools = (tools: ConnectionWithTools["tools"]) => {
-    if (!searchQuery) return tools;
-    const query = searchQuery.toLowerCase();
+    if (!connectionSearchQuery) return tools;
+    const query = connectionSearchQuery.toLowerCase();
     return tools.filter(
       (tool) =>
         tool.name.toLowerCase().includes(query) ||
@@ -89,32 +93,15 @@ export function ConnectionToolEditorPanel({
     );
   };
 
-  const toggleToolkit = (toolkitSlug: string) => {
-    const newSet = new Set(expandedToolkits);
-    if (newSet.has(toolkitSlug)) {
-      newSet.delete(toolkitSlug);
-    } else {
-      newSet.add(toolkitSlug);
-    }
-    setExpandedToolkits(newSet);
-  };
-
   const handleToggle = (connectionId: string, toolId: string) => {
     const key = bindingKey(connectionId, toolId);
-    const newSet = new Set(selectedBindings);
-    if (newSet.has(key)) {
-      newSet.delete(key);
-    } else {
-      newSet.add(key);
-    }
-    setSelectedBindings(newSet);
+    toggleConnectionBinding(key);
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
     try {
       const bindings: ConnectionToolBinding[] = [];
-      for (const key of selectedBindings) {
+      for (const key of selectedConnectionBindings) {
         const [connectionId, toolId] = key.split(":");
         
         // Check if it's a platform tool
@@ -149,19 +136,17 @@ export function ConnectionToolEditorPanel({
           ? error.message
           : "Failed to save connection tools. Please try again."
       );
-    } finally {
-      setIsSaving(false);
     }
   };
 
-  const hasNoTools = availableConnections.length === 0 && platformToolkits.length === 0 && !isLoading;
+  const hasNoTools = availableConnections.length === 0 && platformToolkits.length === 0 && !isLoadingConnectionTools;
 
   // Count selected tools per toolkit for badge
   const getSelectedCount = (connections: ConnectionWithTools[]) => {
     let count = 0;
     for (const conn of connections) {
       for (const tool of conn.tools) {
-        if (selectedBindings.has(bindingKey(conn.connectionId, tool.id))) {
+        if (selectedConnectionBindings.has(bindingKey(conn.connectionId, tool.id))) {
           count++;
         }
       }
@@ -173,7 +158,7 @@ export function ConnectionToolEditorPanel({
   const getPlatformSelectedCount = (toolkit: PlatformToolkit) => {
     let count = 0;
     for (const tool of toolkit.tools) {
-      if (selectedBindings.has(bindingKey(PLATFORM_TOOL_MARKER, tool.id))) {
+      if (selectedConnectionBindings.has(bindingKey(PLATFORM_TOOL_MARKER, tool.id))) {
         count++;
       }
     }
@@ -182,8 +167,8 @@ export function ConnectionToolEditorPanel({
 
   // Filter tools for platform toolkit
   const filterPlatformTools = (tools: PlatformToolkit["tools"]) => {
-    if (!searchQuery) return tools;
-    const query = searchQuery.toLowerCase();
+    if (!connectionSearchQuery) return tools;
+    const query = connectionSearchQuery.toLowerCase();
     return tools.filter(
       (tool) =>
         tool.name.toLowerCase().includes(query) ||
@@ -217,8 +202,8 @@ export function ConnectionToolEditorPanel({
         <div className="px-6 py-4 border-b border-gray-200 bg-white">
           <Input
             placeholder="Search tools..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={connectionSearchQuery}
+            onChange={(e) => setConnectionSearchQuery(e.target.value)}
             className="max-w-md"
           />
         </div>
@@ -226,7 +211,7 @@ export function ConnectionToolEditorPanel({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
-        {isLoading ? (
+        {isLoadingConnectionTools ? (
           <div className="text-center text-gray-500 py-12">
             Loading connection tools...
           </div>
@@ -297,7 +282,7 @@ export function ConnectionToolEditorPanel({
                           <div className="border-t border-gray-200 divide-y divide-gray-100">
                             {filteredTools.map((tool) => {
                               const key = bindingKey(PLATFORM_TOOL_MARKER, tool.id);
-                              const isSelected = selectedBindings.has(key);
+                              const isSelected = selectedConnectionBindings.has(key);
 
                               return (
                                 <label
@@ -388,7 +373,7 @@ export function ConnectionToolEditorPanel({
                             <div className="divide-y divide-gray-100">
                               {filteredTools.map((tool) => {
                                 const key = bindingKey(connection.connectionId, tool.id);
-                                const isSelected = selectedBindings.has(key);
+                                const isSelected = selectedConnectionBindings.has(key);
 
                                 return (
                                   <label
@@ -432,11 +417,11 @@ export function ConnectionToolEditorPanel({
       {/* Footer */}
       {!hasNoTools && (
         <div className="border-t border-gray-200 px-6 py-4 bg-white flex justify-end gap-3">
-          <Button variant="outline" onClick={onBack} disabled={isSaving}>
+          <Button variant="outline" onClick={onBack} disabled={isSavingConnectionTools}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save Changes"}
+          <Button onClick={handleSave} disabled={isSavingConnectionTools}>
+            {isSavingConnectionTools ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       )}

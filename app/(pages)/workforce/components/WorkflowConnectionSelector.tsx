@@ -2,7 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
-import type { Connection } from "./agent-modal/hooks/useWorkflowAssignment";
+import type { Connection } from "./agent-modal/store";
 
 interface WorkflowConnectionSelectorProps {
   toolkitSlug: string;

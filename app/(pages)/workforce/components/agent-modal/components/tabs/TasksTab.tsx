@@ -1,7 +1,7 @@
 "use client";
 
 import type { AgentConfig } from "@/_tables/types";
-import { useAgentDetails } from "../../hooks/useAgentDetails";
+import { useAgentModalStore } from "../../store";
 import { TaskItem } from "../shared/TaskItem";
 
 interface TasksTabProps {
@@ -9,7 +9,7 @@ interface TasksTabProps {
 }
 
 export function TasksTab({ agent }: TasksTabProps) {
-  const { tasks } = useAgentDetails(agent);
+  const tasks = useAgentModalStore((state) => state.tasks);
 
   return (
     <div className="flex-1 overflow-y-auto bg-gray-50 p-6">

@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AgentConfig } from "@/_tables/types";
-import { useAgentDetails } from "../../hooks/useAgentDetails";
+import { useAgentModalStore } from "../../store";
 import { JobCard } from "../shared/JobCard";
 import { TriggerCard } from "../shared/TriggerCard";
 
@@ -12,7 +12,8 @@ interface PlannerTabProps {
 }
 
 export function PlannerTab({ agent }: PlannerTabProps) {
-  const { jobs, triggers } = useAgentDetails(agent);
+  const jobs = useAgentModalStore((state) => state.jobs);
+  const triggers = useAgentModalStore((state) => state.triggers);
 
   return (
     <div className="flex-1 overflow-y-auto bg-gray-50 p-6">

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { AgentConfig, ConnectionToolBinding, WorkflowBinding, WorkflowMetadata } from "@/_tables/types";
-import { useAgentDetails } from "../../hooks/useAgentDetails";
+import { useEffect } from "react";
+import type { AgentConfig, ConnectionToolBinding, WorkflowBinding } from "@/_tables/types";
+import { useAgentModalStore } from "../../store";
 import { ToolCard } from "../shared/ToolCard";
 import { WorkflowCard } from "../shared/WorkflowCard";
 import { ConnectionToolCard } from "../shared/ConnectionToolCard";
@@ -16,93 +16,64 @@ interface CapabilitiesTabProps {
   agent: AgentConfig;
 }
 
-type ViewState = "list" | "connection-editor" | "workflow-editor";
-
 export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
-  const { tools, connectionBindings, workflows, isLoading } = useAgentDetails(agent);
-  const [isCustomEditorOpen, setIsCustomEditorOpen] = useState(false);
-  const [view, setView] = useState<ViewState>("list");
-  const [workflowBindings, setWorkflowBindings] = useState<WorkflowBinding[]>([]);
-  const [workflowMetadata, setWorkflowMetadata] = useState<WorkflowMetadata[]>([]);
+  // Store state
+  const assignedCustomTools = useAgentModalStore((state) => state.assignedCustomTools);
+  const connectionBindings = useAgentModalStore((state) => state.connectionBindings);
+  const workflowBindings = useAgentModalStore((state) => state.workflowBindings);
+  const availableWorkflows = useAgentModalStore((state) => state.availableWorkflows);
+  const isLoadingDetails = useAgentModalStore((state) => state.isLoadingDetails);
+  const view = useAgentModalStore((state) => state.view);
+  const isCustomEditorOpen = useAgentModalStore((state) => state.isCustomEditorOpen);
+  
+  // Store actions
+  const setView = useAgentModalStore((state) => state.setView);
+  const openCustomEditor = useAgentModalStore((state) => state.openCustomEditor);
+  const closeCustomEditor = useAgentModalStore((state) => state.closeCustomEditor);
+  const saveCustomTools = useAgentModalStore((state) => state.saveCustomTools);
+  const saveConnectionTools = useAgentModalStore((state) => state.saveConnectionTools);
+  const saveWorkflows = useAgentModalStore((state) => state.saveWorkflows);
+  const fetchWorkflows = useAgentModalStore((state) => state.fetchWorkflows);
+  const fetchUserConnections = useAgentModalStore((state) => state.fetchUserConnections);
 
-  // Fetch workflow bindings and metadata
+  // Fetch workflows and user connections when component mounts
   useEffect(() => {
-    if (!agent.id) return;
-
-    const fetchWorkflowData = async () => {
-      try {
-        const [bindingsRes, availableRes] = await Promise.all([
-          fetch(`/api/workforce/${agent.id}/workflows`),
-          fetch(`/api/workforce/${agent.id}/workflows/available`),
-        ]);
-
-        if (bindingsRes.ok) {
-          const bindingsData = await bindingsRes.json();
-          setWorkflowBindings(bindingsData.bindings || []);
-        }
-
-        if (availableRes.ok) {
-          const availableData = await availableRes.json();
-          setWorkflowMetadata(availableData.workflows || []);
-        }
-      } catch (error) {
-        console.error("[CapabilitiesTab] Error fetching workflow data:", error);
-      }
-    };
-
-    fetchWorkflowData();
-  }, [agent.id]);
+    if (agent.id) {
+      fetchWorkflows(agent.id);
+      fetchUserConnections();
+    }
+  }, [agent.id, fetchWorkflows, fetchUserConnections]);
 
   const handleSaveCustomTools = async (toolIds: string[]) => {
-    const response = await fetch(`/api/workforce/${agent.id}/tools/custom`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ toolIds }),
-    });
-
-    if (!response.ok) {
+    const success = await saveCustomTools(agent.id, toolIds);
+    if (success) {
+      closeCustomEditor();
+    } else {
       throw new Error("Failed to save tools");
     }
-    
-    // Force a reload to refresh the tools list
-    window.location.reload();
   };
 
   const handleSaveConnectionTools = async (bindings: ConnectionToolBinding[]) => {
-    const response = await fetch(`/api/workforce/${agent.id}/tools/connection`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bindings }),
-    });
-
-    if (!response.ok) {
+    const success = await saveConnectionTools(agent.id, bindings);
+    if (success) {
+      setView("list");
+    } else {
       throw new Error("Failed to save connection tools");
     }
-    
-    // Force a reload to refresh the tools list
-    window.location.reload();
   };
 
   const handleSaveWorkflows = async (bindings: WorkflowBinding[]) => {
-    const response = await fetch(`/api/workforce/${agent.id}/workflows`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bindings }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.details 
-        ? errorData.details.join("\n")
-        : errorData.error || "Failed to save workflows";
-      throw new Error(errorMessage);
+    const success = await saveWorkflows(agent.id, bindings);
+    if (success) {
+      setView("list");
+    } else {
+      // Get error from store after save attempt
+      const errorWorkflows = useAgentModalStore.getState().errorWorkflows;
+      throw new Error(errorWorkflows || "Failed to save workflows");
     }
-    
-    // Force a reload to refresh the workflows list
-    window.location.reload();
   };
 
-  if (isLoading) {
+  if (isLoadingDetails) {
     return <div className="p-8 text-center text-gray-500">Loading capabilities...</div>;
   }
 
@@ -145,17 +116,17 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
               Custom Tools
             </h3>
           <button
-              onClick={() => setIsCustomEditorOpen(true)}
+              onClick={() => openCustomEditor()}
               className="px-3 py-1.5 bg-white border border-gray-200 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors"
           >
             Manage
           </button>
         </div>
           <div className="grid grid-cols-2 gap-4">
-            {tools.length === 0 ? (
+            {assignedCustomTools.length === 0 ? (
               <p className="text-sm text-gray-500 col-span-2 italic">No custom tools assigned.</p>
             ) : (
-              tools.map((tool) => <ToolCard key={tool.id} tool={tool} />)
+              assignedCustomTools.map((tool) => <ToolCard key={tool.id} tool={tool} />)
             )}
           </div>
         </div>
@@ -225,7 +196,7 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {workflowBindings.map((binding) => {
-                const workflow = workflowMetadata.find((w) => w.id === binding.workflowId);
+                const workflow = availableWorkflows.find((w) => w.id === binding.workflowId);
                 return workflow ? (
                   <WorkflowCard key={binding.workflowId} workflow={workflow} binding={binding} />
                 ) : null;
@@ -239,7 +210,13 @@ export function CapabilitiesTab({ agent }: CapabilitiesTabProps) {
       <ToolEditor
         agent={agent}
         open={isCustomEditorOpen}
-        onOpenChange={setIsCustomEditorOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeCustomEditor();
+          } else {
+            openCustomEditor();
+          }
+        }}
         onSave={handleSaveCustomTools}
       />
     </div>

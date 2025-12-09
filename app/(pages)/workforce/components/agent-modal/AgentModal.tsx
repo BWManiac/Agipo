@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { AgentConfig } from "@/_tables/types";
+import { useAgentModalStore } from "./store";
 import { AgentHeader } from "./components/AgentHeader";
 import { OverviewTab } from "./components/tabs/OverviewTab";
 import { ChatTab } from "./components/tabs/ChatTab";
@@ -22,7 +23,20 @@ export type AgentModalProps = {
 export type TabId = "overview" | "chat" | "tasks" | "planner" | "records" | "knowledge" | "capabilities" | "config";
 
 export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
-  const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const activeTab = useAgentModalStore((state) => state.activeTab);
+  const setActiveTab = useAgentModalStore((state) => state.setActiveTab);
+  const setAgent = useAgentModalStore((state) => state.setAgent);
+  const resetEditorState = useAgentModalStore((state) => state.resetEditorState);
+
+  // Update agent in store when prop changes
+  useEffect(() => {
+    setAgent(agent);
+    
+    // Reset editor state when modal closes
+    if (!open) {
+      resetEditorState();
+    }
+  }, [agent, open, setAgent, resetEditorState]);
 
   if (!agent) return null;
 
