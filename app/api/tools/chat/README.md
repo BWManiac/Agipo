@@ -52,7 +52,12 @@ POST(request): NextResponse
 
 ## Output
 
-Streaming text response in Vercel AI SDK format.
+Streaming text response in Vercel AI SDK format. The response streams token-by-token as the AI generates its response, allowing for real-time display in the UI.
+
+**Response Format:**
+- Content-Type: `text/plain; charset=utf-8`
+- Streaming: Server-Sent Events (SSE) format
+- Each chunk contains partial text that should be appended to display
 
 ---
 
@@ -60,20 +65,30 @@ Streaming text response in Vercel AI SDK format.
 
 | Consumer | Location | Usage |
 |----------|----------|-------|
-| ToolsPage | `app/(pages)/tools/` | Tool testing interface |
+| Tools Page | `app/(pages)/tools/page.tsx` | Tool testing interface |
+
+---
+
+## Related Docs
+
+- Tools Runtime Service - `app/api/tools/services/runtime.ts`
+- [Vercel AI SDK](https://ai-sdk.dev/docs) - Streaming format documentation
+- [AI Gateway](https://ai-sdk.dev/docs/ai-gateway) - Model routing
 
 ---
 
 ## Notes
 
-- Uses `maxDuration: 30` seconds
-- Only loads custom tools, not connection tools
-- Model hardcoded to `google/gemini-3-pro-preview`
+- Uses `maxDuration: 30` seconds for timeout
+- Only loads custom tools from `_tables/tools/`, not connection tools
+- Model is hardcoded to `google/gemini-3-pro-preview`
+- This is a testing endpoint - for production agent chat, use `/api/workforce/[agentId]/chat`
 
 ---
 
 ## Future Improvements
 
-- [ ] Add model selection
+- [ ] Add model selection parameter
 - [ ] Include connection tools for testing
 - [ ] Add tool execution logging
+- [ ] Add conversation history persistence

@@ -39,12 +39,7 @@ None
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `[]` | ToolDefinition[] | Array of tool definitions |
-| `[].id` | string | Tool identifier |
-| `[].name` | string | Display name |
-| `[].description` | string | What the tool does |
-| `[].nodes` | Node[] | Workflow nodes |
-| `[].edges` | Edge[] | Workflow connections |
+| `[]` | array | Array of tool definitions (returned directly, not wrapped) |
 
 **Example Response:**
 ```json
@@ -65,5 +60,27 @@ None
 
 | Consumer | Location | Usage |
 |----------|----------|-------|
-| ToolsPage | `app/(pages)/tools/` | Tools list view |
-| CustomToolEditorPanel | `app/(pages)/workforce/components/agent-modal/` | Available tools picker |
+| Tools Page | `app/(pages)/tools/page.tsx` | Tools list view |
+| Custom Tool Editor Panel | `app/(pages)/workforce/components/agent-modal/` | Available tools picker |
+
+---
+
+## Related Docs
+
+- Tools Storage Service - `app/api/tools/services/storage.ts`
+- `/api/tools/create` - Creates new tool definitions
+- `/api/tools/[toolId]/read` - Retrieves a specific tool definition
+
+---
+
+## Notes
+
+This endpoint returns tools as a direct array, not wrapped in an object. Tools are stored in `_tables/tools/` directory with both definition files (workflow.json) and executable code (tool.js).
+
+---
+
+## Future Improvements
+
+- [ ] Add filtering and sorting query parameters
+- [ ] Add pagination for large tool collections
+- [ ] Add search functionality
