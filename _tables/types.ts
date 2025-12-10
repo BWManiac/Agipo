@@ -36,6 +36,8 @@ export type AgentConfig = {
   insights: Array<{ title: string; detail: string; type: "question" | "opportunity" | "risk" }>;
   activities: Array<{ title: string; timestamp: string; summary: string; impact: string }>;
   feedback: Array<{ author: string; comment: string; timestamp: string }>;
+  isManager?: boolean; // Optional: indicates if agent is a manager
+  subAgentIds?: string[]; // Optional: IDs of sub-agents managed by this agent
 };
 
 export type ToolDefinition = {

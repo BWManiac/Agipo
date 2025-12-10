@@ -3,18 +3,29 @@ import path from "path";
 import { getAgentById } from "@/_tables/agents";
 import type { ConnectionToolBinding } from "@/_tables/types";
 
-// Map agent ID to filename
-const idToFile: Record<string, string> = {
-  pm: "mira-patel",
-  marketing: "noah-reyes",
-  support: "elena-park",
-  engineering: "alex-kim",
-};
-
-function getAgentFilename(agentId: string): string | null {
-  const agent = getAgentById(agentId);
-  if (!agent) return null;
-  return idToFile[agentId] || null;
+/**
+ * Scans the agents directory for folders matching the agentId (UUID).
+ * Folder format: {name-slug}-{uuid}
+ * Returns the folder name if found, null otherwise.
+ */
+async function getAgentFolderPath(agentId: string): Promise<string | null> {
+  const agentsDir = path.join(process.cwd(), "_tables", "agents");
+  
+  try {
+    const entries = await fs.readdir(agentsDir, { withFileTypes: true });
+    
+    // Look for folders that end with the agentId (UUID)
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name.endsWith(`-${agentId}`)) {
+        return entry.name;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error(`[agent-config] Error scanning agents directory:`, error);
+    return null;
+  }
 }
 
 /**
@@ -39,18 +50,18 @@ export function getAgentConnectionToolBindings(agentId: string): ConnectionToolB
  * Updates the list of tools assigned to an agent by modifying the source file.
  */
 export async function updateAgentTools(agentId: string, toolIds: string[]): Promise<void> {
-  const filename = getAgentFilename(agentId);
-  if (!filename) {
-    throw new Error(`Agent not found or not mapped to file: ${agentId}`);
+  const folderName = await getAgentFolderPath(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
   }
 
-  const agentFile = path.join(process.cwd(), "_tables", "agents", `${filename}.ts`);
+  const agentFile = path.join(process.cwd(), "_tables", "agents", folderName, "config.ts");
   
   let fileContent: string;
   try {
     fileContent = await fs.readFile(agentFile, "utf-8");
   } catch (error) {
-    throw new Error(`Failed to read agent config file: ${filename}.ts`);
+    throw new Error(`Failed to read agent config file: ${folderName}/config.ts`);
   }
 
   // Build toolIds string: ["id1", "id2"]
@@ -78,12 +89,12 @@ export async function updateConnectionToolBindings(
   agentId: string,
   bindings: ConnectionToolBinding[]
 ): Promise<void> {
-  const filename = getAgentFilename(agentId);
-  if (!filename) {
-    throw new Error(`Agent not found or not mapped to file: ${agentId}`);
+  const folderName = await getAgentFolderPath(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
   }
 
-  const agentFile = path.join(process.cwd(), "_tables", "agents", `${filename}.ts`);
+  const agentFile = path.join(process.cwd(), "_tables", "agents", folderName, "config.ts");
 
   let fileContent: string;
   try {

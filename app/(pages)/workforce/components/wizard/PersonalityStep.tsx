@@ -1,0 +1,189 @@
+"use client";
+
+import { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+
+interface PersonalityStepProps {
+  formData: {
+    systemPrompt: string;
+    model: string;
+    objectives: string[];
+    guardrails: string[];
+    isManager: boolean;
+  };
+  onUpdate: (updates: Partial<PersonalityStepProps["formData"]>) => void;
+}
+
+export function PersonalityStep({ formData, onUpdate }: PersonalityStepProps) {
+  const [objectivesOpen, setObjectivesOpen] = useState(false);
+  const [guardrailsOpen, setGuardrailsOpen] = useState(false);
+  const [managerOpen, setManagerOpen] = useState(false);
+
+  const handleObjectivesChange = (value: string) => {
+    const objectives = value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    onUpdate({ objectives });
+  };
+
+  const handleGuardrailsChange = (value: string) => {
+    const guardrails = value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    onUpdate({ guardrails });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold">Personality & Instructions</h2>
+        <p className="text-sm text-muted-foreground">
+          Define how your agent behaves and what it should do
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="systemPrompt">
+            Instructions <span className="text-destructive">*</span>
+          </Label>
+          <Textarea
+            id="systemPrompt"
+            value={formData.systemPrompt}
+            onChange={(e) => onUpdate({ systemPrompt: e.target.value })}
+            placeholder="You are a helpful assistant that..."
+            className="mt-1 min-h-[120px] font-mono text-sm"
+            minLength={10}
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Minimum 10 characters. Describe the agent's role, behavior, and key instructions.
+          </p>
+        </div>
+
+        <div>
+          <Label htmlFor="model">
+            Model <span className="text-destructive">*</span>
+          </Label>
+          <Select
+            value={formData.model}
+            onValueChange={(value) => onUpdate({ model: value })}
+          >
+            <SelectTrigger id="model" className="mt-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="google/gemini-2.5-pro">
+                Google Gemini 2.5 Pro
+              </SelectItem>
+              <SelectItem value="openai/gpt-4o">OpenAI GPT-4o</SelectItem>
+              <SelectItem value="anthropic/claude-3-5-sonnet">
+                Anthropic Claude 3.5 Sonnet
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Collapsible open={objectivesOpen} onOpenChange={setObjectivesOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between">
+              <span>Objectives (Optional)</span>
+              {objectivesOpen ? (
+                <ChevronUpIcon className="h-4 w-4" />
+              ) : (
+                <ChevronDownIcon className="h-4 w-4" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-2">
+              <Textarea
+                value={formData.objectives.join("\n")}
+                onChange={(e) => handleObjectivesChange(e.target.value)}
+                placeholder="Enter objectives, one per line:&#10;- Increase user engagement&#10;- Reduce support tickets"
+                className="min-h-[80px] text-sm"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                One objective per line
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={guardrailsOpen} onOpenChange={setGuardrailsOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between">
+              <span>Guardrails (Optional)</span>
+              {guardrailsOpen ? (
+                <ChevronUpIcon className="h-4 w-4" />
+              ) : (
+                <ChevronDownIcon className="h-4 w-4" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-2">
+              <Textarea
+                value={formData.guardrails.join("\n")}
+                onChange={(e) => handleGuardrailsChange(e.target.value)}
+                placeholder="Enter guardrails, one per line:&#10;- Never share user data&#10;- Always verify before taking action"
+                className="min-h-[80px] text-sm"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                One guardrail per line
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={managerOpen} onOpenChange={setManagerOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between">
+              <span>Manager Agent (Optional)</span>
+              {managerOpen ? (
+                <ChevronUpIcon className="h-4 w-4" />
+              ) : (
+                <ChevronDownIcon className="h-4 w-4" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-2 space-y-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isManager"
+                  checked={formData.isManager}
+                  onChange={(e) => onUpdate({ isManager: e.target.checked })}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                <Label htmlFor="isManager" className="cursor-pointer">
+                  This agent manages other agents
+                </Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Manager agents can coordinate with sub-agents. Sub-agent selection will be available in the next step.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+    </div>
+  );
+}

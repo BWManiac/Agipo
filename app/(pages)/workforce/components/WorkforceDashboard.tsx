@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { agents as registryAgents } from "@/_tables/agents";
 import type { AgentConfig } from "@/_tables/types";
 import { AgentModal } from "./agent-modal";
+import { CreateAgentDialog } from "./CreateAgentDialog";
 
 const statusStyles: Record<AgentConfig["status"], string> = {
   active: "bg-emerald-100 text-emerald-700 border border-emerald-200",
@@ -19,15 +19,38 @@ const statusStyles: Record<AgentConfig["status"], string> = {
 
 export function WorkforceDashboard() {
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [agents, setAgents] = useState<AgentConfig[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const selectedAgent = useMemo(
-    () => registryAgents.find((agent) => agent.id === selectedAgentId) ?? null,
-    [selectedAgentId]
+    () => agents.find((agent) => agent.id === selectedAgentId) ?? null,
+    [agents, selectedAgentId]
   );
+
+  const fetchAgents = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/workforce");
+      if (response.ok) {
+        const data = await response.json();
+        setAgents(data.agents || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch agents:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgents();
+  }, []);
 
   const metrics = [
     {
       label: "Agents hired",
-      value: `${registryAgents.length}`,
+      value: `${agents.length}`,
       helper: "+1 recommendation",
     },
     {
@@ -42,7 +65,7 @@ export function WorkforceDashboard() {
     },
   ];
 
-  const attentionAgents = registryAgents.filter((agent) => agent.status !== "active");
+  const attentionAgents = agents.filter((agent) => agent.status !== "active");
 
   return (
     <div className="space-y-8">
@@ -62,7 +85,9 @@ export function WorkforceDashboard() {
             </div>
           </div>
           <div className="flex flex-col items-start gap-3 md:items-end">
-            <Button size="lg">Hire new agent</Button>
+            <Button size="lg" onClick={() => setCreateDialogOpen(true)}>
+              Hire new agent
+            </Button>
             <Link href="/profile" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
               View context profile →
             </Link>
@@ -97,7 +122,16 @@ export function WorkforceDashboard() {
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {registryAgents.map((agent) => (
+          {isLoading ? (
+            <div className="col-span-full py-8 text-center text-sm text-muted-foreground">
+              Loading agents...
+            </div>
+          ) : agents.length === 0 ? (
+            <div className="col-span-full py-8 text-center text-sm text-muted-foreground">
+              No agents yet. Create your first agent to get started.
+            </div>
+          ) : (
+            agents.map((agent) => (
             <button
               key={agent.id}
               onClick={() => setSelectedAgentId(agent.id)}
@@ -150,7 +184,8 @@ export function WorkforceDashboard() {
               </div>
               <div className="mt-4 text-sm font-semibold text-primary">Open agent →</div>
             </button>
-          ))}
+            ))
+          )}
         </div>
       </section>
 
@@ -190,6 +225,14 @@ export function WorkforceDashboard() {
         open={selectedAgent !== null}
         onOpenChange={(open) => {
           if (!open) setSelectedAgentId(null);
+        }}
+      />
+
+      <CreateAgentDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onAgentCreated={() => {
+          fetchAgents();
         }}
       />
     </div>
