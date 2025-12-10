@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ToolsSearchInput } from "./ToolsSearchInput";
-import { ToolEditor } from "../../ToolEditor";
-import { ConnectionToolEditorPanel } from "../../ConnectionToolEditorPanel";
+import { ToolEditor } from "../ToolEditor";
+import { ConnectionToolEditorPanel } from "../ConnectionToolEditorPanel";
 import type { AgentConfig, ConnectionToolBinding, WorkflowSummary } from "@/_tables/types";
 
 interface CapabilitiesStepProps {
