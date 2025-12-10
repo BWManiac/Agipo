@@ -41,7 +41,9 @@ Everything else depends on:
 | `app/(pages)/docs/components/catalog/DocumentCard.tsx` | Single card | 80 |
 | `app/(pages)/docs/components/catalog/CreateDocumentButton.tsx` | New doc button | 60 |
 | `app/(pages)/docs/components/catalog/EmptyState.tsx` | Empty message | 40 |
-| `app/(pages)/docs/hooks/useDocument.ts` | Document hooks | 150 |
+| `app/(pages)/docs/store/index.ts` | Store composition | 30 |
+| `app/(pages)/docs/store/types.ts` | Store types | 20 |
+| `app/(pages)/docs/store/slices/catalogSlice.ts` | Catalog state & actions | 120 |
 | `app/api/docs/route.ts` | List/create API | 100 |
 | `app/api/docs/[docId]/route.ts` | CRUD API | 150 |
 | `app/api/docs/services/index.ts` | Barrel export | 20 |
@@ -144,12 +146,19 @@ const NAV_ITEMS = [
 // app/(pages)/docs/page.tsx
 "use client";
 
+import { useEffect } from "react";
 import { DocumentCatalog } from "./components/catalog/DocumentCatalog";
 import { CreateDocumentButton } from "./components/catalog/CreateDocumentButton";
-import { useDocuments } from "./hooks/useDocument";
+import { useDocsStore } from "./store";
 
 export default function DocsPage() {
-  const { documents, isLoading } = useDocuments();
+  const documents = useDocsStore((state) => state.documents);
+  const isLoading = useDocsStore((state) => state.isLoading);
+  const fetchDocuments = useDocsStore((state) => state.fetchDocuments);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -238,7 +247,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { useDeleteDocument } from "../hooks/useDocument";
+import { useDocsStore } from "../../store";
 import type { DocumentListItem } from "@/app/api/docs/services/types";
 
 interface DocumentCardProps {
@@ -247,12 +256,16 @@ interface DocumentCardProps {
 
 export function DocumentCard({ document }: DocumentCardProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const { mutate: deleteDocument, isPending } = useDeleteDocument();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deleteDocument = useDocsStore((state) => state.deleteDocument);
 
-  const handleDelete = () => {
-    deleteDocument(document.id, {
-      onSuccess: () => setDeleteDialogOpen(false),
-    });
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    const success = await deleteDocument(document.id);
+    if (success) {
+      setDeleteDialogOpen(false);
+    }
+    setIsDeleting(false);
   };
 
   return (
@@ -322,10 +335,10 @@ export function DocumentCard({ document }: DocumentCardProps) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={isPending}
+              disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isPending ? "Deleting..." : "Delete"}
+              {isDeleting ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -341,30 +354,30 @@ export function DocumentCard({ document }: DocumentCardProps) {
 // app/(pages)/docs/components/catalog/CreateDocumentButton.tsx
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCreateDocument } from "../hooks/useDocument";
+import { useDocsStore } from "../../store";
 
 export function CreateDocumentButton() {
   const router = useRouter();
-  const { mutate: createDocument, isPending } = useCreateDocument();
+  const [isCreating, setIsCreating] = useState(false);
+  const createDocument = useDocsStore((state) => state.createDocument);
 
-  const handleCreate = () => {
-    createDocument(
-      { title: "Untitled" },
-      {
-        onSuccess: (data) => {
-          router.push(`/docs/${data.document.frontmatter.id}`);
-        },
-      }
-    );
+  const handleCreate = async () => {
+    setIsCreating(true);
+    const docId = await createDocument("Untitled");
+    if (docId) {
+      router.push(`/docs/${docId}`);
+    }
+    setIsCreating(false);
   };
 
   return (
-    <Button onClick={handleCreate} disabled={isPending}>
+    <Button onClick={handleCreate} disabled={isCreating}>
       <Plus className="h-4 w-4 mr-2" />
-      {isPending ? "Creating..." : "New Document"}
+      {isCreating ? "Creating..." : "New Document"}
     </Button>
   );
 }
@@ -395,119 +408,125 @@ export function EmptyState() {
 }
 ```
 
-### Document Hooks
+### Catalog Store Slice
 
 ```tsx
-// app/(pages)/docs/hooks/useDocument.ts
-"use client";
+// app/(pages)/docs/store/types.ts
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type {
-  DocumentListItem,
-  Document,
-  CreateDocumentRequest,
-  CreateDocumentResponse,
-  GetDocumentResponse,
-  UpdateDocumentRequest,
-  UpdateDocumentResponse,
-} from "@/app/api/docs/services/types";
+import type { DocumentListItem } from "@/app/api/docs/services/types";
 
-// Query keys
-export const documentKeys = {
-  all: ["documents"] as const,
-  lists: () => [...documentKeys.all, "list"] as const,
-  list: () => [...documentKeys.lists()] as const,
-  details: () => [...documentKeys.all, "detail"] as const,
-  detail: (id: string) => [...documentKeys.details(), id] as const,
-};
+export interface CatalogSlice {
+  // State
+  documents: DocumentListItem[];
+  isLoading: boolean;
+  error: string | null;
 
-// List documents
-export function useDocuments() {
-  return useQuery({
-    queryKey: documentKeys.list(),
-    queryFn: async (): Promise<DocumentListItem[]> => {
+  // Actions
+  fetchDocuments: () => Promise<void>;
+  createDocument: (title?: string) => Promise<string | null>; // Returns docId or null
+  deleteDocument: (docId: string) => Promise<boolean>;
+}
+
+export interface DocsStore extends CatalogSlice {
+  // Other slices will be added here (editor, chat, etc.)
+}
+```
+
+```tsx
+// app/(pages)/docs/store/slices/catalogSlice.ts
+
+import type { StateCreator } from "zustand";
+import type { CatalogSlice, DocsStore } from "../types";
+import type { DocumentListItem } from "@/app/api/docs/services/types";
+
+export const createCatalogSlice: StateCreator<
+  DocsStore,
+  [],
+  [],
+  CatalogSlice
+> = (set, get) => ({
+  // Initial state
+  documents: [],
+  isLoading: false,
+  error: null,
+
+  // Fetch all documents
+  fetchDocuments: async () => {
+    set({ isLoading: true, error: null });
+    try {
       const response = await fetch("/api/docs");
       if (!response.ok) throw new Error("Failed to fetch documents");
       const data = await response.json();
-      return data.documents;
-    },
-  });
-}
+      set({ documents: data.documents, isLoading: false });
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "Failed to fetch documents",
+        isLoading: false,
+      });
+    }
+  },
 
-// Get single document
-export function useDocument(docId: string) {
-  return useQuery({
-    queryKey: documentKeys.detail(docId),
-    queryFn: async (): Promise<Document> => {
-      const response = await fetch(`/api/docs/${docId}`);
-      if (!response.ok) throw new Error("Failed to fetch document");
-      const data: GetDocumentResponse = await response.json();
-      return data.document;
-    },
-    enabled: !!docId,
-  });
-}
-
-// Create document
-export function useCreateDocument() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (request: CreateDocumentRequest): Promise<CreateDocumentResponse> => {
+  // Create new document
+  createDocument: async (title?: string) => {
+    try {
       const response = await fetch("/api/docs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(request),
+        body: JSON.stringify({ title }),
       });
       if (!response.ok) throw new Error("Failed to create document");
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: documentKeys.lists() });
-    },
-  });
-}
+      const data = await response.json();
+      const docId = data.document.frontmatter.id;
 
-// Update document
-export function useUpdateDocument() {
-  const queryClient = useQueryClient();
+      // Refresh the document list
+      get().fetchDocuments();
 
-  return useMutation({
-    mutationFn: async ({
-      docId,
-      ...request
-    }: UpdateDocumentRequest & { docId: string }): Promise<UpdateDocumentResponse> => {
-      const response = await fetch(`/api/docs/${docId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(request),
+      return docId;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "Failed to create document",
       });
-      if (!response.ok) throw new Error("Failed to update document");
-      return response.json();
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: documentKeys.detail(variables.docId) });
-      queryClient.invalidateQueries({ queryKey: documentKeys.lists() });
-    },
-  });
-}
+      return null;
+    }
+  },
 
-// Delete document
-export function useDeleteDocument() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (docId: string): Promise<void> => {
+  // Delete document
+  deleteDocument: async (docId: string) => {
+    try {
       const response = await fetch(`/api/docs/${docId}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete document");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: documentKeys.lists() });
-    },
-  });
-}
+
+      // Remove from local state immediately
+      set((state) => ({
+        documents: state.documents.filter((doc) => doc.id !== docId),
+      }));
+
+      return true;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "Failed to delete document",
+      });
+      return false;
+    }
+  },
+});
+```
+
+```tsx
+// app/(pages)/docs/store/index.ts
+
+import { create } from "zustand";
+import { createCatalogSlice } from "./slices/catalogSlice";
+import type { DocsStore } from "./types";
+
+export const useDocsStore = create<DocsStore>()((...args) => ({
+  ...createCatalogSlice(...args),
+}));
+
+// Re-export types
+export type { DocsStore, CatalogSlice } from "./types";
 ```
 
 ### API Route - List/Create

@@ -21,8 +21,7 @@
 | **@lexical/table** | Markdown tables | New |
 | **@lexical/link** | Hyperlinks | New |
 | **@lexical/history** | Undo/redo | New |
-| **Zustand** | Complex UI state (sidebar, chat, editor) | Existing pattern |
-| **TanStack Query v5** | Server state, caching | Existing |
+| **Zustand** | All state management (UI, data, editor) | Existing pattern |
 | **@ai-sdk/react** | Chat streaming | Existing |
 | **Radix UI** | Accessible primitives | Existing |
 | **ShadCN** | UI components | Existing |
@@ -91,12 +90,6 @@ app/(pages)/docs/
 │   └── settings/
 │       ├── SettingsPanel.tsx             # Settings modal
 │       └── AccessControl.tsx             # Agent access management
-├── hooks/
-│   ├── useDocument.ts                    # Document CRUD hooks
-│   ├── useDocumentChat.ts                # Chat streaming
-│   ├── useDocumentOutline.ts             # Heading extraction
-│   ├── useSaveStatus.ts                  # Save indicator state
-│   └── useVersionHistory.ts              # Version management
 └── store/
     ├── index.ts                          # Store composition
     ├── types.ts                          # Combined store types
@@ -975,7 +968,7 @@ export function DocEditor() {
 ### Document Loading Flow
 
 ```
-1. Page loads → useDocument hook fetches document
+1. Page loads → store action fetches document via API
 2. API returns { frontmatter, content }
 3. gray-matter already parsed on server
 4. Content loaded into Lexical: $convertFromMarkdownString()
@@ -1041,12 +1034,11 @@ export function DocEditor() {
 | History Components | 2 | 0 |
 | Settings Components | 2 | 0 |
 | Catalog Components | 4 | 0 |
-| Hooks | 5 | 0 |
 | API Routes | 12 | 0 |
 | API Services | 5 | 0 |
 | TopNav | 0 | 1 |
 | Package.json | 0 | 1 |
-| **Total** | **58** | **2** |
+| **Total** | **53** | **2** |
 
 ---
 

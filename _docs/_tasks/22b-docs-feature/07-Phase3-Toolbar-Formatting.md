@@ -76,8 +76,8 @@ This phase adds rich text formatting capabilities through a floating toolbar tha
 ## File Structure
 
 ```
-components/
-└── docs/
+app/(pages)/docs/
+└── components/
     └── editor/
         ├── toolbar/
         │   ├── index.ts                    # Barrel export
@@ -98,7 +98,7 @@ components/
 
 ### 1. Floating Toolbar Plugin
 
-**File:** `components/docs/editor/plugins/FloatingToolbarPlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/FloatingToolbarPlugin.tsx`
 
 ```tsx
 "use client";
@@ -227,7 +227,7 @@ export function FloatingToolbarPlugin() {
 
 ### 2. Floating Toolbar Component
 
-**File:** `components/docs/editor/toolbar/index.ts`
+**File:** `app/(pages)/docs/components/editor/toolbar/index.ts`
 
 ```ts
 export { FloatingToolbar } from "./FloatingToolbar";
@@ -238,7 +238,7 @@ export { TurnIntoDropdown } from "./TurnIntoDropdown";
 export { ToolbarDivider } from "./ToolbarDivider";
 ```
 
-**File:** `components/docs/editor/toolbar/FloatingToolbar.tsx`
+**File:** `app/(pages)/docs/components/editor/toolbar/FloatingToolbar.tsx`
 
 ```tsx
 "use client";
@@ -297,7 +297,7 @@ export function FloatingToolbar() {
 }
 ```
 
-**File:** `components/docs/editor/toolbar/ToolbarDivider.tsx`
+**File:** `app/(pages)/docs/components/editor/toolbar/ToolbarDivider.tsx`
 
 ```tsx
 export function ToolbarDivider() {
@@ -309,7 +309,7 @@ export function ToolbarDivider() {
 
 ### 3. Format Button Component
 
-**File:** `components/docs/editor/toolbar/FormatButton.tsx`
+**File:** `app/(pages)/docs/components/editor/toolbar/FormatButton.tsx`
 
 ```tsx
 "use client";
@@ -381,7 +381,7 @@ export function FormatButton({ format, icon: Icon, label, shortcut }: FormatButt
 
 ### 4. Format State Hook
 
-**File:** `components/docs/editor/hooks/useTextFormatState.ts`
+**File:** `app/(pages)/docs/components/editor/hooks/useTextFormatState.ts`
 
 ```ts
 "use client";
@@ -459,7 +459,7 @@ export function useTextFormatState(): FormatState {
 
 ### 5. Link Button with Dialog
 
-**File:** `components/docs/editor/toolbar/LinkButton.tsx`
+**File:** `app/(pages)/docs/components/editor/toolbar/LinkButton.tsx`
 
 ```tsx
 "use client";
@@ -671,7 +671,7 @@ export function LinkButton() {
 
 ### 6. Turn Into Dropdown
 
-**File:** `components/docs/editor/toolbar/TurnIntoDropdown.tsx`
+**File:** `app/(pages)/docs/components/editor/toolbar/TurnIntoDropdown.tsx`
 
 ```tsx
 "use client";
@@ -814,7 +814,7 @@ export function TurnIntoDropdown() {
 
 ### 7. Keyboard Shortcuts Plugin
 
-**File:** `components/docs/editor/plugins/KeyboardShortcutsPlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/KeyboardShortcutsPlugin.tsx`
 
 ```tsx
 "use client";
@@ -892,7 +892,7 @@ export function KeyboardShortcutsPlugin() {
 
 ### 8. Link Plugin
 
-**File:** `components/docs/editor/plugins/LinkPlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/LinkPlugin.tsx`
 
 ```tsx
 "use client";
@@ -915,7 +915,7 @@ export function LinkPlugin() {
 
 ### 9. Update Editor Container
 
-**File:** `components/docs/editor/EditorContainer.tsx` (Updated)
+**File:** `app/(pages)/docs/components/editor/EditorContainer.tsx` (Updated)
 
 ```tsx
 "use client";
@@ -991,7 +991,7 @@ function EditorPlaceholder() {
 
 ### 10. Hooks Barrel Export
 
-**File:** `components/docs/editor/hooks/index.ts`
+**File:** `app/(pages)/docs/components/editor/hooks/index.ts`
 
 ```ts
 export { useTextFormatState } from "./useTextFormatState";

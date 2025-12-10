@@ -73,8 +73,8 @@ This phase integrates the AI chat functionality with the document editor. Users 
 ## File Structure
 
 ```
-components/
-└── docs/
+app/(pages)/docs/
+└── components/
     └── chat/
         ├── index.ts                     # Barrel export
         ├── ChatSidebar.tsx              # Main sidebar container
@@ -84,13 +84,14 @@ components/
         ├── ChatInput.tsx                # Input area
         ├── ToolCallDisplay.tsx          # Agent tool execution UI
         └── ResizeHandle.tsx             # Drag to resize
-lib/
-└── docs/
-    ├── store/
-    │   └── chat-slice.ts               # Chat Zustand slice
-    └── agents/
-        ├── doc-agent.ts                 # Document agent definition
-        └── doc-tools.ts                 # Document tool definitions
+app/(pages)/docs/
+└── store/
+    └── slices/
+        └── chatSlice.ts                 # Chat Zustand slice
+app/api/docs/
+└── services/
+    ├── doc-agent.ts                     # Document agent definition
+    └── doc-tools.ts                     # Document tool definitions
 app/
 └── api/
     └── docs/
@@ -105,7 +106,7 @@ app/
 
 ### 1. Chat Sidebar Component
 
-**File:** `components/docs/chat/index.ts`
+**File:** `app/(pages)/docs/components/chat/index.ts`
 
 ```ts
 export { ChatSidebar } from "./ChatSidebar";
@@ -117,7 +118,7 @@ export { ToolCallDisplay } from "./ToolCallDisplay";
 export { ResizeHandle } from "./ResizeHandle";
 ```
 
-**File:** `components/docs/chat/ChatSidebar.tsx`
+**File:** `app/(pages)/docs/components/chat/ChatSidebar.tsx`
 
 ```tsx
 "use client";
@@ -127,8 +128,8 @@ import { ChatHeader } from "./ChatHeader";
 import { ChatMessages } from "./ChatMessages";
 import { ChatInput } from "./ChatInput";
 import { ResizeHandle } from "./ResizeHandle";
-import { useChatStore } from "@/lib/docs/store/chat-slice";
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
+import { useDocsStore } from "../../store";
+import { useDocsStore } from "../../store";
 import { cn } from "@/lib/utils";
 
 const MIN_WIDTH = 320;
@@ -187,7 +188,7 @@ export function ChatSidebar() {
 }
 ```
 
-**File:** `components/docs/chat/ChatHeader.tsx`
+**File:** `app/(pages)/docs/components/chat/ChatHeader.tsx`
 
 ```tsx
 "use client";
@@ -199,7 +200,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useChatStore } from "@/lib/docs/store/chat-slice";
+import { useDocsStore } from "../../store";
 import { X, MoreHorizontal, Trash2, Download } from "lucide-react";
 
 interface ChatHeaderProps {
@@ -246,7 +247,7 @@ export function ChatHeader({ onClearHistory }: ChatHeaderProps) {
 }
 ```
 
-**File:** `components/docs/chat/ResizeHandle.tsx`
+**File:** `app/(pages)/docs/components/chat/ResizeHandle.tsx`
 
 ```tsx
 "use client";
@@ -299,7 +300,7 @@ export function ResizeHandle({ onResize }: ResizeHandleProps) {
 
 ### 2. Chat Messages Component
 
-**File:** `components/docs/chat/ChatMessages.tsx`
+**File:** `app/(pages)/docs/components/chat/ChatMessages.tsx`
 
 ```tsx
 "use client";
@@ -354,7 +355,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
 }
 ```
 
-**File:** `components/docs/chat/ChatMessage.tsx`
+**File:** `app/(pages)/docs/components/chat/ChatMessage.tsx`
 
 ```tsx
 "use client";
@@ -432,7 +433,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
 }
 ```
 
-**File:** `components/docs/chat/ToolCallDisplay.tsx`
+**File:** `app/(pages)/docs/components/chat/ToolCallDisplay.tsx`
 
 ```tsx
 "use client";
@@ -529,7 +530,7 @@ export function ToolCallDisplay({ toolCall }: ToolCallDisplayProps) {
 
 ### 3. Chat Input Component
 
-**File:** `components/docs/chat/ChatInput.tsx`
+**File:** `app/(pages)/docs/components/chat/ChatInput.tsx`
 
 ```tsx
 "use client";
@@ -619,7 +620,7 @@ export function ChatInput({ onSend, isLoading, onCancel }: ChatInputProps) {
 
 ### 4. Chat Store Slice
 
-**File:** `lib/docs/store/chat-slice.ts`
+**File:** `app/(pages)/docs/store/slices/chatSlice.ts`
 
 ```ts
 import { create } from "zustand";
@@ -804,7 +805,7 @@ export const useChatStore = create<ChatState>()(
 
 ### 5. Document Agent Tools
 
-**File:** `lib/docs/agents/doc-tools.ts`
+**File:** `app/api/docs/services/doc-tools.ts`
 
 ```ts
 import { z } from "zod";
@@ -1058,7 +1059,7 @@ export type DocumentTools = ReturnType<typeof createDocumentTools>;
 
 ### 6. Document Agent Definition
 
-**File:** `lib/docs/agents/doc-agent.ts`
+**File:** `app/api/docs/services/doc-agent.ts`
 
 ```ts
 import { anthropic } from "@ai-sdk/anthropic";
@@ -1131,7 +1132,7 @@ function extractOutline(content: string): string {
 import { NextRequest } from "next/server";
 import { streamText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
-import { createDocumentTools } from "@/lib/docs/agents/doc-tools";
+import { createDocumentTools } from "../services/doc-tools";
 import { updateDocument } from "../../services";
 
 interface RouteContext {
@@ -1272,7 +1273,7 @@ The user can see the document being edited in real-time, so you don't need to sh
 
 ### 8. Update Document Editor to Include Chat
 
-**File:** `components/docs/editor/DocumentEditor.tsx` (Updated)
+**File:** `app/(pages)/docs/components/editor/DocumentEditor.tsx` (Updated)
 
 ```tsx
 "use client";
@@ -1283,8 +1284,8 @@ import { DocumentHeader } from "./DocumentHeader";
 import { SaveIndicator } from "./SaveIndicator";
 import { ChatSidebar } from "../chat/ChatSidebar";
 import { ChatToggle } from "./ChatToggle";
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
-import { useChatStore } from "@/lib/docs/store/chat-slice";
+import { useDocsStore } from "../../store";
+import { useDocsStore } from "../../store";
 import type { Document } from "@/app/api/docs/services/types";
 
 interface DocumentEditorProps {
@@ -1333,14 +1334,14 @@ export function DocumentEditor({ document }: DocumentEditorProps) {
 }
 ```
 
-**File:** `components/docs/editor/ChatToggle.tsx`
+**File:** `app/(pages)/docs/components/editor/ChatToggle.tsx`
 
 ```tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
-import { useChatStore } from "@/lib/docs/store/chat-slice";
+import { useDocsStore } from "../../store";
 import { cn } from "@/lib/utils";
 
 export function ChatToggle() {
@@ -1368,7 +1369,7 @@ export function ChatToggle() {
 
 ### 9. Sync Editor with Agent Changes
 
-**File:** `components/docs/editor/plugins/AgentSyncPlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/AgentSyncPlugin.tsx`
 
 ```tsx
 "use client";
@@ -1376,8 +1377,8 @@ export function ChatToggle() {
 import { useEffect, useRef } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $convertFromMarkdownString, TRANSFORMERS } from "@lexical/markdown";
-import { useChatStore } from "@/lib/docs/store/chat-slice";
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
+import { useDocsStore } from "../../store";
+import { useDocsStore } from "../../store";
 
 export function AgentSyncPlugin() {
   const [editor] = useLexicalComposerContext();

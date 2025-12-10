@@ -6,9 +6,13 @@ import { SessionsSidebar } from "./components/SessionsSidebar";
 import { BrowserView } from "./components/BrowserView";
 import { ChatPanel } from "./components/ChatPanel";
 import { ProfileDialog } from "./components/Profiles";
+import { useKeyboardShortcuts } from "./hooks";
 
 export default function BrowserAutomationPage() {
   const fetchSessions = useBrowserStore((state) => state.fetchSessions);
+
+  // Enable global keyboard shortcuts
+  useKeyboardShortcuts();
 
   useEffect(() => {
     fetchSessions();

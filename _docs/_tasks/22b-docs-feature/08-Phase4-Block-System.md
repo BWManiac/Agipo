@@ -79,8 +79,8 @@ This phase implements Notion-style block interactions. Users will be able to:
 ## File Structure
 
 ```
-components/
-└── docs/
+app/(pages)/docs/
+└── components/
     └── editor/
         ├── blocks/
         │   ├── index.ts                  # Barrel export
@@ -108,7 +108,7 @@ components/
 
 ### 1. Slash Command Definitions
 
-**File:** `components/docs/editor/slash-command/commands.ts`
+**File:** `app/(pages)/docs/components/editor/slash-command/commands.ts`
 
 ```ts
 import {
@@ -271,7 +271,7 @@ export function getCommandById(id: string): SlashCommand | undefined {
 
 ### 2. Slash Command Menu Component
 
-**File:** `components/docs/editor/slash-command/index.ts`
+**File:** `app/(pages)/docs/components/editor/slash-command/index.ts`
 
 ```ts
 export { SlashCommandMenu } from "./SlashCommandMenu";
@@ -280,7 +280,7 @@ export { SLASH_COMMANDS, filterCommands, getCommandById } from "./commands";
 export type { SlashCommand } from "./commands";
 ```
 
-**File:** `components/docs/editor/slash-command/SlashCommandMenu.tsx`
+**File:** `app/(pages)/docs/components/editor/slash-command/SlashCommandMenu.tsx`
 
 ```tsx
 "use client";
@@ -415,7 +415,7 @@ export function SlashCommandMenu({
 }
 ```
 
-**File:** `components/docs/editor/slash-command/SlashCommandItem.tsx`
+**File:** `app/(pages)/docs/components/editor/slash-command/SlashCommandItem.tsx`
 
 ```tsx
 "use client";
@@ -465,7 +465,7 @@ export function SlashCommandItem({
 
 ### 3. Slash Command Plugin
 
-**File:** `components/docs/editor/plugins/SlashCommandPlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/SlashCommandPlugin.tsx`
 
 ```tsx
 "use client";
@@ -715,7 +715,7 @@ export function SlashCommandPlugin() {
 
 ### 4. Block Handle Components
 
-**File:** `components/docs/editor/blocks/index.ts`
+**File:** `app/(pages)/docs/components/editor/blocks/index.ts`
 
 ```ts
 export { BlockHandle } from "./BlockHandle";
@@ -724,7 +724,7 @@ export { BlockWrapper } from "./BlockWrapper";
 export { DragIndicator } from "./DragIndicator";
 ```
 
-**File:** `components/docs/editor/blocks/BlockHandle.tsx`
+**File:** `app/(pages)/docs/components/editor/blocks/BlockHandle.tsx`
 
 ```tsx
 "use client";
@@ -804,7 +804,7 @@ export const BlockHandle = forwardRef<HTMLDivElement, BlockHandleProps>(
 BlockHandle.displayName = "BlockHandle";
 ```
 
-**File:** `components/docs/editor/blocks/BlockMenu.tsx`
+**File:** `app/(pages)/docs/components/editor/blocks/BlockMenu.tsx`
 
 ```tsx
 "use client";
@@ -935,7 +935,7 @@ export function BlockMenu({
 }
 ```
 
-**File:** `components/docs/editor/blocks/DragIndicator.tsx`
+**File:** `app/(pages)/docs/components/editor/blocks/DragIndicator.tsx`
 
 ```tsx
 "use client";
@@ -968,7 +968,7 @@ export function DragIndicator({ position, isVisible }: DragIndicatorProps) {
 
 ### 5. Block Handle Plugin
 
-**File:** `components/docs/editor/plugins/BlockHandlePlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/BlockHandlePlugin.tsx`
 
 ```tsx
 "use client";
@@ -1256,7 +1256,7 @@ export function BlockHandlePlugin() {
 
 ### 6. Callout Node (Custom Block)
 
-**File:** `components/docs/editor/nodes/CalloutNode.tsx`
+**File:** `app/(pages)/docs/components/editor/nodes/CalloutNode.tsx`
 
 ```tsx
 import {
@@ -1392,7 +1392,7 @@ function CalloutComponent({ type, content, nodeKey }: CalloutComponentProps) {
 
 ### 7. Update Node Exports
 
-**File:** `components/docs/editor/nodes/index.ts` (Updated)
+**File:** `app/(pages)/docs/components/editor/nodes/index.ts` (Updated)
 
 ```ts
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
@@ -1424,7 +1424,7 @@ export const editorNodes: Klass<LexicalNode>[] = [
 
 ### 8. Update Editor Container
 
-**File:** `components/docs/editor/EditorContainer.tsx` (Updated)
+**File:** `app/(pages)/docs/components/editor/EditorContainer.tsx` (Updated)
 
 ```tsx
 "use client";

@@ -34,7 +34,7 @@ A document editing feature that provides:
 | Phase | Focus | New Files | Modified Files | Complexity |
 |-------|-------|-----------|----------------|------------|
 | Phase 0 | Technical Spike | 8 | 1 | Low |
-| Phase 1 | Foundation (Nav, Catalog, API) | 15 | 2 | Medium |
+| Phase 1 | Foundation (Nav, Catalog, API) | 12 | 1 | Medium |
 | Phase 2 | Editor Core | 12 | 0 | High |
 | Phase 3 | Toolbar & Formatting | 6 | 2 | Medium |
 | Phase 4 | Block System | 5 | 2 | High |
@@ -42,7 +42,7 @@ A document editing feature that provides:
 | Phase 6 | Outline & Properties | 6 | 1 | Medium |
 | Phase 7 | Version History | 6 | 1 | Medium |
 | Phase 8 | Polish & Validation | 2 | 5 | Low |
-| **Total** | | **70** | **14** | |
+| **Total** | | **67** | **13** | |
 
 **Note:** Phase 0 validates assumptions. All subsequent phases may be revised based on spike results.
 
@@ -214,28 +214,7 @@ app/(pages)/docs/components/settings/
 
 ---
 
-### 3.6 Hooks
-
-```
-app/(pages)/docs/hooks/
-├── useDocument.ts              # 🆕 Phase 1 - Document CRUD
-├── useDocumentChat.ts          # 🆕 Phase 5 - Chat streaming
-├── useDocumentOutline.ts       # 🆕 Phase 6 - Heading extraction
-├── useSaveStatus.ts            # 🆕 Phase 2 - Save indicator
-└── useVersionHistory.ts        # 🆕 Phase 7 - Version management
-```
-
-| File | Phase | LOC Est. | Dependencies |
-|------|-------|----------|--------------|
-| `useDocument.ts` | 1 | 150 | TanStack Query |
-| `useDocumentChat.ts` | 5 | 120 | @ai-sdk/react |
-| `useDocumentOutline.ts` | 6 | 80 | Lexical |
-| `useSaveStatus.ts` | 2 | 60 | Zustand |
-| `useVersionHistory.ts` | 7 | 100 | TanStack Query |
-
----
-
-### 3.7 API Routes
+### 3.6 API Routes
 
 ```
 app/api/docs/
@@ -288,7 +267,7 @@ app/api/docs/
 
 ---
 
-### 3.8 Data Storage
+### 3.7 Data Storage
 
 ```
 _tables/documents/
@@ -302,7 +281,7 @@ _tables/documents/
 
 ---
 
-### 3.9 Modified Files Summary
+### 3.8 Modified Files Summary
 
 | File | Phase | Changes |
 |------|-------|---------|
@@ -315,12 +294,12 @@ _tables/documents/
 
 ---
 
-### 3.10 File Count by Phase
+### 3.9 File Count by Phase
 
 | Phase | New Files | Modified Files | Total LOC Est. |
 |-------|-----------|----------------|----------------|
 | Phase 0 | 8 | 1 | ~830 |
-| Phase 1 | 15 | 2 | ~1,100 |
+| Phase 1 | 12 | 1 | ~900 |
 | Phase 2 | 12 | 0 | ~800 |
 | Phase 3 | 6 | 2 | ~600 |
 | Phase 4 | 5 | 2 | ~700 |
@@ -328,7 +307,7 @@ _tables/documents/
 | Phase 6 | 6 | 1 | ~550 |
 | Phase 7 | 6 | 1 | ~550 |
 | Phase 8 | 2 | 5 | ~200 |
-| **Total** | **70** | **14** | **~6,380** |
+| **Total** | **67** | **13** | **~6,180** |
 
 ---
 

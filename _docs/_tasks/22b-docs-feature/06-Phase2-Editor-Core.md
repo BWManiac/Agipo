@@ -78,32 +78,33 @@ This phase establishes the core document editing experience using Lexical. Users
 app/
 ├── (pages)/
 │   └── docs/
-│       └── [docId]/
-│           ├── page.tsx                 # Document editor page
-│           └── loading.tsx              # Loading skeleton
-components/
-└── docs/
-    └── editor/
-        ├── index.ts                     # Barrel export
-        ├── DocumentEditor.tsx           # Main editor wrapper
-        ├── EditorContainer.tsx          # Lexical provider setup
-        ├── EditorContent.tsx            # The actual editable area
-        ├── SaveIndicator.tsx            # Auto-save status display
-        ├── DocumentHeader.tsx           # Title and metadata
-        ├── plugins/
-        │   ├── index.ts                 # Plugin barrel export
-        │   ├── AutoSavePlugin.tsx       # Handles auto-save logic
-        │   ├── MarkdownPlugin.tsx       # Import/export transforms
-        │   └── OnChangePlugin.tsx       # Syncs to store
-        ├── nodes/
-        │   └── index.ts                 # Custom node registrations
-        └── themes/
-            ├── index.ts                 # Theme barrel export
-            └── editorTheme.ts           # Lexical theme config
-lib/
-└── docs/
-    └── store/
-        └── editor-slice.ts              # Editor Zustand slice
+│       ├── [docId]/
+│       │   ├── page.tsx                 # Document editor page
+│       │   └── loading.tsx              # Loading skeleton
+│       ├── components/
+│       │   └── editor/
+│       │       ├── index.ts             # Barrel export
+│       │       ├── DocumentEditor.tsx   # Main editor wrapper
+│       │       ├── EditorContainer.tsx  # Lexical provider setup
+│       │       ├── EditorContent.tsx    # The actual editable area
+│       │       ├── SaveIndicator.tsx    # Auto-save status display
+│       │       ├── DocumentHeader.tsx   # Title and metadata
+│       │       ├── plugins/
+│       │       │   ├── index.ts         # Plugin barrel export
+│       │       │   ├── AutoSavePlugin.tsx
+│       │       │   ├── MarkdownPlugin.tsx
+│       │       │   └── OnChangePlugin.tsx
+│       │       ├── nodes/
+│       │       │   └── index.ts         # Custom node registrations
+│       │       └── themes/
+│       │           ├── index.ts
+│       │           └── editorTheme.ts
+│       └── store/
+│           ├── index.ts                 # Store composition
+│           ├── types.ts                 # Store types
+│           └── slices/
+│               ├── catalogSlice.ts      # From Phase 1
+│               └── editorSlice.ts       # Editor state slice
 ```
 
 ---
@@ -116,7 +117,7 @@ lib/
 
 ```tsx
 import { notFound } from "next/navigation";
-import { DocumentEditor } from "@/components/docs/editor";
+import { DocumentEditor } from "../components/editor";
 import { getDocument } from "@/app/api/docs/services";
 
 interface DocumentPageProps {
@@ -177,7 +178,7 @@ export default function DocumentLoading() {
 
 ### 2. Main Editor Components
 
-**File:** `components/docs/editor/index.ts`
+**File:** `app/(pages)/docs/components/editor/index.ts`
 
 ```ts
 export { DocumentEditor } from "./DocumentEditor";
@@ -187,7 +188,7 @@ export { SaveIndicator } from "./SaveIndicator";
 export { DocumentHeader } from "./DocumentHeader";
 ```
 
-**File:** `components/docs/editor/DocumentEditor.tsx`
+**File:** `app/(pages)/docs/components/editor/DocumentEditor.tsx`
 
 ```tsx
 "use client";
@@ -196,7 +197,7 @@ import { useEffect } from "react";
 import { EditorContainer } from "./EditorContainer";
 import { DocumentHeader } from "./DocumentHeader";
 import { SaveIndicator } from "./SaveIndicator";
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
+import { useDocsStore } from "../../store";
 import type { Document } from "@/app/api/docs/services/types";
 
 interface DocumentEditorProps {
@@ -234,12 +235,12 @@ export function DocumentEditor({ document }: DocumentEditorProps) {
 }
 ```
 
-**File:** `components/docs/editor/DocumentHeader.tsx`
+**File:** `app/(pages)/docs/components/editor/DocumentHeader.tsx`
 
 ```tsx
 "use client";
 
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
+import { useDocsStore } from "../../store";
 import { FileText } from "lucide-react";
 
 export function DocumentHeader() {
@@ -265,12 +266,12 @@ export function DocumentHeader() {
 }
 ```
 
-**File:** `components/docs/editor/SaveIndicator.tsx`
+**File:** `app/(pages)/docs/components/editor/SaveIndicator.tsx`
 
 ```tsx
 "use client";
 
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
+import { useDocsStore } from "../../store";
 import { Check, AlertCircle, Loader2, Cloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -358,7 +359,7 @@ function formatTime(date: Date): string {
 
 ### 3. Lexical Editor Setup
 
-**File:** `components/docs/editor/EditorContainer.tsx`
+**File:** `app/(pages)/docs/components/editor/EditorContainer.tsx`
 
 ```tsx
 "use client";
@@ -423,7 +424,7 @@ function EditorPlaceholder() {
 }
 ```
 
-**File:** `components/docs/editor/EditorContent.tsx`
+**File:** `app/(pages)/docs/components/editor/EditorContent.tsx`
 
 ```tsx
 "use client";
@@ -444,13 +445,13 @@ export function EditorContent() {
 
 ### 4. Lexical Theme
 
-**File:** `components/docs/editor/themes/index.ts`
+**File:** `app/(pages)/docs/components/editor/themes/index.ts`
 
 ```ts
 export { editorTheme } from "./editorTheme";
 ```
 
-**File:** `components/docs/editor/themes/editorTheme.ts`
+**File:** `app/(pages)/docs/components/editor/themes/editorTheme.ts`
 
 ```ts
 import type { EditorThemeClasses } from "lexical";
@@ -553,7 +554,7 @@ export const editorTheme: EditorThemeClasses = {
 
 ### 5. Node Registration
 
-**File:** `components/docs/editor/nodes/index.ts`
+**File:** `app/(pages)/docs/components/editor/nodes/index.ts`
 
 ```ts
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
@@ -580,7 +581,7 @@ export const editorNodes: Klass<LexicalNode>[] = [
 
 ### 6. Editor Plugins
 
-**File:** `components/docs/editor/plugins/index.ts`
+**File:** `app/(pages)/docs/components/editor/plugins/index.ts`
 
 ```ts
 export { AutoSavePlugin } from "./AutoSavePlugin";
@@ -588,7 +589,7 @@ export { MarkdownPlugin } from "./MarkdownPlugin";
 export { OnChangePlugin } from "./OnChangePlugin";
 ```
 
-**File:** `components/docs/editor/plugins/MarkdownPlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/MarkdownPlugin.tsx`
 
 ```tsx
 "use client";
@@ -632,7 +633,7 @@ export function exportToMarkdown(editor: ReturnType<typeof useLexicalComposerCon
 }
 ```
 
-**File:** `components/docs/editor/plugins/OnChangePlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/OnChangePlugin.tsx`
 
 ```tsx
 "use client";
@@ -640,7 +641,7 @@ export function exportToMarkdown(editor: ReturnType<typeof useLexicalComposerCon
 import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $convertToMarkdownString, TRANSFORMERS } from "@lexical/markdown";
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
+import { useDocsStore } from "../../store";
 
 export function OnChangePlugin() {
   const [editor] = useLexicalComposerContext();
@@ -675,7 +676,7 @@ export function OnChangePlugin() {
 }
 ```
 
-**File:** `components/docs/editor/plugins/AutoSavePlugin.tsx`
+**File:** `app/(pages)/docs/components/editor/plugins/AutoSavePlugin.tsx`
 
 ```tsx
 "use client";
@@ -683,7 +684,7 @@ export function OnChangePlugin() {
 import { useEffect, useRef, useCallback } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $convertToMarkdownString, TRANSFORMERS } from "@lexical/markdown";
-import { useEditorStore } from "@/lib/docs/store/editor-slice";
+import { useDocsStore } from "../../store";
 
 interface AutoSavePluginProps {
   debounceMs?: number;
@@ -770,7 +771,7 @@ export function AutoSavePlugin({ debounceMs = 1500 }: AutoSavePluginProps) {
 
 ### 7. Editor Store Slice
 
-**File:** `lib/docs/store/editor-slice.ts`
+**File:** `app/(pages)/docs/store/slices/editorSlice.ts`
 
 ```ts
 import { create } from "zustand";

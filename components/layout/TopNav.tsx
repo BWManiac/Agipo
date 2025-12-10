@@ -14,6 +14,7 @@ import {
   User,
   GitBranch,
   Globe,
+  FileText,
 } from "lucide-react";
 import {
   SignInButton,
@@ -27,6 +28,8 @@ const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: null },
   { href: "/workforce", label: "Workforce", icon: Users },
   { href: "/records", label: "Records", icon: Database },
+  { href: "/dox", label: "Dox", icon: FileText },
+  { href: "/docs", label: "Docs", icon: FileText },
   { href: "/tools", label: "Tools", icon: Wrench },
   { href: "/workflows", label: "Workflows", icon: GitBranch },
   { href: "/experiments/browser-automation", label: "Browser", icon: Globe },
