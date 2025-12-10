@@ -1,9 +1,29 @@
 Headless Browser Technology
 ============================
 
-## Overview
+> **Note**: This document contains **SPECULATION** based on inferred patterns. We have **NO DIRECT EVIDENCE** of whether they use headless or headed browsers, or which browser engine.
 
-Since Asteroid.ai uses Playwright as their primary browser automation engine, the headless browser technology is determined by what Playwright uses under the hood.
+---
+
+## What We KNOW ✅
+
+1. **Playwright** is used (confirmed via UI)
+2. **Anchor Browser** manages the browser infrastructure (confirmed via network traffic)
+3. **VNC protocol** is used for live viewing (confirmed via network traffic)
+
+---
+
+## What We DON'T KNOW ⚠️
+
+1. **Headless vs Headed**: No evidence of which mode they use
+2. **Browser Engine**: No evidence of Chromium vs Firefox vs WebKit
+3. **How VNC Works**: Anchor Browser could be providing headless browsers with VNC streaming, or headed browsers with VNC access
+
+---
+
+## SPECULATION: Browser Engine Options
+
+Since Playwright is confirmed, Playwright supports three browser engines:
 
 ## Playwright's Browser Engines
 
@@ -159,40 +179,41 @@ client.on('Page.screencastFrame', (frame) => {
 
 ---
 
-## Most Likely Architecture
+## SPECULATION: How Anchor Browser + Playwright Work
 
-Based on evidence, Asteroid.ai likely uses:
+**What We Know:**
+- Anchor Browser provides browser infrastructure
+- VNC protocol streams live browser view
+- Playwright controls browser automation
 
-### **Headless Chromium** (Primary)
+**What We Don't Know:**
+- Whether browsers are headless or headed
+- Which browser engine (Chromium/Firefox/WebKit)
+- How Anchor Browser implements VNC streaming
 
-```typescript
-// Production execution (headless)
-const browser = await chromium.launch({
-  headless: true,
-  args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-accelerated-2d-canvas',
-    '--no-first-run',
-    '--no-zygote',
-    '--disable-gpu'
-  ]
-})
+**Possible Architectures** (All Speculation):
 
-// For real-time viewing:
-// 1. Inject rrweb recorder
-// 2. Stream DOM events via WebSocket
-// 3. Periodically capture screenshots
-// 4. Client-side reconstructs view using rrweb Replayer
-```
+### Option 1: Headless + VNC Streaming (Most Likely)
 
-**Why this makes sense:**
-1. **Scalability**: Headless can run many instances per server
-2. **Cost efficiency**: No GPU/display requirements
-3. **Performance**: Headless is faster than headed
-4. **Real-time view**: rrweb events + screenshots provide live view
-5. **Industry standard**: Most browser automation uses headless
+Anchor Browser could:
+- Run browsers in headless mode
+- Use VNC server to stream headless browser output
+- Provide VNC connection for real-time viewing
+
+**Pros**: Scalable, efficient
+**Cons**: VNC over headless is less common
+
+### Option 2: Headed + VNC Streaming
+
+Anchor Browser could:
+- Run browsers in headed mode (with display)
+- Use standard VNC server to stream display
+- Provide VNC connection for real-time viewing
+
+**Pros**: Standard VNC setup
+**Cons**: More resource intensive
+
+**Note**: Without Anchor Browser documentation, we can't determine which approach they use.
 
 ---
 
@@ -302,21 +323,17 @@ await page.click('#button')
 
 ## Conclusion
 
-**Most Likely**: Asteroid.ai uses **Headless Chromium** powered by Playwright.
+**What We Know For Sure:**
+- ✅ Playwright controls browser automation
+- ✅ Anchor Browser manages browser infrastructure  
+- ✅ VNC protocol provides real-time viewing
 
-**How real-time viewing works**:
-1. Browser runs headless on server (no UI)
-2. rrweb records DOM mutations and events
-3. Screenshots captured periodically
-4. Both streamed via WebSocket to client
-5. Client uses rrweb Replayer to reconstruct "live" view
-6. User sees real-time browser interaction without actual viewport streaming
+**What We Don't Know:**
+- ⚠️ Headless vs headed mode
+- ⚠️ Which browser engine (Chromium/Firefox/WebKit)
+- ⚠️ How Anchor Browser implements VNC
 
-This gives them:
-- ✅ Scalable headless execution
-- ✅ Efficient resource usage
-- ✅ Real-time viewing capability
-- ✅ Full session replay
+**Key Insight**: Anchor Browser abstracts away the browser implementation details. We know they provide VNC viewing, but the underlying browser configuration is opaque.
 
 ---
 

@@ -13,15 +13,18 @@ Asteroid.ai is a browser automation and AI agent platform that enables users to 
 
 ## Document Index
 
-1. **[Technology Stack](./01-Technology-Stack.md)** - Core underlying technologies identified
-2. **[Browser Automation Architecture](./02-Browser-Automation-Architecture.md)** - DOM-based vs vision-based approaches
+0. **[Confirmed vs Speculated](./00-CONFIRMED-VS-SPECULATED.md)** - ⭐ START HERE: Clear breakdown of what we know vs what we inferred
+1. **[Technology Stack](./01-Technology-Stack.md)** - Core underlying technologies (updated to distinguish confirmed vs speculated)
+2. **[Browser Automation Architecture](./02-Browser-Automation-Architecture.md)** - DOM-based vs vision-based approaches (updated)
 3. **[Credential Management](./03-Credential-Management.md)** - Vault, credentials, cookies, TOTP, security
-4. **[Session Recording & Replay](./04-Session-Recording-Replay.md)** - Live viewing, rrweb, real-time streaming
+4. **[Session Recording & Replay](./04-Session-Recording-Replay.md)** - Live viewing, Anchor Browser VNC, rrweb (updated)
 5. **[Stealth & Anti-Detection](./05-Stealth-Anti-Detection.md)** - Proxy, fingerprinting, CAPTCHA solving
 6. **[Product Features & UI](./06-Product-Features-UI.md)** - What we learned from their interface
-7. **[Key Inferences & Learnings](./07-Key-Inferences.md)** - Summary conclusions and takeaways
+7. **[Key Inferences & Learnings](./07-Key-Inferences.md)** - Summary conclusions (updated with confirmed vs speculated)
 8. **[UI Evidence: Playwright & rrweb](./08-UI-Evidence-Playwright-rrweb.md)** - Direct UI evidence confirming technologies
-9. **[Headless Browser Technology](./09-Headless-Browser-Technology.md)** - Chromium, Firefox, WebKit - what they likely use
+9. **[Headless Browser Technology](./09-Headless-Browser-Technology.md)** - Updated to reflect we don't know headless/headed status
+10. **[Browserbase Analysis](./10-Browserbase-Analysis.md)** - Initial analysis (they use Anchor Browser, not Browserbase)
+11. **[Anchor Browser Infrastructure](./11-Anchor-Browser-Infrastructure.md)** - ✅ CONFIRMED: They use Anchor Browser
 
 ## Executive Summary
 

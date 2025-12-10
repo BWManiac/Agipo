@@ -1,9 +1,16 @@
 Stealth & Anti-Detection Features
 ===================================
 
+> **Note**: This document describes features observed in the UI. The **existence** of these features is confirmed, but the **implementation details** (which libraries, specific techniques) are **SPECULATED**.
+
+---
+
 ## Overview
 
 Asteroid.ai includes several features designed to avoid bot detection and maintain reliable browser automation at scale.
+
+**Confirmed**: UI features exist (toggles, settings)  
+**Speculated**: Implementation methods
 
 ## Features Identified
 

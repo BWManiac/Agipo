@@ -1,9 +1,15 @@
 UI Evidence: Playwright & rrweb
 =================================
 
+> **Note**: This document captures **CONFIRMED** evidence from UI and network inspection.
+
+---
+
 ## Overview
 
 This document captures the direct UI evidence that confirms Asteroid.ai's use of Playwright and rrweb technologies.
+
+**Status**: All evidence in this document is **CONFIRMED** via direct observation (UI screenshots, network traffic, console logs).
 
 ## Playwright Evidence
 

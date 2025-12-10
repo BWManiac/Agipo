@@ -1,9 +1,16 @@
 Credential Management System
 =============================
 
+> **Note**: This document describes features we observed in the UI. The **existence** of these features is confirmed via UI inspection, but the **implementation details** (which libraries, encryption methods, etc.) are **SPECULATED**.
+
+---
+
 ## Overview
 
 Asteroid.ai provides a comprehensive credential management system through **Agent Profiles** with a dedicated **Vault** section for storing sensitive authentication data.
+
+**Confirmed**: UI features exist  
+**Speculated**: Implementation details
 
 ## Security Model
 
@@ -191,51 +198,31 @@ async function runAgentWithProfile(agentId: string, profileId: string) {
 
 ## Security Considerations
 
-### Encryption Implementation
+### Encryption Implementation ⚠️ SPECULATED
 
-**At Rest:**
+**Confirmed**: UI states "All credentials are encrypted in transit and at rest"
+
+**Speculated Implementation** (Example - we don't know their actual implementation):
 ```typescript
+// This is an EXAMPLE of how they might implement encryption
+// We have NO EVIDENCE of their actual implementation
 import crypto from 'crypto'
 
-const encryptionKey = process.env.ENCRYPTION_KEY // From secure key management
+const encryptionKey = process.env.ENCRYPTION_KEY
 const algorithm = 'aes-256-gcm'
 
 function encrypt(plaintext: string, key: Buffer): EncryptedData {
-  const iv = crypto.randomBytes(16)
-  const cipher = crypto.createCipheriv(algorithm, key, iv)
-  
-  let encrypted = cipher.update(plaintext, 'utf8', 'hex')
-  encrypted += cipher.final('hex')
-  
-  const authTag = cipher.getAuthTag()
-  
-  return {
-    encrypted,
-    iv: iv.toString('hex'),
-    authTag: authTag.toString('hex')
-  }
-}
-
-function decrypt(encryptedData: EncryptedData, key: Buffer): string {
-  const decipher = crypto.createDecipheriv(
-    algorithm,
-    key,
-    Buffer.from(encryptedData.iv, 'hex')
-  )
-  
-  decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'))
-  
-  let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8')
-  decrypted += decipher.final('utf8')
-  
-  return decrypted
+  // ... example implementation
 }
 ```
 
-**Key Management:**
-- Use AWS KMS, HashiCorp Vault, or similar
-- Never store encryption keys in code or config
-- Rotate keys periodically
+**Possible Technologies** (All Speculated):
+- Node.js `crypto` module (AES-256-GCM)
+- AWS KMS
+- HashiCorp Vault
+- Other encryption services
+
+**Note**: We know encryption happens, but implementation is unknown.
 
 ### Transit Security
 - All API calls use HTTPS/TLS

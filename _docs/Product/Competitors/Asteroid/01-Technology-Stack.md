@@ -1,193 +1,172 @@
 Asteroid.ai Technology Stack
 =============================
 
-## Core Browser Automation
-
-### Primary Engine: Playwright (Confirmed)
-
-**Evidence:**
-
-1. **Explicit UI References** (High Confidence):
-   - Agent Builder workflow diagram explicitly shows **"Playwright Script"** node
-   - Feature list states: **"Playwright logic with selector-based guardrails"**
-   - Workflow diagram demonstrates Playwright as execution path in graph-based builder
-
-2. **Cookie API Structure** (High Confidence):
-   - Cookie management UI matches Playwright's cookie API structure exactly
-   - Standard cookie fields (domain, SameSite, Secure, HttpOnly) align with Playwright's cookie interface
-
-3. **Blog References** (High Confidence):
-   - Mentions "accessibility snapshots (popularized by Microsoft's Playwright MCP server)" in their blog
-   - Describes Playwright as one of the supported execution engines
-
-**Code Pattern Match:**
-```typescript
-// Asteroid's cookie structure matches Playwright's API
-interface Cookie {
-  name: string        // Cookie Key (their UI)
-  value: string       // Cookie Value
-  domain: string      // Domain
-  expires?: number    // Expiry
-  httpOnly?: boolean  // HttpOnly checkbox
-  secure?: boolean    // Secure checkbox
-  sameSite?: 'Strict' | 'Lax' | 'None' // SameSite dropdown
-}
-```
-
-### Alternative Engines Supported
-
-According to their blog post ["When will browser agents do real work?"](https://asteroid.ai/blog/when-will-browser-agents-do-real-work/):
-
-> "The agent compiles that knowledge into **deterministic scripts (Playwright, Selenium, or CDP commands)**"
-
-**Inference**: They support multiple browser automation engines:
-- **Playwright** (primary, based on evidence)
-- **Selenium** (for legacy compatibility)
-- **Chrome DevTools Protocol (CDP)** (direct browser control)
-
-This suggests they have an abstraction layer over multiple engines.
+> **Note**: This document distinguishes between **CONFIRMED** technologies (direct evidence) and **SPECULATED** technologies (inferred from patterns/UI). Only technologies with direct evidence are marked as confirmed.
 
 ---
 
-## Session Recording & Replay
+## CONFIRMED Technologies
 
-### rrweb
+### 1. Playwright ✅ **CONFIRMED**
 
-**About rrweb:**
-[rrweb](https://www.rrweb.io/) is an open-source web session replay library that provides easy-to-use APIs to record user interactions and replay them remotely. It's trusted by companies like PostHog, Highlight, and Pendo.
+**Direct Evidence:**
 
-**Evidence of Usage:**
-
-1. **Console Logs** (Direct Evidence):
-   - Browser console shows `rrweb-plugin-console-record.js:2447` during agent execution
-   - This is the console recording plugin from rrweb
-
-2. **UI References** (Direct Evidence):
-   - References to `lazy-recorder.js` and `dead-clicks-autocapture.js` in source
-   - These are related to rrweb's recording capabilities
-
-3. **PostHog Integration** (Indirect Evidence):
-   - PostHog source code found in their codebase
-   - PostHog uses rrweb for session replay
-   - Suggests they're using similar patterns
-
-4. **Real-Time Browser View** (Functional Evidence):
-   - Live browser viewing in execution dashboard
-   - Action logs showing real-time DOM interactions
-   - "Automatic recording and playback of every run" feature
-   - These capabilities match rrweb's functionality exactly
+- Agent Builder workflow diagram explicitly shows **"Playwright Script"** node
+- Feature list states: **"Playwright logic with selector-based guardrails"**
+- Workflow diagram demonstrates Playwright as execution path in graph-based builder
 
 **Where We Saw It:**
-- **Browser Console**: `rrweb-plugin-console-record.js` appeared in console logs when viewing agent executions
-- **Execution Dashboard**: Real-time browser view showing live agent interactions (powered by rrweb streaming)
-- **Session Replay**: "Automatic recording and playback" feature uses rrweb for full session reconstruction
-
-**Purpose:**
-- Records DOM mutations and events
-- Enables session replay
-- Real-time streaming of browser state
-- Pixel-perfect replay of user interactions
-
-**Usage Pattern:**
-```typescript
-import { record } from 'rrweb'
-
-record({
-  emit(event) {
-    // Stream events via WebSocket for live view
-    // Store events for replay
-  }
-})
-```
+- Agent Builder UI showing "Playwright Script" node
+- Feature documentation page listing Playwright as core feature
 
 ---
 
-## Analytics & Session Tracking
+### 2. Anchor Browser ✅ **CONFIRMED**
 
-### PostHog
+**Direct Evidence:**
+- Network tab shows WebSocket connection: `wss://connect.anchorbrowser.io//vnc/?sessionId=8f33ba99-e7b8-4215-93cb-a0861f2a3468`
+- Origin domain: `https://live.anchorbrowser.io`
+- Protocol: **VNC** (Virtual Network Computing) over WebSocket
 
-**Evidence:**
-- Found `autocapture-utils.ts` in their codebase (PostHog's autocapture utility)
-- PostHog's `Autocapture` class found in source
-- PostHog uses rrweb for session replay
+**Where We Saw It:**
+- Chrome DevTools → Network tab during agent execution
+- WebSocket connection to `connect.anchorbrowser.io`
+- VNC protocol in connection URL
 
-**Purpose:**
-- Analytics on their own platform
-- Session replay for debugging
-- User behavior tracking
-
-**Note**: This is for their **own platform analytics**, not the browser automation engine.
+**What This Confirms:**
+- They use Anchor Browser for browser infrastructure
+- VNC protocol for real-time browser viewing
+- Session-based browser management
+- Managed browser infrastructure (not self-hosted)
 
 ---
 
-## Authentication & Credentials
+### 3. rrweb ✅ **CONFIRMED**
 
-### Encryption Libraries
+**Direct Evidence:**
+- Browser console shows: `rrweb-plugin-console-record.js:2447`
+- This is the console recording plugin from the rrweb library
 
-**Evidence from UI:**
-> "All credentials are encrypted in transit and at rest. Credentials are only decrypted when an agent attempts to use them."
+**Where We Saw It:**
+- Browser console during agent execution
+- Execution dashboard while viewing agent runs
 
-**Likely Technologies:**
-- Node.js `crypto` module (AES-256-GCM encryption)
-- AWS KMS or HashiCorp Vault (for key management)
+---
+
+### 4. PostHog ✅ **CONFIRMED**
+
+**Direct Evidence:**
+- Source code found: `autocapture-utils.ts` (PostHog's autocapture utility)
+- PostHog's `Autocapture` class found in their codebase
+
+**Note**: This appears to be for their **own platform analytics**, not the browser automation engine.
+
+---
+
+## SPECULATED Technologies (Inferred from Evidence)
+
+### Browser Automation Engines
+
+**Speculation** (Not Confirmed):
+According to their blog post, they mention supporting "Playwright, Selenium, or CDP commands", but we only have direct evidence for **Playwright**.
+
+- **Playwright**: ✅ Confirmed (see above)
+- **Selenium**: ⚠️ Mentioned in blog, no direct evidence found
+- **CDP**: ⚠️ Mentioned in blog, no direct evidence found
+
+**Inference**: They may support multiple engines, but we can only confirm Playwright.
+
+### Cookie API Structure
+
+**Evidence** (Inferred from UI):
+- Cookie management UI fields match Playwright's cookie API structure
+- Fields: domain, SameSite, Secure, HttpOnly align with Playwright's interface
+
+**Inference**: This strongly suggests Playwright, but cookie APIs are similar across automation tools, so this is supporting evidence rather than direct proof.
+
+---
+
+### Browser Engine (Chromium/Firefox/WebKit)
+
+**Speculation**: Playwright supports Chromium, Firefox, and WebKit, but we don't know which one(s) Asteroid uses.
+
+**Most Likely**: Headless Chromium (standard default for Playwright)
+
+**Evidence**: None - this is pure inference from Playwright being the engine.
+
+---
+
+### Encryption Implementation
+
+**Evidence** (UI Statement):
+> "All credentials are encrypted in transit and at rest."
+
+**Speculation**:
+- Likely uses Node.js `crypto` module (AES-256-GCM)
+- Possibly AWS KMS or HashiCorp Vault for key management
 - TLS/HTTPS for transit encryption
 
-### TOTP Support
+**Note**: We know encryption happens, but not the implementation details.
 
-**Evidence from UI:**
+---
+
+### TOTP Library
+
+**Evidence** (UI Feature):
 - "TOTP Secrets" section in Vault tab
 - Support for 2FA authentication
 
-**Likely Technology:**
-- `otplib` or similar library for TOTP generation
+**Speculation**:
+- Likely `otplib` or similar library
+- Standard TOTP (RFC 6238) implementation
+
+**Note**: We know TOTP is supported, but not which library.
 
 ---
 
-## Stealth & Anti-Detection
+### CAPTCHA Solving Service
 
-### Anti-Detection Libraries
+**Evidence** (UI Feature):
+- "Captcha Solver" toggle in UI
+- "Automated CAPTCHA handling" mentioned in features
 
-**Evidence:**
+**Speculation**:
+- Could be 2Captcha, AntiCaptcha, Capsolver, or another service
+- Standard API integration pattern
+
+**Note**: We know CAPTCHA solving exists, but not which service.
+
+---
+
+### Stealth/Anti-Detection Libraries
+
+**Evidence** (UI Feature):
 - "Extra Stealth" toggle in UI
 - Proxy and fingerprinting features
 
-**Likely Technologies:**
-- `puppeteer-extra-plugin-stealth` (if using Puppeteer)
-- Custom fingerprinting evasion scripts (if using Playwright)
-- User-agent rotation libraries
+**Speculation**:
+- Could use `puppeteer-extra-plugin-stealth` patterns
+- Could be custom scripts
+- Standard fingerprinting evasion techniques
 
-### CAPTCHA Solving
-
-**Evidence:**
-- "Captcha Solver" toggle in UI
-- Mentions "automated CAPTCHA handling" in features
-
-**Likely Integrations:**
-- 2Captcha API
-- AntiCaptcha API
-- Capsolver API
+**Note**: We know stealth features exist, but not the implementation.
 
 ---
 
-## Real-Time Infrastructure
+### Real-Time Viewing Technology
 
-### WebSocket
+**Confirmed**: Uses Anchor Browser with VNC protocol (see Anchor Browser section above)
 
-**Evidence:**
-- Real-time browser viewing functionality
-- WebSocket connections to `odyssey.asteroid.ai` visible in console
-- Live streaming of agent execution
-
-**Usage:**
-- Stream rrweb events in real-time
-- Broadcast screenshots/viewport updates
-- Real-time execution status
+**Speculation**:
+- May also use rrweb for session replay (separate from live viewing)
+- Screenshot streaming possible but not confirmed
+- WebSocket connections confirmed (network evidence)
 
 ---
 
-## Architecture Pattern
+## Architecture Pattern (Confirmed + Inferred)
 
-Based on all evidence, their stack looks like:
+Based on **confirmed evidence**, their stack includes:
 
 ```
 ┌─────────────────────────────────────┐
@@ -196,30 +175,47 @@ Based on all evidence, their stack looks like:
 │  Custom: AI Reasoning Layer        │
 │  Custom: Hybrid DOM/Vision Router  │
 ├─────────────────────────────────────┤
-│  Abstraction Layer                 │
-│  (Supports Playwright/Selenium/CDP)│
+│  Playwright (✅ CONFIRMED)         │
 ├─────────────────────────────────────┤
-│  Browser Automation Engines        │
-│  - Playwright (primary)            │
-│  - Selenium (legacy)               │
-│  - CDP (direct control)            │
+│  Anchor Browser (✅ CONFIRMED)     │
+│    - VNC streaming for live view   │
+│    - Session-based browsers        │
+│    - Managed infrastructure        │
 ├─────────────────────────────────────┤
 │  Supporting Libraries              │
-│  - rrweb (session recording)       │
-│  - PostHog (analytics)             │
-│  - otplib (TOTP)                   │
-│  - CAPTCHA APIs                    │
+│  - rrweb (✅ CONFIRMED)            │
+│  - PostHog (✅ CONFIRMED)          │
 └─────────────────────────────────────┘
 ```
+
+**Note**: Other components (Selenium/CDP support, specific libraries, browser engine) are **inferred** from UI/features but not directly confirmed.
+
+---
+
+## Summary: Confirmed vs Speculated
+
+| Technology | Status | Evidence Type |
+|-----------|--------|---------------|
+| **Playwright** | ✅ CONFIRMED | Direct UI references |
+| **Anchor Browser** | ✅ CONFIRMED | Network traffic |
+| **rrweb** | ✅ CONFIRMED | Console logs |
+| **PostHog** | ✅ CONFIRMED | Source code |
+| **Chromium/Firefox/WebKit** | ⚠️ SPECULATED | Inferred from Playwright |
+| **Encryption library** | ⚠️ SPECULATED | Inferred from UI statements |
+| **TOTP library** | ⚠️ SPECULATED | Inferred from feature |
+| **CAPTCHA service** | ⚠️ SPECULATED | Inferred from feature |
+| **Stealth library** | ⚠️ SPECULATED | Inferred from feature |
 
 ---
 
 ## Key Takeaway
 
-**They are NOT building bespoke browser automation.** They're building an intelligent orchestration layer on top of proven, open-source browser automation engines. Their innovation is in:
-1. AI-powered reasoning and planning
-2. Hybrid DOM + vision approach
-3. Graph-based workflow execution
-4. Enterprise-grade credential management
-5. Real-time streaming and observability
+**Confirmed**: They use managed browser infrastructure (Anchor Browser) with Playwright automation. They're building an intelligent orchestration layer on top of proven technologies, not reinventing browser automation.
+
+**Their innovation is likely in:**
+1. AI-powered reasoning and planning (speculated)
+2. Hybrid DOM + vision approach (mentioned in blog)
+3. Graph-based workflow execution (confirmed via UI)
+4. Enterprise-grade credential management (confirmed via UI)
+5. Real-time streaming via VNC (confirmed via Anchor Browser)
 

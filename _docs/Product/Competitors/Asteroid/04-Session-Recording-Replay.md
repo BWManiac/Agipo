@@ -1,39 +1,64 @@
 Session Recording & Replay
 ===========================
 
-## Overview
+> **Note**: This document distinguishes between **CONFIRMED** technologies (direct evidence) and **SPECULATED** usage patterns.
 
-Asteroid.ai provides real-time viewing and session replay capabilities, allowing users to watch agents navigate websites in real-time or replay past sessions for debugging and verification.
+---
 
-## Core Technology: rrweb
+## CONFIRMED Technologies
 
-### About rrweb
+### 1. Anchor Browser - VNC for Live Viewing ✅
 
-[rrweb](https://www.rrweb.io/) is an open-source web session replay library that provides easy-to-use APIs to record user interactions and replay them remotely. It's used by companies like PostHog, Highlight, and Pendo for user analysis, bug reproduction, and real-time collaboration.
+**Direct Evidence:**
+- Network tab: `wss://connect.anchorbrowser.io//vnc/?sessionId=...`
+- VNC protocol confirmed for real-time browser viewing
 
-### Evidence of Usage
+**What This Confirms:**
+- Real-time browser viewing uses **VNC protocol via Anchor Browser**
+- NOT screenshots, NOT rrweb for live viewing
+- VNC provides pixel-perfect remote browser viewing
 
-**Where We Saw rrweb Being Used:**
+**Where We Saw It:**
+- Chrome DevTools → Network tab during agent execution
+- WebSocket connection with VNC protocol
 
-1. **Browser Console** (Direct Evidence):
-   - `rrweb-plugin-console-record.js:2447` appeared in browser console during agent execution
-   - This is the console recording plugin from the rrweb library
-   - Found when inspecting the execution dashboard while an agent was running
+---
 
-2. **Source Code References**:
-   - References to `lazy-recorder.js` and `dead-clicks-autocapture.js` in their codebase
-   - These are related to rrweb's recording capabilities
+### 2. rrweb ✅ CONFIRMED
 
-3. **Execution Dashboard** (Functional Evidence):
-   - **Real-time browser view**: Live embedded browser showing agent interactions
-   - **Action logs**: Real-time timeline showing DOM interactions ("Navigating to URL", "Clicking on close button")
-   - **Feature description**: "Automatic recording and playback of every run"
-   - These features match rrweb's capabilities exactly
+**Direct Evidence:**
+- Browser console: `rrweb-plugin-console-record.js:2447`
 
-4. **PostHog Integration** (Indirect Evidence):
-   - PostHog source code found in their codebase
-   - PostHog uses rrweb for session replay
-   - Suggests they're using similar patterns
+**Where We Saw It:**
+- Browser console during agent execution
+
+**About rrweb:**
+[rrweb](https://www.rrweb.io/) is an open-source web session replay library used for recording and replaying browser sessions.
+
+**Likely Usage** (Inferred):
+- May be used for **session replay** (stored recordings)
+- May be used for **PostHog analytics** (PostHog uses rrweb)
+- Likely **NOT** used for live viewing (Anchor Browser VNC handles that)
+
+---
+
+## SPECULATED Usage Patterns
+
+### How rrweb and VNC Work Together ⚠️
+
+**Inference**: They likely use both technologies for different purposes:
+- **VNC (Anchor Browser)**: Real-time live viewing during execution
+- **rrweb**: Stored session replay for viewing past executions
+
+**Evidence**: We confirmed both exist, but their exact integration is inferred.
+
+### Screenshot Streaming ⚠️
+
+**Speculation**: May combine VNC with periodic screenshots for verification.
+
+**Evidence**: None - pure speculation based on common patterns.
+
+**Note**: VNC alone could handle all viewing needs.
 
 ### What rrweb Does
 

@@ -1,9 +1,15 @@
 Product Features & UI Analysis
 ===============================
 
+> **Note**: This document describes **UI features** we observed. These are **CONFIRMED** features (we saw them in the UI), but does not confirm the underlying implementation technologies.
+
+---
+
 ## Overview
 
 Analysis of Asteroid.ai's product features and UI patterns based on screenshots and interface exploration.
+
+**Status**: All features described here are **CONFIRMED** via UI inspection. Implementation details are **SPECULATED**.
 
 ## Agent Profile System
 

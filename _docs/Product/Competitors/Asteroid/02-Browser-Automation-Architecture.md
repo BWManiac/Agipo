@@ -1,14 +1,37 @@
 Browser Automation Architecture
 =================================
 
-## Core Approach: Hybrid DOM + Vision
+> **Note**: This document distinguishes between **CONFIRMED** architecture patterns (direct evidence) and **SPECULATED** patterns (inferred from blog posts/features).
 
-**Confirmed Technology**: Playwright is explicitly used as the primary browser automation engine, as evidenced by:
-- Agent Builder workflow diagram showing "Playwright Script" node
-- Feature list stating "Playwright logic with selector-based guardrails"
-- Execution dashboard showing Playwright-style action patterns
+---
 
-Based on their blog post ["When will browser agents do real work?"](https://asteroid.ai/blog/when-will-browser-agents-do-real-work/), Asteroid.ai uses a **hybrid approach** combining two methodologies:
+## CONFIRMED Architecture
+
+### Browser Automation Engine: Playwright ✅
+
+**Direct Evidence:**
+- Agent Builder workflow diagram shows "Playwright Script" node
+- Feature list states "Playwright logic with selector-based guardrails"
+
+### Browser Infrastructure: Anchor Browser ✅
+
+**Direct Evidence:**
+- Network traffic shows `wss://connect.anchorbrowser.io/vnc/?sessionId=...`
+- VNC protocol confirmed for live browser viewing
+
+---
+
+## SPECULATED Architecture Patterns
+
+### Hybrid DOM + Vision Approach ⚠️
+
+**Source**: Blog post ["When will browser agents do real work?"](https://asteroid.ai/blog/when-will-browser-agents-do-real-work/)
+
+**What They Say**: They describe using both DOM-based and vision-based approaches.
+
+**Status**: **SPECULATED** - Based on blog post description, not direct technical evidence.
+
+**Inferred Pattern**: They likely use a **hybrid approach** combining two methodologies:
 
 ### 1. DOM-Based Agents (Primary)
 

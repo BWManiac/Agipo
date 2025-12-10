@@ -12,35 +12,60 @@ Asteroid.ai is **NOT** building bespoke browser automation. Instead, they've bui
 
 ---
 
-## Technology Stack Confidence Levels
+## Technology Stack: Confirmed vs Speculated
 
-### High Confidence (Strong Evidence)
+### ✅ CONFIRMED Technologies (Direct Evidence)
 
-1. **rrweb for Session Recording** ✅ **CONFIRMED**
-   - Console logs explicitly show `rrweb-plugin-console-record.js:2447`
-   - [rrweb.io](https://www.rrweb.io/) - open-source library for session replay
-   - Real-time browser view in execution dashboard uses rrweb
-   - "Automatic recording and playback" feature matches rrweb capabilities
-   - PostHog integration (PostHog uses rrweb)
-   - Industry standard for session replay (used by PostHog, Highlight, Pendo)
+1. **Playwright** ✅ **CONFIRMED**
+   - **Direct Evidence**: Agent Builder workflow diagram shows "Playwright Script" node
+   - **Direct Evidence**: Feature list states "Playwright logic with selector-based guardrails"
+   - **Where**: UI screenshots and feature documentation
 
-2. **Playwright as Primary Engine** ✅ **CONFIRMED**
-   - **Explicit UI references**: Agent Builder workflow diagram shows "Playwright Script" node
-   - **Feature documentation**: "Playwright logic with selector-based guardrails" in feature list
-   - Cookie API structure matches exactly
-   - Blog mentions Playwright MCP server
-   - Accessibility snapshots are Playwright feature
-   - Cookie fields align perfectly with Playwright interface
+2. **Anchor Browser** ✅ **CONFIRMED**
+   - **Direct Evidence**: Network tab shows `wss://connect.anchorbrowser.io/vnc/?sessionId=...`
+   - **Direct Evidence**: VNC protocol confirmed in WebSocket connection
+   - **Where**: Chrome DevTools Network tab during agent execution
 
-3. **WebSocket for Real-Time Streaming** ✅
-   - Console shows connections to `odyssey.asteroid.ai`
-   - Real-time browser viewing requires WebSocket
-   - Standard pattern for live updates
+3. **rrweb** ✅ **CONFIRMED**
+   - **Direct Evidence**: Console logs show `rrweb-plugin-console-record.js:2447`
+   - **Where**: Browser console during agent execution
 
-4. **PostHog for Analytics** ✅
-   - Source code found in their codebase
-   - Used for their own platform analytics
-   - Not directly related to browser automation
+4. **PostHog** ✅ **CONFIRMED**
+   - **Direct Evidence**: Source code `autocapture-utils.ts` found in codebase
+   - **Where**: Source code inspection
+   - **Note**: Used for platform analytics, not browser automation
+
+### ⚠️ SPECULATED Technologies (Inferred)
+
+1. **Hybrid DOM + Vision Approach** ⚠️
+   - **Source**: Blog post description
+   - **Evidence**: Text description, no technical confirmation
+   - **Status**: Plausible but not proven
+
+2. **CAPTCHA Solving Services** ⚠️
+   - **Source**: UI feature toggle
+   - **Evidence**: Feature exists, but which service unknown
+   - **Status**: Feature confirmed, implementation unknown
+
+3. **Encryption Implementation** ⚠️
+   - **Source**: UI security statements
+   - **Evidence**: Encryption happens, but method unknown
+   - **Status**: Functionality confirmed, implementation unknown
+
+4. **Stealth Libraries** ⚠️
+   - **Source**: UI "Extra Stealth" toggle
+   - **Evidence**: Feature exists, but implementation unknown
+   - **Status**: Feature confirmed, library unknown
+
+5. **Browser Engine** ⚠️
+   - **Source**: Inference from Playwright usage
+   - **Evidence**: None - Playwright supports multiple engines
+   - **Status**: Unknown which engine(s) they use
+
+6. **Headless vs Headed Mode** ⚠️
+   - **Source**: Inference from patterns
+   - **Evidence**: None - Anchor Browser abstracts this
+   - **Status**: Unknown
 
 ### Medium Confidence (Strong Inferences)
 
@@ -78,31 +103,32 @@ Asteroid.ai is **NOT** building bespoke browser automation. Instead, they've bui
 
 ---
 
-## Architecture Pattern
+## Architecture Pattern (Confirmed + Inferred)
 
 ```
 ┌─────────────────────────────────────────┐
-│  CUSTOM LAYERS                          │
+│  CUSTOM LAYERS (✅ Confirmed via UI)   │
 │  ├─ Visual Builder (Astro)             │
 │  ├─ Graph-based Workflow Engine        │
-│  ├─ AI Reasoning (Hybrid DOM/Vision)   │
-│  ├─ Credential Management (Vault)      │
-│  └─ Real-time Streaming                │
+│  └─ Credential Management (Vault)      │
 ├─────────────────────────────────────────┤
-│  ABSTRACTION LAYER                      │
-│  └─ Multi-engine support                │
-│     (Playwright / Selenium / CDP)      │
+│  Playwright (✅ CONFIRMED via UI)      │
 ├─────────────────────────────────────────┤
-│  BROWSER AUTOMATION ENGINES             │
-│  └─ Playwright (primary, inferred)     │
+│  Anchor Browser (✅ CONFIRMED via      │
+│    Network Traffic)                    │
+│    - VNC streaming                     │
+│    - Managed infrastructure            │
 ├─────────────────────────────────────────┤
 │  SUPPORTING LIBRARIES                   │
-│  ├─ rrweb (session recording)          │
-│  ├─ PostHog (analytics)                │
-│  ├─ otplib (TOTP)                      │
-│  └─ CAPTCHA APIs                       │
+│  ├─ rrweb (✅ CONFIRMED via Console)   │
+│  └─ PostHog (✅ CONFIRMED via Code)    │
 └─────────────────────────────────────────┘
 ```
+
+**Note**: 
+- ✅ = Confirmed with direct evidence
+- ⚠️ = Inferred/speculated (no direct evidence)
+- Multi-engine support (Selenium/CDP) mentioned in blog but not confirmed
 
 **Key Insight**: They're building **on top of** proven technologies, not replacing them.
 
@@ -240,18 +266,24 @@ Asteroid.ai is executing well on **orchestration and management** rather than bu
 
 ---
 
-## Research Confidence Summary
+## Research Summary: Confirmed vs Speculated
 
-| Aspect | Confidence | Evidence Quality |
-|--------|-----------|------------------|
-| rrweb usage | **Very High** ✅ | Direct console logs, UI features, [rrweb.io](https://www.rrweb.io/) reference |
-| Playwright usage | **Very High** ✅ | Explicit UI references ("Playwright Script" node, feature list) |
-| Hybrid DOM+Vision | High | Explicitly described in blog |
-| Credential encryption | High | Explicit UI statements |
-| WebSocket streaming | High | Console logs, technical necessity, real-time view |
-| CAPTCHA solving | Medium | UI feature, standard pattern |
-| Stealth libraries | Medium | UI feature, common approach |
-| Multi-engine support | Low | Blog mention, no direct evidence |
+| Technology/Feature | Status | Evidence Type |
+|-------------------|--------|---------------|
+| **Playwright** | ✅ CONFIRMED | Direct UI references |
+| **Anchor Browser** | ✅ CONFIRMED | Network traffic |
+| **rrweb** | ✅ CONFIRMED | Console logs |
+| **PostHog** | ✅ CONFIRMED | Source code |
+| **VNC Protocol** | ✅ CONFIRMED | Network traffic |
+| **Hybrid DOM+Vision** | ⚠️ SPECULATED | Blog post description |
+| **Credential encryption** | ⚠️ SPECULATED | UI statement (functionality confirmed, implementation unknown) |
+| **CAPTCHA solving** | ⚠️ SPECULATED | UI feature (service unknown) |
+| **Stealth libraries** | ⚠️ SPECULATED | UI feature (implementation unknown) |
+| **Browser engine** | ⚠️ SPECULATED | Inferred from Playwright |
+| **Headless/Headed mode** | ⚠️ SPECULATED | Unknown (Anchor Browser abstracts) |
+| **Multi-engine support** | ⚠️ SPECULATED | Blog mention (Selenium/CDP not confirmed) |
 
-**Overall**: High confidence on core technologies, medium-high on architecture patterns.
+**Key Distinction**: 
+- **Confirmed** = Direct technical evidence (UI, network traffic, console logs, source code)
+- **Speculated** = Inferred from features, blog posts, or common patterns
 
