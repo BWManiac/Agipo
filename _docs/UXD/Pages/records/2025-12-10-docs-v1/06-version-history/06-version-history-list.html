@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version History - List View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .version-item { transition: all 0.15s; }
+        .version-item:hover { background: rgb(249 250 251); }
+        .version-item.selected { background: rgb(239 246 255); border-color: rgb(59 130 246); }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-5xl mx-auto">
+        <h2 class="text-lg font-semibold mb-4">Version History - List View</h2>
+        <p class="text-sm text-muted-foreground mb-6">Browse document versions with agent attribution. Click a version to preview.</p>
+
+        <div class="flex gap-6">
+            <!-- Version History Panel -->
+            <div class="w-96 bg-white border rounded-lg shadow-sm flex flex-col h-[640px]">
+                <!-- Panel Header -->
+                <div class="px-4 py-3 border-b flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="font-semibold">Version History</h3>
+                    </div>
+                    <button class="p-1.5 hover:bg-secondary rounded-md transition-all">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Version List -->
+                <div class="flex-1 overflow-y-auto">
+                    <!-- Current Version -->
+                    <div class="px-4 py-2 bg-gray-50 border-b">
+                        <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Current</span>
+                    </div>
+                    <div class="version-item selected p-4 border-b border-l-4 border-l-blue-500 cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                    ZC
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-sm">Zen Chang</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">Agent</span>
+                                    </div>
+                                    <p class="text-xs text-muted-foreground">Dec 10, 2025 at 3:45 PM</p>
+                                </div>
+                            </div>
+                            <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">Current</span>
+                        </div>
+                        <p class="text-sm text-muted-foreground mt-2 pl-9">
+                            Added action items to Recommendations section (+142 words)
+                        </p>
+                    </div>
+
+                    <!-- Previous Versions -->
+                    <div class="px-4 py-2 bg-gray-50 border-b">
+                        <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Today</span>
+                    </div>
+
+                    <!-- Version 2 -->
+                    <div class="version-item p-4 border-b cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="font-medium text-sm">You</span>
+                                    <p class="text-xs text-muted-foreground">Dec 10, 2025 at 2:30 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-muted-foreground mt-2 pl-9">
+                            Updated feature comparison table (+28 words)
+                        </p>
+                    </div>
+
+                    <!-- Version 3 - Agent -->
+                    <div class="version-item p-4 border-b cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-md bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                    MR
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-sm">Mira</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">Agent</span>
+                                    </div>
+                                    <p class="text-xs text-muted-foreground">Dec 10, 2025 at 1:15 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-muted-foreground mt-2 pl-9">
+                            Reviewed and fixed formatting issues (~12 changes)
+                        </p>
+                    </div>
+
+                    <!-- Yesterday -->
+                    <div class="px-4 py-2 bg-gray-50 border-b">
+                        <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Yesterday</span>
+                    </div>
+
+                    <!-- Version 4 -->
+                    <div class="version-item p-4 border-b cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="font-medium text-sm">You</span>
+                                    <p class="text-xs text-muted-foreground">Dec 9, 2025 at 4:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-muted-foreground mt-2 pl-9">
+                            Wrote initial draft with competitor overview (+890 words)
+                        </p>
+                    </div>
+
+                    <!-- Version 5 - Document Created -->
+                    <div class="version-item p-4 border-b cursor-pointer">
+                        <div class="flex items-start gap-2">
+                            <div class="w-7 h-7 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="font-medium text-sm">Document created</span>
+                                <p class="text-xs text-muted-foreground">Dec 9, 2025 at 2:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="p-4 border-t bg-gray-50 shrink-0">
+                    <p class="text-xs text-muted-foreground text-center">
+                        5 versions • Auto-saved every 5 minutes
+                    </p>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="flex-1 bg-white border rounded-lg shadow-sm flex flex-col h-[640px]">
+                <!-- Preview Header -->
+                <div class="px-4 py-3 border-b flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold">
+                            ZC
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-sm">Zen Chang</span>
+                                <span class="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">Agent</span>
+                                <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">Current</span>
+                            </div>
+                            <p class="text-xs text-muted-foreground">December 10, 2025 at 3:45 PM</p>
+                        </div>
+                    </div>
+                    <button class="h-8 px-4 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-all">
+                        Restore this version
+                    </button>
+                </div>
+
+                <!-- Document Preview -->
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div class="max-w-2xl mx-auto prose text-sm">
+                        <h1 class="text-xl font-bold mb-4">Competitor Analysis</h1>
+
+                        <h2 class="text-lg font-semibold mt-6 mb-3">Overview</h2>
+                        <p class="text-muted-foreground">
+                            This document summarizes our research on key competitors in the workflow automation space.
+                        </p>
+
+                        <h2 class="text-lg font-semibold mt-6 mb-3">Key Findings</h2>
+
+                        <h3 class="text-base font-semibold mt-4 mb-2">Market Position</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-muted-foreground">
+                            <li><strong>Competitor A</strong>: Strong enterprise focus, complex pricing</li>
+                            <li><strong>Competitor B</strong>: Developer-centric, open source core</li>
+                            <li><strong>Competitor C</strong>: SMB focus, simple onboarding</li>
+                        </ul>
+
+                        <h3 class="text-base font-semibold mt-4 mb-2">Feature Comparison</h3>
+                        <table class="w-full text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="border p-2 text-left">Feature</th>
+                                    <th class="border p-2 text-left">Us</th>
+                                    <th class="border p-2 text-left">Competitor A</th>
+                                    <th class="border p-2 text-left">Competitor B</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border p-2">AI Agents</td>
+                                    <td class="border p-2 text-green-600">✓</td>
+                                    <td class="border p-2 text-red-500">✗</td>
+                                    <td class="border p-2 text-yellow-600">Partial</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2">Visual Editor</td>
+                                    <td class="border p-2 text-green-600">✓</td>
+                                    <td class="border p-2 text-green-600">✓</td>
+                                    <td class="border p-2 text-red-500">✗</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h2 class="text-lg font-semibold mt-6 mb-3">Recommendations</h2>
+                        <p class="text-muted-foreground">Based on our analysis, we should focus on:</p>
+                        <ol class="list-decimal pl-5 space-y-1 text-muted-foreground">
+                            <li><strong>Differentiation through AI</strong>: Our agent system is unique</li>
+                            <li><strong>Ease of use</strong>: Simpler than Competitor A</li>
+                            <li><strong>Enterprise features</strong>: More robust than Competitor C</li>
+                        </ol>
+
+                        <!-- Highlighted new content from this version -->
+                        <div class="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 text-xs text-green-700 mb-2 font-medium">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Added in this version by Zen Chang (Agent)
+                            </div>
+                            <p class="font-semibold text-green-900 mb-2">Action Items:</p>
+                            <ul class="list-disc pl-5 space-y-1 text-green-900">
+                                <li>Schedule competitive demo review — <em>Owner: Product Team</em></li>
+                                <li>Draft positioning document — <em>Owner: Marketing</em></li>
+                                <li>Identify top 5 enterprise features to build — <em>Owner: Engineering</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Footer -->
+                <div class="px-4 py-3 border-t bg-gray-50 flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span>1,032 words</span>
+                        <span>•</span>
+                        <span>+142 words from previous</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="h-8 px-3 text-sm font-medium border rounded-md hover:bg-secondary transition-all">
+                            Compare with previous
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

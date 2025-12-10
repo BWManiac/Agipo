@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Panel - Activity Log</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .activity-item { border-left: 2px solid rgb(229 231 235); }
+        .activity-item:hover { background: rgb(249 250 251); }
+        .activity-item.agent { border-left-color: rgb(147 51 234); }
+        .activity-item.user { border-left-color: rgb(59 130 246); }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-lg font-semibold mb-4">Settings Panel - Activity Log</h2>
+        <p class="text-sm text-muted-foreground mb-6">Shows document edit history with agent and user attribution.</p>
+
+        <div class="flex gap-6">
+            <!-- Settings Panel Component -->
+            <div class="w-[480px] bg-white border rounded-lg shadow-sm">
+                <!-- Panel Header -->
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <h3 class="font-semibold">Document Settings</h3>
+                    </div>
+                    <button class="p-1.5 hover:bg-secondary rounded-md transition-all">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex border-b">
+                    <button class="px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+                        Agent Access
+                    </button>
+                    <button class="px-4 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
+                        Activity Log
+                    </button>
+                    <button class="px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+                        Properties
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6">
+                    <!-- Filter -->
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-xs text-muted-foreground">Filter:</span>
+                        <button class="px-2.5 py-1 text-xs font-medium bg-primary text-primary-foreground rounded-full">All</button>
+                        <button class="px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary rounded-full">Agents</button>
+                        <button class="px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary rounded-full">You</button>
+                    </div>
+
+                    <!-- Activity Timeline -->
+                    <div class="space-y-1">
+                        <!-- Today Header -->
+                        <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider py-2">Today</div>
+
+                        <!-- Agent Activity -->
+                        <div class="activity-item agent pl-4 py-3 rounded-r-md">
+                            <div class="flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
+                                    ZC
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-sm">Zen Chang</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">Agent</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-0.5">Added action items to Recommendations section</p>
+                                    <div class="flex items-center gap-3 mt-1.5">
+                                        <span class="text-xs text-muted-foreground">3:45 PM</span>
+                                        <span class="text-xs text-green-600">+142 words</span>
+                                        <button class="text-xs text-blue-600 hover:underline">View changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Activity -->
+                        <div class="activity-item user pl-4 py-3 rounded-r-md">
+                            <div class="flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-sm">You</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-0.5">Updated feature comparison table</p>
+                                    <div class="flex items-center gap-3 mt-1.5">
+                                        <span class="text-xs text-muted-foreground">2:30 PM</span>
+                                        <span class="text-xs text-green-600">+28 words</span>
+                                        <button class="text-xs text-blue-600 hover:underline">View changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agent Activity -->
+                        <div class="activity-item agent pl-4 py-3 rounded-r-md">
+                            <div class="flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-md bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
+                                    MR
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-sm">Mira</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">Agent</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-0.5">Reviewed and fixed formatting issues</p>
+                                    <div class="flex items-center gap-3 mt-1.5">
+                                        <span class="text-xs text-muted-foreground">1:15 PM</span>
+                                        <span class="text-xs text-yellow-600">~12 changes</span>
+                                        <button class="text-xs text-blue-600 hover:underline">View changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Yesterday Header -->
+                        <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider py-2 mt-4">Yesterday</div>
+
+                        <!-- User Activity -->
+                        <div class="activity-item user pl-4 py-3 rounded-r-md">
+                            <div class="flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-sm">You</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-0.5">Wrote initial draft with competitor overview</p>
+                                    <div class="flex items-center gap-3 mt-1.5">
+                                        <span class="text-xs text-muted-foreground">4:00 PM</span>
+                                        <span class="text-xs text-green-600">+890 words</span>
+                                        <button class="text-xs text-blue-600 hover:underline">View changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Created -->
+                        <div class="activity-item pl-4 py-3 rounded-r-md">
+                            <div class="flex items-start gap-3">
+                                <div class="w-7 h-7 rounded-md bg-gray-100 flex items-center justify-center shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-muted-foreground">Document created</p>
+                                    <div class="flex items-center gap-3 mt-1.5">
+                                        <span class="text-xs text-muted-foreground">2:00 PM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Load More -->
+                    <button class="w-full mt-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-all">
+                        Load more activity
+                    </button>
+                </div>
+            </div>
+
+            <!-- Changes Preview Panel -->
+            <div class="w-80 bg-white border rounded-lg shadow-sm">
+                <div class="px-4 py-3 border-b flex items-center justify-between">
+                    <h4 class="font-medium text-sm">Change Preview</h4>
+                    <button class="p-1 hover:bg-secondary rounded">
+                        <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold">
+                            ZC
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium">Zen Chang</span>
+                            <span class="text-xs text-muted-foreground ml-1">added</span>
+                        </div>
+                    </div>
+
+                    <!-- Diff View -->
+                    <div class="border rounded-lg overflow-hidden text-xs font-mono">
+                        <div class="bg-gray-50 px-3 py-1.5 border-b text-muted-foreground">
+                            Recommendations section
+                        </div>
+                        <div class="p-3 space-y-2">
+                            <!-- Added content -->
+                            <div class="bg-green-50 border-l-2 border-green-400 pl-2 py-1 text-green-900">
+                                <p class="font-semibold">Action Items:</p>
+                            </div>
+                            <div class="bg-green-50 border-l-2 border-green-400 pl-2 py-1 text-green-900">
+                                <p>• Schedule competitive demo review</p>
+                            </div>
+                            <div class="bg-green-50 border-l-2 border-green-400 pl-2 py-1 text-green-900">
+                                <p>  Owner: Product Team</p>
+                            </div>
+                            <div class="bg-green-50 border-l-2 border-green-400 pl-2 py-1 text-green-900">
+                                <p>• Draft positioning document</p>
+                            </div>
+                            <div class="bg-green-50 border-l-2 border-green-400 pl-2 py-1 text-green-900">
+                                <p>  Owner: Marketing</p>
+                            </div>
+                            <div class="bg-green-50 border-l-2 border-green-400 pl-2 py-1 text-green-900">
+                                <p>• Identify top 5 enterprise features</p>
+                            </div>
+                            <div class="bg-green-50 border-l-2 border-green-400 pl-2 py-1 text-green-900">
+                                <p>  Owner: Engineering</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mt-4">
+                        <button class="flex-1 h-8 text-xs font-medium border rounded-md hover:bg-secondary transition-all">
+                            View in context
+                        </button>
+                        <button class="flex-1 h-8 text-xs font-medium text-blue-600 border border-blue-200 bg-blue-50 rounded-md hover:bg-blue-100 transition-all">
+                            Restore this version
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

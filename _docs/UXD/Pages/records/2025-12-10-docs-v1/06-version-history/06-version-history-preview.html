@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version History - Compare View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .diff-added { background: rgb(220 252 231); }
+        .diff-removed { background: rgb(254 226 226); }
+        .diff-modified { background: rgb(254 249 195); }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="text-lg font-semibold mb-4">Version History - Compare View</h2>
+        <p class="text-sm text-muted-foreground mb-6">Side-by-side comparison between two versions with diff highlighting.</p>
+
+        <!-- Full Width Compare Panel -->
+        <div class="bg-white border rounded-lg shadow-sm">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button class="p-1.5 hover:bg-secondary rounded-md transition-all">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <div>
+                        <h3 class="font-semibold">Comparing Versions</h3>
+                        <p class="text-xs text-muted-foreground">Viewing changes between Dec 9 at 4:00 PM and Dec 10 at 3:45 PM</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <!-- View Toggle -->
+                    <div class="flex items-center border rounded-md">
+                        <button class="h-8 px-3 text-sm font-medium bg-primary text-primary-foreground rounded-l-md">
+                            Side by Side
+                        </button>
+                        <button class="h-8 px-3 text-sm font-medium text-muted-foreground hover:bg-secondary rounded-r-md">
+                            Unified
+                        </button>
+                    </div>
+                    <button class="p-1.5 hover:bg-secondary rounded-md transition-all">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Version Selectors -->
+            <div class="grid grid-cols-2 border-b">
+                <!-- Left Version (Older) -->
+                <div class="p-4 border-r bg-red-50/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-sm">You</div>
+                                <p class="text-xs text-muted-foreground">Dec 9, 2025 at 4:00 PM</p>
+                            </div>
+                        </div>
+                        <select class="h-8 px-2 text-xs border rounded-md bg-white">
+                            <option>Dec 9 at 4:00 PM</option>
+                            <option>Dec 9 at 2:00 PM (Created)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Right Version (Newer) -->
+                <div class="p-4 bg-green-50/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                ZC
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-sm">Zen Chang</span>
+                                    <span class="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">Agent</span>
+                                </div>
+                                <p class="text-xs text-muted-foreground">Dec 10, 2025 at 3:45 PM</p>
+                            </div>
+                        </div>
+                        <select class="h-8 px-2 text-xs border rounded-md bg-white">
+                            <option>Dec 10 at 3:45 PM (Current)</option>
+                            <option>Dec 10 at 2:30 PM</option>
+                            <option>Dec 10 at 1:15 PM</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diff Content -->
+            <div class="grid grid-cols-2 divide-x max-h-[500px] overflow-y-auto">
+                <!-- Left Content (Older) -->
+                <div class="p-6 text-sm">
+                    <div class="prose max-w-none">
+                        <h1 class="text-lg font-bold mb-3">Competitor Analysis</h1>
+
+                        <h2 class="text-base font-semibold mt-4 mb-2">Overview</h2>
+                        <p class="text-muted-foreground mb-3">
+                            This document summarizes our research on key competitors in the workflow automation space.
+                        </p>
+
+                        <h2 class="text-base font-semibold mt-4 mb-2">Key Findings</h2>
+
+                        <h3 class="text-sm font-semibold mt-3 mb-2">Market Position</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-muted-foreground mb-3">
+                            <li><strong>Competitor A</strong>: Strong enterprise focus, complex pricing</li>
+                            <li><strong>Competitor B</strong>: Developer-centric, open source core</li>
+                            <li><strong>Competitor C</strong>: SMB focus, simple onboarding</li>
+                        </ul>
+
+                        <h3 class="text-sm font-semibold mt-3 mb-2">Feature Comparison</h3>
+                        <p class="text-xs text-muted-foreground italic mb-3">[Table content unchanged]</p>
+
+                        <h2 class="text-base font-semibold mt-4 mb-2">Recommendations</h2>
+                        <p class="text-muted-foreground mb-2">Based on our analysis, we should focus on:</p>
+                        <ol class="list-decimal pl-5 space-y-1 text-muted-foreground">
+                            <li><strong>Differentiation through AI</strong>: Our agent system is unique</li>
+                            <li><strong>Ease of use</strong>: Simpler than Competitor A</li>
+                            <li><strong>Enterprise features</strong>: More robust than Competitor C</li>
+                        </ol>
+
+                        <!-- Empty space where content was added -->
+                        <div class="mt-4 h-32 border-2 border-dashed border-red-200 rounded-lg flex items-center justify-center">
+                            <span class="text-xs text-red-400">Content not present in this version</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content (Newer) -->
+                <div class="p-6 text-sm">
+                    <div class="prose max-w-none">
+                        <h1 class="text-lg font-bold mb-3">Competitor Analysis</h1>
+
+                        <h2 class="text-base font-semibold mt-4 mb-2">Overview</h2>
+                        <p class="text-muted-foreground mb-3">
+                            This document summarizes our research on key competitors in the workflow automation space.
+                        </p>
+
+                        <h2 class="text-base font-semibold mt-4 mb-2">Key Findings</h2>
+
+                        <h3 class="text-sm font-semibold mt-3 mb-2">Market Position</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-muted-foreground mb-3">
+                            <li><strong>Competitor A</strong>: Strong enterprise focus, complex pricing</li>
+                            <li><strong>Competitor B</strong>: Developer-centric, open source core</li>
+                            <li><strong>Competitor C</strong>: SMB focus, simple onboarding</li>
+                        </ul>
+
+                        <h3 class="text-sm font-semibold mt-3 mb-2">Feature Comparison</h3>
+                        <p class="text-xs text-muted-foreground italic mb-3">[Table content unchanged]</p>
+
+                        <h2 class="text-base font-semibold mt-4 mb-2">Recommendations</h2>
+                        <p class="text-muted-foreground mb-2">Based on our analysis, we should focus on:</p>
+                        <ol class="list-decimal pl-5 space-y-1 text-muted-foreground">
+                            <li><strong>Differentiation through AI</strong>: Our agent system is unique</li>
+                            <li><strong>Ease of use</strong>: Simpler than Competitor A</li>
+                            <li class="diff-modified px-1 -mx-1 rounded"><strong>Enterprise features</strong>: More robust than Competitor C for scaling teams</li>
+                        </ol>
+
+                        <!-- New content added -->
+                        <div class="diff-added mt-4 p-4 rounded-lg border border-green-300">
+                            <div class="flex items-center gap-2 text-xs text-green-700 mb-2 font-medium">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Added by Zen Chang (Agent)
+                            </div>
+                            <p class="font-semibold mb-2">Action Items:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Schedule competitive demo review — <em>Owner: Product Team</em></li>
+                                <li>Draft positioning document — <em>Owner: Marketing</em></li>
+                                <li>Identify top 5 enterprise features to build — <em>Owner: Engineering</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 border-t bg-gray-50 flex items-center justify-between">
+                <div class="flex items-center gap-6 text-xs text-muted-foreground">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded bg-green-200 border border-green-400"></span>
+                        <span>Added (+142 words)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded bg-yellow-200 border border-yellow-400"></span>
+                        <span>Modified (1 line)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded bg-red-200 border border-red-400"></span>
+                        <span>Removed (0 words)</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="h-9 px-4 text-sm font-medium border rounded-md hover:bg-secondary transition-all">
+                        Cancel
+                    </button>
+                    <button class="h-9 px-4 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
+                        Restore older version
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative: Unified Diff View -->
+        <div class="mt-8">
+            <h3 class="text-base font-semibold mb-4">Alternative: Unified Diff View</h3>
+            <div class="bg-white border rounded-lg shadow-sm">
+                <div class="px-4 py-3 border-b bg-gray-50">
+                    <span class="text-sm font-medium">Unified changes view</span>
+                </div>
+                <div class="p-4 font-mono text-xs overflow-x-auto">
+                    <div class="space-y-0.5">
+                        <div class="text-muted-foreground">@@ Recommendations section @@</div>
+                        <div class="pl-4">Based on our analysis, we should focus on:</div>
+                        <div class="pl-4">1. **Differentiation through AI**: Our agent system is unique</div>
+                        <div class="pl-4">2. **Ease of use**: Simpler than Competitor A</div>
+                        <div class="diff-removed pl-4 text-red-700">- 3. **Enterprise features**: More robust than Competitor C</div>
+                        <div class="diff-added pl-4 text-green-700">+ 3. **Enterprise features**: More robust than Competitor C for scaling teams</div>
+                        <div class="diff-added pl-4 text-green-700">+</div>
+                        <div class="diff-added pl-4 text-green-700">+ **Action Items:**</div>
+                        <div class="diff-added pl-4 text-green-700">+ - Schedule competitive demo review — *Owner: Product Team*</div>
+                        <div class="diff-added pl-4 text-green-700">+ - Draft positioning document — *Owner: Marketing*</div>
+                        <div class="diff-added pl-4 text-green-700">+ - Identify top 5 enterprise features to build — *Owner: Engineering*</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

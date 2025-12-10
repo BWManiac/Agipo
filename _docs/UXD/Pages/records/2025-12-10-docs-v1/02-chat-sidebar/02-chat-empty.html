@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Sidebar - Empty State</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-sm mx-auto">
+        <h2 class="text-lg font-semibold mb-4">Chat Sidebar - Empty State</h2>
+        <p class="text-sm text-muted-foreground mb-6">Shows when no conversation has been started yet.</p>
+
+        <!-- Chat Sidebar Component -->
+        <div class="w-80 bg-white border rounded-lg flex flex-col h-[600px] shadow-sm">
+            <!-- Agent Picker -->
+            <div class="p-4 border-b">
+                <label class="text-xs font-medium text-muted-foreground mb-2 block">Chat with Agent</label>
+                <button class="w-full h-10 px-3 border rounded-md text-sm font-medium flex items-center gap-3 hover:bg-secondary transition-all">
+                    <div class="w-7 h-7 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                        ZC
+                    </div>
+                    <div class="flex-1 text-left">
+                        <div class="font-medium text-sm">Zen Chang</div>
+                        <div class="text-xs text-muted-foreground">Product Manager</div>
+                    </div>
+                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Conversations Header -->
+            <div class="px-4 py-2 border-b flex items-center justify-between">
+                <span class="text-xs font-medium text-muted-foreground">Conversations</span>
+                <button class="p-1 hover:bg-secondary rounded" title="New conversation">
+                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Empty State -->
+            <div class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-medium text-foreground mb-1">Start a conversation</h3>
+                <p class="text-sm text-muted-foreground mb-6">Ask the agent to help with this document</p>
+
+                <!-- Suggested Prompts -->
+                <div class="w-full space-y-2">
+                    <button class="w-full text-left px-3 py-2 border rounded-md text-sm hover:bg-secondary transition-all">
+                        <span class="text-muted-foreground">💡</span> Summarize this document
+                    </button>
+                    <button class="w-full text-left px-3 py-2 border rounded-md text-sm hover:bg-secondary transition-all">
+                        <span class="text-muted-foreground">✍️</span> Help me write more content
+                    </button>
+                    <button class="w-full text-left px-3 py-2 border rounded-md text-sm hover:bg-secondary transition-all">
+                        <span class="text-muted-foreground">🔍</span> Find related information
+                    </button>
+                    <button class="w-full text-left px-3 py-2 border rounded-md text-sm hover:bg-secondary transition-all">
+                        <span class="text-muted-foreground">✨</span> Improve the writing style
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="p-4 border-t">
+                <div class="flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="Ask about this document..."
+                        class="flex-1 h-10 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <button class="h-10 w-10 bg-primary text-primary-foreground hover:opacity-90 rounded-md flex items-center justify-center transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-xs text-muted-foreground mt-2">
+                    Agent can read and edit this document.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

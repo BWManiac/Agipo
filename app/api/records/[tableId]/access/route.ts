@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { getAgentById, listAgents } from "@/_tables/agents";
+import { getAgentById } from "@/_tables/agents";
 
 const TABLES_DIR = path.join(process.cwd(), "_tables", "records");
 

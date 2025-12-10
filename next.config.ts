@@ -2,23 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["nodejs-polars"],
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin",
-          },
-          {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
-          },
-        ],
-      },
-    ];
-  },
+  // Note: COOP/COEP headers removed - they were for WebContainer API support
+  // but block cross-origin iframes like Anchor Browser live view
 };
 
 export default nextConfig;

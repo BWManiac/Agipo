@@ -4,15 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { 
-  Users, 
-  Database, 
-  Wrench, 
-  LayoutGrid, 
+import {
+  Users,
+  Database,
+  Wrench,
+  LayoutGrid,
   Bell,
   Menu,
   User,
   GitBranch,
+  Globe,
 } from "lucide-react";
 import {
   SignInButton,
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
   { href: "/records", label: "Records", icon: Database },
   { href: "/tools", label: "Tools", icon: Wrench },
   { href: "/workflows", label: "Workflows", icon: GitBranch },
+  { href: "/experiments/browser-automation", label: "Browser", icon: Globe },
   { href: "/marketplace", label: "Marketplace", icon: LayoutGrid },
 ];
 

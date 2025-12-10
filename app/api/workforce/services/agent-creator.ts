@@ -174,7 +174,7 @@ export async function updateAgentsIndex(
 
   // Update the agents array
   // Pattern: export const agents = [...];
-  const agentsArrayPattern = /(export\s+const\s+agents\s*=\s*\[)([^\]]*)(\];)/s;
+  const agentsArrayPattern = /(export\s+const\s+agents\s*=\s*\[)([\s\S]*)(\];)/;
   const match = updatedContent.match(agentsArrayPattern);
   
   if (!match) {

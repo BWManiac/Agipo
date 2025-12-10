@@ -21,10 +21,26 @@ After this phase, users can navigate to `/experiments/browser-automation`, creat
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Layout | Three-column (sidebar, browser, chat) | Matches mockup, optimal for workflow |
-| Session sidebar | Left side, collapsible | Sessions are secondary to browser view |
-| Browser iframe | Center, expandable | Primary focus of the feature |
+| Layout | Cursor-style (sessions sidebar, chat LEFT, browser RIGHT) | Familiar pattern, chat-first workflow |
+| Session sidebar | Far left, collapsible | Sessions are secondary to main interaction |
+| Chat panel | Left side (main interaction area) | Cursor-style UI, natural language first |
+| Browser iframe | Right side, expandable | Visual feedback for actions |
 | State management | Zustand store slices | Follows established patterns |
+
+### Layout Diagram
+
+```
++----------------+------------------+----------------------------------+
+| Sessions       |    Chat Panel    |         Browser View             |
+| Sidebar        |    (LEFT)        |         (RIGHT)                  |
+| (collapsible)  |                  |                                  |
+|                |  - Messages      |    Live browser iframe           |
+| - Session 1    |  - Agent steps   |    from Anchor Browser           |
+| - Session 2    |  - Input box     |                                  |
+| - + New        |  - Tab: Actions  |    URL bar, controls             |
+|                |                  |                                  |
++----------------+------------------+----------------------------------+
+```
 
 ### Pertinent Research
 
@@ -70,7 +86,7 @@ After this phase, users can navigate to `/experiments/browser-automation`, creat
 | # | Criterion | Test |
 |---|-----------|------|
 | AC-2.1 | Page loads at /experiments/browser-automation | Navigate to URL |
-| AC-2.2 | Three-column layout renders | Verify sidebar, browser, chat areas |
+| AC-2.2 | Cursor-style layout renders | Verify sessions sidebar, chat (left), browser (right) |
 | AC-2.3 | Sessions sidebar shows session list | Create session, verify in list |
 | AC-2.4 | New Session button opens dialog | Click button |
 | AC-2.5 | Creating session calls API | Monitor network, verify POST |
@@ -89,10 +105,10 @@ After this phase, users can navigate to `/experiments/browser-automation`, creat
 
 ```
 1. User navigates to /experiments/browser-automation
-2. Page loads with three-column layout
+2. Page loads with cursor-style layout (sessions sidebar, chat left, browser right)
 3. Sessions sidebar shows empty state
-4. Browser view shows empty state with "Create a session" CTA
-5. Chat panel shows empty state (Phase 3 placeholder)
+4. Browser view (right) shows empty state with "Create a session" CTA
+5. Chat panel (left) shows empty state placeholder (Phase 3)
 ```
 
 #### Flow 2: Create Session
@@ -402,19 +418,19 @@ export default function BrowserAutomationPage() {
 
   return (
     <div className="h-screen flex bg-gray-50">
-      {/* Sessions Sidebar */}
+      {/* Sessions Sidebar - Far Left (collapsible) */}
       <SessionsSidebar />
 
-      {/* Browser View - Center */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <BrowserView />
-      </div>
-
-      {/* Chat Panel - Right (Placeholder for Phase 3) */}
-      <div className="w-[400px] border-l bg-white flex flex-col">
+      {/* Chat Panel - Left (Placeholder for Phase 3) */}
+      <div className="w-[400px] border-r bg-white flex flex-col">
         <div className="flex-1 flex items-center justify-center text-muted-foreground">
           Chat panel (Phase 3)
         </div>
+      </div>
+
+      {/* Browser View - Right (main view) */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <BrowserView />
       </div>
     </div>
   );
@@ -436,6 +452,7 @@ export default function BrowserAutomationPage() {
 | Date | Change | Author |
 |------|--------|--------|
 | 2025-12-10 | Initial creation | Claude |
+| 2025-12-10 | **Updated layout to cursor-style** (chat LEFT, browser RIGHT) per user request | Claude |
 
 ---
 

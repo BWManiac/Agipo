@@ -36,6 +36,11 @@ This is a **research log** for discovering facts about external systems (APIs, S
 | [RQ-7: How to use natural language browser control?](#rq-7-how-to-use-natural-language-browser-control) | PR-3.x (NL control) | ✅ |
 | [RQ-8: How to use the Tasks API?](#rq-8-how-to-use-the-tasks-api-for-reusable-automation) | Future (Workflow integration) | ✅ |
 | [RQ-9: SDK installation and setup?](#rq-9-sdk-installation-and-setup) | All requirements | ✅ |
+| [RQ-10: Does SDK work as documented?](#rq-10-does-the-anchor-browser-sdk-work-as-documented) | All (Phase 0 Spike) | ✅ |
+| [RQ-11: Playwright CDP connection?](#rq-11-can-playwright-connect-to-anchor-browser-via-cdp) | PR-6.x (Phase 0 Spike) | ✅ |
+| [RQ-12: Direct Playwright actions?](#rq-12-do-direct-playwright-actions-work-correctly) | PR-6.x (Phase 0 Spike) | ✅ |
+| [RQ-13: Mastra Agent + Tools?](#rq-13-does-mastra-agent--browser-tools-work) | PR-3.x (Phase 0 Spike) | ⚠️ |
+| [RQ-14: Tool definition syntax?](#rq-14-what-is-the-correct-tool-definition-syntax-for-ai-sdk-v5) | PR-3.x (Phase 0 Spike) | ✅ |
 
 ---
 
@@ -700,6 +705,297 @@ We don't store cookies locally—Anchor handles that.
 
 ---
 
+## Part 7: Phase 0 Technical Spike Results
+
+**Date:** December 10, 2025
+**Status:** ✅ Completed with findings
+
+### Spike Overview
+
+We implemented a technical spike to validate all core assumptions before Phase 1 implementation. The spike consisted of 5 test services and 1 API endpoint.
+
+**Files Created:**
+```
+app/api/browser-automation/spike/
+├── test/
+│   └── route.ts              # Main test endpoint
+└── services/
+    ├── test-session.ts       # Session creation tests
+    ├── test-playwright.ts    # CDP connection tests
+    ├── test-actions.ts       # Basic browser actions
+    ├── test-agent.ts         # Mastra agent integration
+    └── test-full.ts          # End-to-end flow
+```
+
+### Test Results Summary
+
+| Test | Status | Key Findings |
+|------|--------|--------------|
+| **Session Creation** | ✅ Pass | SDK works exactly as documented |
+| **Playwright CDP** | ✅ Pass | CDP connection reliable, navigation works |
+| **Basic Actions** | ✅ Pass | Navigate → Click → Type → Submit all work |
+| **Agent Integration** | ⚠️ Partial | Agent streams, but tool execution has issues |
+| **Full Flow** | ⚠️ Partial | Steps pass, but navigate tool fails via agent |
+
+---
+
+### RQ-10: Does the Anchor Browser SDK work as documented?
+
+**Status:** ✅ Validated
+
+**Test:** Session creation via SDK
+
+**Result:**
+```json
+{
+  "success": true,
+  "session": {
+    "id": "e653a498-e722-4c0d-beec-01bf429eb335",
+    "cdpUrl": "wss://connect.anchorbrowser.io?apiKey=...&sessionId=...",
+    "liveViewUrl": "https://live.anchorbrowser.io?sessionId=...",
+    "status": "created"
+  }
+}
+```
+
+**Key Findings:**
+1. SDK class is `AnchorBrowser` (not `AnchorClient` as in some docs)
+2. Response has optional fields - need null checks: `session.data?.id`
+3. Proxy config goes under `session.proxy`, not `browser.proxy`
+4. Live view URLs work immediately - no delay
+
+**Corrected SDK Usage:**
+```typescript
+import AnchorBrowser from "anchorbrowser";
+
+const client = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
+
+const session = await client.sessions.create({
+  session: {
+    proxy: { active: false, type: "anchor_proxy" },
+    timeout: {
+      max_duration: 10,
+      idle_timeout: 5,
+    },
+  },
+});
+
+// Must check for undefined
+if (!session.data?.id || !session.data?.cdp_url || !session.data?.live_view_url) {
+  throw new Error("Session creation failed");
+}
+```
+
+---
+
+### RQ-11: Can Playwright connect to Anchor Browser via CDP?
+
+**Status:** ✅ Validated
+
+**Test:** CDP connection and navigation
+
+**Result:**
+```json
+{
+  "success": true,
+  "cdpConnection": "success",
+  "navigation": {
+    "targetUrl": "https://example.com",
+    "currentUrl": "https://example.com/",
+    "pageTitle": "Example Domain"
+  }
+}
+```
+
+**Working Pattern:**
+```typescript
+import { chromium } from "playwright";
+
+const browser = await chromium.connectOverCDP(cdpUrl, { timeout: 30000 });
+const context = browser.contexts()[0];
+const page = context.pages()[0] || (await context.newPage());
+
+await page.goto("https://example.com", { waitUntil: "domcontentloaded" });
+```
+
+**Key Findings:**
+1. Connection is fast (~1-2 seconds)
+2. Must use `browser.contexts()[0]` - CDP provides existing context
+3. Page may or may not exist - check and create if needed
+4. `waitUntil: "domcontentloaded"` is more reliable than default
+
+---
+
+### RQ-12: Do direct Playwright actions work correctly?
+
+**Status:** ✅ Validated
+
+**Test:** Navigate → Click → Type → Submit sequence
+
+**Result:**
+```json
+{
+  "success": true,
+  "actions": [
+    { "action": "navigate", "target": "https://www.google.com", "success": true, "duration": 1137 },
+    { "action": "click", "target": "textarea[name=\"q\"]", "success": true, "duration": 1608 },
+    { "action": "type", "target": "browser automation test", "success": true, "duration": 504 },
+    { "action": "submit", "target": "Enter key", "success": true, "duration": 1870 }
+  ],
+  "finalUrl": "https://www.google.com/search?q=browser+automation+test..."
+}
+```
+
+**Key Findings:**
+1. All basic Playwright operations work over CDP
+2. Timing is acceptable (actions take ~500ms-2s)
+3. Page state persists between actions
+4. Keyboard events (Enter) work correctly
+5. Google search selector: `textarea[name="q"]` or `input[name="q"]`
+
+---
+
+### RQ-13: Does Mastra Agent + Browser Tools work?
+
+**Status:** ⚠️ Partial - Requires Investigation
+
+**Test:** Mastra agent with custom Playwright tools
+
+**Result:**
+```json
+{
+  "success": false,
+  "agentCreated": true,
+  "streamingWorked": true,
+  "toolsCalled": ["navigate", "navigate"],
+  "navigation": {
+    "success": false,
+    "finalUrl": "about:blank"
+  },
+  "agentResponse": "I'll navigate to example.com... I'm encountering a technical error..."
+}
+```
+
+**Key Findings:**
+1. **Mastra Agent creation works** - No errors instantiating agent
+2. **Streaming works** - Multiple chunks received (42 in full flow test)
+3. **Tool registration works** - Agent knows about tools and tries to call them
+4. **Tool execution fails** - Navigate tool called but page doesn't change
+
+**Root Cause Hypothesis:**
+
+The issue appears to be related to how Mastra handles tool execution with the `ai` SDK v5+ `inputSchema` format. The tool is being registered and called, but the execution may be failing silently.
+
+**Comparison:**
+- Direct Playwright actions (test-actions.ts): ✅ Works perfectly
+- Same actions via Mastra Agent tools: ❌ Fails
+
+**Investigation Needed:**
+1. Check if tool execution errors are being swallowed
+2. Verify tool parameter passing in Mastra
+3. Consider using `parameters` vs `inputSchema` (SDK version compatibility)
+4. Add try/catch with detailed logging in tool execute functions
+
+---
+
+### RQ-14: What is the correct tool definition syntax for ai SDK v5+?
+
+**Status:** ✅ Answered (with caveat)
+
+**Discovery:** The `ai` package v5+ uses `inputSchema` not `parameters`:
+
+**Correct Syntax (ai v5+):**
+```typescript
+import { tool } from "ai";
+import { z } from "zod";
+
+const navigateTool = tool({
+  description: "Navigate the browser to a URL",
+  inputSchema: z.object({
+    url: z.string().describe("The URL to navigate to"),
+  }),
+  async execute({ url }) {
+    // Tool logic here
+  },
+});
+```
+
+**Incorrect Syntax (caused build errors):**
+```typescript
+// This doesn't work in ai v5+
+const navigateTool = tool({
+  description: "...",
+  parameters: z.object({ ... }),  // ❌ Wrong property name
+  execute: async ({ url }) => { ... },  // ❌ Arrow function may cause issues
+});
+```
+
+**Existing Pattern Reference:**
+See `app/(pages)/tools/editor/tools/addNode.tool.ts` for working example.
+
+---
+
+### Impact on Implementation Phases
+
+#### Phase 1: API Foundation
+- **No blockers** — Session CRUD API is straightforward
+- Use validated SDK patterns from spike
+- Add proper error handling for optional response fields
+
+#### Phase 2: Basic Playground UI
+- **No blockers** — Live view URL works in iframe
+- Session list API pattern confirmed
+
+#### Phase 3: Chat & Browser Agent
+- **⚠️ Needs work** — Mastra agent tool execution issue
+- **Option A:** Debug and fix Mastra tool execution
+- **Option B:** Use Anchor's built-in `agent.task()` instead
+- **Option C:** Hybrid - use direct Playwright for basic actions, Mastra for orchestration
+
+**Recommendation:** Start Phase 3 with direct Playwright actions (which work), then address agent integration.
+
+#### Phase 4: Action Log
+- **No blockers** — Tool execution tracking pattern confirmed
+- Timestamp + duration logging works
+
+#### Phase 5: Profile Management
+- **No blockers** — Profile config via `session.browser.profile` confirmed
+
+#### Phase 6: Polish
+- Depends on Phase 3 resolution
+
+---
+
+### Code Artifacts from Spike
+
+The spike code can serve as reference for Phase 1+:
+
+| File | Reusable For |
+|------|--------------|
+| `test-session.ts` | `services/anchor-client.ts` session methods |
+| `test-playwright.ts` | CDP connection pattern |
+| `test-actions.ts` | Direct browser action implementations |
+| `test-agent.ts` | Tool definition patterns (needs debugging) |
+| `test-full.ts` | Action logging pattern |
+
+---
+
+### Open Questions
+
+1. **Why do Mastra agent tools fail while direct Playwright works?**
+   - Priority: High (blocks Phase 3 chat integration)
+   - Owner: TBD
+
+2. **Should we use Anchor's agent.task() instead of Mastra?**
+   - Priority: Medium (alternative path)
+   - Trade-off: Simpler but less control
+
+3. **How to handle tool errors gracefully in the UI?**
+   - Priority: Low (Phase 6)
+   - Pattern: Return error objects instead of throwing
+
+---
+
 ## Resources Used
 
 ### Official Documentation
@@ -716,3 +1012,32 @@ We don't store cookies locally—Anchor handles that.
 - Agent config pattern: `_tables/agents/[agentId]/config.ts`
 - Composio client pattern: `app/api/connections/services/client.ts`
 - Chat service pattern: `app/api/workforce/[agentId]/chat/services/chat-service.ts`
+
+### Phase 0 Spike Code (December 10, 2025)
+- **Spike test endpoint:** `app/api/browser-automation/spike/test/route.ts`
+- **Session creation:** `app/api/browser-automation/spike/services/test-session.ts`
+- **Playwright CDP:** `app/api/browser-automation/spike/services/test-playwright.ts`
+- **Browser actions:** `app/api/browser-automation/spike/services/test-actions.ts`
+- **Agent integration:** `app/api/browser-automation/spike/services/test-agent.ts`
+- **Full flow:** `app/api/browser-automation/spike/services/test-full.ts`
+
+### Test Commands
+```bash
+# Test session creation
+curl -X POST "http://localhost:3000/api/browser-automation/spike/test?test=session"
+
+# Test Playwright connection
+curl -X POST "http://localhost:3000/api/browser-automation/spike/test?test=playwright"
+
+# Test basic actions
+curl -X POST "http://localhost:3000/api/browser-automation/spike/test?test=actions"
+
+# Test agent integration
+curl -X POST "http://localhost:3000/api/browser-automation/spike/test?test=agent"
+
+# Test full flow
+curl -X POST "http://localhost:3000/api/browser-automation/spike/test?test=full"
+
+# Terminate a session
+curl -X POST "http://localhost:3000/api/browser-automation/spike/test?test=terminate&sessionId=SESSION_ID"
+```

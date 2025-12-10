@@ -72,6 +72,7 @@ export type WorkflowSummary = {
  */
 export type WorkflowMetadata = WorkflowSummary & {
   requiredConnections: string[];
+  stepCount?: number;
 };
 
 /**

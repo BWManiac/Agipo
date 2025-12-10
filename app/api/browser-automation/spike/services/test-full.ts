@@ -45,10 +45,10 @@ function createLoggingBrowserTools(page: Page) {
 
   const navigate = tool({
     description: "Navigate the browser to a URL",
-    parameters: z.object({
+    inputSchema: z.object({
       url: z.string().describe("The URL to navigate to"),
     }),
-    execute: async ({ url }) => {
+    async execute({ url }) {
       const fullUrl = url.startsWith("http") ? url : `https://${url}`;
       await page.goto(fullUrl, { waitUntil: "domcontentloaded" });
       const result = {
@@ -68,10 +68,10 @@ function createLoggingBrowserTools(page: Page) {
 
   const click = tool({
     description: "Click an element on the page",
-    parameters: z.object({
+    inputSchema: z.object({
       selector: z.string().describe("CSS selector or text to click"),
     }),
-    execute: async ({ selector }) => {
+    async execute({ selector }) {
       try {
         // Try CSS selector first
         await page.click(selector, { timeout: 5000 });
@@ -92,11 +92,11 @@ function createLoggingBrowserTools(page: Page) {
 
   const type = tool({
     description: "Type text into an input field",
-    parameters: z.object({
+    inputSchema: z.object({
       selector: z.string().describe("CSS selector of the input"),
       text: z.string().describe("Text to type"),
     }),
-    execute: async ({ selector, text }) => {
+    async execute({ selector, text }) {
       await page.fill(selector, text);
       const result = { success: true, typed: text.length };
       actionsExecuted.push({
@@ -111,10 +111,10 @@ function createLoggingBrowserTools(page: Page) {
 
   const screenshot = tool({
     description: "Take a screenshot of the current page",
-    parameters: z.object({
+    inputSchema: z.object({
       fullPage: z.boolean().optional().describe("Capture full page"),
     }),
-    execute: async ({ fullPage = false }) => {
+    async execute({ fullPage = false }) {
       const buffer = await page.screenshot({ fullPage });
       const base64 = buffer.toString("base64").substring(0, 100) + "..."; // Truncate for response
       const result = { success: true, size: buffer.length, preview: base64 };
@@ -130,13 +130,13 @@ function createLoggingBrowserTools(page: Page) {
 
   const extract = tool({
     description: "Extract text content from the page or specific element",
-    parameters: z.object({
+    inputSchema: z.object({
       selector: z
         .string()
         .optional()
         .describe("CSS selector (omit for page text)"),
     }),
-    execute: async ({ selector }) => {
+    async execute({ selector }) {
       let text: string;
       if (selector) {
         text = await page.locator(selector).textContent() || "";

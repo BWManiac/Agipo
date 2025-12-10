@@ -50,7 +50,8 @@ export async function POST(
     // Build tools: agent's existing tools + table-specific tools
     const existingTools = await buildToolMap(userId, agentConfig);
     const tableTools = await buildTableTools(tableId, userId);
-    const allTools = { ...existingTools, ...tableTools };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allTools = { ...existingTools, ...tableTools } as any;
 
     // Build table context for the system prompt
     const columnInfo = schema.columns

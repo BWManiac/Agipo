@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docs - Empty Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        accent: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prose h1 { font-size: 2rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 1rem; }
+        .toolbar-btn { transition: all 0.15s; }
+        .toolbar-btn:hover { background: rgb(229 231 235); }
+        .property-row:hover { background: rgb(249 250 251); }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        .cursor-blink { animation: blink 1s step-end infinite; }
+    </style>
+</head>
+<body class="bg-gray-50 text-foreground h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b shrink-0">
+        <div class="px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <!-- Back Button -->
+                    <button class="p-1.5 hover:bg-secondary rounded-md transition-all">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <!-- Document Icon -->
+                    <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <!-- Document Title (Editable, focused) -->
+                    <div>
+                        <input type="text" placeholder="Untitled Document" class="text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-0 w-80 placeholder:text-gray-300" autofocus />
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>New document</span>
+                            <span>•</span>
+                            <span>Not saved yet</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Disabled buttons for new doc -->
+                    <button class="p-2 text-gray-300 cursor-not-allowed" disabled>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                    <button class="p-2 hover:bg-secondary rounded-md transition-all">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                    <button class="h-9 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 transition-all">
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="px-4 py-2 border-t flex items-center gap-1">
+            <div class="flex items-center gap-0.5 pr-3 border-r">
+                <button class="toolbar-btn p-2 rounded text-muted-foreground">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                    </svg>
+                </button>
+                <button class="toolbar-btn p-2 rounded text-muted-foreground">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-0.5 px-3 border-r">
+                <button class="toolbar-btn px-2 py-1.5 rounded text-sm font-medium flex items-center gap-1">
+                    Paragraph
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-0.5 px-3 border-r">
+                <button class="toolbar-btn p-2 rounded font-bold text-sm">B</button>
+                <button class="toolbar-btn p-2 rounded italic text-sm">I</button>
+                <button class="toolbar-btn p-2 rounded line-through text-sm">S</button>
+                <button class="toolbar-btn p-2 rounded text-sm font-mono">&lt;/&gt;</button>
+            </div>
+
+            <div class="flex items-center gap-0.5 px-3 border-r">
+                <button class="toolbar-btn p-2 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-0.5 px-3">
+                <button class="toolbar-btn p-2 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <button class="toolbar-btn p-2 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h10"></path>
+                    </svg>
+                </button>
+                <button class="toolbar-btn p-2 rounded">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden">
+        <!-- Document Outline (Empty State) -->
+        <aside class="w-56 border-r bg-white shrink-0 flex flex-col">
+            <div class="p-4 border-b">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Outline</h3>
+            </div>
+            <div class="flex-1 flex items-center justify-center p-4">
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                        </svg>
+                    </div>
+                    <p class="text-xs text-muted-foreground">No headings yet</p>
+                    <p class="text-xs text-muted-foreground mt-1">Add headings to see<br/>document structure</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Editor Canvas -->
+        <div class="flex-1 bg-white overflow-y-auto">
+            <div class="max-w-3xl mx-auto py-8 px-12">
+                <!-- Properties Section (Collapsed by default for new doc) -->
+                <div class="mb-6">
+                    <button class="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span>Properties</span>
+                        <span class="text-xs text-muted-foreground">(0 set)</span>
+                    </button>
+                </div>
+
+                <!-- Empty Editor Canvas -->
+                <div class="prose max-w-none min-h-[400px]">
+                    <!-- Cursor indicator with slash command hint -->
+                    <div class="flex items-start gap-3">
+                        <div class="flex items-center text-gray-300">
+                            <span class="cursor-blink text-2xl font-light">|</span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="text-sm text-muted-foreground">
+                                Start typing, or press <kbd class="px-1.5 py-0.5 bg-gray-100 border rounded text-xs font-mono">/</kbd> for commands
+                            </p>
+                            <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                                <span class="flex items-center gap-1">
+                                    <kbd class="px-1 py-0.5 bg-gray-100 border rounded font-mono">#</kbd>
+                                    Heading
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <kbd class="px-1 py-0.5 bg-gray-100 border rounded font-mono">-</kbd>
+                                    List
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <kbd class="px-1 py-0.5 bg-gray-100 border rounded font-mono">```</kbd>
+                                    Code
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Start Hints -->
+                <div class="mt-12 border-t pt-8">
+                    <h4 class="text-sm font-medium mb-4">Quick Start</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-all text-left">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm">Start with a heading</p>
+                                <p class="text-xs text-muted-foreground">Type # for Heading 1</p>
+                            </div>
+                        </button>
+
+                        <button class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-all text-left">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm">Import from URL</p>
+                                <p class="text-xs text-muted-foreground">Paste a link to import content</p>
+                            </div>
+                        </button>
+
+                        <button class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-all text-left">
+                            <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm">Ask an agent to write</p>
+                                <p class="text-xs text-muted-foreground">Get AI help starting your doc</p>
+                            </div>
+                        </button>
+
+                        <button class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-all text-left">
+                            <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm">Use a template</p>
+                                <p class="text-xs text-muted-foreground">Meeting notes, project brief...</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Sidebar (Collapsed by default) -->
+        <aside class="w-14 border-l bg-white shrink-0 flex flex-col items-center py-4">
+            <button class="p-3 hover:bg-secondary rounded-lg transition-all group relative">
+                <svg class="w-5 h-5 text-muted-foreground group-hover:text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                </svg>
+                <!-- Tooltip -->
+                <span class="absolute right-full mr-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-primary text-primary-foreground text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Open Chat
+                </span>
+            </button>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t px-4 py-2 flex items-center justify-between text-xs text-muted-foreground shrink-0">
+        <div class="flex items-center gap-4">
+            <span>0 words</span>
+            <span>•</span>
+            <span>0 characters</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+            <span>Not saved</span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -39,12 +39,17 @@ export async function testSessionCreation(): Promise<SessionTestResult> {
     },
   });
 
+  const sessionData = session.data;
+  if (!sessionData?.id || !sessionData?.cdp_url || !sessionData?.live_view_url) {
+    throw new Error("Session creation failed: missing required session data");
+  }
+
   return {
     success: true,
     session: {
-      id: session.data.id,
-      cdpUrl: session.data.cdp_url,
-      liveViewUrl: session.data.live_view_url,
+      id: sessionData.id,
+      cdpUrl: sessionData.cdp_url,
+      liveViewUrl: sessionData.live_view_url,
       status: "created",
     },
     note: "Session created successfully. Use liveViewUrl to view in browser.",

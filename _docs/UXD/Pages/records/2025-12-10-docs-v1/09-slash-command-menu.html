@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slash Command Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .menu-item:hover { background: rgb(243 244 246); }
+        .menu-item.selected { background: rgb(239 246 255); }
+        .prose p { margin-bottom: 0.75rem; line-height: 1.7; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-5xl mx-auto">
+        <h2 class="text-lg font-semibold mb-4">Slash Command Menu</h2>
+        <p class="text-sm text-muted-foreground mb-6">Type "/" to open the command palette for inserting blocks. Arrow keys to navigate, Enter to select, Esc to close.</p>
+
+        <div class="grid grid-cols-2 gap-6">
+            <!-- State 1: Empty slash command (full menu) -->
+            <div class="bg-white border rounded-lg shadow-sm">
+                <div class="px-4 py-3 border-b bg-gray-50">
+                    <span class="text-sm font-medium">State 1: Just typed "/"</span>
+                </div>
+                <div class="p-6 relative">
+                    <div class="prose text-sm max-w-none">
+                        <h2 class="text-lg font-semibold mb-3">Market Analysis</h2>
+                        <p>Our research shows several key trends in the market.</p>
+                        <p class="flex items-center">
+                            <span class="text-muted-foreground">/</span>
+                            <span class="w-0.5 h-5 bg-blue-500 animate-pulse ml-0.5"></span>
+                        </p>
+                    </div>
+
+                    <!-- Slash Command Menu -->
+                    <div class="absolute left-6 top-[140px] w-72 bg-white border rounded-lg shadow-xl z-10">
+                        <div class="p-2 border-b">
+                            <div class="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground">
+                                <span>Basic blocks</span>
+                            </div>
+                        </div>
+                        <div class="p-1 max-h-80 overflow-y-auto">
+                            <!-- Text -->
+                            <button class="menu-item selected w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Text</p>
+                                    <p class="text-xs text-muted-foreground">Plain text paragraph</p>
+                                </div>
+                            </button>
+
+                            <!-- Heading 1 -->
+                            <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <span class="text-lg font-bold text-gray-600">H1</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Heading 1</p>
+                                    <p class="text-xs text-muted-foreground">Large section heading</p>
+                                </div>
+                            </button>
+
+                            <!-- Heading 2 -->
+                            <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <span class="text-base font-bold text-gray-600">H2</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Heading 2</p>
+                                    <p class="text-xs text-muted-foreground">Medium section heading</p>
+                                </div>
+                            </button>
+
+                            <!-- Heading 3 -->
+                            <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <span class="text-sm font-bold text-gray-600">H3</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Heading 3</p>
+                                    <p class="text-xs text-muted-foreground">Small section heading</p>
+                                </div>
+                            </button>
+
+                            <!-- Bullet List -->
+                            <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Bullet List</p>
+                                    <p class="text-xs text-muted-foreground">Unordered list of items</p>
+                                </div>
+                            </button>
+
+                            <!-- Numbered List -->
+                            <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Numbered List</p>
+                                    <p class="text-xs text-muted-foreground">Ordered list of items</p>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="p-2 border-t bg-gray-50 text-xs text-muted-foreground flex items-center justify-between">
+                            <span>↑↓ Navigate</span>
+                            <span>↵ Select</span>
+                            <span>Esc Close</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State 2: Filtered by search -->
+            <div class="bg-white border rounded-lg shadow-sm">
+                <div class="px-4 py-3 border-b bg-gray-50">
+                    <span class="text-sm font-medium">State 2: Typed "/code"</span>
+                </div>
+                <div class="p-6 relative">
+                    <div class="prose text-sm max-w-none">
+                        <h2 class="text-lg font-semibold mb-3">Implementation</h2>
+                        <p>Here's the code for the feature:</p>
+                        <p class="flex items-center">
+                            <span class="text-muted-foreground">/code</span>
+                            <span class="w-0.5 h-5 bg-blue-500 animate-pulse ml-0.5"></span>
+                        </p>
+                    </div>
+
+                    <!-- Filtered Slash Command Menu -->
+                    <div class="absolute left-6 top-[140px] w-72 bg-white border rounded-lg shadow-xl z-10">
+                        <div class="p-2 border-b">
+                            <div class="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground">
+                                <span>Matching "code"</span>
+                            </div>
+                        </div>
+                        <div class="p-1">
+                            <!-- Code Block -->
+                            <button class="menu-item selected w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Code Block</p>
+                                    <p class="text-xs text-muted-foreground">Syntax highlighted code</p>
+                                </div>
+                            </button>
+
+                            <!-- Inline Code -->
+                            <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                <div class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                                    <span class="font-mono text-sm text-gray-600">`a`</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Inline Code</p>
+                                    <p class="text-xs text-muted-foreground">Code within text</p>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="p-2 border-t bg-gray-50 text-xs text-muted-foreground flex items-center justify-between">
+                            <span>↑↓ Navigate</span>
+                            <span>↵ Select</span>
+                            <span>Esc Close</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State 3: Advanced blocks category -->
+            <div class="bg-white border rounded-lg shadow-sm">
+                <div class="px-4 py-3 border-b bg-gray-50">
+                    <span class="text-sm font-medium">State 3: Advanced Blocks</span>
+                </div>
+                <div class="p-6 relative">
+                    <div class="prose text-sm max-w-none">
+                        <h2 class="text-lg font-semibold mb-3">Notes</h2>
+                        <p class="flex items-center">
+                            <span class="text-muted-foreground">/</span>
+                            <span class="w-0.5 h-5 bg-blue-500 animate-pulse ml-0.5"></span>
+                        </p>
+                    </div>
+
+                    <!-- Full Slash Command Menu with categories -->
+                    <div class="absolute left-6 top-[100px] w-72 bg-white border rounded-lg shadow-xl z-10">
+                        <div class="max-h-96 overflow-y-auto">
+                            <!-- Basic Blocks -->
+                            <div class="p-2 border-b">
+                                <div class="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">Basic blocks</div>
+                            </div>
+                            <div class="p-1">
+                                <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Text</p>
+                                    </div>
+                                </button>
+                                <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center shrink-0">
+                                        <span class="text-sm font-bold text-gray-600">H1</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Heading 1</p>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Advanced Blocks -->
+                            <div class="p-2 border-t border-b">
+                                <div class="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">Advanced</div>
+                            </div>
+                            <div class="p-1">
+                                <!-- Callout -->
+                                <button class="menu-item selected w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Callout</p>
+                                        <p class="text-xs text-muted-foreground">Highlighted info box</p>
+                                    </div>
+                                </button>
+
+                                <!-- Toggle -->
+                                <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Toggle</p>
+                                        <p class="text-xs text-muted-foreground">Collapsible content</p>
+                                    </div>
+                                </button>
+
+                                <!-- Table -->
+                                <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Table</p>
+                                        <p class="text-xs text-muted-foreground">Rows and columns</p>
+                                    </div>
+                                </button>
+
+                                <!-- Divider -->
+                                <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Divider</p>
+                                        <p class="text-xs text-muted-foreground">Horizontal line</p>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Media -->
+                            <div class="p-2 border-t border-b">
+                                <div class="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">Media</div>
+                            </div>
+                            <div class="p-1">
+                                <!-- Image -->
+                                <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Image</p>
+                                        <p class="text-xs text-muted-foreground">Upload or embed</p>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Agent -->
+                            <div class="p-2 border-t border-b">
+                                <div class="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">Agent</div>
+                            </div>
+                            <div class="p-1">
+                                <!-- Ask Agent -->
+                                <button class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-md text-left">
+                                    <div class="w-8 h-8 rounded bg-purple-100 flex items-center justify-center shrink-0">
+                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Ask Agent</p>
+                                        <p class="text-xs text-muted-foreground">Generate content with AI</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State 4: Agent generation prompt -->
+            <div class="bg-white border rounded-lg shadow-sm">
+                <div class="px-4 py-3 border-b bg-gray-50">
+                    <span class="text-sm font-medium">State 4: Agent Generation</span>
+                </div>
+                <div class="p-6 relative">
+                    <div class="prose text-sm max-w-none">
+                        <h2 class="text-lg font-semibold mb-3">Summary</h2>
+                        <p>Based on the analysis above:</p>
+                    </div>
+
+                    <!-- Agent Prompt Input -->
+                    <div class="mt-4 border-2 border-purple-200 rounded-lg bg-purple-50 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-6 h-6 rounded bg-purple-100 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-purple-900">Ask Agent to write</span>
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Write a summary of the key findings..."
+                            class="w-full h-10 px-3 text-sm border border-purple-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                            value="Write a summary of the key findings"
+                        />
+                        <div class="flex items-center justify-between mt-3">
+                            <p class="text-xs text-purple-700">Press Enter to generate, Esc to cancel</p>
+                            <button class="h-8 px-4 text-sm font-medium bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-all">
+                                Generate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -36,10 +36,10 @@ function createBrowserTools(page: Page) {
 
   const navigateTool = tool({
     description: "Navigate the browser to a URL",
-    parameters: z.object({
+    inputSchema: z.object({
       url: z.string().describe("The URL to navigate to"),
     }),
-    execute: async ({ url }) => {
+    async execute({ url }) {
       toolsCalled.push("navigate");
       // Add protocol if missing
       const fullUrl = url.startsWith("http") ? url : `https://${url}`;
@@ -54,12 +54,12 @@ function createBrowserTools(page: Page) {
 
   const clickTool = tool({
     description: "Click an element on the page by CSS selector or visible text",
-    parameters: z.object({
+    inputSchema: z.object({
       selector: z
         .string()
         .describe("CSS selector or text to find and click"),
     }),
-    execute: async ({ selector }) => {
+    async execute({ selector }) {
       toolsCalled.push("click");
       try {
         // Try as CSS selector first
@@ -74,11 +74,11 @@ function createBrowserTools(page: Page) {
 
   const typeTool = tool({
     description: "Type text into an input field",
-    parameters: z.object({
+    inputSchema: z.object({
       selector: z.string().describe("CSS selector of the input field"),
       text: z.string().describe("Text to type"),
     }),
-    execute: async ({ selector, text }) => {
+    async execute({ selector, text }) {
       toolsCalled.push("type");
       await page.fill(selector, text);
       return { success: true, typed: text.length };

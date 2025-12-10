@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Outline - Left Sidebar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .outline-item { transition: all 0.15s; }
+        .outline-item:hover { background: rgb(243 244 246); }
+        .outline-item.active { background: rgb(239 246 255); color: rgb(37 99 235); }
+        .outline-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgb(37 99 235);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-lg font-semibold mb-4">Document Outline - Left Sidebar</h2>
+        <p class="text-sm text-muted-foreground mb-6">Shows document structure navigation. Inspired by Obsidian's outline view.</p>
+
+        <div class="flex gap-6">
+            <!-- Default State -->
+            <div class="flex-1">
+                <h3 class="text-sm font-medium text-muted-foreground mb-3">Default State</h3>
+                <div class="w-56 bg-white border rounded-lg flex flex-col h-[500px] shadow-sm">
+                    <div class="p-3 border-b">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Outline</span>
+                            <button class="p-1 hover:bg-secondary rounded" title="Close outline">
+                                <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto py-2">
+                        <div class="px-2 space-y-0.5">
+                            <!-- H1 -->
+                            <button class="outline-item active relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H1</span>
+                                <span class="truncate font-medium">Competitor Analysis</span>
+                            </button>
+                            <!-- H2 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-3">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H2</span>
+                                <span class="truncate">Overview</span>
+                            </button>
+                            <!-- H2 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-3">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H2</span>
+                                <span class="truncate">Key Findings</span>
+                            </button>
+                            <!-- H3 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-6">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H3</span>
+                                <span class="truncate">Market Position</span>
+                            </button>
+                            <!-- H3 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-6">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H3</span>
+                                <span class="truncate">Feature Comparison</span>
+                            </button>
+                            <!-- H3 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-6">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H3</span>
+                                <span class="truncate">Pricing Analysis</span>
+                            </button>
+                            <!-- H2 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-3">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H2</span>
+                                <span class="truncate">Recommendations</span>
+                            </button>
+                            <!-- H3 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-6">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H3</span>
+                                <span class="truncate">Short-term Actions</span>
+                            </button>
+                            <!-- H3 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-6">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H3</span>
+                                <span class="truncate">Long-term Strategy</span>
+                            </button>
+                            <!-- H2 -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-3">
+                                <span class="w-6 text-xs text-muted-foreground font-mono">H2</span>
+                                <span class="truncate">Appendix</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-3 border-t text-xs text-muted-foreground">
+                        <div class="flex items-center justify-between">
+                            <span>10 headings</span>
+                            <span>3,247 words</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- With Collapse/Expand -->
+            <div class="flex-1">
+                <h3 class="text-sm font-medium text-muted-foreground mb-3">With Collapsible Sections</h3>
+                <div class="w-56 bg-white border rounded-lg flex flex-col h-[500px] shadow-sm">
+                    <div class="p-3 border-b">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Outline</span>
+                            <div class="flex items-center gap-1">
+                                <button class="p-1 hover:bg-secondary rounded" title="Expand all">
+                                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                    </svg>
+                                </button>
+                                <button class="p-1 hover:bg-secondary rounded" title="Close">
+                                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto py-2">
+                        <div class="px-2 space-y-0.5">
+                            <!-- H1 with toggle -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2">
+                                <svg class="w-3 h-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                <span class="truncate font-medium">Competitor Analysis</span>
+                            </button>
+
+                            <!-- H2 - Overview (no children) -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-4">
+                                <span class="w-3"></span>
+                                <span class="truncate">Overview</span>
+                            </button>
+
+                            <!-- H2 - Key Findings (expanded) -->
+                            <button class="outline-item active relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-4">
+                                <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                <span class="truncate">Key Findings</span>
+                            </button>
+
+                            <!-- H3 children -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-8">
+                                <span class="w-3"></span>
+                                <span class="truncate text-muted-foreground">Market Position</span>
+                            </button>
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-8">
+                                <span class="w-3"></span>
+                                <span class="truncate text-muted-foreground">Feature Comparison</span>
+                            </button>
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-8">
+                                <span class="w-3"></span>
+                                <span class="truncate text-muted-foreground">Pricing Analysis</span>
+                            </button>
+
+                            <!-- H2 - Recommendations (collapsed) -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-4">
+                                <svg class="w-3 h-3 text-muted-foreground -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                <span class="truncate">Recommendations</span>
+                                <span class="text-xs text-muted-foreground ml-auto">2</span>
+                            </button>
+
+                            <!-- H2 - Appendix -->
+                            <button class="outline-item relative w-full text-left px-3 py-1.5 rounded text-sm flex items-center gap-2 ml-4">
+                                <span class="w-3"></span>
+                                <span class="truncate">Appendix</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-3 border-t text-xs text-muted-foreground">
+                        <div class="flex items-center justify-between">
+                            <span>10 headings</span>
+                            <span>3,247 words</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="flex-1">
+                <h3 class="text-sm font-medium text-muted-foreground mb-3">Empty State (No Headings)</h3>
+                <div class="w-56 bg-white border rounded-lg flex flex-col h-[500px] shadow-sm">
+                    <div class="p-3 border-b">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Outline</span>
+                            <button class="p-1 hover:bg-secondary rounded" title="Close outline">
+                                <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                        <div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-3">
+                            <svg class="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h7"></path>
+                            </svg>
+                        </div>
+                        <p class="text-sm text-muted-foreground mb-1">No headings yet</p>
+                        <p class="text-xs text-muted-foreground">Add headings (# or ##) to see the document outline</p>
+                    </div>
+                    <div class="p-3 border-t text-xs text-muted-foreground">
+                        <div class="flex items-center justify-between">
+                            <span>0 headings</span>
+                            <span>124 words</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="mt-8 bg-white border rounded-lg p-4">
+            <h3 class="font-medium mb-2">Outline Behavior</h3>
+            <ul class="text-sm text-muted-foreground space-y-1">
+                <li>• Click heading to scroll document to that section</li>
+                <li>• Active heading (currently in view) is highlighted in blue</li>
+                <li>• Indentation shows heading hierarchy (H1 → H2 → H3)</li>
+                <li>• Collapse/expand arrows for headings with children</li>
+                <li>• Footer shows total heading count and word count</li>
+                <li>• Can be toggled closed via the X button</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
