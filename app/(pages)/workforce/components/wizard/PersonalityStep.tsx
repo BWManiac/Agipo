@@ -25,11 +25,13 @@ interface PersonalityStepProps {
     objectives: string[];
     guardrails: string[];
     isManager: boolean;
+    subAgentIds: string[];
   };
   onUpdate: (updates: Partial<PersonalityStepProps["formData"]>) => void;
+  onOpenSubAgents?: () => void;
 }
 
-export function PersonalityStep({ formData, onUpdate }: PersonalityStepProps) {
+export function PersonalityStep({ formData, onUpdate, onOpenSubAgents }: PersonalityStepProps) {
   const [objectivesOpen, setObjectivesOpen] = useState(false);
   const [guardrailsOpen, setGuardrailsOpen] = useState(false);
   const [managerOpen, setManagerOpen] = useState(false);
@@ -164,7 +166,7 @@ export function PersonalityStep({ formData, onUpdate }: PersonalityStepProps) {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 space-y-3">
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -177,9 +179,31 @@ export function PersonalityStep({ formData, onUpdate }: PersonalityStepProps) {
                   This agent manages other agents
                 </Label>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Manager agents can coordinate with sub-agents. Sub-agent selection will be available in the next step.
-              </p>
+              {formData.isManager && (
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    Manager agents can coordinate with sub-agents.
+                  </p>
+                  {formData.subAgentIds.length > 0 ? (
+                    <p className="text-xs text-muted-foreground">
+                      {formData.subAgentIds.length} sub-agent
+                      {formData.subAgentIds.length !== 1 ? "s" : ""} selected
+                    </p>
+                  ) : null}
+                  {onOpenSubAgents && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={onOpenSubAgents}
+                    >
+                      {formData.subAgentIds.length > 0
+                        ? "Manage Sub-Agents"
+                        : "Select Sub-Agents"}
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </CollapsibleContent>
         </Collapsible>

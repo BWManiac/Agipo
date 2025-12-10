@@ -4,14 +4,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { IdentityStep } from "./wizard/IdentityStep";
 import { PersonalityStep } from "./wizard/PersonalityStep";
+import { CapabilitiesStep } from "./wizard/CapabilitiesStep";
 import { SuccessState } from "./wizard/SuccessState";
+import { ErrorState } from "./wizard/ErrorState";
+import { SubAgentsScreen } from "./SubAgentsScreen";
+import type { ConnectionToolBinding } from "@/_tables/types";
 
 interface CreateFromScratchWizardProps {
   onComplete: () => void;
   onCancel: () => void;
 }
 
-type WizardStep = 1 | 2 | 3 | "success" | "error";
+type WizardStep = 1 | 2 | 3 | "success" | "error" | "sub-agents";
 
 interface FormData {
   name: string;
@@ -24,6 +28,9 @@ interface FormData {
   guardrails: string[];
   isManager: boolean;
   subAgentIds: string[];
+  toolIds: string[];
+  connectionToolBindings: ConnectionToolBinding[];
+  workflows: string[];
 }
 
 export function CreateFromScratchWizard({
@@ -46,6 +53,9 @@ export function CreateFromScratchWizard({
     guardrails: [],
     isManager: false,
     subAgentIds: [],
+    toolIds: [],
+    connectionToolBindings: [],
+    workflows: [],
   });
 
   const handleNext = () => {
@@ -63,7 +73,10 @@ export function CreateFromScratchWizard({
         setError("System prompt must be at least 10 characters");
         return;
       }
-      // Submit form
+      setStep(3);
+      setError(null);
+    } else if (step === 3) {
+      // Step 3 is optional (capabilities), proceed to create
       handleSubmit();
     }
   };
@@ -72,7 +85,15 @@ export function CreateFromScratchWizard({
     if (step === 2) {
       setStep(1);
       setError(null);
+    } else if (step === 3) {
+      setStep(2);
+      setError(null);
     }
+  };
+
+  const handleSkipCapabilities = () => {
+    // Skip capabilities step and create agent
+    handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -96,6 +117,8 @@ export function CreateFromScratchWizard({
           guardrails: formData.guardrails,
           isManager: formData.isManager,
           subAgentIds: formData.subAgentIds,
+          // Note: toolIds, connectionToolBindings, and workflows will be assigned
+          // after agent creation via the Capabilities tab in the agent modal
         }),
       });
 
@@ -135,18 +158,28 @@ export function CreateFromScratchWizard({
 
   if (step === "error") {
     return (
-      <div className="space-y-4 py-8">
-        <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
-          <h3 className="font-semibold text-destructive">Error creating agent</h3>
-          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setStep(2)}>
-            Go back to form
-          </Button>
-          <Button onClick={handleSubmit}>Retry</Button>
-        </div>
-      </div>
+      <ErrorState
+        error={error || "Failed to create agent"}
+        onRetry={handleSubmit}
+        onGoBack={() => {
+          setStep(3);
+          setError(null);
+        }}
+      />
+    );
+  }
+
+  if (step === "sub-agents") {
+    return (
+      <SubAgentsScreen
+        currentAgentId="temp" // Not created yet, but needed for filtering
+        selectedSubAgentIds={formData.subAgentIds}
+        onSave={(subAgentIds) => {
+          setFormData({ ...formData, subAgentIds });
+          setStep(2);
+        }}
+        onCancel={() => setStep(2)}
+      />
     );
   }
 
@@ -162,6 +195,11 @@ export function CreateFromScratchWizard({
         <div
           className={`h-2 flex-1 rounded-full ${
             step >= 2 ? "bg-primary" : "bg-muted"
+          }`}
+        />
+        <div
+          className={`h-2 flex-1 rounded-full ${
+            step >= 3 ? "bg-primary" : "bg-muted"
           }`}
         />
       </div>
@@ -185,6 +223,15 @@ export function CreateFromScratchWizard({
         <PersonalityStep
           formData={formData}
           onUpdate={(updates) => setFormData({ ...formData, ...updates })}
+          onOpenSubAgents={() => setStep("sub-agents")}
+        />
+      )}
+
+      {step === 3 && (
+        <CapabilitiesStep
+          formData={formData}
+          onUpdate={(updates) => setFormData({ ...formData, ...updates })}
+          onSkip={handleSkipCapabilities}
         />
       )}
 
@@ -194,7 +241,13 @@ export function CreateFromScratchWizard({
           {step === 1 ? "Cancel" : "Back"}
         </Button>
         <Button onClick={handleNext} disabled={isLoading}>
-          {isLoading ? "Creating..." : step === 2 ? "Create Agent" : "Next"}
+          {isLoading
+            ? "Creating..."
+            : step === 3
+              ? "Create Agent"
+              : step === 2
+                ? "Next"
+                : "Next"}
         </Button>
       </div>
     </div>
