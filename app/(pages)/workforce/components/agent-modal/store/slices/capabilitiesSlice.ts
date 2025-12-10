@@ -7,7 +7,7 @@
 
 import type { StateCreator } from "zustand";
 import type { WorkflowSummary, ConnectionToolBinding, WorkflowBinding, WorkflowMetadata } from "@/_tables/types";
-import type { ConnectionWithTools, PlatformToolkit, Connection } from "../types";
+import type { ConnectionWithTools, PlatformToolkit, Connection, AgentModalStore } from "../types";
 
 // 1. State Interface
 export interface CapabilitiesSliceState {
