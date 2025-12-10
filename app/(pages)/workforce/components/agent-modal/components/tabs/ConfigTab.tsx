@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -12,14 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { AgentConfig } from "@/_tables/types";
-
-type ModelInfo = {
-  id: string;
-  name: string;
-  provider: string;
-  description?: string;
-  tags?: string[];
-};
+import { getAvailableModels, type ModelInfo } from "@/app/api/workforce/[agentId]/chat/services/models";
 
 interface ConfigTabProps {
   agent: AgentConfig;
@@ -29,33 +22,9 @@ export function ConfigTab({ agent }: ConfigTabProps) {
   const [objectives, setObjectives] = useState(agent.objectives.join("\n"));
   const [systemPrompt, setSystemPrompt] = useState(agent.systemPrompt);
   const [model, setModel] = useState(agent.model);
-  const [models, setModels] = useState<ModelInfo[]>([]);
-  const [isLoadingModels, setIsLoadingModels] = useState(true);
 
-  // Fetch available models
-  useEffect(() => {
-    const fetchModels = async () => {
-      try {
-        const response = await fetch("/api/workforce/models");
-        if (response.ok) {
-          const data = await response.json();
-          setModels(data.models || []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch models:", error);
-        // Fallback to default models if fetch fails
-        setModels([
-          { id: "google/gemini-2.5-pro", name: "Google Gemini 2.5 Pro", provider: "google" },
-          { id: "openai/gpt-4o", name: "OpenAI GPT-4o", provider: "openai" },
-          { id: "anthropic/claude-3-5-sonnet", name: "Anthropic Claude 3.5 Sonnet", provider: "anthropic" },
-        ]);
-      } finally {
-        setIsLoadingModels(false);
-      }
-    };
-
-    fetchModels();
-  }, []);
+  // Get available models directly (no API call needed)
+  const models = getAvailableModels();
 
   const handleSave = () => {
     console.log("Saving config:", {
@@ -129,25 +98,19 @@ export function ConfigTab({ agent }: ConfigTabProps) {
 
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-1">Model</Label>
-            <Select value={model} onValueChange={setModel} disabled={isLoadingModels}>
+            <Select value={model} onValueChange={setModel}>
               <SelectTrigger className="w-full text-sm">
-                <SelectValue placeholder={isLoadingModels ? "Loading models..." : "Select a model"} />
+                <SelectValue placeholder="Select a model" />
               </SelectTrigger>
               <SelectContent>
-                {models.length === 0 && !isLoadingModels ? (
-                  <SelectItem value={model || ""} disabled>
-                    {model || "No models available"}
+                {models.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name}
                   </SelectItem>
-                ) : (
-                  models.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.name}
-                    </SelectItem>
-                  ))
-                )}
+                ))}
               </SelectContent>
             </Select>
-            {model && models.length > 0 && (
+            {model && (
               <p className="mt-1 text-xs text-gray-500">
                 {models.find((m) => m.id === model)?.description || ""}
               </p>

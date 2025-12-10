@@ -9,6 +9,7 @@ import { SuccessState } from "./wizard/SuccessState";
 import { ErrorState } from "./wizard/ErrorState";
 import { SubAgentsScreen } from "./SubAgentsScreen";
 import type { ConnectionToolBinding } from "@/_tables/types";
+import { getDefaultModel } from "@/app/api/workforce/[agentId]/chat/services/models";
 
 interface CreateFromScratchWizardProps {
   onComplete: () => void;
@@ -48,7 +49,7 @@ export function CreateFromScratchWizard({
     avatar: "🤖",
     description: "",
     systemPrompt: "",
-    model: "google/gemini-2.5-pro", // Default model - will be updated when models load
+    model: getDefaultModel().id, // Default model from models service
     objectives: [],
     guardrails: [],
     isManager: false,
