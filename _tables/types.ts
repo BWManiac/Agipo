@@ -67,6 +67,14 @@ export type WorkflowSummary = {
 };
 
 /**
+ * Extended workflow metadata that includes required connections.
+ * Used when displaying workflow cards in the agent configuration UI.
+ */
+export type WorkflowMetadata = WorkflowSummary & {
+  requiredConnections: string[];
+};
+
+/**
  * Represents a binding between an agent and a workflow.
  * Stores the workflow ID and connection bindings for each required toolkit.
  */

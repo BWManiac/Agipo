@@ -72,11 +72,19 @@ export function ThreadList({ tableId }: ThreadListProps) {
           </button>
         ) : (
           threads.slice(0, 5).map((thread) => (
-            <button
+            <div
               key={thread.id}
+              role="button"
+              tabIndex={0}
               onClick={() => handleSelectThread(thread.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleSelectThread(thread.id);
+                }
+              }}
               className={cn(
-                "w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-muted/50 group transition-colors",
+                "w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-muted/50 group transition-colors cursor-pointer",
                 activeThreadId === thread.id && "bg-muted"
               )}
             >
@@ -95,7 +103,7 @@ export function ThreadList({ tableId }: ThreadListProps) {
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
-            </button>
+            </div>
           ))
         )}
       </div>

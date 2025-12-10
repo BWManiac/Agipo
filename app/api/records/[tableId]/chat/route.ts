@@ -1,13 +1,15 @@
-import { NextResponse } from "next/server";
+import { generateId } from "ai";
 import { auth } from "@clerk/nextjs/server";
-import { Agent } from "@mastra/core/agent";
-import { createGateway } from "@ai-sdk/gateway";
 import { getAgentById } from "@/_tables/agents";
-import { getAgentMemory } from "@/app/api/workforce/[agentId]/chat/services/memory";
-import { buildToolMap, formatMessages } from "@/app/api/workforce/[agentId]/chat/services/chat-service";
+import {
+  buildToolMap,
+  formatMessages,
+  createConfiguredAgent
+} from "@/app/api/workforce/[agentId]/chat/services/chat-service";
 import { getTableSchema } from "@/app/api/records/services";
 import { buildTableTools } from "./services/table-tools";
 
+export const runtime = "nodejs";
 export const maxDuration = 60;
 
 /**
@@ -26,7 +28,8 @@ export async function POST(
 
     const { tableId } = await params;
     const body = await req.json();
-    const { messages, agentId, threadId } = body;
+    const { messages, agentId, threadId: incomingThreadId } = body;
+    const threadId = incomingThreadId || generateId();
 
     if (!agentId) {
       return new Response("agentId required", { status: 400 });
@@ -73,44 +76,59 @@ Always confirm what you did after executing a tool.
     // Format messages with table context
     const formattedMessages = formatMessages(messages, tableContext);
 
-    // Create gateway and agent
-    const gateway = createGateway({
-      apiKey: process.env.AI_GATEWAY_API_KEY,
-    });
-
-    const agent = new Agent({
-      name: agentConfig.id,
-      instructions: agentConfig.systemPrompt,
-      model: gateway(agentConfig.model),
-      tools: allTools,
-      memory: getAgentMemory(agentConfig.id),
-    });
+    // Create agent using shared service (same pattern as workforce chat)
+    const agent = createConfiguredAgent(userId, agentConfig, allTools);
 
     // Use table-scoped resource ID for memory
     const resourceId = `${userId}:table:${tableId}`;
 
-    // Stream the response
-    const result = await agent.stream(formattedMessages, {
-      resourceId,
-      threadId: threadId || undefined,
-    });
+    console.log(`[Records Chat] tableId: ${tableId}, agentId: ${agentId}, threadId: ${threadId}`);
 
-    // Create streaming response
-    const stream = result.toDataStreamResponse();
+    try {
+      // Stream the response (matching workforce chat pattern)
+      const result = await agent.stream(
+        formattedMessages as unknown as Parameters<typeof agent.stream>[0],
+        {
+          maxSteps: agentConfig.maxSteps ?? 5,
+          format: 'aisdk',
+          threadId,
+          resourceId,
+        }
+      );
 
-    // Add thread ID to headers
-    const response = new Response(stream.body, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-        "X-Thread-Id": threadId || "",
-      },
-    });
+      console.log("[Records Chat] Streaming response");
+      const response = result.toUIMessageStreamResponse();
+      response.headers.set("X-Thread-Id", threadId);
+      return response;
+    } catch (streamError) {
+      console.error("[Records Chat] Stream error:", streamError);
 
-    return response;
+      const errorMessage = streamError instanceof Error ? streamError.message : "Unknown error";
+      const isTimeout = errorMessage.includes("timeout") || errorMessage.includes("TIMEOUT");
+
+      const userMessage = isTimeout
+        ? "The request took too long. Please try a simpler request."
+        : "I encountered an issue processing your request. Please try again.";
+
+      return new Response(JSON.stringify({
+        message: userMessage,
+        error: errorMessage,
+        threadId,
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
   } catch (error) {
     console.error("[Records Chat] Error:", error);
-    return new Response("Chat failed", { status: 500 });
+
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return new Response(JSON.stringify({
+      message: "Something went wrong. Please try again.",
+      error: errorMessage,
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }

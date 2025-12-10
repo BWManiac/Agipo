@@ -190,17 +190,17 @@ export function CreateFromScratchWizard({
       <div className="flex items-center gap-2">
         <div
           className={`h-2 flex-1 rounded-full ${
-            step >= 1 ? "bg-primary" : "bg-muted"
+            typeof step === "number" && step >= 1 ? "bg-primary" : "bg-muted"
           }`}
         />
         <div
           className={`h-2 flex-1 rounded-full ${
-            step >= 2 ? "bg-primary" : "bg-muted"
+            typeof step === "number" && step >= 2 ? "bg-primary" : "bg-muted"
           }`}
         />
         <div
           className={`h-2 flex-1 rounded-full ${
-            step >= 3 ? "bg-primary" : "bg-muted"
+            typeof step === "number" && step >= 3 ? "bg-primary" : "bg-muted"
           }`}
         />
       </div>

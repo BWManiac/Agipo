@@ -22,6 +22,7 @@ export interface GridSliceState {
   page: number;
   pageSize: number;
   totalRows: number;
+  activeColumnId: string | null; // Which column's menu is currently open
 }
 
 // 2. Actions Interface
@@ -41,6 +42,7 @@ export interface GridSliceActions {
   setPageSize: (size: number) => void;
   setTotalRows: (total: number) => void;
   getQueryParams: () => { sort?: { col: string; desc: boolean }; filters?: Array<{ col: string; op: string; val: unknown }>; limit: number; offset: number };
+  setActiveColumn: (columnId: string | null) => void;
   resetGridState: () => void;
 }
 
@@ -56,6 +58,7 @@ const initialState: GridSliceState = {
   page: 1,
   pageSize: 100,
   totalRows: 0,
+  activeColumnId: null,
 };
 
 // 5. Slice Creator
@@ -149,6 +152,8 @@ export const createGridSlice: StateCreator<
 
     return params;
   },
+
+  setActiveColumn: (columnId) => set({ activeColumnId: columnId }),
 
   resetGridState: () => set({ ...initialState, selectedRowIds: new Set() }),
 });

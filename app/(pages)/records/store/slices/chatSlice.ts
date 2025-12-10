@@ -158,25 +158,47 @@ export const createChatSlice: StateCreator<
         throw new Error("Chat request failed");
       }
 
-      // Read streaming response
+      // Read streaming response (AI SDK UI message stream format)
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
       let fullContent = "";
+      let buffer = "";
 
       if (reader) {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          const chunk = decoder.decode(value, { stream: true });
-          fullContent += chunk;
+          buffer += decoder.decode(value, { stream: true });
 
-          // Update the assistant message content
-          set((s) => ({
-            messages: s.messages.map((m) =>
-              m.id === assistantId ? { ...m, content: fullContent } : m
-            ),
-          }));
+          // Process complete lines from the buffer
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || ""; // Keep incomplete line in buffer
+
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+
+            const jsonStr = line.slice(6); // Remove "data: " prefix
+            if (jsonStr === "[DONE]") continue;
+
+            try {
+              const data = JSON.parse(jsonStr);
+
+              // Handle text-delta events (the actual streamed text)
+              if (data.type === "text-delta" && data.delta) {
+                fullContent += data.delta;
+
+                // Update the assistant message content
+                set((s) => ({
+                  messages: s.messages.map((m) =>
+                    m.id === assistantId ? { ...m, content: fullContent } : m
+                  ),
+                }));
+              }
+            } catch {
+              // Skip malformed JSON lines
+            }
+          }
         }
       }
 

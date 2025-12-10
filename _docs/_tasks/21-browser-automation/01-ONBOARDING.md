@@ -30,11 +30,14 @@
 **The Goal:** Enable users to automate browser-based tasks (like signing into Slack, downloading files from location lookup tools, extracting data) through natural language instructions, with full visibility into what's happening.
 
 **The Approach:** 
-1. **Phase 1:** Build isolated playground (`/experiments/browser-automation`) to test Anchor Browser integration
-2. **Phase 2:** Integrate browser automation as first-class workflow node type (like Composio steps)
-3. **Phase 3:** Add advanced features (profiles, session recording, stealth)
+1. **Phase 0:** Technical spike to validate core assumptions (Anchor API, Playwright CDP, Mastra agent)
+2. **Phase 1:** Build isolated playground (`/experiments/browser-automation`) to test Anchor Browser integration
+3. **Phase 2:** Integrate browser automation as first-class workflow node type (like Composio steps)
+4. **Phase 3:** Add advanced features (profiles, session recording, stealth)
 
-**Current Status:** Product Spec complete, ready to begin implementation.
+**Current Status:** Product Spec complete, Phase 0 spike ready to begin.
+
+**⚠️ Important:** Phase 0 must complete successfully before proceeding to Phase 1. After Phase 0, review all later phases for any needed updates.
 
 ---
 
@@ -72,7 +75,24 @@ All of these require browser automation.
 
 ## What We're Building
 
-### Phase 1: Browser Automation Playground (Current Focus)
+### Phase 0: Technical Spike (Current Focus)
+
+**Location:** `app/api/browser-automation/spike/`
+
+**What It Does:**
+- Validates Anchor Browser API integration
+- Tests Playwright CDP connection
+- Validates Mastra agent + browser tools pattern
+- Tests streaming responses
+
+**Why First:**
+- Validates assumptions before building full infrastructure
+- Identifies integration issues early
+- Provides working prototype to reference
+
+**See:** `00-Phase0-Technical-Spike.md` for complete details.
+
+### Phase 1: Browser Automation Playground (After Phase 0)
 
 **Location:** `/experiments/browser-automation`
 
@@ -385,9 +405,37 @@ User creates session with profile → Signs in → Closes session → Creates ne
 
 ## Implementation Approach
 
+### Phase 0: Technical Spike
+
+**Goal:** Validate core technical assumptions with minimal code.
+
+**Files to Create:**
+```
+app/api/browser-automation/spike/
+├── test/route.ts                    # Test endpoint
+└── services/
+    ├── test-session.ts              # Session creation test
+    ├── test-playwright.ts           # Playwright connection test
+    ├── test-agent.ts                # Mastra agent test
+    └── test-full.ts                 # End-to-end test
+```
+
+**Acceptance Criteria:**
+- Can create session via Anchor Browser SDK
+- Can connect Playwright via CDP
+- Can execute basic browser actions
+- Can create Mastra agent with browser tools
+- Streaming responses work
+
+**See:** `00-Phase0-Technical-Spike.md` for complete details.
+
+---
+
 ### Phase 1: API Foundation
 
 **Goal:** Build API abstraction layer for Anchor Browser integration.
+
+**Depends On:** Phase 0 (Technical Spike) - Assumes all core assumptions validated.
 
 **Files to Create:**
 ```
@@ -653,17 +701,25 @@ const browserAgent = new Agent({
 
 ### Immediate (Week 1)
 
-1. **Set Up Anchor Browser Account**
-   - Get API key
-   - Test session creation
+1. **Phase 0: Technical Spike** ⚠️ **START HERE**
+   - Install `anchorbrowser` dependency
+   - Temporarily disable auth in `proxy.ts` for spike routes
+   - Create spike test endpoint
+   - Run all test scenarios (session, playwright, agent, full)
+   - Document any issues or learnings
+   - **Review all later phases** if assumptions changed
+
+2. **Set Up Anchor Browser Account** (if not done)
+   - API key already configured per user note
+   - Test session creation via Phase 0 spike
    - Verify live view works
 
-2. **Create API Foundation**
+3. **Create API Foundation** (After Phase 0)
    - Create `app/api/browser-automation/` domain
-   - Build `anchor-client.ts` service
+   - Build `anchor-client.ts` service (refactor from spike)
    - Create session routes (create, list, terminate)
 
-3. **Build Basic Playground Page**
+4. **Build Basic Playground Page** (After Phase 1)
    - Create `/experiments/browser-automation` page
    - Add session creation UI
    - Embed live browser view iframe
@@ -785,7 +841,8 @@ const browserAgent = new Agent({
 ### Q: How does this relate to workflows?
 
 **A:** 
-- Phase 1: Experimental playground (current)
+- Phase 0: Technical spike to validate assumptions (current)
+- Phase 1: Experimental playground
 - Phase 2: Browser becomes workflow node type (like Composio steps)
 - Phase 3: Advanced features (profiles, recording, stealth)
 
@@ -804,20 +861,22 @@ For a new developer joining this initiative:
 
 - [ ] Read this onboarding document completely
 - [ ] Read `00-Product-Spec.md` for detailed requirements
+- [ ] **Read `00-Phase0-Technical-Spike.md` - START HERE**
 - [ ] Review Asteroid competitor analysis (`_docs/Product/Competitors/Asteroid/`)
 - [ ] Study Anchor Browser documentation (links above)
 - [ ] Review existing API patterns (`app/api/DOMAIN_PRINCIPLES.md`)
 - [ ] Review agent storage pattern (`_tables/agents/`)
-- [ ] Set up Anchor Browser account and get API key
-- [ ] Test Anchor Browser session creation locally
+- [ ] API key already configured (per user note)
 - [ ] Review Mastra Agent patterns (`app/api/workforce/[agentId]/chat/`)
 - [ ] Familiarize with Playwright CDP connection
 
 **Ready to Code?**
-1. Start with API foundation (`app/api/browser-automation/services/anchor-client.ts`)
-2. Create session routes
-3. Build experimental page
-4. Iterate based on learnings
+1. **Start with Phase 0 spike** (`app/api/browser-automation/spike/test/route.ts`)
+2. Temporarily disable auth in `proxy.ts` for spike routes
+3. Run all test scenarios
+4. Document learnings
+5. **Review all later phases** if assumptions changed
+6. Then proceed to Phase 1 (API Foundation)
 
 ---
 
@@ -829,9 +888,9 @@ For a new developer joining this initiative:
 
 **How:** Use Anchor Browser API + Playwright + Mastra Agent, following existing codebase patterns.
 
-**Current Status:** Product Spec complete, ready to begin implementation.
+**Current Status:** Product Spec complete, Phase 0 spike ready to begin.
 
-**Next Step:** Build API abstraction layer and experimental playground page.
+**Next Step:** Execute Phase 0 technical spike to validate core assumptions, then review all later phases before proceeding.
 
 ---
 
