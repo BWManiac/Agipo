@@ -7,6 +7,8 @@ const isPublicRoute = createRouteMatcher([
   // Temporarily disable auth for Phase 0 spike testing
   "/api/browser-automation/spike(.*)",
   "/api/dox/spike(.*)",
+  // Docs API - temporarily public for development
+  "/api/docs(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

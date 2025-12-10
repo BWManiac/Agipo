@@ -20,6 +20,13 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+// Remove undefined values from object (YAML can't serialize undefined)
+function removeUndefined<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
+}
+
 export async function createVersion(
   docId: string,
   document: Document,
@@ -32,13 +39,13 @@ export async function createVersion(
   const versionId = `v_${Date.now()}`;
   const versionPath = getVersionPath(docId, versionId);
 
-  // Create version content with frontmatter
-  const versionContent = matter.stringify(document.content, {
+  // Create version content with frontmatter (filter out undefined values)
+  const versionContent = matter.stringify(document.content, removeUndefined({
     ...document.frontmatter,
     version_id: versionId,
     version_author: author,
     version_summary: summary,
-  });
+  }));
 
   await fs.writeFile(versionPath, versionContent, "utf-8");
 

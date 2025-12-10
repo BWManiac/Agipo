@@ -13,6 +13,7 @@ import { useDocsStore } from "../../../store";
 export function KeyboardShortcutsPlugin() {
   const [editor] = useLexicalComposerContext();
   const toggleShortcuts = useDocsStore((state) => state.toggleShortcuts);
+  const toggleOutline = useDocsStore((state) => state.toggleOutline);
   const save = useDocsStore((state) => state.save);
 
   useEffect(() => {
@@ -68,8 +69,15 @@ export function KeyboardShortcutsPlugin() {
         return;
       }
 
-      // ? = Show shortcuts help
-      if (event.key === "?" && !isMod && !event.shiftKey) {
+      // Cmd/Ctrl + \ = Toggle outline
+      if (isMod && event.key === "\\") {
+        event.preventDefault();
+        toggleOutline();
+        return;
+      }
+
+      // ? = Show shortcuts help (Shift + / produces ?)
+      if (event.key === "?" && !isMod) {
         // Only trigger if not in an input
         const target = event.target as HTMLElement;
         if (target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
@@ -85,7 +93,7 @@ export function KeyboardShortcutsPlugin() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [editor, toggleShortcuts, save]);
+  }, [editor, toggleShortcuts, toggleOutline, save]);
 
   return null;
 }

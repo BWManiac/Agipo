@@ -36,7 +36,7 @@ export function PropertiesPanel({ docId }: PropertiesPanelProps) {
           </SheetTitle>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6">
+        <div className="mt-6 space-y-6 px-1">
           <TitleEditor docId={docId} />
 
           <Separator />

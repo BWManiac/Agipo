@@ -1,22 +1,80 @@
-// Chat Slice - AI chat state management
+/**
+ * Chat Slice
+ * 
+ * Manages AI chat state and message handling.
+ * Handles sending messages, streaming responses, and tool calls.
+ */
 
 import type { StateCreator } from "zustand";
-import type { ChatSlice, DocsStore, ChatMessage } from "../types";
 import { nanoid } from "nanoid";
+import type { DocsStore } from "../types";
 
+// Chat Message Type
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+  toolCalls?: Array<{
+    tool: string;
+    args: Record<string, unknown>;
+    result?: unknown;
+  }>;
+}
+
+// 1. State Interface
+export interface ChatSliceState {
+  /** Chat message history */
+  messages: ChatMessage[];
+  
+  /** Loading state for chat operations */
+  isLoading: boolean;
+  
+  /** Selected agent ID for chat */
+  selectedAgentId: string | null;
+  
+  /** Current thread ID for conversation continuity */
+  threadId: string | null;
+}
+
+// 2. Actions Interface
+export interface ChatSliceActions {
+  /** Send a message to the AI and stream the response */
+  sendMessage: (message: string, docId: string) => Promise<void>;
+  
+  /** Set the selected agent ID */
+  setSelectedAgent: (agentId: string | null) => void;
+  
+  /** Clear all chat messages and reset thread */
+  clearChat: () => void;
+  
+  /** Set the current thread ID */
+  setThreadId: (threadId: string | null) => void;
+}
+
+// 3. Combined Slice Type
+export type ChatSlice = ChatSliceState & ChatSliceActions;
+
+// 4. Initial State
+const initialState: ChatSliceState = {
+  messages: [],
+  isLoading: false,
+  selectedAgentId: null,
+  threadId: null,
+};
+
+// 5. Slice Creator
 export const createChatSlice: StateCreator<
   DocsStore,
   [],
   [],
   ChatSlice
 > = (set, get) => ({
-  // Initial state
-  messages: [],
-  isLoading: false,
-  selectedAgentId: null,
-  threadId: null,
+  ...initialState,
 
-  sendMessage: async (message: string, docId: string) => {
+  sendMessage: async (message, docId) => {
+    console.log("[ChatSlice] Sending message:", message);
+    
     const userMessage: ChatMessage = {
       id: nanoid(),
       role: "user",
@@ -98,7 +156,7 @@ export const createChatSlice: StateCreator<
 
       // Refresh document if there were tool calls that modified it
       if (toolCalls.length > 0) {
-        // Trigger document refetch
+        console.log("[ChatSlice] Tool calls detected, refreshing document");
         const refreshResponse = await fetch(`/api/docs/${docId}`);
         if (refreshResponse.ok) {
           const { document } = await refreshResponse.json();
@@ -106,8 +164,10 @@ export const createChatSlice: StateCreator<
           get().setContent(document.content);
         }
       }
+
+      console.log("[ChatSlice] Message sent and response received");
     } catch (error) {
-      console.error("Chat error:", error);
+      console.error("[ChatSlice] Error sending message:", error);
 
       const errorMessage: ChatMessage = {
         id: nanoid(),
@@ -123,9 +183,18 @@ export const createChatSlice: StateCreator<
     }
   },
 
-  setSelectedAgent: (agentId) => set({ selectedAgentId: agentId }),
+  setSelectedAgent: (agentId) => {
+    console.log("[ChatSlice] Setting selected agent:", agentId);
+    set({ selectedAgentId: agentId });
+  },
 
-  clearChat: () => set({ messages: [], threadId: null }),
+  clearChat: () => {
+    console.log("[ChatSlice] Clearing chat");
+    set({ messages: [], threadId: null });
+  },
 
-  setThreadId: (threadId) => set({ threadId }),
+  setThreadId: (threadId) => {
+    console.log("[ChatSlice] Setting thread ID:", threadId);
+    set({ threadId });
+  },
 });

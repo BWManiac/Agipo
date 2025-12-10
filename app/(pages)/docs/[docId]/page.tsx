@@ -88,7 +88,7 @@ export default function DocumentPage() {
 
   return (
     <ErrorBoundary>
-      <div className="h-full flex">
+      <div className="h-[calc(100vh-4rem)] flex">
         {/* Left Sidebar - Outline */}
         {isOutlineOpen && <OutlineSidebar />}
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Keyboard } from "lucide-react";
 import {
   Dialog,
@@ -8,11 +9,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useDocsStore } from "../../store";
-import { KEYBOARD_SHORTCUTS, SHORTCUT_CATEGORIES } from "./shortcuts-data";
+import { getKeyboardShortcuts, SHORTCUT_CATEGORIES } from "./shortcuts-data";
 
 export function ShortcutsDialog() {
   const isShortcutsOpen = useDocsStore((state) => state.isShortcutsOpen);
   const setShortcutsOpen = useDocsStore((state) => state.setShortcutsOpen);
+
+  // Generate shortcuts on client to get correct OS-specific keys
+  const shortcuts = useMemo(() => getKeyboardShortcuts(), []);
 
   return (
     <Dialog open={isShortcutsOpen} onOpenChange={setShortcutsOpen}>
@@ -31,8 +35,9 @@ export function ShortcutsDialog() {
                 {category}
               </h4>
               <div className="space-y-2">
-                {KEYBOARD_SHORTCUTS.filter((s) => s.category === category).map(
-                  (shortcut) => (
+                {shortcuts
+                  .filter((s) => s.category === category)
+                  .map((shortcut) => (
                     <div
                       key={shortcut.description}
                       className="flex items-center justify-between"
@@ -49,8 +54,7 @@ export function ShortcutsDialog() {
                         ))}
                       </div>
                     </div>
-                  )
-                )}
+                  ))}
               </div>
             </div>
           ))}

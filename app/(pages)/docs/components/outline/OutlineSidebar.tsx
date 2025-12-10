@@ -39,7 +39,7 @@ export function OutlineSidebar() {
         {headings.length === 0 ? (
           <OutlineEmpty />
         ) : (
-          <div className="p-2">
+          <div className="p-3">
             {headings.map((heading) => (
               <OutlineItem
                 key={heading.id}
