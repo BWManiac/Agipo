@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -17,6 +17,14 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+
+type ModelInfo = {
+  id: string;
+  name: string;
+  provider: string;
+  description?: string;
+  tags?: string[];
+};
 
 interface PersonalityStepProps {
   formData: {
@@ -35,6 +43,33 @@ export function PersonalityStep({ formData, onUpdate, onOpenSubAgents }: Persona
   const [objectivesOpen, setObjectivesOpen] = useState(false);
   const [guardrailsOpen, setGuardrailsOpen] = useState(false);
   const [managerOpen, setManagerOpen] = useState(false);
+  const [models, setModels] = useState<ModelInfo[]>([]);
+  const [isLoadingModels, setIsLoadingModels] = useState(true);
+
+  // Fetch available models
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch("/api/workforce/models");
+        if (response.ok) {
+          const data = await response.json();
+          setModels(data.models || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch models:", error);
+        // Fallback to default models if fetch fails
+        setModels([
+          { id: "google/gemini-2.5-pro", name: "Google Gemini 2.5 Pro", provider: "google" },
+          { id: "openai/gpt-4o", name: "OpenAI GPT-4o", provider: "openai" },
+          { id: "anthropic/claude-3-5-sonnet", name: "Anthropic Claude 3.5 Sonnet", provider: "anthropic" },
+        ]);
+      } finally {
+        setIsLoadingModels(false);
+      }
+    };
+
+    fetchModels();
+  }, []);
 
   const handleObjectivesChange = (value: string) => {
     const objectives = value
@@ -86,20 +121,30 @@ export function PersonalityStep({ formData, onUpdate, onOpenSubAgents }: Persona
           <Select
             value={formData.model}
             onValueChange={(value) => onUpdate({ model: value })}
+            disabled={isLoadingModels}
           >
             <SelectTrigger id="model" className="mt-1">
-              <SelectValue />
+              <SelectValue placeholder={isLoadingModels ? "Loading models..." : "Select a model"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="google/gemini-2.5-pro">
-                Google Gemini 2.5 Pro
-              </SelectItem>
-              <SelectItem value="openai/gpt-4o">OpenAI GPT-4o</SelectItem>
-              <SelectItem value="anthropic/claude-3-5-sonnet">
-                Anthropic Claude 3.5 Sonnet
-              </SelectItem>
+              {models.length === 0 && !isLoadingModels ? (
+                <SelectItem value="google/gemini-2.5-pro" disabled>
+                  No models available
+                </SelectItem>
+              ) : (
+                models.map((model) => (
+                  <SelectItem key={model.id} value={model.id}>
+                    {model.name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
+          {formData.model && models.length > 0 && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {models.find((m) => m.id === formData.model)?.description || ""}
+            </p>
+          )}
         </div>
 
         <Collapsible open={objectivesOpen} onOpenChange={setObjectivesOpen}>

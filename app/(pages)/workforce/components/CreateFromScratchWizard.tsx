@@ -48,7 +48,7 @@ export function CreateFromScratchWizard({
     avatar: "🤖",
     description: "",
     systemPrompt: "",
-    model: "google/gemini-2.5-pro",
+    model: "google/gemini-2.5-pro", // Default model - will be updated when models load
     objectives: [],
     guardrails: [],
     isManager: false,
