@@ -68,3 +68,4 @@ export const createMappingsSlice: StateCreator<
   loadMappings: (mappings) => set({ mappings }),
 });
 
+
