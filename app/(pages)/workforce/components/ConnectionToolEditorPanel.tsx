@@ -357,7 +357,7 @@ export function ConnectionToolEditorPanel({
                     <div className="border-t border-gray-200">
                       {connections.map((connection) => {
                         const filteredTools = filterTools(connection.tools);
-                        if (filteredTools.length === 0 && searchQuery) return null;
+                        if (filteredTools.length === 0 && connectionSearchQuery) return null;
 
                         return (
                           <div key={connection.connectionId}>

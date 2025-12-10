@@ -8,6 +8,7 @@
 
 import { tool, type Tool } from "ai";
 import type { ToolDefinition, WorkflowBinding } from "@/_tables/types";
+import type { ZodObject, ZodRawShape } from "zod";
 import { getWorkflowExecutable, getWorkflowMetadata } from "@/app/api/workflows/services/workflow-loader";
 
 // ============================================================================
@@ -55,7 +56,7 @@ export async function getWorkflowToolExecutable(
     const vercelTool = tool({
       description: toolDescription,
       // Use workflow's inputSchema directly (already Zod, no conversion needed)
-      inputSchema: (workflow as { inputSchema: unknown }).inputSchema,
+      inputSchema: (workflow as { inputSchema: ZodObject<ZodRawShape> }).inputSchema,
       execute: async (input: Record<string, unknown>) => {
         console.log(`[WorkflowTools] Executing workflow: ${binding.workflowId}`);
         console.log(`[WorkflowTools] Input:`, JSON.stringify(input, null, 2));
@@ -76,7 +77,9 @@ export async function getWorkflowToolExecutable(
           };
           
           // Create workflow run instance
-          const run = await (workflow as { createRunAsync: (options?: { resourceId?: string }) => Promise<{ start: (options: { inputData: Record<string, unknown>; runtimeContext?: { get: (key: string) => unknown; connections?: Record<string, string> } }) => Promise<{ status: string; result?: unknown; steps?: Record<string, { status: string; error?: unknown }> }> }> }).createRunAsync({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const workflowExec = workflow as any;
+          const run = await workflowExec.createRunAsync({
             resourceId: userId,
           });
           
@@ -96,8 +99,8 @@ export async function getWorkflowToolExecutable(
           } else if (result.status === "failed") {
             // Extract error details from failed steps
             const failedSteps = Object.entries(result.steps || {})
-              .filter(([_, step]) => step.status === "failed")
-              .map(([id, step]) => ({ stepId: id, error: step.error }));
+              .filter(([_, step]) => (step as { status: string }).status === "failed")
+              .map(([id, step]) => ({ stepId: id, error: (step as { error?: unknown }).error }));
             
             const errorMessage = failedSteps.length > 0
               ? `Workflow execution failed at step(s): ${JSON.stringify(failedSteps)}`

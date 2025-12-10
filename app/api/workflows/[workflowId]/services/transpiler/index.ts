@@ -51,7 +51,7 @@ export function transpileWorkflow(
   } catch (e) {
     errors.push(`Failed to generate input schema: ${e}`);
     // Fallback to empty schema
-    inputSchema = { type: "object", properties: {}, required: [] };
+    inputSchema = { type: "object" as const, properties: {}, required: [] as string[] };
   }
 
   // Create definition with generated inputSchema

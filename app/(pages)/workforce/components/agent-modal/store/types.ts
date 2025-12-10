@@ -55,8 +55,7 @@ import type { UiSlice } from "./slices/uiSlice";
 
 // Re-export shared types for convenience
 export type { TabId };
-export type { ConnectionWithTools, PlatformToolkit };
-// Connection is defined in this file, so we export it directly (already exported above)
+// ConnectionWithTools, PlatformToolkit, Connection are already exported above
 export type { Task, ScheduledJob, EventTrigger, MockRecord };
 
 // This is the final, combined store type that includes all slices.

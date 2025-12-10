@@ -9,7 +9,7 @@ import path from "path";
 import type {
   CachedToolkit,
   SchemaCacheMeta,
-} from "../../types/composio-schemas";
+} from "@/app/api/workflows/types/composio-schemas";
 
 /**
  * Get the path to the schema cache directory

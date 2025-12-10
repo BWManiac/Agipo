@@ -13,7 +13,7 @@ import {
   writeCacheMeta,
   writeToolkitCache,
 } from "../services/composio-schema-cache";
-import type { CachedToolkit, CachedToolSchema } from "../../types/composio-schemas";
+import type { CachedToolkit, CachedToolSchema } from "@/app/api/workflows/types/composio-schemas";
 
 export const runtime = "nodejs";
 
