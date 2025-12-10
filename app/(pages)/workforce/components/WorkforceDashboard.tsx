@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { agents as registryAgents } from "@/_tables/agents";
 import type { AgentConfig } from "@/_tables/types";
 import { AgentModal } from "./agent-modal";
+import { CreateAgentDialog } from "./CreateAgentDialog";
 
 const statusStyles: Record<AgentConfig["status"], string> = {
   active: "bg-emerald-100 text-emerald-700 border border-emerald-200",
@@ -19,15 +19,38 @@ const statusStyles: Record<AgentConfig["status"], string> = {
 
 export function WorkforceDashboard() {
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [agents, setAgents] = useState<AgentConfig[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const selectedAgent = useMemo(
-    () => registryAgents.find((agent) => agent.id === selectedAgentId) ?? null,
-    [selectedAgentId]
+    () => agents.find((agent) => agent.id === selectedAgentId) ?? null,
+    [agents, selectedAgentId]
   );
+
+  const fetchAgents = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/workforce");
+      if (response.ok) {
+        const data = await response.json();
+        setAgents(data.agents || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch agents:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgents();
+  }, []);
 
   const metrics = [
     {
       label: "Agents hired",
-      value: `${registryAgents.length}`,
+      value: `${agents.length}`,
       helper: "+1 recommendation",
     },
     {
@@ -42,10 +65,50 @@ export function WorkforceDashboard() {
     },
   ];
 
-  const attentionAgents = registryAgents.filter((agent) => agent.status !== "active");
+  const attentionAgents = agents.filter((agent) => agent.status !== "active");
 
   return (
     <div className="space-y-8">
+      <header className="rounded-2xl border border-border bg-background px-6 py-8 shadow-sm">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-3">
+            <span className="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+              Workforce Hub
+            </span>
+            <h1 className="text-3xl font-bold tracking-tight">Manage your AI workforce</h1>
+            <p className="text-sm text-muted-foreground">
+              Review hired agents, monitor outcomes, and collaborate with them just like teammates.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary">Coverage: Product, Marketing, Support</Badge>
+              <Badge variant="secondary">Profile-linked context enabled</Badge>
+            </div>
+          </div>
+          <div className="flex flex-col items-start gap-3 md:items-end">
+            <Button size="lg" onClick={() => setCreateDialogOpen(true)}>
+              Hire new agent
+            </Button>
+            <Link href="/profile" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
+              View context profile →
+            </Link>
+          </div>
+        </div>
+        <Separator className="my-6" />
+        <div className="grid gap-4 md:grid-cols-3">
+          {metrics.map((metric) => (
+            <Card key={metric.label} className="border-border/80">
+              <CardContent className="space-y-2 p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {metric.label}
+                </div>
+                <div className="text-2xl font-semibold text-foreground">{metric.value}</div>
+                <div className="text-xs text-muted-foreground">{metric.helper}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </header>
+
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Active roster</h2>
@@ -59,7 +122,16 @@ export function WorkforceDashboard() {
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {registryAgents.map((agent) => (
+          {isLoading ? (
+            <div className="col-span-full py-8 text-center text-sm text-muted-foreground">
+              Loading agents...
+            </div>
+          ) : agents.length === 0 ? (
+            <div className="col-span-full py-8 text-center text-sm text-muted-foreground">
+              No agents yet. Create your first agent to get started.
+            </div>
+          ) : (
+            agents.map((agent) => (
             <button
               key={agent.id}
               onClick={() => setSelectedAgentId(agent.id)}
@@ -112,47 +184,10 @@ export function WorkforceDashboard() {
               </div>
               <div className="mt-4 text-sm font-semibold text-primary">Open agent →</div>
             </button>
-          ))}
+            ))
+          )}
         </div>
       </section>
-
-      <header className="rounded-2xl border border-border bg-background px-6 py-8 shadow-sm">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-3">
-            <span className="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-              Workforce Hub
-            </span>
-            <h1 className="text-3xl font-bold tracking-tight">Manage your AI workforce</h1>
-            <p className="text-sm text-muted-foreground">
-              Review hired agents, monitor outcomes, and collaborate with them just like teammates.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">Coverage: Product, Marketing, Support</Badge>
-              <Badge variant="secondary">Profile-linked context enabled</Badge>
-            </div>
-          </div>
-          <div className="flex flex-col items-start gap-3 md:items-end">
-            <Button size="lg">Hire new agent</Button>
-            <Link href="/profile" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
-              View context profile →
-            </Link>
-          </div>
-        </div>
-        <Separator className="my-6" />
-        <div className="grid gap-4 md:grid-cols-3">
-          {metrics.map((metric) => (
-            <Card key={metric.label} className="border-border/80">
-              <CardContent className="space-y-2 p-5">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  {metric.label}
-                </div>
-                <div className="text-2xl font-semibold text-foreground">{metric.value}</div>
-                <div className="text-xs text-muted-foreground">{metric.helper}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </header>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
@@ -190,6 +225,14 @@ export function WorkforceDashboard() {
         open={selectedAgent !== null}
         onOpenChange={(open) => {
           if (!open) setSelectedAgentId(null);
+        }}
+      />
+
+      <CreateAgentDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onAgentCreated={() => {
+          fetchAgents();
         }}
       />
     </div>

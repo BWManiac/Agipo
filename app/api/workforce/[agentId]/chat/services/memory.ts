@@ -8,16 +8,41 @@ import * as path from "path";
 const memoryCache = new Map<string, Memory>();
 
 /**
+ * Scans the agents directory for folders matching the agentId (UUID).
+ * Folder format: {name-slug}-{uuid}
+ * Returns the folder name if found, null otherwise.
+ */
+function getAgentFolderName(agentId: string): string | null {
+  const agentsDir = path.join(process.cwd(), "_tables", "agents");
+  
+  try {
+    const entries = fs.readdirSync(agentsDir, { withFileTypes: true });
+    
+    // Look for folders that end with the agentId (UUID)
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name.endsWith(`-${agentId}`)) {
+        return entry.name;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error(`[memory] Error scanning agents directory:`, error);
+    return null;
+  }
+}
+
+/**
  * Creates a per-agent Memory instance for conversation persistence.
  * 
- * Storage: SQLite file at `_tables/agents/{agentId}/memory.db`
+ * Storage: SQLite file at `_tables/agents/{folder-name}/memory.db`
  * 
  * Features enabled:
  * - lastMessages: Keeps last 10 messages in context
  * - workingMemory: Structured knowledge about users (per-user scope)
  * - threads.generateTitle: Auto-generates thread titles from first message
  * 
- * @param agentId - The agent's unique identifier (e.g., "pm", "alex-kim")
+ * @param agentId - The agent's unique identifier (UUID)
  * @returns Memory instance configured for the agent
  */
 export function getAgentMemory(agentId: string): Memory {
@@ -27,8 +52,14 @@ export function getAgentMemory(agentId: string): Memory {
     return cached;
   }
 
+  // Map UUID agentId to folder name
+  const folderName = getAgentFolderName(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
+  }
+
   // Ensure the agent directory exists
-  const agentDir = path.join(process.cwd(), "_tables", "agents", agentId);
+  const agentDir = path.join(process.cwd(), "_tables", "agents", folderName);
   if (!fs.existsSync(agentDir)) {
     fs.mkdirSync(agentDir, { recursive: true });
     console.log(`[memory] Created agent directory: ${agentDir}`);
@@ -38,7 +69,7 @@ export function getAgentMemory(agentId: string): Memory {
   // LibSQL uses file: protocol for local SQLite databases
   const dbPath = `file:${agentDir}/memory.db`;
 
-  console.log(`[memory] Initializing memory for agent: ${agentId}, path: ${dbPath}`);
+  console.log(`[memory] Initializing memory for agent: ${agentId}, folder: ${folderName}, path: ${dbPath}`);
 
   const memory = new Memory({
     storage: new LibSQLStore({

@@ -14,7 +14,7 @@ export type ConnectionToolBinding = {
 };
 
 export type AgentConfig = {
-  id: string; // UUID v4 format, auto-generated on creation
+  id: string;
   name: string;
   role: string;
   avatar: string;
@@ -32,22 +32,13 @@ export type AgentConfig = {
   highlight: string;
   lastActivity: string;
   metrics: Array<{ label: string; value: string }>;
-  assignedWorkflows: string[]; // @deprecated - use workflowBindings instead
+  assignedWorkflows: string[];
   capabilities: string[];
   insights: Array<{ title: string; detail: string; type: "question" | "opportunity" | "risk" }>;
   activities: Array<{ title: string; timestamp: string; summary: string; impact: string }>;
   feedback: Array<{ author: string; comment: string; timestamp: string }>;
-  /**
-   * Whether this agent is a manager that can delegate to sub-agents.
-   * If true, the agent can access and delegate tasks to agents listed in `subAgentIds`.
-   */
-  isManager?: boolean;
-  /**
-   * Array of agent IDs that this manager agent can access as sub-agents.
-   * Only used if `isManager` is true.
-   * Maps to Mastra Agent's `agents` parameter.
-   */
-  subAgentIds?: string[];
+  isManager?: boolean; // Optional: indicates if agent is a manager
+  subAgentIds?: string[]; // Optional: IDs of sub-agents managed by this agent
 };
 
 export type ToolDefinition = {
@@ -82,17 +73,4 @@ export type WorkflowSummary = {
 export type WorkflowBinding = {
   workflowId: string;
   connectionBindings: Record<string, string>; // toolkitSlug → connectionId
-};
-
-/**
- * Metadata about a workflow, extracted from transpiled workflow.ts files.
- * Used for listing available workflows in the assignment UI.
- */
-export type WorkflowMetadata = {
-  id: string;
-  name: string;
-  description?: string;
-  requiredConnections: string[]; // toolkit slugs like ["gmail", "slack"]
-  stepCount: number;
-  lastModified?: string;
 };

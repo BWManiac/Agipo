@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { AgentConfig } from "@/_tables/types";
+import { getAvailableModels, type ModelInfo } from "@/app/api/workforce/[agentId]/chat/services/models";
 
 interface ConfigTabProps {
   agent: AgentConfig;
@@ -21,6 +22,9 @@ export function ConfigTab({ agent }: ConfigTabProps) {
   const [objectives, setObjectives] = useState(agent.objectives.join("\n"));
   const [systemPrompt, setSystemPrompt] = useState(agent.systemPrompt);
   const [model, setModel] = useState(agent.model);
+
+  // Get available models directly (no API call needed)
+  const models = getAvailableModels();
 
   const handleSave = () => {
     console.log("Saving config:", {
@@ -96,14 +100,21 @@ export function ConfigTab({ agent }: ConfigTabProps) {
             <Label className="text-sm font-medium text-gray-700 mb-1">Model</Label>
             <Select value={model} onValueChange={setModel}>
               <SelectTrigger className="w-full text-sm">
-                <SelectValue />
+                <SelectValue placeholder="Select a model" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="google/gemini-2.5-pro">Google Gemini 2.5 Pro</SelectItem>
-                <SelectItem value="openai/gpt-4o">OpenAI GPT-4o</SelectItem>
-                <SelectItem value="anthropic/claude-3-5-sonnet">Anthropic Claude 3.5 Sonnet</SelectItem>
+                {models.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
+            {model && (
+              <p className="mt-1 text-xs text-gray-500">
+                {models.find((m) => m.id === model)?.description || ""}
+              </p>
+            )}
           </div>
 
           <div className="flex justify-end pt-4">

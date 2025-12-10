@@ -1,139 +1,100 @@
-# Agent Memory Service
+# Memory Service
 
-> Creates and caches per-agent Memory instances for conversation persistence.
+This service manages per-agent Memory instances for conversation persistence using Mastra's Memory system.
 
-**Service:** `memory.ts`  
-**Domain:** Workforce
+## Folder Structure
 
----
+Memory databases are stored in agent folders with the format: `{name-slug}-{uuid}/`
 
-## Purpose
+Example:
+- Folder: `test-agent-a1b2c3d4-e5f6-7890-abcd-ef1234567890/`
+- Memory DB: `test-agent-a1b2c3d4-e5f6-7890-abcd-ef1234567890/memory.db`
+- Agent ID (UUID): `a1b2c3d4-e5f6-7890-abcd-ef1234567890`
 
-This service provides per-agent Memory instances using Mastra Memory and LibSQL storage. Each agent has its own SQLite database file for storing conversation threads, messages, and working memory. Without this service, agents would be stateless - every conversation would start fresh with no memory of past interactions.
-
-**Product Value:** Enables agents to remember past conversations and maintain knowledge about users over time. This transforms agents from stateless assistants into persistent collaborators who accumulate context, making them feel like true "digital employees" who know your preferences and history.
-
----
-
-## Methods Overview
-
-| Function | What It Does | When to Use |
-|----------|--------------|-------------|
-| `getAgentMemory()` | Creates or returns a cached Memory instance for an agent, configured with conversation persistence and working memory. | When initializing agents for chat - provides memory instance for conversation threads |
-
----
-
-## Approach
-
-The service implements a singleton pattern per agent, caching Memory instances after first creation. Each agent gets its own SQLite database file at `_tables/agents/{agentId}/memory.db`. Memory is configured with lastMessages (keeps context), workingMemory (structured user knowledge), and automatic thread title generation. The service ensures agent directories exist before creating databases.
-
----
-
-## Public API
+## Functions
 
 ### `getAgentMemory(agentId: string): Memory`
 
-**What it does:** Creates or returns a cached Memory instance for an agent, configured with LibSQL storage, conversation persistence, and working memory capabilities.
+Creates or retrieves a cached Memory instance for an agent.
 
-**Product Impact:** Every agent conversation needs a Memory instance to persist threads and messages. This function provides that instance with proper configuration, enabling agents to remember past conversations and maintain knowledge about users.
+**Parameters:**
+- `agentId` - The agent's UUID identifier
 
-**Input:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `agentId` | string | Yes | Agent identifier (e.g., "pm", "marketing", "alex-kim") |
-
-**Output:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| Return value | Memory | Mastra Memory instance configured for the agent, cached after first creation |
+**Returns:** Mastra Memory instance configured for the agent
 
 **Process:**
+1. Checks cache for existing Memory instance
+2. Maps UUID `agentId` to folder name using `getAgentFolderName()`
+3. Ensures agent directory exists (creates if needed)
+4. Initializes Memory with LibSQLStore pointing to `{folder}/memory.db`
+5. Caches and returns the instance
 
-```
-getAgentMemory(agentId): Memory
-├── Check memoryCache for existing instance
-├── If cached: Return cached instance
-├── If not cached:
-│   ├── Ensure agent directory exists: _tables/agents/{agentId}/
-│   ├── Build SQLite database path: file:{agentDir}/memory.db
-│   ├── Create Memory instance with:
-│   │   ├── storage: LibSQLStore with file:// URL
-│   │   └── options:
-│   │       ├── lastMessages: 10 (keep last 10 messages in context)
-│   │       ├── workingMemory: { enabled: true, scope: "resource", schema: workingMemorySchema }
-│   │       └── threads: { generateTitle: true }
-│   ├── Cache instance in memoryCache Map
-│   └── Return new instance
-```
+**Throws:** Error if agent folder not found
 
 ---
 
-## Dependencies
+## Helper Functions
 
-| Dependency | Purpose |
-|------------|---------|
-| `@mastra/memory` | Memory framework |
-| `@mastra/libsql` | SQLite storage backend |
-| `fs` | Directory creation and existence checks |
-| `path` | Path resolution for database files |
-| `../types/working-memory` | Working memory schema definition |
+### `getAgentFolderName(agentId: string): string | null`
 
----
+Scans the `_tables/agents/` directory for folders matching the agentId (UUID).
 
-## Consumers
+**Process:**
+1. Reads all entries in `_tables/agents/`
+2. Finds directories that end with `-{agentId}`
+3. Returns folder name if found, null otherwise
 
-| Consumer | Location | Usage |
-|----------|----------|-------|
-| Chat Service | `app/api/workforce/[agentId]/chat/services/chat-service.ts` | Provides Memory instance when creating agents |
-| Thread Service | `app/api/workforce/[agentId]/threads/services/thread-service.ts` | Uses Memory for thread operations |
-| Knowledge Service | `app/api/workforce/[agentId]/knowledge/services/knowledge-service.ts` | Uses Memory for working memory operations |
+**Example:**
+- `agentId`: `a1b2c3d4-e5f6-7890-abcd-ef1234567890`
+- Matches folder: `test-agent-a1b2c3d4-e5f6-7890-abcd-ef1234567890`
+- Returns: `test-agent-a1b2c3d4-e5f6-7890-abcd-ef1234567890`
 
 ---
 
-## Design Decisions
+## Memory Configuration
 
-### Why per-agent databases?
+Each Memory instance is configured with:
 
-**Decision:** Each agent gets its own SQLite database file.
-
-**Rationale:** This provides isolation between agents while maintaining simplicity. Each agent's conversations and knowledge are separate, making it clear what data belongs to which agent. SQLite files are easy to backup, inspect, and manage.
-
-### Why caching Memory instances?
-
-**Decision:** Memory instances are cached after first creation.
-
-**Rationale:** Creating Memory instances involves file system operations and database initialization. Caching avoids repeated initialization overhead and ensures the same instance is reused across requests for the same agent.
-
-### Why lastMessages: 10?
-
-**Decision:** Keeps last 10 messages in context automatically.
-
-**Rationale:** Provides conversation continuity without manual context management. 10 messages is a reasonable balance between context and token usage. This is configurable if needed.
+- **Storage:** LibSQLStore with SQLite database at `file:{folder}/memory.db`
+- **lastMessages:** Keeps last 10 messages in context for continuity
+- **workingMemory:** 
+  - Enabled: true
+  - Scope: "resource" (per-user, across all threads)
+  - Schema: `workingMemorySchema` from `../types/working-memory`
+- **threads.generateTitle:** Auto-generates thread titles from first message
 
 ---
 
-## Error Handling
+## Caching
 
-Directory creation failures would throw errors. Database initialization failures would be caught by Mastra and logged. Missing directories are automatically created with `recursive: true`.
-
----
-
-## Related Docs
-
-- [Chat Service README](./chat-service.README.md) - Uses this service to provide Memory to agents
-- [Thread Service README](../../threads/services/thread-service.README.md) - Uses Memory for thread operations
-- [Knowledge Service README](../../knowledge/services/knowledge-service.README.md) - Uses Memory for working memory
-- [Mastra Memory Documentation](https://mastra.ai/docs/memory) - Memory framework details
+Memory instances are cached in memory to avoid recreating on every request:
+- Cache key: `agentId` (UUID)
+- Cache lifetime: For the duration of the Node.js process
+- Cache invalidation: Manual restart required (or process restart)
 
 ---
 
-## Future Improvements
+## File Paths
 
-- [ ] Add database migration utilities for schema changes
-- [ ] Add memory cleanup/pruning for old threads
-- [ ] Add memory backup/export capabilities
-- [ ] Consider shared memory pools for team agents
-- [ ] Add memory metrics/analytics
+Memory databases are stored at:
+- `_tables/agents/{folder-name}/memory.db`
 
+The folder name is derived from scanning directories that end with `-{agentId}`.
+
+---
+
+## Frontend Consumers
+
+| Component | Hook | Description |
+|-----------|------|-------------|
+| Chat components | Various | Uses Memory for conversation persistence |
+| Thread management | Various | Uses Memory for thread operations |
+
+---
+
+## Notes
+
+- Memory instances are created lazily (on first access)
+- Agent directories are created automatically if they don't exist
+- UUID to folder mapping is done by matching folder names ending with `-{uuid}`
+- The service uses synchronous file operations for folder scanning (blocking, but fast for small directories)

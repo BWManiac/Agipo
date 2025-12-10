@@ -244,22 +244,35 @@ type AgentConfig = {
 
 ### Phase 1: Legacy Agent Cleanup
 
-**Goal:** Delete all legacy agents and update index.ts to prepare for new folder-based structure.
+**User Value:** Prepares the system for a clean, scalable agent management foundation. Removes confusing hardcoded examples so users only see agents they've actually created. This eliminates confusion about which agents are "real" vs. demo data.
 
-**Changes:**
-1. Delete all legacy agent files: mira-patel.ts, alex-kim.ts, elena-park.ts, noah-reyes.ts
-2. Delete all legacy folders: engineering/, marketing/, pm/
-3. Update index.ts to remove all legacy imports/exports (make it empty or ready for new structure)
+**What Users Can Do After This Phase:** Users will see a clean slate - no legacy agents cluttering their dashboard. The system is ready for the new folder-based agent creation system. Users can start fresh without any confusing demo agents.
 
-**Phase 1 Acceptance Criteria:**
+**File Impact Analysis:**
+
+| File | Action | Purpose | Lines |
+|------|--------|---------|-------|
+| `_tables/agents/mira-patel.ts` | Delete | Remove legacy PM agent file | - |
+| `_tables/agents/alex-kim.ts` | Delete | Remove legacy engineering agent file | - |
+| `_tables/agents/elena-park.ts` | Delete | Remove legacy support agent file | - |
+| `_tables/agents/noah-reyes.ts` | Delete | Remove legacy marketing agent file | - |
+| `_tables/agents/engineering/` | Delete | Remove legacy memory folder (entire directory) | - |
+| `_tables/agents/marketing/` | Delete | Remove legacy memory folder (entire directory) | - |
+| `_tables/agents/pm/` | Delete | Remove legacy memory folder (entire directory) | - |
+| `app/(pages)/workforce/data/mock-data.ts` | Delete | Remove unused mock data file | - |
+| `_tables/agents/index.ts` | Modify | Remove all legacy imports/exports, set to empty array | ~10 |
+
+**Acceptance Criteria:**
 
 | # | Criterion | Test Method |
 |---|-----------|-------------|
-| P1.1 | All legacy agent files deleted | `ls _tables/agents/*.ts` shows no legacy files |
-| P1.2 | All legacy folders deleted | `ls _tables/agents/` shows no engineering/, marketing/, pm/ folders |
-| P1.3 | index.ts has no legacy imports | Verify index.ts file contains no references to miraPatelAgent, etc. |
+| AC-1.1 | All legacy agent files deleted | Run `ls _tables/agents/*.ts` - should not show mira-patel.ts, alex-kim.ts, elena-park.ts, noah-reyes.ts |
+| AC-1.2 | All legacy folders deleted | Run `ls _tables/agents/` - should not show engineering/, marketing/, pm/ directories |
+| AC-1.3 | index.ts has no legacy imports | Open `_tables/agents/index.ts` - should have no `import { miraPatelAgent }` statements |
+| AC-1.4 | index.ts exports empty array | Verify `export const agents = []` or similar minimal structure |
+| AC-1.5 | mock-data.ts deleted | Verify `app/(pages)/workforce/data/mock-data.ts` does not exist |
 
-**Phase 1 Test Flow:**
+**Test Flow:**
 ```bash
 # Verify deletion
 ls _tables/agents/
@@ -273,29 +286,87 @@ cat _tables/agents/index.ts
 
 ---
 
-### Phase 2: API Foundation
+### Phase 2: Service Updates for Folder Structure
 
-**Goal:** Create backend APIs for agent creation and listing with folder-based storage.
+**User Value:** Ensures existing agent functionality (tool assignment, chat, memory) continues to work seamlessly with the new folder-based agent structure. Users won't experience any disruption - their agents will work exactly as before, just with a better underlying storage system.
 
-**Changes:**
-1. Create `agent-creator.ts` service with UUID generation, folder creation, file generation
-2. Create `POST /api/workforce/create` route with validation and error handling
-3. Create `GET /api/workforce` route for listing agents
-4. Update `agent-config.ts` to read from folder structure
-5. Update `memory.ts` to use folder-based paths
+**What Users Can Do After This Phase:** Existing agent features remain fully functional. The system is now compatible with folder-based agents, ready for new agent creation. Users can continue using agents without noticing any changes.
 
-**Phase 2 Acceptance Criteria:**
+**File Impact Analysis:**
+
+| File | Action | Purpose | Lines |
+|------|--------|---------|-------|
+| `app/api/workforce/services/agent-config.ts` | Modify | Update to read from folder structure, remove hardcoded mapping, add folder scanning | ~100 |
+| `app/api/workforce/services/agent-config.README.md` | Modify | Update documentation for folder-based structure | ~50 |
+| `app/api/workforce/[agentId]/chat/services/memory.ts` | Modify | Update to map UUID to folder name for memory.db path | ~30 |
+| `app/api/workforce/[agentId]/chat/services/memory.README.md` | Modify | Update documentation for folder-based paths | ~20 |
+
+**Key Implementation Changes:**
+- Add `getAgentFolderPath(agentId: string)` helper to scan folders and match UUID
+- Update all file paths from `{filename}.ts` to `{folder}/config.ts`
+- Update memory path from `_tables/agents/{agentId}/` to `_tables/agents/{folder-name}/`
+
+**Acceptance Criteria:**
 
 | # | Criterion | Test Method |
 |---|-----------|-------------|
-| P2.1 | `POST /api/workforce/create` creates agent successfully | Call API with valid data, verify 200 response with agentId |
-| P2.2 | Agent folder created with `{name-slug}-{uuid}` format | Verify folder exists in `_tables/agents/` |
-| P2.3 | Config file created in agent folder | Verify `{folder}/config.ts` exists with correct structure |
-| P2.4 | index.ts updated automatically | Verify index.ts includes new agent import/export |
-| P2.5 | API validates required fields | Call API with missing name/role/systemPrompt, verify 400 error |
-| P2.6 | `GET /api/workforce` returns all agents | Call API, verify response includes newly created agent |
+| AC-2.1 | getAgentFolderPath() finds folder for UUID agentId | Call with UUID, verify returns correct folder name |
+| AC-2.2 | getAgentCustomTools() reads from folder-based config | Create test agent folder, verify function returns tools |
+| AC-2.3 | updateAgentTools() updates config in folder | Update toolIds, verify {folder}/config.ts is modified |
+| AC-2.4 | Memory database created in correct folder | Create agent, initialize memory, verify memory.db in {folder}/ |
+| AC-2.5 | All update functions work with folder structure | Test updateConnectionToolBindings, updateWorkflowBindings |
 
-**Phase 2 Test Flow:**
+**Test Flow:**
+```bash
+# Create test agent folder manually
+mkdir -p _tables/agents/test-agent-{uuid}/
+# Create config.ts file
+# Verify services can read/update config
+```
+
+---
+
+### Phase 3: API Foundation
+
+**User Value:** Provides the backend infrastructure that powers agent creation. Users can programmatically create agents through APIs, enabling the UI wizard to function. This phase makes agent creation possible from a technical standpoint.
+
+**What Users Can Do After This Phase:** Developers can create agents via API calls. The foundation is ready for the UI wizard to be built on top. Users will be able to create agents programmatically (though UI comes in Phase 4).
+
+**File Impact Analysis:**
+
+| File | Action | Purpose | Lines |
+|------|--------|---------|-------|
+| `_tables/types.ts` | Modify | Add `isManager?: boolean` and `subAgentIds?: string[]` to AgentConfig | ~5 |
+| `app/api/workforce/services/agent-creator.ts` | Create | Core service for agent file generation (UUID, folder-based) | ~300 |
+| `app/api/workforce/services/agent-creator.README.md` | Create | Service documentation | ~150 |
+| `app/api/workforce/create/route.ts` | Create | POST endpoint for creating agents | ~100 |
+| `app/api/workforce/create/README.md` | Create | API route documentation | ~100 |
+| `app/api/workforce/route.ts` | Create | GET endpoint for listing all agents | ~50 |
+| `app/api/workforce/README.md` | Create | API route documentation | ~80 |
+
+**Key Functions in agent-creator.ts:**
+- `generateAgentId()` - UUID v4 via `crypto.randomUUID()`
+- `slugify()` - Convert name to slug
+- `generateFolderName()` - `{name-slug}-{uuid}`
+- `generateAgentFileContent()` - TypeScript file template
+- `createAgentFolder()` - Create directory
+- `createAgentConfigFile()` - Write config.ts
+- `updateAgentsIndex()` - Regex-based index.ts update
+- `createAgent()` - Orchestrator with rollback
+
+**Acceptance Criteria:**
+
+| # | Criterion | Test Method |
+|---|-----------|-------------|
+| AC-3.1 | `POST /api/workforce/create` creates agent successfully | Call API with valid data, verify 200 response with agentId |
+| AC-3.2 | Agent folder created with `{name-slug}-{uuid}` format | Verify folder exists in `_tables/agents/` |
+| AC-3.3 | Config file created in agent folder | Verify `{folder}/config.ts` exists with correct structure |
+| AC-3.4 | index.ts updated automatically | Verify index.ts includes new agent import/export |
+| AC-3.5 | API validates required fields | Call API with missing name/role/systemPrompt, verify 400 error |
+| AC-3.6 | `GET /api/workforce` returns all agents | Call API, verify response includes newly created agent |
+| AC-3.7 | Rollback works on errors | Simulate error, verify file deleted and index reverted |
+
+**Test Flow:**
 ```bash
 # Create agent via API
 curl -X POST http://localhost:3000/api/workforce/create \
@@ -321,30 +392,36 @@ curl http://localhost:3000/api/workforce
 
 ---
 
-### Phase 3: Basic Create Flow UI
+### Phase 4: Basic Create Flow UI
 
-**Goal:** Build the create agent dialog and first two wizard steps (Identity and Personality).
+**User Value:** Enables users to create agents through an intuitive, step-by-step wizard interface. Users can now create custom AI agents without technical knowledge - just fill out a form and click through guided steps. This transforms agent creation from a developer-only task to something any user can do.
 
-**Changes:**
-1. Create `CreateAgentDialog` component with Dialog and Tabs
-2. Create `CreateFromScratchWizard` orchestrator
-3. Create `IdentityStep` component
-4. Create `PersonalityStep` component
-5. Wire up form submission to API
-6. Add success state component
+**What Users Can Do After This Phase:** Users can click "Hire new agent" on the workforce dashboard, fill out a simple 2-step form (Identity and Personality), and create their first custom agent. The agent immediately appears in their roster, ready to use.
 
-**Phase 3 Acceptance Criteria:**
+**File Impact Analysis:**
+
+| File | Action | Purpose | Lines |
+|------|--------|---------|-------|
+| `app/(pages)/workforce/components/CreateAgentDialog.tsx` | Create | Main modal container with tabs (Create Custom | Hire from Marketplace) | ~150 |
+| `app/(pages)/workforce/components/CreateFromScratchWizard.tsx` | Create | 3-step wizard orchestrator with step state and API integration | ~300 |
+| `app/(pages)/workforce/components/wizard/IdentityStep.tsx` | Create | Step 1: Name, role, avatar picker, description form | ~100 |
+| `app/(pages)/workforce/components/wizard/PersonalityStep.tsx` | Create | Step 2: Instructions, model, objectives, guardrails, manager toggle | ~200 |
+| `app/(pages)/workforce/components/wizard/SuccessState.tsx` | Create | Success confirmation screen with agent preview and quick actions | ~120 |
+| `app/(pages)/workforce/components/WorkforceDashboard.tsx` | Modify | Add dialog state, wire up "Hire new agent" button, refresh agent list | ~40 |
+
+**Acceptance Criteria:**
 
 | # | Criterion | Test Method |
 |---|-----------|-------------|
-| P3.1 | Create Agent dialog opens from "Hire new agent" button | Click button, verify dialog opens |
-| P3.2 | Step 1 (Identity) form works | Fill name, role, select avatar, verify validation |
-| P3.3 | Step 2 (Personality) form works | Fill instructions, select model, verify validation |
-| P3.4 | Form submission creates agent via API | Submit form, verify API called, agent created |
-| P3.5 | Success state shows after creation | Verify success screen with agent preview |
-| P3.6 | Agent appears in roster after creation | Verify agent card appears in Active Roster |
+| AC-4.1 | Create Agent dialog opens from "Hire new agent" button | Click button, verify dialog opens |
+| AC-4.2 | Step 1 (Identity) form works with validation | Fill name, role, select avatar, verify validation works |
+| AC-4.3 | Step 2 (Personality) form works with validation | Fill instructions, select model, verify validation works |
+| AC-4.4 | Form submission creates agent via API | Submit form, verify API called, agent created |
+| AC-4.5 | Success state shows after creation | Verify success screen with agent preview |
+| AC-4.6 | Agent appears in roster immediately after creation | Verify agent card appears in Active Roster |
+| AC-4.7 | Dialog closes and returns to dashboard | Click "Done", verify dialog closes, dashboard visible |
 
-**Phase 3 Test Flow:**
+**Test Flow:**
 ```
 1. Click "Hire new agent" button
 2. Fill Step 1: Name "Test Agent", Role "Test Role", select avatar
@@ -357,29 +434,42 @@ curl http://localhost:3000/api/workforce
 
 ---
 
-### Phase 4: Complete Create Flow
+### Phase 5: Complete Create Flow
 
-**Goal:** Add capabilities step, sub-agents support, and error handling.
+**User Value:** Completes the agent creation experience with optional capabilities configuration, manager agent support, and robust error handling. Users can now create fully-featured agents with tools and workflows, set up manager-sub-agent hierarchies, and recover gracefully from errors. This makes agent creation production-ready and user-friendly.
 
-**Changes:**
-1. Create `CapabilitiesStep` component with tools/connections/workflows selection
-2. Create `SubAgentsScreen` component
-3. Add error handling and error state
-4. Add loading states
-5. Integrate sub-agents selection with manager toggle
+**What Users Can Do After This Phase:** Users can create agents with all optional features:
+- Assign tools, connections, and workflows during creation (or skip and add later)
+- Create manager agents that can delegate to sub-agents
+- See clear error messages and retry if something goes wrong
+- Experience smooth loading states during creation
 
-**Phase 4 Acceptance Criteria:**
+**File Impact Analysis:**
+
+| File | Action | Purpose | Lines |
+|------|--------|---------|-------|
+| `app/(pages)/workforce/components/wizard/CapabilitiesStep.tsx` | Create | Step 3: Tools, connections, workflows selection (optional) | ~250 |
+| `app/(pages)/workforce/components/wizard/ToolsSearchInput.tsx` | Create | LLM-powered tools search input (mock data for now) | ~150 |
+| `app/(pages)/workforce/components/SubAgentsScreen.tsx` | Create | Sub-agents selection screen (separate screen, not modal) | ~150 |
+| `app/(pages)/workforce/components/wizard/ErrorState.tsx` | Create | Error handling screen with retry and go back options | ~100 |
+| `app/(pages)/workforce/components/wizard/PersonalityStep.tsx` | Modify | Wire up manager toggle to open SubAgentsScreen | ~20 |
+| `app/(pages)/workforce/components/CreateFromScratchWizard.tsx` | Modify | Add Step 3, sub-agents handling, error handling, loading states | ~100 |
+
+**Acceptance Criteria:**
 
 | # | Criterion | Test Method |
 |---|-----------|-------------|
-| P4.1 | Step 3 (Capabilities) allows selecting tools | Select tools, verify they're included in creation |
-| P4.2 | Step 3 can be skipped | Click "Skip this step", verify agent created without capabilities |
-| P4.3 | Manager toggle shows sub-agents link | Enable toggle, verify link appears |
-| P4.4 | Sub-agents screen opens and works | Click link, select agents, verify saved |
-| P4.5 | Error state shows on API failure | Simulate error, verify error screen |
-| P4.6 | Retry works from error state | Click retry, verify form resubmits |
+| AC-5.1 | Step 3 (Capabilities) allows selecting tools | Select tools, verify they're included in creation |
+| AC-5.2 | Step 3 can be skipped | Click "Skip this step", verify agent created without capabilities |
+| AC-5.3 | Tools search input shows UI (mock data) | Enter text, verify suggestions dropdown appears |
+| AC-5.4 | Manager toggle shows sub-agents link | Enable toggle, verify link appears |
+| AC-5.5 | Sub-agents screen opens and works | Click link, select agents, verify saved |
+| AC-5.6 | Sub-agents empty state shows correctly | Create first agent, enable manager, verify empty state |
+| AC-5.7 | Error state shows on API failure | Simulate error, verify error screen |
+| AC-5.8 | Retry works from error state | Click retry, verify form resubmits |
+| AC-5.9 | Loading states show during API calls | Verify loading indicator during submission |
 
-**Phase 4 Test Flow:**
+**Test Flow:**
 ```
 1. Create agent with capabilities
 2. Select tools, connections, workflows in Step 3
@@ -392,27 +482,37 @@ curl http://localhost:3000/api/workforce
 
 ---
 
-### Phase 5: Integration & Polish
+### Phase 6: Integration & Testing
 
-**Goal:** Ensure all functionality works end-to-end and agent modal works with new agents.
+**User Value:** Ensures the complete system works seamlessly end-to-end. Users can create agents, use them in conversations, assign tools, and have everything work reliably. This phase validates that newly created agents are fully functional and indistinguishable from manually created agents in terms of capabilities.
 
-**Changes:**
-1. Verify agent modal works with newly created agents
-2. Test tool assignment in agent modal
-3. Test chat functionality with new agents
-4. Test workflow execution
-5. Final UI polish and error message improvements
+**What Users Can Do After This Phase:** Users have a complete, production-ready agent creation system:
+- Create agents through the wizard
+- Immediately use agents in chat conversations
+- Assign and use tools seamlessly
+- Have agents remember conversations (memory works)
+- Experience no difference between wizard-created and manually-created agents
 
-**Phase 5 Acceptance Criteria:**
+**File Impact Analysis:**
+
+| File | Action | Purpose | Lines |
+|------|--------|---------|-------|
+| `app/(pages)/workforce/components/agent-modal/` | Verify | Test compatibility with UUID-based agent IDs, modify if needed | TBD |
+| Documentation files | Update | Update any READMEs if implementation details changed | TBD |
+
+**Acceptance Criteria:**
 
 | # | Criterion | Test Method |
 |---|-----------|-------------|
-| P5.1 | Newly created agent works in agent modal (Chat) | Open agent, send message, verify response |
-| P5.2 | Newly created agent works in agent modal (Capabilities) | Open agent, assign tools, verify they save |
-| P5.3 | Tools can be used in chat | Assign Gmail tool, ask agent to send email, verify tool called |
-| P5.4 | All main acceptance criteria (Section 3) pass | Full test suite |
+| AC-6.1 | Newly created agent works in agent modal (Chat tab) | Open agent, send message, verify response |
+| AC-6.2 | Newly created agent works in agent modal (Capabilities tab) | Open agent, assign tools, verify they save |
+| AC-6.3 | Tools can be assigned to new agent | Assign Gmail tools, verify they work in chat |
+| AC-6.4 | Workflows can be assigned to new agent | Assign workflow, verify it's available |
+| AC-6.5 | Memory database created on first use | Create agent, chat with it, verify memory.db created |
+| AC-6.6 | All main acceptance criteria (Section 3) pass | Full test suite from Product Spec |
+| AC-6.7 | No regressions in existing functionality | Verify agent modal still works, chat still works |
 
-**Phase 5 Test Flow (End-to-End):**
+**Test Flow (End-to-End):**
 ```
 1. Create agent with name, role, instructions
 2. Assign Gmail tools in Step 3
