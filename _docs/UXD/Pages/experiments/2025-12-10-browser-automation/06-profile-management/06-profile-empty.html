@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Automation - No Profiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dropdown-enter {
+            animation: fadeIn 0.15s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-md mx-auto">
+        <p class="text-sm text-muted-foreground mb-4">Profile selector dropdown - Empty state</p>
+
+        <!-- Trigger button -->
+        <div class="relative inline-block">
+            <button class="inline-flex items-center justify-center gap-2 h-9 px-3 border bg-white hover:bg-secondary rounded-md text-sm font-medium transition-all shadow-sm text-muted-foreground">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span>No profile</span>
+                <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Empty Dropdown Menu -->
+            <div class="absolute top-full left-0 mt-1 w-80 bg-white rounded-lg border shadow-lg z-50 dropdown-enter">
+                <!-- Empty State Content -->
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 rounded-full bg-secondary mx-auto flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-foreground mb-1">No profiles yet</h3>
+                    <p class="text-xs text-muted-foreground mb-4">
+                        Create a profile to save credentials and cookies for reuse across browser sessions.
+                    </p>
+                    <button class="inline-flex items-center justify-center gap-2 h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Create Profile
+                    </button>
+                </div>
+
+                <!-- Benefits -->
+                <div class="border-t px-4 py-3 bg-secondary/30">
+                    <p class="text-xs font-medium text-foreground mb-2">Why use profiles?</p>
+                    <ul class="space-y-1.5">
+                        <li class="flex items-start gap-2 text-xs text-muted-foreground">
+                            <svg class="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Sign in once, stay logged in across sessions</span>
+                        </li>
+                        <li class="flex items-start gap-2 text-xs text-muted-foreground">
+                            <svg class="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Save credentials for automatic login</span>
+                        </li>
+                        <li class="flex items-start gap-2 text-xs text-muted-foreground">
+                            <svg class="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Configure browser settings per use case</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative: Inline Empty State (for sidebar) -->
+        <div class="mt-12">
+            <p class="text-sm text-muted-foreground mb-4">Alternative: Inline prompt in session creation</p>
+
+            <div class="bg-white rounded-lg border p-4 max-w-sm">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-foreground">No profile selected</h4>
+                        <p class="text-xs text-muted-foreground mt-0.5 mb-3">You'll need to sign in manually each session.</p>
+                        <div class="flex gap-2">
+                            <button class="text-xs text-primary hover:underline">Create profile</button>
+                            <span class="text-xs text-muted-foreground">or</span>
+                            <button class="text-xs text-muted-foreground hover:text-foreground">Continue without</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- First-time user prompt overlay -->
+        <div class="mt-12">
+            <p class="text-sm text-muted-foreground mb-4">First-time user education card:</p>
+
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6 max-w-sm">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-2xl">💡</span>
+                    <h3 class="text-sm font-semibold text-foreground">Pro tip: Use profiles!</h3>
+                </div>
+                <p class="text-sm text-muted-foreground mb-4">
+                    Create a browser profile to save your login credentials. The agent can automatically sign into websites without you typing passwords each time.
+                </p>
+                <div class="flex gap-2">
+                    <button class="flex-1 h-9 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-all">
+                        Create Profile
+                    </button>
+                    <button class="h-9 px-4 border bg-white rounded-lg text-sm font-medium hover:bg-secondary transition-colors">
+                        Maybe Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

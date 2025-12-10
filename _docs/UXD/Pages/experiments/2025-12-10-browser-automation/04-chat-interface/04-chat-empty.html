@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Automation - Chat Empty State</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-foreground">
+    <!-- Chat Panel - Empty State (this would be the right sidebar panel) -->
+    <div class="w-[400px] h-screen border-l bg-white flex flex-col">
+        <!-- Panel Tabs -->
+        <div class="border-b shrink-0">
+            <div class="flex">
+                <button class="flex-1 px-4 py-3 text-sm font-medium text-foreground border-b-2 border-primary">
+                    Chat
+                </button>
+                <button class="flex-1 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground border-b-2 border-transparent">
+                    Action Log
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State Content -->
+        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center mb-4">
+                <span class="text-4xl">🤖</span>
+            </div>
+            <h3 class="text-lg font-semibold text-foreground mb-2">Ready to help!</h3>
+            <p class="text-sm text-muted-foreground mb-6 max-w-xs">
+                Tell me what you want to do in the browser. I'll execute your commands and show you what's happening.
+            </p>
+
+            <!-- Suggestion chips -->
+            <div class="space-y-2 w-full max-w-xs">
+                <p class="text-xs text-muted-foreground uppercase tracking-wide mb-3">Try saying:</p>
+                <button class="w-full text-left px-4 py-3 rounded-lg border hover:bg-secondary hover:border-primary/20 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-foreground">"Navigate to google.com"</span>
+                    </div>
+                </button>
+                <button class="w-full text-left px-4 py-3 rounded-lg border hover:bg-secondary hover:border-primary/20 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-foreground">"Click the Sign In button"</span>
+                    </div>
+                </button>
+                <button class="w-full text-left px-4 py-3 rounded-lg border hover:bg-secondary hover:border-primary/20 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-foreground">"Take a screenshot"</span>
+                    </div>
+                </button>
+                <button class="w-full text-left px-4 py-3 rounded-lg border hover:bg-secondary hover:border-primary/20 transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-foreground">"Extract all text from this page"</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="border-t p-4 shrink-0">
+            <div class="flex items-end gap-2">
+                <div class="flex-1 relative">
+                    <textarea
+                        placeholder="Type a command... e.g., 'Click the login button'"
+                        class="w-full min-h-[44px] max-h-32 px-4 py-3 border rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                        rows="1"
+                    ></textarea>
+                </div>
+                <button class="h-11 w-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-all shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-xs text-muted-foreground mt-2">Press Enter to send, Shift+Enter for new line</p>
+        </div>
+    </div>
+</body>
+</html>

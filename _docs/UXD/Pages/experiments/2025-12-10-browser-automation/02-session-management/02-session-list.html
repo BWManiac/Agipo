@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Automation - Multiple Sessions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        accent: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        destructive: {
+                            DEFAULT: 'rgb(239 68 68)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        success: {
+                            DEFAULT: 'rgb(34 197 94)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        warning: {
+                            DEFAULT: 'rgb(234 179 8)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-foreground h-screen flex flex-col overflow-hidden">
+    <!-- Header -->
+    <header class="bg-white border-b shrink-0 z-10">
+        <div class="px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <a href="#" class="text-muted-foreground hover:text-foreground text-sm">Experiments</a>
+                    <span class="text-muted-foreground">/</span>
+                    <h1 class="text-lg font-semibold">Browser Automation</h1>
+                    <span class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        Experimental
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Profile Selector -->
+                    <div class="relative">
+                        <button class="inline-flex items-center justify-center gap-2 h-9 px-3 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <span>My Work Account</span>
+                            <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- New Session Button -->
+                    <button class="inline-flex items-center justify-center gap-2 h-9 px-4 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-sm font-medium transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        New Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex overflow-hidden">
+        <!-- Sessions Sidebar - Multiple Sessions -->
+        <aside class="w-64 bg-white border-r flex flex-col shrink-0">
+            <div class="p-4 border-b">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-semibold text-foreground">Active Sessions</h2>
+                        <p class="text-xs text-muted-foreground mt-1">3 sessions running</p>
+                    </div>
+                    <button class="text-xs text-destructive hover:underline">End all</button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-2 space-y-1">
+                <!-- Session 1 (Selected) -->
+                <button class="w-full text-left p-3 rounded-lg bg-primary/5 border border-primary/20 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-foreground truncate">Slack Automation</span>
+                        <span class="flex items-center gap-1 text-xs text-success">
+                            <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
+                            Running
+                        </span>
+                    </div>
+                    <div class="text-xs text-muted-foreground truncate">slack.com/messages/general</div>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-xs text-muted-foreground">5 min ago</span>
+                        <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-blue-100 text-blue-700">
+                            Work Account
+                        </span>
+                    </div>
+                </button>
+
+                <!-- Session 2 -->
+                <button class="w-full text-left p-3 rounded-lg hover:bg-secondary transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-foreground truncate">Data Export</span>
+                        <span class="flex items-center gap-1 text-xs text-success">
+                            <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
+                            Running
+                        </span>
+                    </div>
+                    <div class="text-xs text-muted-foreground truncate">location-tool.internal.co</div>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-xs text-muted-foreground">12 min ago</span>
+                        <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-purple-100 text-purple-700">
+                            Personal
+                        </span>
+                    </div>
+                </button>
+
+                <!-- Session 3 (Idle) -->
+                <button class="w-full text-left p-3 rounded-lg hover:bg-secondary transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-foreground truncate">GitHub PR Review</span>
+                        <span class="flex items-center gap-1 text-xs text-warning">
+                            <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
+                            Idle
+                        </span>
+                    </div>
+                    <div class="text-xs text-muted-foreground truncate">github.com/org/repo/pulls</div>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-xs text-muted-foreground">18 min ago</span>
+                        <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-700">
+                            No profile
+                        </span>
+                    </div>
+                </button>
+
+                <!-- Completed Session (History) -->
+                <div class="pt-3 mt-3 border-t">
+                    <p class="text-xs text-muted-foreground mb-2 px-1">Recent</p>
+                    <button class="w-full text-left p-3 rounded-lg hover:bg-secondary transition-all opacity-60">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-medium text-foreground truncate">Email Cleanup</span>
+                            <span class="flex items-center gap-1 text-xs text-muted-foreground">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Done
+                            </span>
+                        </div>
+                        <div class="text-xs text-muted-foreground truncate">gmail.com/inbox</div>
+                        <div class="text-xs text-muted-foreground mt-1">Ended 1 hour ago</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selected Session Footer -->
+            <div class="p-4 border-t bg-secondary/30">
+                <div class="text-xs space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Session ID</span>
+                        <span class="font-mono text-foreground">sess_slack01</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Profile</span>
+                        <span class="text-foreground">My Work Account</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">CDP URL</span>
+                        <button class="text-blue-600 hover:underline">Copy</button>
+                    </div>
+                </div>
+                <button class="w-full mt-3 inline-flex items-center justify-center gap-2 h-8 px-3 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-md text-xs font-medium transition-all">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Terminate Session
+                </button>
+            </div>
+        </aside>
+
+        <!-- Placeholder for Browser + Chat area -->
+        <div class="flex-1 flex items-center justify-center bg-gray-100">
+            <div class="text-center text-muted-foreground">
+                <p class="text-sm">Browser view and chat panel would be here</p>
+                <p class="text-xs mt-1">See 01-playground-main.html for full layout</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

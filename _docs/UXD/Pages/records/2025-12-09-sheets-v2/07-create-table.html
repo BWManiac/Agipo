@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records - Create Table</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        accent: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        destructive: {
+                            DEFAULT: 'rgb(239 68 68)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        card: {
+                            DEFAULT: 'rgb(255 255 255)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50/80 text-foreground min-h-screen flex items-center justify-center p-8">
+    <!-- Modal Overlay -->
+    <div class="fixed inset-0 bg-black/50"></div>
+
+    <!-- Modal -->
+    <div class="relative bg-white rounded-xl border shadow-xl w-full max-w-lg">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b">
+            <h2 class="text-lg font-semibold">Create New Table</h2>
+            <button class="p-1 hover:bg-secondary rounded-md transition-colors">
+                <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 space-y-6">
+            <!-- Table Name -->
+            <div class="space-y-2">
+                <label for="table-name" class="text-sm font-medium text-foreground">
+                    Table Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="table-name"
+                    placeholder="e.g., Customer Leads"
+                    class="w-full h-10 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-2">
+                <label for="table-desc" class="text-sm font-medium text-foreground">
+                    Description <span class="text-xs text-muted-foreground">(optional)</span>
+                </label>
+                <textarea
+                    id="table-desc"
+                    rows="2"
+                    placeholder="What is this table for?"
+                    class="w-full px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                ></textarea>
+            </div>
+
+            <!-- Icon Picker -->
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Icon</label>
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-2xl">
+                        👥
+                    </div>
+                    <button class="h-9 px-3 border rounded-md text-sm font-medium hover:bg-secondary transition-colors">
+                        Change
+                    </button>
+                </div>
+            </div>
+
+            <!-- Initial Columns -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="text-sm font-medium text-foreground">Initial Columns</label>
+                    <button class="text-xs text-primary hover:underline">+ Add column</button>
+                </div>
+
+                <!-- System Columns (disabled) -->
+                <div class="text-xs text-muted-foreground bg-secondary/50 rounded-md px-3 py-2">
+                    System columns (ID, Created, Updated) are added automatically
+                </div>
+
+                <!-- User Columns -->
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <input
+                            type="text"
+                            value="Name"
+                            class="flex-1 h-9 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <select class="h-9 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option selected>Text</option>
+                            <option>Number</option>
+                            <option>Date</option>
+                            <option>Select</option>
+                            <option>Boolean</option>
+                        </select>
+                        <button class="p-2 hover:bg-secondary rounded-md transition-colors">
+                            <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input
+                            type="text"
+                            value="Email"
+                            class="flex-1 h-9 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <select class="h-9 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option selected>Text</option>
+                            <option>Number</option>
+                            <option>Date</option>
+                            <option>Select</option>
+                            <option>Boolean</option>
+                        </select>
+                        <button class="p-2 hover:bg-secondary rounded-md transition-colors">
+                            <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input
+                            type="text"
+                            value="Status"
+                            class="flex-1 h-9 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <select class="h-9 px-3 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option>Text</option>
+                            <option>Number</option>
+                            <option>Date</option>
+                            <option selected>Select</option>
+                            <option>Boolean</option>
+                        </select>
+                        <button class="p-2 hover:bg-secondary rounded-md transition-colors">
+                            <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Access -->
+            <div class="space-y-3">
+                <label class="text-sm font-medium text-foreground">Grant Agent Access</label>
+                <p class="text-xs text-muted-foreground">Select which agents can read and write to this table</p>
+                <div class="space-y-2 max-h-32 overflow-y-auto">
+                    <label class="flex items-center gap-3 p-2 rounded-md hover:bg-secondary cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded border-input" checked />
+                        <div class="w-7 h-7 rounded-md bg-secondary border flex items-center justify-center text-base shrink-0">🧭</div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">Mira Patel</div>
+                            <div class="text-xs text-muted-foreground">Product Manager</div>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-2 rounded-md hover:bg-secondary cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                        <div class="w-7 h-7 rounded-md bg-secondary border flex items-center justify-center text-base shrink-0">⚙️</div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">Noah Reyes</div>
+                            <div class="text-xs text-muted-foreground">Operations</div>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-2 rounded-md hover:bg-secondary cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded border-input" />
+                        <div class="w-7 h-7 rounded-md bg-secondary border flex items-center justify-center text-base shrink-0">💻</div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">Alex Kim</div>
+                            <div class="text-xs text-muted-foreground">Technical Lead</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50 rounded-b-xl">
+            <button class="h-9 px-4 border rounded-md text-sm font-medium hover:bg-secondary transition-colors">
+                Cancel
+            </button>
+            <button class="h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-all">
+                Create Table
+            </button>
+        </div>
+    </div>
+</body>
+</html>

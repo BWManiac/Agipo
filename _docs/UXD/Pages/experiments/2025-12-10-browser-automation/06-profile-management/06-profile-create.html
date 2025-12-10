@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Automation - Create Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        destructive: {
+                            DEFAULT: 'rgb(239 68 68)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-900/50 min-h-screen flex items-center justify-center p-4">
+    <!-- Create Profile Modal -->
+    <div class="w-full max-w-lg bg-white rounded-xl shadow-2xl">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b">
+            <div>
+                <h2 class="text-lg font-semibold text-foreground">Create Browser Profile</h2>
+                <p class="text-sm text-muted-foreground">Save credentials and settings for reuse</p>
+            </div>
+            <button class="p-2 hover:bg-secondary rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-6 space-y-6">
+            <!-- Profile Name & Icon -->
+            <div class="flex gap-4">
+                <!-- Icon Picker -->
+                <div>
+                    <label class="text-sm font-medium text-foreground block mb-2">Icon</label>
+                    <button class="w-16 h-16 rounded-xl border-2 border-dashed border-input hover:border-primary/50 flex items-center justify-center text-3xl bg-secondary/30 transition-colors">
+                        💼
+                    </button>
+                </div>
+                <!-- Profile Name -->
+                <div class="flex-1">
+                    <label class="text-sm font-medium text-foreground block mb-2">Profile Name <span class="text-destructive">*</span></label>
+                    <input
+                        type="text"
+                        placeholder="e.g., My Work Account"
+                        value="My Work Account"
+                        class="w-full h-11 px-4 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    >
+                    <p class="text-xs text-muted-foreground mt-1">Used to identify this profile</p>
+                </div>
+            </div>
+
+            <!-- Credentials Section -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <label class="text-sm font-medium text-foreground">Saved Credentials</label>
+                    <button class="text-xs text-primary hover:underline">+ Add credential</button>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Credential 1 -->
+                    <div class="p-4 border rounded-lg bg-secondary/20">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium">Slack Login</span>
+                            </div>
+                            <button class="p-1 hover:bg-secondary rounded">
+                                <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-muted-foreground block mb-1">Username/Email</label>
+                                <input
+                                    type="text"
+                                    value="john@company.com"
+                                    class="w-full h-9 px-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                >
+                            </div>
+                            <div>
+                                <label class="text-xs text-muted-foreground block mb-1">Password</label>
+                                <div class="relative">
+                                    <input
+                                        type="password"
+                                        value="supersecretpassword"
+                                        class="w-full h-9 px-3 pr-9 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                    >
+                                    <button class="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-secondary rounded">
+                                        <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <label class="text-xs text-muted-foreground block mb-1">Domain (optional)</label>
+                            <input
+                                type="text"
+                                placeholder="e.g., slack.com"
+                                value="slack.com"
+                                class="w-full h-9 px-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Add Credential Button -->
+                    <button class="w-full p-3 border-2 border-dashed rounded-lg text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add another credential
+                    </button>
+                </div>
+            </div>
+
+            <!-- Browser Settings (Collapsible) -->
+            <div class="border rounded-lg">
+                <button class="w-full flex items-center justify-between p-4 text-left">
+                    <div>
+                        <span class="text-sm font-medium text-foreground">Browser Settings</span>
+                        <span class="text-xs text-muted-foreground ml-2">(Optional)</span>
+                    </div>
+                    <svg class="w-5 h-5 text-muted-foreground transform rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <!-- Expanded settings -->
+                <div class="px-4 pb-4 space-y-4 border-t pt-4">
+                    <!-- Proxy Toggle -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-medium text-foreground">Use Proxy</span>
+                            <p class="text-xs text-muted-foreground">Route traffic through a proxy server</p>
+                        </div>
+                        <button class="w-11 h-6 bg-secondary rounded-full relative transition-colors">
+                            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></span>
+                        </button>
+                    </div>
+
+                    <!-- Stealth Mode Toggle -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-medium text-foreground">Stealth Mode</span>
+                            <p class="text-xs text-muted-foreground">Avoid bot detection (requires proxy)</p>
+                        </div>
+                        <button class="w-11 h-6 bg-secondary rounded-full relative transition-colors opacity-50 cursor-not-allowed">
+                            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></span>
+                        </button>
+                    </div>
+
+                    <!-- Viewport -->
+                    <div>
+                        <label class="text-sm font-medium text-foreground block mb-2">Viewport Size</label>
+                        <select class="w-full h-9 px-3 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option>Desktop (1920 x 1080)</option>
+                            <option>Laptop (1366 x 768)</option>
+                            <option>Tablet (768 x 1024)</option>
+                            <option>Mobile (375 x 812)</option>
+                            <option>Custom...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Banner -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex gap-3">
+                    <svg class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-blue-800 font-medium">Cookies will be saved automatically</p>
+                        <p class="text-xs text-blue-600 mt-0.5">When you sign into websites using this profile, cookies will be preserved for future sessions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t bg-secondary/20">
+            <button class="h-10 px-4 border rounded-lg text-sm font-medium hover:bg-secondary transition-colors">
+                Cancel
+            </button>
+            <button class="h-10 px-6 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-all">
+                Create Profile
+            </button>
+        </div>
+    </div>
+</body>
+</html>

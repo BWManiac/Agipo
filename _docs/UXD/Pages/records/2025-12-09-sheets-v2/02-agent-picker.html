@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records - Agent Picker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        accent: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        destructive: {
+                            DEFAULT: 'rgb(239 68 68)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        card: {
+                            DEFAULT: 'rgb(255 255 255)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-foreground h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b shrink-0">
+        <div class="px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <a href="#" class="text-muted-foreground hover:text-foreground text-sm">Records</a>
+                    <span class="text-muted-foreground">/</span>
+                    <h1 class="text-lg font-semibold">Customer Leads</h1>
+                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground">
+                        24 rows
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="inline-flex items-center justify-center gap-2 h-9 px-4 border hover:bg-secondary rounded-md text-sm font-medium transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Column
+                    </button>
+                    <button class="inline-flex items-center justify-center gap-2 h-9 px-4 bg-primary text-primary-foreground hover:opacity-90 rounded-md text-sm font-medium transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Row
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex overflow-hidden">
+        <!-- Chat Sidebar with Agent Picker Open -->
+        <div class="w-80 border-r bg-white flex flex-col shrink-0 relative">
+            <!-- Agent Picker - Dropdown Open State -->
+            <div class="p-4 border-b">
+                <label class="text-xs font-medium text-muted-foreground mb-2 block">Chat with Agent</label>
+                <button class="w-full h-10 px-3 border border-ring ring-2 ring-ring/20 rounded-md text-sm font-medium flex items-center gap-3 bg-white">
+                    <div class="w-7 h-7 rounded-md bg-secondary border flex items-center justify-center text-base shrink-0">
+                        🧭
+                    </div>
+                    <div class="flex-1 text-left">
+                        <div class="font-medium text-sm">Mira Patel</div>
+                        <div class="text-xs text-muted-foreground">Product Manager</div>
+                    </div>
+                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                    </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div class="absolute left-4 right-4 top-[88px] bg-white border rounded-lg shadow-lg z-50 overflow-hidden">
+                    <div class="p-2 border-b">
+                        <input
+                            type="text"
+                            placeholder="Search agents..."
+                            class="w-full h-8 px-3 bg-secondary/50 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                    </div>
+                    <div class="max-h-64 overflow-y-auto">
+                        <!-- Currently Selected -->
+                        <div class="px-2 py-1.5 bg-primary/5 border-l-2 border-primary cursor-pointer">
+                            <div class="flex items-center gap-3 px-2 py-1.5">
+                                <div class="w-8 h-8 rounded-md bg-secondary border flex items-center justify-center text-lg shrink-0">
+                                    🧭
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm">Mira Patel</div>
+                                    <div class="text-xs text-muted-foreground">Product Manager</div>
+                                </div>
+                                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Other Agents -->
+                        <div class="px-2 py-1.5 hover:bg-secondary/50 cursor-pointer">
+                            <div class="flex items-center gap-3 px-2 py-1.5">
+                                <div class="w-8 h-8 rounded-md bg-secondary border flex items-center justify-center text-lg shrink-0">
+                                    ⚙️
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm">Noah Reyes</div>
+                                    <div class="text-xs text-muted-foreground">Operations</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-2 py-1.5 hover:bg-secondary/50 cursor-pointer">
+                            <div class="flex items-center gap-3 px-2 py-1.5">
+                                <div class="w-8 h-8 rounded-md bg-secondary border flex items-center justify-center text-lg shrink-0">
+                                    💻
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm">Alex Kim</div>
+                                    <div class="text-xs text-muted-foreground">Technical Lead</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-2 py-1.5 hover:bg-secondary/50 cursor-pointer">
+                            <div class="flex items-center gap-3 px-2 py-1.5">
+                                <div class="w-8 h-8 rounded-md bg-secondary border flex items-center justify-center text-lg shrink-0">
+                                    🎨
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm">Elena Park</div>
+                                    <div class="text-xs text-muted-foreground">Creative Director</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-2 py-1.5 hover:bg-secondary/50 cursor-pointer">
+                            <div class="flex items-center gap-3 px-2 py-1.5">
+                                <div class="w-8 h-8 rounded-md bg-secondary border flex items-center justify-center text-lg shrink-0">
+                                    📊
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm">Data Analyst</div>
+                                    <div class="text-xs text-muted-foreground">Analytics</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-2 border-t bg-gray-50">
+                        <a href="#" class="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Create new agent
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages (dimmed when picker open) -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 opacity-50">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        Show me all leads from this week
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] bg-secondary rounded-lg px-3 py-2 text-sm">
+                        <p>I found <strong>8 leads</strong> from this week.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input (dimmed) -->
+            <div class="p-4 border-t opacity-50">
+                <div class="flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="Ask about this table..."
+                        class="flex-1 h-10 px-3 bg-background border rounded-md text-sm"
+                        disabled
+                    />
+                    <button class="h-10 w-10 bg-primary text-primary-foreground rounded-md flex items-center justify-center" disabled>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Grid (dimmed when picker open) -->
+        <div class="flex-1 overflow-auto bg-white opacity-50">
+            <table class="w-full border-collapse text-sm">
+                <thead class="sticky top-0 bg-gray-50 z-10">
+                    <tr>
+                        <th class="w-10 px-3 py-3 border-b border-r bg-gray-50">
+                            <input type="checkbox" class="w-4 h-4 rounded border-input" disabled />
+                        </th>
+                        <th class="px-3 py-3 border-b border-r bg-gray-50 text-left font-medium text-muted-foreground text-xs uppercase tracking-wide">ID</th>
+                        <th class="px-3 py-3 border-b border-r bg-gray-50 text-left font-medium text-muted-foreground text-xs uppercase tracking-wide">Name</th>
+                        <th class="px-3 py-3 border-b border-r bg-gray-50 text-left font-medium text-muted-foreground text-xs uppercase tracking-wide">Email</th>
+                        <th class="px-3 py-3 border-b border-r bg-gray-50 text-left font-medium text-muted-foreground text-xs uppercase tracking-wide">Company</th>
+                        <th class="px-3 py-3 border-b border-r bg-gray-50 text-left font-medium text-muted-foreground text-xs uppercase tracking-wide">Status</th>
+                        <th class="px-3 py-3 border-b bg-gray-50 text-left font-medium text-muted-foreground text-xs uppercase tracking-wide">Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="px-3 py-2 border-b border-r"><input type="checkbox" class="w-4 h-4 rounded border-input" disabled /></td>
+                        <td class="px-3 py-2 border-b border-r text-muted-foreground font-mono text-xs">clx9abc01</td>
+                        <td class="px-3 py-2 border-b border-r">John Smith</td>
+                        <td class="px-3 py-2 border-b border-r">john@acme.com</td>
+                        <td class="px-3 py-2 border-b border-r">Acme Corp</td>
+                        <td class="px-3 py-2 border-b border-r">new</td>
+                        <td class="px-3 py-2 border-b text-muted-foreground text-xs">Dec 9, 2025</td>
+                    </tr>
+                    <tr>
+                        <td class="px-3 py-2 border-b border-r"><input type="checkbox" class="w-4 h-4 rounded border-input" disabled /></td>
+                        <td class="px-3 py-2 border-b border-r text-muted-foreground font-mono text-xs">clx9abc02</td>
+                        <td class="px-3 py-2 border-b border-r">Alice Chen</td>
+                        <td class="px-3 py-2 border-b border-r">alice@techco.io</td>
+                        <td class="px-3 py-2 border-b border-r">TechCo</td>
+                        <td class="px-3 py-2 border-b border-r">contacted</td>
+                        <td class="px-3 py-2 border-b text-muted-foreground text-xs">Dec 8, 2025</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t px-6 py-2 shrink-0">
+        <div class="flex justify-between items-center text-xs text-muted-foreground">
+            <div class="flex items-center gap-4">
+                <span>24 rows total</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span>Last saved: Just now</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

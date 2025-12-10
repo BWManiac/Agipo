@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records - Chat States</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                        accent: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        destructive: {
+                            DEFAULT: 'rgb(239 68 68)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        card: {
+                            DEFAULT: 'rgb(255 255 255)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+        .typing-dot {
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-foreground p-8">
+    <h1 class="text-2xl font-bold mb-8">Chat States Reference</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <!-- State 1: Typing Indicator -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Agent Typing</span>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        Add a new lead for Sarah Wilson
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="bg-secondary rounded-lg px-4 py-3">
+                        <div class="flex gap-1.5">
+                            <div class="w-2 h-2 bg-muted-foreground/50 rounded-full typing-dot"></div>
+                            <div class="w-2 h-2 bg-muted-foreground/50 rounded-full typing-dot"></div>
+                            <div class="w-2 h-2 bg-muted-foreground/50 rounded-full typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 2: Tool Executing -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Tool Executing</span>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        Delete all rows with status "inactive"
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] space-y-2">
+                        <!-- Tool Execution Indicator -->
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                            <svg class="w-4 h-4 text-amber-600 spinner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span class="text-amber-700">Executing: sys_table_delete</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 3: Tool Success -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Tool Success</span>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        Add a row for John Smith
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div class="w-4 h-4 rounded bg-green-100 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span>Executed: sys_table_write</span>
+                        </div>
+                        <div class="bg-secondary rounded-lg px-3 py-2 text-sm">
+                            Done! I've added <strong>John Smith</strong> to the table.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 4: Tool Error -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Tool Error</span>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        Update row clx123 to status "approved"
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div class="w-4 h-4 rounded bg-red-100 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <span class="text-red-600">Failed: sys_table_update</span>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-700">
+                            <p class="font-medium">Could not update row</p>
+                            <p class="text-xs mt-1 text-red-600">Row with ID "clx123" not found. The row may have been deleted.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 5: Multiple Tool Calls -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Multiple Tools</span>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        Find all leads from TechCo and mark them as contacted
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] space-y-2">
+                        <!-- First tool -->
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div class="w-4 h-4 rounded bg-green-100 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span>sys_table_read → Found 3 rows</span>
+                        </div>
+                        <!-- Second tool -->
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div class="w-4 h-4 rounded bg-green-100 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span>sys_table_update → Updated 3 rows</span>
+                        </div>
+                        <div class="bg-secondary rounded-lg px-3 py-2 text-sm">
+                            <p>Done! I found <strong>3 leads</strong> from TechCo and updated their status to "contacted":</p>
+                            <ul class="text-xs text-muted-foreground mt-1 space-y-0.5">
+                                <li>• Alice Chen</li>
+                                <li>• Bob Martinez</li>
+                                <li>• Carol Davis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 6: No Agent Selected -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: No Agent</span>
+            </div>
+            <div class="p-4">
+                <div class="h-48 flex flex-col items-center justify-center text-center px-4">
+                    <div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-3">
+                        <svg class="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-medium text-sm mb-1">No agent selected</h3>
+                    <p class="text-xs text-muted-foreground mb-3">Choose an agent to start chatting about this table</p>
+                    <button class="h-8 px-4 bg-primary text-primary-foreground rounded-md text-xs font-medium">
+                        Select Agent
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 7: Agent Thinking (Reading Data) -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Reading Table</span>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        How many leads did we add this week?
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground bg-blue-50 border border-blue-200 rounded-md px-3 py-2">
+                            <svg class="w-4 h-4 text-blue-600 spinner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span class="text-blue-700">Reading table data...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 8: Confirmation Required -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Confirmation</span>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm">
+                        Delete all rows older than 30 days
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[85%]">
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg px-3 py-3 text-sm">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                <div>
+                                    <p class="font-medium text-amber-800">This will delete 12 rows</p>
+                                    <p class="text-xs text-amber-700 mt-1">This action cannot be undone. Are you sure?</p>
+                                    <div class="flex gap-2 mt-3">
+                                        <button class="h-7 px-3 bg-red-600 text-white rounded-md text-xs font-medium hover:bg-red-700">
+                                            Yes, delete
+                                        </button>
+                                        <button class="h-7 px-3 border border-amber-300 rounded-md text-xs font-medium text-amber-800 hover:bg-amber-100">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State 9: Connection Error -->
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="px-4 py-2 bg-gray-50 border-b">
+                <span class="text-xs font-medium text-muted-foreground">State: Connection Error</span>
+            </div>
+            <div class="p-4">
+                <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-center">
+                    <svg class="w-8 h-8 text-red-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="font-medium text-sm text-red-800">Connection lost</p>
+                    <p class="text-xs text-red-600 mt-1">Unable to reach the agent. Please check your connection.</p>
+                    <button class="mt-3 h-8 px-4 bg-red-600 text-white rounded-md text-xs font-medium hover:bg-red-700">
+                        Retry
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
