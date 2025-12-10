@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No Agents Available</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
+        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-semibold text-gray-900 mb-2">No Agents Available</h1>
+      <p class="text-sm text-gray-500">
+        You don't have any agents yet. Finish creating this agent first, then you can assign other agents as sub-agents later.
+      </p>
+    </div>
+
+    <!-- Empty State Content -->
+    <div class="space-y-6">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h2 class="text-sm font-medium text-blue-900 mb-2">What are sub-agents?</h2>
+        <p class="text-sm text-blue-800">
+          Sub-agents are other agents that a manager agent can delegate tasks to. For example, a Product Manager agent might delegate technical tasks to an Engineering Lead agent.
+        </p>
+        <p class="text-sm text-blue-800 mt-2">
+          <strong>Note:</strong> You can configure sub-agents after creating this agent in the agent settings.
+        </p>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="mt-8 pt-6 border-t">
+      <button
+        type="button"
+        onclick="returnToFlow()"
+        class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+      >
+        Continue Creating Agent
+      </button>
+      <button
+        type="button"
+        onclick="cancel()"
+        class="w-full mt-3 px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function returnToFlow() {
+      alert('Returning to Step 2 (Personality)...');
+      // In real implementation:
+      // - Return to Step 2 with isManager still enabled
+      // - User can continue creating the agent
+      // - Sub-agents can be configured later in agent settings
+    }
+
+    function cancel() {
+      alert('Returning to Step 2 (Personality)...');
+      // In real implementation:
+      // - Return to Step 2
+      // - User can disable manager toggle if desired
+    }
+  </script>
+</body>
+</html>
+

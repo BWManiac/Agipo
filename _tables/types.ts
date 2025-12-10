@@ -14,7 +14,7 @@ export type ConnectionToolBinding = {
 };
 
 export type AgentConfig = {
-  id: string;
+  id: string; // UUID v4 format, auto-generated on creation
   name: string;
   role: string;
   avatar: string;
@@ -37,6 +37,17 @@ export type AgentConfig = {
   insights: Array<{ title: string; detail: string; type: "question" | "opportunity" | "risk" }>;
   activities: Array<{ title: string; timestamp: string; summary: string; impact: string }>;
   feedback: Array<{ author: string; comment: string; timestamp: string }>;
+  /**
+   * Whether this agent is a manager that can delegate to sub-agents.
+   * If true, the agent can access and delegate tasks to agents listed in `subAgentIds`.
+   */
+  isManager?: boolean;
+  /**
+   * Array of agent IDs that this manager agent can access as sub-agents.
+   * Only used if `isManager` is true.
+   * Maps to Mastra Agent's `agents` parameter.
+   */
+  subAgentIds?: string[];
 };
 
 export type ToolDefinition = {

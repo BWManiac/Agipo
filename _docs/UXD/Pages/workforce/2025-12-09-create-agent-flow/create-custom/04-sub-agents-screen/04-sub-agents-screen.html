@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Sub-Agents</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .agent-card {
+      transition: all 0.2s;
+    }
+    .agent-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .agent-card.selected {
+      border-color: hsl(var(--primary));
+      background-color: hsl(var(--primary) / 0.05);
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-active {
+      background-color: hsl(142.1 76.2% 36.3% / 0.1);
+      color: hsl(142.1 70.6% 45.3%);
+      border: 1px solid hsl(142.1 76.2% 36.3% / 0.2);
+    }
+    .status-paused {
+      background-color: hsl(var(--muted));
+      color: hsl(var(--muted-foreground));
+      border: 1px solid hsl(var(--border));
+    }
+  </style>
+</head>
+<body class="bg-muted/30 p-8" style="--primary: 221.2 83.2% 53.3%; --accent: 210 40% 96.1%; --muted: 210 40% 96.1%; --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; --foreground: 222.2 84% 4.9%; --muted-foreground: 215.4 16.3% 46.9%;">
+  <div class="max-w-4xl mx-auto bg-background rounded-xl border border-border shadow-sm p-6">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-lg font-semibold text-foreground mb-2">Select Sub-Agents</h1>
+      <p class="text-sm text-muted-foreground">
+        Choose which agents this manager agent can delegate tasks to. You can change this later.
+      </p>
+    </div>
+
+    <!-- Agent List -->
+    <div class="space-y-3 mb-6">
+      <!-- Agent Card 1 -->
+      <label class="agent-card block p-4 rounded-xl border-2 border-border bg-background cursor-pointer transition-all">
+        <div class="flex items-center gap-4">
+          <input
+            type="checkbox"
+            name="sub-agents"
+            value="agent-1"
+            onchange="toggleSelection(this)"
+            class="size-5 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary"
+          />
+          <span class="text-3xl">🧭</span>
+          <div class="flex-1">
+            <div class="flex items-center gap-3">
+              <h3 class="text-base font-semibold text-foreground">Mira Patel</h3>
+              <span class="status-badge status-active">Active</span>
+            </div>
+            <p class="text-sm text-muted-foreground mt-1">Product Manager</p>
+            <p class="text-xs text-muted-foreground mt-1">Synthesizes feedback, prioritizes roadmap items</p>
+          </div>
+        </div>
+      </label>
+
+      <!-- Agent Card 2 -->
+      <label class="agent-card block p-4 rounded-xl border-2 border-border bg-background cursor-pointer transition-all">
+        <div class="flex items-center gap-4">
+          <input
+            type="checkbox"
+            name="sub-agents"
+            value="agent-2"
+            onchange="toggleSelection(this)"
+            class="size-5 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary"
+          />
+          <span class="text-3xl">⚙️</span>
+          <div class="flex-1">
+            <div class="flex items-center gap-3">
+              <h3 class="text-base font-semibold text-foreground">Alex Kim</h3>
+              <span class="status-badge status-active">Active</span>
+            </div>
+            <p class="text-sm text-muted-foreground mt-1">Engineering Lead</p>
+            <p class="text-xs text-muted-foreground mt-1">Monitors sprint health, reviews technical debt</p>
+          </div>
+        </div>
+      </label>
+
+      <!-- Agent Card 3 -->
+      <label class="agent-card block p-4 rounded-xl border-2 border-border bg-background cursor-pointer transition-all">
+        <div class="flex items-center gap-4">
+          <input
+            type="checkbox"
+            name="sub-agents"
+            value="agent-3"
+            onchange="toggleSelection(this)"
+            class="size-5 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary"
+          />
+          <span class="text-3xl">📊</span>
+          <div class="flex-1">
+            <div class="flex items-center gap-3">
+              <h3 class="text-base font-semibold text-foreground">Noah Reyes</h3>
+              <span class="status-badge status-paused">Paused</span>
+            </div>
+            <p class="text-sm text-muted-foreground mt-1">Marketing Lead</p>
+            <p class="text-xs text-muted-foreground mt-1">Tracks campaign performance, analyzes metrics</p>
+          </div>
+        </div>
+      </label>
+
+      <!-- Agent Card 4 -->
+      <label class="agent-card block p-4 rounded-xl border-2 border-border bg-background cursor-pointer transition-all">
+        <div class="flex items-center gap-4">
+          <input
+            type="checkbox"
+            name="sub-agents"
+            value="agent-4"
+            onchange="toggleSelection(this)"
+            class="size-5 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary"
+          />
+          <span class="text-3xl">💼</span>
+          <div class="flex-1">
+            <div class="flex items-center gap-3">
+              <h3 class="text-base font-semibold text-foreground">Elena Park</h3>
+              <span class="status-badge status-active">Active</span>
+            </div>
+            <p class="text-sm text-muted-foreground mt-1">Support Lead</p>
+            <p class="text-xs text-muted-foreground mt-1">Handles customer inquiries and support tickets</p>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Selection Summary -->
+    <div id="selection-summary" class="mb-6 p-4 rounded-md border border-border bg-muted/30 hidden">
+      <p class="text-sm text-foreground">
+        <strong id="selected-count">0</strong> agent(s) selected
+      </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-2 pt-4 border-t border-border">
+      <button
+        type="button"
+        onclick="cancel()"
+        class="h-9 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        onclick="save()"
+        class="h-9 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-primary/90 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function toggleSelection(checkbox) {
+      const card = checkbox.closest('.agent-card');
+      
+      if (checkbox.checked) {
+        card.classList.add('selected');
+      } else {
+        card.classList.remove('selected');
+      }
+
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const checkboxes = document.querySelectorAll('input[name="sub-agents"]:checked');
+      const summary = document.getElementById('selection-summary');
+      const count = document.getElementById('selected-count');
+
+      if (checkboxes.length > 0) {
+        summary.classList.remove('hidden');
+        count.textContent = checkboxes.length;
+      } else {
+        summary.classList.add('hidden');
+      }
+    }
+
+    function save() {
+      const selected = Array.from(document.querySelectorAll('input[name="sub-agents"]:checked'))
+        .map(cb => cb.value);
+      
+      alert(`Selected ${selected.length} sub-agent(s). Returning to Step 2...`);
+      // In real implementation, this would return to Step 2 with selected agent IDs
+    }
+
+    function cancel() {
+      if (confirm('Cancel sub-agents selection? Any changes will be discarded.')) {
+        // In real implementation, this would return to Step 2 without changes
+        alert('Returning to Step 2...');
+      }
+    }
+
+    // Click on card toggles checkbox
+    document.querySelectorAll('.agent-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.type !== 'checkbox') {
+          const checkbox = card.querySelector('input[type="checkbox"]');
+          checkbox.checked = !checkbox.checked;
+          toggleSelection(checkbox);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

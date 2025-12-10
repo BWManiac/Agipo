@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Agent - Step 3: Capabilities</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .suggestions-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: hsl(var(--background));
+      border: 1px solid hsl(var(--border));
+      border-radius: 0.375rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 10;
+      margin-top: 0.25rem;
+    }
+    .suggestion-item {
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .suggestion-item:hover {
+      background-color: hsl(var(--accent));
+    }
+    .selected-tool-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background-color: hsl(var(--primary) / 0.1);
+      border: 1px solid hsl(var(--primary) / 0.3);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body class="bg-muted/30 p-8" style="--primary: 221.2 83.2% 53.3%; --accent: 210 40% 96.1%; --muted: 210 40% 96.1%; --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; --foreground: 222.2 84% 4.9%; --muted-foreground: 215.4 16.3% 46.9%;">
+  <div class="max-w-2xl mx-auto bg-background rounded-xl border border-border shadow-sm p-6">
+    <!-- Step Indicator -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h1 class="text-lg font-semibold text-foreground">Create Agent</h1>
+        <span class="text-sm text-muted-foreground">Step 3 of 3</span>
+      </div>
+      <div class="bg-primary/20 relative h-2 w-full overflow-hidden rounded-full">
+        <div class="bg-primary h-full transition-all" style="width: 100%"></div>
+      </div>
+    </div>
+
+    <!-- Skip Button -->
+    <div class="mb-6">
+      <button
+        type="button"
+        onclick="skipStep()"
+        class="w-full h-9 rounded-md border-2 border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        Skip this step
+      </button>
+      <p class="mt-2 text-xs text-muted-foreground text-center">You can add capabilities later in the agent settings</p>
+    </div>
+
+    <!-- Form -->
+    <form class="space-y-6">
+      <!-- Tools Search -->
+      <div class="space-y-2">
+        <label for="tools-search" class="text-sm font-medium text-foreground">
+          Search Tools <span class="text-xs text-muted-foreground">(optional)</span>
+        </label>
+        <div class="relative">
+          <input
+            type="text"
+            id="tools-search"
+            name="tools-search"
+            placeholder="Describe what capabilities this agent needs... (e.g., 'send emails and manage calendar')"
+            oninput="searchTools(this.value)"
+            class="h-9 w-full rounded-md border border-input bg-transparent pl-10 pr-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 placeholder:text-muted-foreground"
+          />
+          <svg class="absolute left-3 top-2.5 size-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <div id="suggestions" class="hidden suggestions-dropdown"></div>
+        </div>
+        <p class="text-xs text-muted-foreground">
+          💡 <strong>Note:</strong> LLM-powered search will be implemented later. This shows the intended experience.
+        </p>
+      </div>
+
+      <!-- Selected Tools Preview -->
+      <div id="selected-tools" class="hidden space-y-2">
+        <label class="text-sm font-medium text-foreground">Selected Tools</label>
+        <div id="selected-tools-list" class="flex flex-wrap gap-2 p-4 rounded-md border border-border bg-muted/30"></div>
+      </div>
+
+      <!-- Custom Tools Section -->
+      <div class="rounded-md border border-border p-4">
+        <h3 class="text-sm font-medium text-foreground mb-1">Custom Tools</h3>
+        <p class="text-xs text-muted-foreground mb-3">Tools created specifically for your workflows</p>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="size-4 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary" />
+            <span class="text-sm text-foreground">Requirements Digest</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="size-4 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary" />
+            <span class="text-sm text-foreground">Launch Tracker</span>
+          </label>
+        </div>
+        <button type="button" class="mt-3 text-sm text-primary hover:text-primary/90">+ Add custom tool</button>
+      </div>
+
+      <!-- Connection Tools Section -->
+      <div class="rounded-md border border-border p-4">
+        <h3 class="text-sm font-medium text-foreground mb-1">Connection Tools</h3>
+        <p class="text-xs text-muted-foreground mb-3">Tools from connected accounts (Gmail, Slack, etc.)</p>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="size-4 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary" />
+            <span class="text-sm text-foreground">Gmail - Send Email</span>
+            <span class="text-xs text-muted-foreground ml-auto">gmail</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="size-4 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary" />
+            <span class="text-sm text-foreground">Gmail - Create Draft</span>
+            <span class="text-xs text-muted-foreground ml-auto">gmail</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="size-4 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary" />
+            <span class="text-sm text-foreground">Browser - Navigate</span>
+            <span class="text-xs text-muted-foreground ml-auto">browser_tool</span>
+          </label>
+        </div>
+        <button type="button" class="mt-3 text-sm text-primary hover:text-primary/90">+ Add connection tool</button>
+      </div>
+
+      <!-- Workflows Section -->
+      <div class="rounded-md border border-border p-4">
+        <h3 class="text-sm font-medium text-foreground mb-1">Workflows</h3>
+        <p class="text-xs text-muted-foreground mb-3">Multi-step workflows the agent can execute</p>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="size-4 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary" />
+            <span class="text-sm text-foreground">Weekly Voice of Customer Digest</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" class="size-4 shrink-0 rounded-[4px] border border-input bg-transparent shadow-xs transition-shadow outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary" />
+            <span class="text-sm text-foreground">Launch-critical Risk Tracker</span>
+          </label>
+        </div>
+        <button type="button" class="mt-3 text-sm text-primary hover:text-primary/90">+ Add workflow</button>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-between gap-2 pt-4 border-t border-border">
+        <button
+          type="button"
+          class="h-9 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          ← Previous
+        </button>
+        <button
+          type="submit"
+          class="h-9 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-primary/90 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          Create Agent
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const mockSuggestions = [
+      { id: 'gmail-send', name: 'Gmail - Send Email', description: 'Send emails via Gmail', toolkit: 'gmail' },
+      { id: 'gmail-draft', name: 'Gmail - Create Draft', description: 'Create email drafts', toolkit: 'gmail' },
+      { id: 'browser-navigate', name: 'Browser - Navigate', description: 'Navigate to web pages', toolkit: 'browser_tool' },
+      { id: 'slack-send', name: 'Slack - Send Message', description: 'Send messages to Slack channels', toolkit: 'slack' },
+      { id: 'calendar-create', name: 'Calendar - Create Event', description: 'Create calendar events', toolkit: 'calendar' },
+    ];
+
+    let selectedTools = [];
+
+    function searchTools(query) {
+      const suggestionsDiv = document.getElementById('suggestions');
+      
+      if (query.length < 2) {
+        suggestionsDiv.classList.add('hidden');
+        return;
+      }
+
+      const filtered = mockSuggestions.filter(tool =>
+        tool.name.toLowerCase().includes(query.toLowerCase()) ||
+        tool.description.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        suggestionsDiv.classList.add('hidden');
+        return;
+      }
+
+      suggestionsDiv.innerHTML = filtered.map(tool => `
+        <div class="suggestion-item" onclick="selectTool('${tool.id}', '${tool.name}')">
+          <div class="font-medium text-sm text-foreground">${tool.name}</div>
+          <div class="text-xs text-muted-foreground">${tool.description}</div>
+          <div class="text-xs text-muted-foreground mt-1">${tool.toolkit}</div>
+        </div>
+      `).join('');
+
+      suggestionsDiv.classList.remove('hidden');
+    }
+
+    function selectTool(id, name) {
+      if (selectedTools.find(t => t.id === id)) return;
+
+      selectedTools.push({ id, name });
+      updateSelectedTools();
+      document.getElementById('tools-search').value = '';
+      document.getElementById('suggestions').classList.add('hidden');
+    }
+
+    function removeTool(id) {
+      selectedTools = selectedTools.filter(t => t.id !== id);
+      updateSelectedTools();
+    }
+
+    function updateSelectedTools() {
+      const container = document.getElementById('selected-tools');
+      const list = document.getElementById('selected-tools-list');
+
+      if (selectedTools.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      list.innerHTML = selectedTools.map(tool => `
+        <span class="selected-tool-chip">
+          ${tool.name}
+          <button type="button" onclick="removeTool('${tool.id}')" class="text-primary hover:text-primary/90">
+            ×
+          </button>
+        </span>
+      `).join('');
+    }
+
+    function skipStep() {
+      if (confirm('Skip capabilities configuration? You can add them later in agent settings.')) {
+        // Proceed to create agent
+        alert('Creating agent without capabilities...');
+      }
+    }
+
+    // Close suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      const searchInput = document.getElementById('tools-search');
+      const suggestions = document.getElementById('suggestions');
+      
+      if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+        suggestions.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

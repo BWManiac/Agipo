@@ -46,44 +46,6 @@ export function WorkforceDashboard() {
 
   return (
     <div className="space-y-8">
-      <header className="rounded-2xl border border-border bg-background px-6 py-8 shadow-sm">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-3">
-            <span className="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-              Workforce Hub
-            </span>
-            <h1 className="text-3xl font-bold tracking-tight">Manage your AI workforce</h1>
-            <p className="text-sm text-muted-foreground">
-              Review hired agents, monitor outcomes, and collaborate with them just like teammates.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">Coverage: Product, Marketing, Support</Badge>
-              <Badge variant="secondary">Profile-linked context enabled</Badge>
-            </div>
-          </div>
-          <div className="flex flex-col items-start gap-3 md:items-end">
-            <Button size="lg">Hire new agent</Button>
-            <Link href="/profile" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
-              View context profile →
-            </Link>
-          </div>
-        </div>
-        <Separator className="my-6" />
-        <div className="grid gap-4 md:grid-cols-3">
-          {metrics.map((metric) => (
-            <Card key={metric.label} className="border-border/80">
-              <CardContent className="space-y-2 p-5">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  {metric.label}
-                </div>
-                <div className="text-2xl font-semibold text-foreground">{metric.value}</div>
-                <div className="text-xs text-muted-foreground">{metric.helper}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </header>
-
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Active roster</h2>
@@ -153,6 +115,44 @@ export function WorkforceDashboard() {
           ))}
         </div>
       </section>
+
+      <header className="rounded-2xl border border-border bg-background px-6 py-8 shadow-sm">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-3">
+            <span className="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+              Workforce Hub
+            </span>
+            <h1 className="text-3xl font-bold tracking-tight">Manage your AI workforce</h1>
+            <p className="text-sm text-muted-foreground">
+              Review hired agents, monitor outcomes, and collaborate with them just like teammates.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary">Coverage: Product, Marketing, Support</Badge>
+              <Badge variant="secondary">Profile-linked context enabled</Badge>
+            </div>
+          </div>
+          <div className="flex flex-col items-start gap-3 md:items-end">
+            <Button size="lg">Hire new agent</Button>
+            <Link href="/profile" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
+              View context profile →
+            </Link>
+          </div>
+        </div>
+        <Separator className="my-6" />
+        <div className="grid gap-4 md:grid-cols-3">
+          {metrics.map((metric) => (
+            <Card key={metric.label} className="border-border/80">
+              <CardContent className="space-y-2 p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {metric.label}
+                </div>
+                <div className="text-2xl font-semibold text-foreground">{metric.value}</div>
+                <div className="text-xs text-muted-foreground">{metric.helper}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </header>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">

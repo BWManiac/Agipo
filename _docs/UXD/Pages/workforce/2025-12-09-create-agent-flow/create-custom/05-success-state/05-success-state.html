@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Created Successfully</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-muted/30 p-8" style="--primary: 221.2 83.2% 53.3%; --accent: 210 40% 96.1%; --muted: 210 40% 96.1%; --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; --foreground: 222.2 84% 4.9%; --muted-foreground: 215.4 16.3% 46.9%; --destructive: 0 84.2% 60.2%;">
+  <div class="max-w-2xl mx-auto bg-background rounded-xl border border-border shadow-sm p-6">
+    <!-- Success Icon & Message -->
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center size-16 rounded-full bg-emerald-100 mb-4">
+        <svg class="size-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h1 class="text-lg font-semibold text-foreground mb-2">Agent Created Successfully!</h1>
+      <p class="text-sm text-muted-foreground">Your agent "<span id="agent-name" class="font-medium text-foreground">Mira Patel</span>" is ready to use.</p>
+    </div>
+
+    <!-- Agent Card Preview -->
+    <div class="mb-6 p-6 rounded-xl border border-border bg-muted/30">
+      <div class="flex items-start gap-4">
+        <span class="text-4xl" id="agent-avatar">🧭</span>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-1">
+            <h2 class="text-base font-semibold text-foreground" id="agent-name-card">Mira Patel</h2>
+            <span class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+              Active
+            </span>
+          </div>
+          <p class="text-sm text-muted-foreground mb-2" id="agent-role">Product Manager</p>
+          <p class="text-sm text-foreground" id="agent-description">
+            Synthesizes feedback, prioritizes roadmap items, and keeps delivery aligned with business goals.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-6">
+      <h3 class="text-sm font-medium text-foreground mb-3">What would you like to do next?</h3>
+      <div class="space-y-2">
+        <button
+          type="button"
+          onclick="openAgent('overview')"
+          class="w-full h-9 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-primary/90 text-left flex items-center justify-between outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          <div>
+            <div class="font-medium">Open Agent</div>
+            <div class="text-xs text-primary-foreground/80">View agent overview and details</div>
+          </div>
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          onclick="openAgent('capabilities')"
+          class="w-full h-9 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-primary/90 text-left flex items-center justify-between outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          <div>
+            <div class="font-medium">Configure Capabilities</div>
+            <div class="text-xs text-primary-foreground/80">Add tools, connections, and workflows</div>
+          </div>
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          onclick="openAgent('chat')"
+          class="w-full h-9 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-primary/90 text-left flex items-center justify-between outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          <div>
+            <div class="font-medium">Start Chatting</div>
+            <div class="text-xs text-primary-foreground/80">Begin a conversation with your agent</div>
+          </div>
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Done Button -->
+    <div class="pt-4 border-t border-border">
+      <button
+        type="button"
+        onclick="done()"
+        class="w-full h-9 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        Done
+      </button>
+      <p class="mt-2 text-xs text-muted-foreground text-center">
+        Your agent will appear in the workforce roster
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // In real implementation, these would use the actual agent data
+    function openAgent(tab) {
+      const agentName = document.getElementById('agent-name').textContent;
+      alert(`Opening agent "${agentName}" in ${tab} tab...`);
+      // In real implementation:
+      // - Close create agent modal
+      // - Open agent modal with the new agent
+      // - Navigate to specified tab
+    }
+
+    function done() {
+      alert('Returning to workforce page. Agent will appear in the roster.');
+      // In real implementation:
+      // - Close create agent modal
+      // - Return to workforce dashboard
+      // - Agent appears in roster automatically
+    }
+  </script>
+</body>
+</html>

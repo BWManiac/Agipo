@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Creation Failed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-muted/30 p-8" style="--primary: 221.2 83.2% 53.3%; --accent: 210 40% 96.1%; --muted: 210 40% 96.1%; --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; --foreground: 222.2 84% 4.9%; --muted-foreground: 215.4 16.3% 46.9%; --destructive: 0 84.2% 60.2%;">
+  <div class="max-w-2xl mx-auto bg-background rounded-xl border border-border shadow-sm p-6">
+    <!-- Error Icon & Message -->
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center size-16 rounded-full bg-destructive/10 mb-4">
+        <svg class="size-8 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </div>
+      <h1 class="text-lg font-semibold text-foreground mb-2">Agent Creation Failed</h1>
+      <p class="text-sm text-muted-foreground">We couldn't create your agent. Please try again.</p>
+    </div>
+
+    <!-- Error Details -->
+    <div class="mb-6 p-4 rounded-md border border-destructive/20 bg-destructive/5">
+      <h2 class="text-sm font-medium text-foreground mb-2">Error Details</h2>
+      <p class="text-sm text-foreground" id="error-message">
+        An unexpected error occurred while creating the agent. Please check your connection and try again.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="space-y-2">
+      <button
+        type="button"
+        onclick="tryAgain()"
+        class="w-full h-9 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-primary/90 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        Try Again
+      </button>
+      <button
+        type="button"
+        onclick="goBack()"
+        class="w-full h-9 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        Go Back to Form
+      </button>
+      <button
+        type="button"
+        onclick="cancel()"
+        class="w-full h-9 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function tryAgain() {
+      alert('Retrying agent creation...');
+      // In real implementation:
+      // - Resubmit the form data
+      // - Show loading state
+    }
+
+    function goBack() {
+      alert('Returning to form...');
+      // In real implementation:
+      // - Return to Step 3 (Capabilities) or last completed step
+      // - Preserve form data
+    }
+
+    function cancel() {
+      alert('Cancelling agent creation...');
+      // In real implementation:
+      // - Close modal
+      // - Return to workforce page
+      // - Discard form data
+    }
+  </script>
+</body>
+</html>
