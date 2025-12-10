@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +12,7 @@ interface BlockHandleProps {
 
 /**
  * Block Handle Component
- * 
+ *
  * Shows a drag handle on hover for block reordering.
  * Phase 3: Basic hover-only handle (full drag-and-drop in future enhancement)
  */
@@ -23,16 +22,12 @@ export function BlockHandle({
   onDragEnd,
   className,
 }: BlockHandleProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div
       className={cn(
         "absolute left-0 top-0 h-full flex items-center opacity-0 group-hover:opacity-100 transition-opacity",
         className
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <button
         type="button"
@@ -40,6 +35,7 @@ export function BlockHandle({
         aria-label="Drag to reorder"
         onMouseDown={onDragStart}
         onMouseUp={onDragEnd}
+        data-block-id={blockId}
       >
         <GripVertical className="w-4 h-4" />
       </button>

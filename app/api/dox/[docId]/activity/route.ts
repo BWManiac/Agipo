@@ -1,13 +1,33 @@
 /**
  * Activity API Route
- * 
+ *
  * GET /api/dox/[docId]/activity
  * Get activity log for a document.
+ *
+ * Activity is derived from version history - each version creates an "edit" activity.
  */
 
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { readDocument } from "../../services/document-storage";
+import { listVersions } from "../../services/version-manager";
+
+interface Activity {
+  id: string;
+  type: "created" | "edited" | "restored" | "agent_edited";
+  actor: {
+    type: "user" | "agent";
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  timestamp: string;
+  summary: string;
+  metadata?: {
+    versionId?: string;
+    wordsDelta?: number;
+  };
+}
 
 export async function GET(
   request: Request,
@@ -33,21 +53,54 @@ export async function GET(
       );
     }
 
-    // TODO: Load from activity.json file or generate from versions
-    // For Phase 7, return empty array
-    const activities: Array<{
-      id: string;
-      type: string;
-      actor: { type: string; id: string; name: string; avatar?: string };
-      timestamp: string;
-      summary: string;
-    }> = [];
+    // Generate activity from version history
+    const versions = await listVersions(docId);
+    const activities: Activity[] = versions.map((version, index) => {
+      const isFirst = index === versions.length - 1; // Oldest version
+      const isAgentEdit = version.createdBy.type === "agent";
 
+      // Determine activity type
+      let type: Activity["type"];
+      if (isFirst) {
+        type = "created";
+      } else if (isAgentEdit) {
+        type = "agent_edited";
+      } else {
+        type = "edited";
+      }
+
+      // Generate summary based on word delta
+      let summary: string;
+      if (isFirst) {
+        summary = "Created document";
+      } else if (version.wordsDelta > 0) {
+        summary = `Added ${version.wordsDelta} words`;
+      } else if (version.wordsDelta < 0) {
+        summary = `Removed ${Math.abs(version.wordsDelta)} words`;
+      } else {
+        summary = "Made changes";
+      }
+
+      return {
+        id: `activity-${version.id}`,
+        type,
+        actor: version.createdBy,
+        timestamp: version.createdAt,
+        summary,
+        metadata: {
+          versionId: version.id,
+          wordsDelta: version.wordsDelta,
+        },
+      };
+    });
+
+    // Apply filter
     const filtered =
       filter === "all"
         ? activities
         : activities.filter((a) => a.actor.type === filter);
 
+    // Apply pagination
     const paginated = filtered.slice(offset, offset + limit);
 
     return NextResponse.json({

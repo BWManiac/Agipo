@@ -40,7 +40,8 @@ export default function DocumentPage() {
       }
       store.setProperties(document.properties);
     }
-  }, [document, store]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [document]); // Only re-run when document changes, not store
 
   // Cleanup on unmount
   useEffect(() => {

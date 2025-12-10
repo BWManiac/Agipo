@@ -216,26 +216,53 @@ export function buildDocumentTools(docId: string): Record<string, Tool<unknown, 
             type: "string",
             description: "Replacement text",
           },
+          replaceAll: {
+            type: "boolean",
+            description: "Replace all occurrences (default: true)",
+          },
         },
         required: ["oldText", "newText"],
       },
       execute: async ({
         oldText,
         newText,
+        replaceAll = true,
       }: {
         oldText: string;
         newText: string;
+        replaceAll?: boolean;
       }) => {
         const doc = await readDocument(docId);
         if (!doc) {
           return { error: "Document not found" };
         }
 
-        // Simple text replacement for Phase 5
-        const newContent = doc.content.replace(oldText, newText);
+        // Check if text exists before replacing
+        if (!doc.content.includes(oldText)) {
+          return { error: "Text not found in document", oldText };
+        }
+
+        // Use regex with global flag to replace all occurrences
+        let newContent: string;
+        let replacementCount: number;
+        if (replaceAll) {
+          const escapedOldText = oldText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const regex = new RegExp(escapedOldText, "g");
+          const matches = doc.content.match(regex);
+          replacementCount = matches ? matches.length : 0;
+          newContent = doc.content.replace(regex, newText);
+        } else {
+          newContent = doc.content.replace(oldText, newText);
+          replacementCount = 1;
+        }
+
         await writeDocument(docId, { content: newContent });
 
-        return { success: true, message: "Content replaced" };
+        return {
+          success: true,
+          message: `Replaced ${replacementCount} occurrence(s)`,
+          replacementCount,
+        };
       },
     }),
     sys_doc_delete: createTool({
@@ -247,19 +274,51 @@ export function buildDocumentTools(docId: string): Record<string, Tool<unknown, 
             type: "string",
             description: "Text to delete",
           },
+          deleteAll: {
+            type: "boolean",
+            description: "Delete all occurrences (default: true)",
+          },
         },
         required: ["text"],
       },
-      execute: async ({ text }: { text: string }) => {
+      execute: async ({
+        text,
+        deleteAll = true,
+      }: {
+        text: string;
+        deleteAll?: boolean;
+      }) => {
         const doc = await readDocument(docId);
         if (!doc) {
           return { error: "Document not found" };
         }
 
-        const newContent = doc.content.replace(text, "");
+        // Check if text exists before deleting
+        if (!doc.content.includes(text)) {
+          return { error: "Text not found in document", text };
+        }
+
+        // Use regex with global flag to delete all occurrences
+        let newContent: string;
+        let deletionCount: number;
+        if (deleteAll) {
+          const escapedText = text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const regex = new RegExp(escapedText, "g");
+          const matches = doc.content.match(regex);
+          deletionCount = matches ? matches.length : 0;
+          newContent = doc.content.replace(regex, "");
+        } else {
+          newContent = doc.content.replace(text, "");
+          deletionCount = 1;
+        }
+
         await writeDocument(docId, { content: newContent });
 
-        return { success: true, message: "Content deleted" };
+        return {
+          success: true,
+          message: `Deleted ${deletionCount} occurrence(s)`,
+          deletionCount,
+        };
       },
     }),
     sys_doc_get_selection: createTool({

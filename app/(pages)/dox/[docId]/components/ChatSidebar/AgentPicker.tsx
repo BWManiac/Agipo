@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useDocsStore } from "../../store";
 import {
   Select,

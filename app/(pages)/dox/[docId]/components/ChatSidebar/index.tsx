@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useDocsStore } from "../../store";
 import { ChatArea } from "./ChatArea";
 import { ChatEmpty } from "./ChatEmpty";

@@ -1,6 +1,6 @@
 /**
  * Access API Route
- * 
+ *
  * GET /api/dox/[docId]/access
  * Get access information for a document.
  */
@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { readDocument } from "../../services/document-storage";
+import { getAgentById } from "@/_tables/agents";
 
 export async function GET(
   request: Request,
@@ -30,21 +31,25 @@ export async function GET(
     }
 
     // Extract agent access from properties (stored in frontmatter)
-    const agentAccess = (document.properties.agentAccess as Array<{
-      agentId: string;
-      permission: string;
-      grantedAt: string;
-    }>) || [];
+    const agentAccess =
+      (document.properties.agentAccess as Array<{
+        agentId: string;
+        permission: string;
+        grantedAt: string;
+      }>) || [];
 
-    // Format agent access
-    const agents = agentAccess.map((access) => ({
-      id: access.agentId,
-      name: access.agentId, // TODO: Fetch agent name
-      avatar: "",
-      permission: access.permission as "read" | "read-write",
-      grantedAt: access.grantedAt,
-      grantedBy: userId,
-    }));
+    // Format agent access with agent name lookup
+    const agents = agentAccess.map((access) => {
+      const agent = getAgentById(access.agentId);
+      return {
+        id: access.agentId,
+        name: agent?.name || access.agentId,
+        avatar: agent?.avatar || "",
+        permission: access.permission as "read" | "read-write",
+        grantedAt: access.grantedAt,
+        grantedBy: userId,
+      };
+    });
 
     return NextResponse.json({
       agents,

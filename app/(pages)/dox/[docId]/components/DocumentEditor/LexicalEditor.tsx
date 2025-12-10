@@ -23,7 +23,6 @@ import { $getRoot, $createParagraphNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import type { EditorState } from "lexical";
 import { useDocsStore } from "../../store";
-import { markdownToLexical } from "@/app/api/dox/services/markdown-parser";
 
 const editorTheme = {
   paragraph: "mb-2",

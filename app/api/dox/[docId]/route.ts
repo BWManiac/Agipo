@@ -17,11 +17,21 @@ import {
 import { markdownToLexical } from "../services/markdown-parser";
 import { generateOutline } from "../services/outline-generator";
 
-const UpdateDocumentSchema = z.object({
-  title: z.string().optional(),
-  content: z.string().optional(),
-  properties: z.record(z.string(), z.unknown()).optional(),
-});
+const UpdateDocumentSchema = z
+  .object({
+    title: z.string().optional(),
+    content: z.string().optional(),
+    properties: z.record(z.string(), z.unknown()).optional(),
+  })
+  .refine(
+    (data) =>
+      data.title !== undefined ||
+      data.content !== undefined ||
+      data.properties !== undefined,
+    {
+      message: "At least one field (title, content, or properties) must be provided",
+    }
+  );
 
 export async function GET(
   request: Request,
