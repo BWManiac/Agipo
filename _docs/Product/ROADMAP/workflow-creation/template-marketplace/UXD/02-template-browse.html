@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Marketplace - Browse Templates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'filter-apply': 'filterApply 0.3s ease-out',
+                        'search-focus': 'searchFocus 0.2s ease-out',
+                        'card-appear': 'cardAppear 0.4s ease-out',
+                        'results-update': 'resultsUpdate 0.5s ease-out',
+                        'tag-select': 'tagSelect 0.2s ease-out',
+                    },
+                    keyframes: {
+                        filterApply: {
+                            '0%': { backgroundColor: 'rgb(219 234 254)', transform: 'scale(1.02)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', transform: 'scale(1)' },
+                        },
+                        searchFocus: {
+                            '0%': { borderColor: 'rgb(229 231 235)', boxShadow: '0 0 0 0 rgba(59, 130, 246, 0)' },
+                            '100%': { borderColor: 'rgb(59 130 246)', boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' },
+                        },
+                        cardAppear: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        resultsUpdate: {
+                            '0%': { opacity: '0.5' },
+                            '100%': { opacity: '1' },
+                        },
+                        tagSelect: {
+                            '0%': { backgroundColor: 'rgb(243 244 246)', borderColor: 'rgb(229 231 235)' },
+                            '100%': { backgroundColor: 'rgb(219 234 254)', borderColor: 'rgb(59 130 246)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Template Marketplace</h1>
+                    <nav class="hidden md:flex items-center gap-6">
+                        <a href="#" class="text-sm text-muted-foreground hover:text-foreground">Home</a>
+                        <a href="#" class="text-sm font-medium text-blue-600">Browse</a>
+                        <a href="#" class="text-sm text-muted-foreground hover:text-foreground">Collections</a>
+                        <a href="#" class="text-sm text-muted-foreground hover:text-foreground">My Templates</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        📤 Publish Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <section class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="max-w-2xl mx-auto">
+                <div class="relative">
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" placeholder="Search templates, categories, or authors..." 
+                           class="w-full pl-12 pr-4 py-3 text-lg border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 animate-search-focus">
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <kbd class="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded">Ctrl+K</kbd>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-8">
+            <!-- Filters Sidebar -->
+            <div class="space-y-6">
+                <!-- Categories Filter -->
+                <div class="bg-white rounded-lg border p-4 animate-filter-apply">
+                    <h3 class="font-semibold mb-3">Categories</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300" checked>
+                            <span class="text-sm">Email Processing</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(247)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Data Analysis</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(189)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Communication</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(156)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">HR & Recruiting</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(134)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Marketing</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(112)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Finance</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(98)</span>
+                        </label>
+                    </div>
+                    <button class="text-xs text-blue-600 hover:underline mt-2">Show all categories</button>
+                </div>
+
+                <!-- Rating Filter -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="font-semibold mb-3">Rating</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <div class="flex items-center gap-1">
+                                <span class="text-sm">⭐⭐⭐⭐⭐</span>
+                                <span class="text-xs text-muted-foreground">(89)</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <div class="flex items-center gap-1">
+                                <span class="text-sm">⭐⭐⭐⭐ & up</span>
+                                <span class="text-xs text-muted-foreground">(234)</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300" checked>
+                            <div class="flex items-center gap-1">
+                                <span class="text-sm">⭐⭐⭐ & up</span>
+                                <span class="text-xs text-muted-foreground">(456)</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Complexity Filter -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="font-semibold mb-3">Complexity</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300" checked>
+                            <span class="text-sm">Beginner</span>
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded ml-auto">Easy</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Intermediate</span>
+                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded ml-auto">Medium</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Advanced</span>
+                            <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded ml-auto">Hard</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Author Type Filter -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="font-semibold mb-3">Author</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Official Templates</span>
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded ml-auto">✓</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Verified Authors</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(156)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-sm">Community</span>
+                            <span class="text-xs text-muted-foreground ml-auto">(1,091)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tags Filter -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="font-semibold mb-3">Popular Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-1 bg-blue-100 border border-blue-200 text-blue-700 text-xs rounded-full animate-tag-select">
+                            AI
+                        </button>
+                        <button class="px-3 py-1 border text-xs rounded-full hover:bg-gray-50">
+                            Automation
+                        </button>
+                        <button class="px-3 py-1 border text-xs rounded-full hover:bg-gray-50">
+                            Productivity
+                        </button>
+                        <button class="px-3 py-1 border text-xs rounded-full hover:bg-gray-50">
+                            Gmail
+                        </button>
+                        <button class="px-3 py-1 border text-xs rounded-full hover:bg-gray-50">
+                            Slack
+                        </button>
+                        <button class="px-3 py-1 border text-xs rounded-full hover:bg-gray-50">
+                            Notion
+                        </button>
+                    </div>
+                    <button class="text-xs text-blue-600 hover:underline mt-3">Show all tags</button>
+                </div>
+
+                <!-- Clear Filters -->
+                <button class="w-full px-4 py-2 text-sm border border-dashed rounded-lg hover:bg-gray-50 transition-colors">
+                    Clear All Filters
+                </button>
+            </div>
+
+            <!-- Results Area -->
+            <div class="col-span-3">
+                <!-- Results Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">Email Processing Templates</h2>
+                        <p class="text-muted-foreground mt-1">247 templates found</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <!-- View Toggle -->
+                        <div class="flex items-center border rounded-lg p-1">
+                            <button class="p-2 bg-blue-600 text-white rounded">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                </svg>
+                            </button>
+                            <button class="p-2 text-gray-600 rounded">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Sort Dropdown -->
+                        <select class="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option>Most Popular</option>
+                            <option>Newest</option>
+                            <option>Highest Rated</option>
+                            <option>Most Downloads</option>
+                            <option>Recently Updated</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Active Filters -->
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="text-sm text-muted-foreground">Active filters:</span>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full flex items-center gap-2">
+                            Email Processing
+                            <button class="hover:bg-blue-200 rounded-full p-0.5">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </span>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full flex items-center gap-2">
+                            Beginner
+                            <button class="hover:bg-green-200 rounded-full p-0.5">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full flex items-center gap-2">
+                            AI
+                            <button class="hover:bg-purple-200 rounded-full p-0.5">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Template Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-results-update">
+                    <!-- Template Card 1 -->
+                    <div class="bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-300 animate-card-appear">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs">
+                                <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span>4.9</span>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Smart Email Processor</h4>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Automatically categorize, extract entities, and create tasks from incoming emails using AI-powered analysis.
+                        </p>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Email</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">AI</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Easy</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                            <span>2.4k downloads</span>
+                            <span>•</span>
+                            <span>By Agipo Team</span>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded">Official</span>
+                        </div>
+                        
+                        <button class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            View Template
+                        </button>
+                    </div>
+
+                    <!-- Template Card 2 -->
+                    <div class="bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-300 animate-card-appear">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs">
+                                <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span>4.6</span>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Inbox Zero Automation</h4>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Achieve inbox zero with automated email sorting, archiving, and follow-up scheduling based on content analysis.
+                        </p>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Email</span>
+                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded">Organization</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Easy</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                            <span>1.8k downloads</span>
+                            <span>•</span>
+                            <span>By ProductivePro</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded">Verified</span>
+                        </div>
+                        
+                        <button class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            View Template
+                        </button>
+                    </div>
+
+                    <!-- Template Card 3 -->
+                    <div class="bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-300 animate-card-appear">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                                </svg>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs">
+                                <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span>4.7</span>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Email Sentiment Analyzer</h4>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Analyze customer email sentiment, flag urgent issues, and route to appropriate team members automatically.
+                        </p>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Email</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">AI</span>
+                            <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded">Support</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                            <span>967 downloads</span>
+                            <span>•</span>
+                            <span>By SentimentAI</span>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded">Community</span>
+                        </div>
+                        
+                        <button class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            View Template
+                        </button>
+                    </div>
+
+                    <!-- Template Card 4 -->
+                    <div class="bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-300 animate-card-appear">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM20.188 8.5A6.5 6.5 0 008.5 2a6.5 6.5 0 00-6.188 8.5m12.376 0A6.5 6.5 0 018.5 22a6.5 6.5 0 006.188-8.5z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs">
+                                <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span>4.5</span>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Newsletter Auto-Responder</h4>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Automatically process newsletter subscriptions, send welcome emails, and manage subscriber preferences.
+                        </p>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Email</span>
+                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded">Marketing</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Easy</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                            <span>743 downloads</span>
+                            <span>•</span>
+                            <span>By MailMaster</span>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded">Community</span>
+                        </div>
+                        
+                        <button class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            View Template
+                        </button>
+                    </div>
+
+                    <!-- Template Card 5 -->
+                    <div class="bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-300 animate-card-appear">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs">
+                                <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span>4.8</span>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Email Security Scanner</h4>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Scan incoming emails for security threats, phishing attempts, and suspicious attachments with AI detection.
+                        </p>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Email</span>
+                            <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">Security</span>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">Medium</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                            <span>1.2k downloads</span>
+                            <span>•</span>
+                            <span>By SecureFlow</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded">Verified</span>
+                        </div>
+                        
+                        <button class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            View Template
+                        </button>
+                    </div>
+
+                    <!-- Template Card 6 -->
+                    <div class="bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-300 animate-card-appear">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                                </svg>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs">
+                                <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span>4.4</span>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Gift Card Manager</h4>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Process gift card purchase confirmations, track balances, and send automated follow-up emails.
+                        </p>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Email</span>
+                            <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded">E-commerce</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Easy</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                            <span>556 downloads</span>
+                            <span>•</span>
+                            <span>By RetailBot</span>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded">Community</span>
+                        </div>
+                        
+                        <button class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            View Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-12">
+                    <div class="text-sm text-muted-foreground">
+                        Showing 1-6 of 247 templates
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors" disabled>
+                            Previous
+                        </button>
+                        <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg">1</button>
+                        <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">2</button>
+                        <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">3</button>
+                        <span class="px-2">...</span>
+                        <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">41</button>
+                        <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime Engine - Runtime Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'setting-update': 'settingUpdate 0.3s ease-out',
+                        'save-success': 'saveSuccess 0.5s ease-out',
+                        'validation-error': 'validationError 0.5s ease-out',
+                        'config-load': 'configLoad 0.4s ease-out',
+                        'preview-update': 'previewUpdate 0.3s ease-out',
+                        'toggle-switch': 'toggleSwitch 0.2s ease-out',
+                    },
+                    keyframes: {
+                        settingUpdate: {
+                            '0%': { backgroundColor: 'rgb(219 234 254)', borderColor: 'rgb(59 130 246)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', borderColor: 'rgb(229 231 235)' },
+                        },
+                        saveSuccess: {
+                            '0%': { backgroundColor: 'rgb(220 252 231)', borderColor: 'rgb(34 197 94)', transform: 'scale(1.01)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', borderColor: 'rgb(229 231 235)', transform: 'scale(1)' },
+                        },
+                        validationError: {
+                            '0%': { backgroundColor: 'rgb(254 226 226)', borderColor: 'rgb(239 68 68)', transform: 'translateX(-2px)' },
+                            '25%': { backgroundColor: 'rgb(254 226 226)', borderColor: 'rgb(239 68 68)', transform: 'translateX(2px)' },
+                            '75%': { backgroundColor: 'rgb(254 226 226)', borderColor: 'rgb(239 68 68)', transform: 'translateX(-1px)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', borderColor: 'rgb(229 231 235)', transform: 'translateX(0)' },
+                        },
+                        configLoad: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        previewUpdate: {
+                            '0%': { backgroundColor: 'rgb(245 243 255)', transform: 'scale(1.01)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', transform: 'scale(1)' },
+                        },
+                        toggleSwitch: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Runtime Settings</h1>
+                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                        ⚙️ Configuration
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm text-muted-foreground">
+                        Email Processing • Modified 2 minutes ago
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Reset to Defaults
+                    </button>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Export Config
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors animate-save-success">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Settings Navigation -->
+            <div class="space-y-4">
+                <!-- Configuration Status -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium">Configuration Status</h3>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="text-sm font-medium text-green-900 mb-1">Configuration Valid</div>
+                            <div class="text-xs text-green-700">All settings validated successfully</div>
+                        </div>
+
+                        <!-- Configuration Stats -->
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Settings changed:</span>
+                                <span class="font-medium text-blue-600">4</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Last saved:</span>
+                                <span class="font-medium">2 min ago</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Config version:</span>
+                                <span class="font-medium">v2.1.3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Categories -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Settings Categories</h3>
+                    <div class="space-y-1">
+                        <button class="w-full text-left px-3 py-2 text-xs bg-blue-50 border border-blue-200 text-blue-700 rounded-lg">
+                            🚀 Execution Settings
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 rounded-lg">
+                            🤖 AI Configuration
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 rounded-lg">
+                            🔄 Retry & Recovery
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 rounded-lg">
+                            📊 Monitoring & Alerts
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 rounded-lg">
+                            💾 Resource Limits
+                        </button>
+                        <button class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 rounded-lg">
+                            🔒 Security Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Environment Profile -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Environment Profile</h3>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-2 py-1 text-xs bg-green-50 border border-green-200 text-green-700 rounded">
+                            🟢 Production
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">
+                            🟡 Staging
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">
+                            🔵 Development
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">
+                            🔧 Custom
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            📋 Copy Configuration
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            📥 Import Settings
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            🔄 Apply Template
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border border-red-200 text-red-700 rounded-lg hover:bg-red-50 transition-colors">
+                            🗑️ Reset All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Settings Panel -->
+            <div class="col-span-3 space-y-6">
+                <!-- Execution Settings -->
+                <div class="bg-white rounded-lg border animate-config-load">
+                    <div class="px-6 py-4 border-b bg-blue-50">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-blue-900">Execution Settings</h3>
+                                <p class="text-sm text-blue-700 mt-0.5">Configure workflow runtime behavior and performance parameters</p>
+                            </div>
+                            <div class="text-sm">
+                                <span class="px-2 py-1 bg-blue-200 text-blue-800 text-xs rounded">4 modified</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <!-- Concurrency Settings -->
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-medium">Concurrency & Parallelization</h4>
+                                
+                                <!-- Max Concurrent Steps -->
+                                <div class="animate-setting-update">
+                                    <label class="block text-sm font-medium mb-2">
+                                        Maximum Concurrent Steps
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="flex items-center gap-3">
+                                        <input type="range" min="1" max="20" value="5" 
+                                               class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <div class="w-12 px-2 py-1 text-sm border rounded text-center">5</div>
+                                    </div>
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Controls how many workflow steps can execute simultaneously
+                                    </div>
+                                </div>
+
+                                <!-- Batch Size -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Item Batch Size</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="1">1 item (Sequential)</option>
+                                        <option value="5" selected>5 items (Recommended)</option>
+                                        <option value="10">10 items (High throughput)</option>
+                                        <option value="25">25 items (Bulk processing)</option>
+                                        <option value="custom">Custom batch size</option>
+                                    </select>
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Number of items to process in each batch operation
+                                    </div>
+                                </div>
+
+                                <!-- Worker Threads -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Worker Thread Pool Size</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">Auto</button>
+                                        <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg">8</button>
+                                        <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">16</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-medium">Execution Limits</h4>
+                                
+                                <!-- Timeout Settings -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Global Timeout</label>
+                                    <div class="flex gap-2">
+                                        <input type="number" value="30" min="1" max="3600" 
+                                               class="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <select class="px-3 py-2 border rounded-lg">
+                                            <option>seconds</option>
+                                            <option selected>minutes</option>
+                                            <option>hours</option>
+                                        </select>
+                                    </div>
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Maximum time allowed for entire workflow execution
+                                    </div>
+                                </div>
+
+                                <!-- Step Timeout -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Step Timeout</label>
+                                    <input type="number" value="120" min="10" max="600" 
+                                           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Timeout for individual workflow steps (seconds)
+                                    </div>
+                                </div>
+
+                                <!-- Memory Limit -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Memory Limit per Worker</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option>128 MB</option>
+                                        <option selected>256 MB</option>
+                                        <option>512 MB</option>
+                                        <option>1 GB</option>
+                                        <option>2 GB</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Execution Behavior -->
+                        <div class="border-t pt-6">
+                            <h4 class="text-sm font-medium mb-4">Execution Behavior</h4>
+                            <div class="grid grid-cols-2 gap-6">
+                                <!-- Error Handling -->
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 border rounded-lg">
+                                        <div>
+                                            <div class="text-sm font-medium">Fail-fast mode</div>
+                                            <div class="text-xs text-muted-foreground">Stop execution on first error</div>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only">
+                                            <div class="w-11 h-6 bg-blue-600 rounded-full shadow-inner">
+                                                <div class="w-5 h-5 bg-white rounded-full shadow transform translate-x-5 animate-toggle-switch"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border rounded-lg">
+                                        <div>
+                                            <div class="text-sm font-medium">Auto-retry failed items</div>
+                                            <div class="text-xs text-muted-foreground">Automatically retry failed operations</div>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only" checked>
+                                            <div class="w-11 h-6 bg-blue-600 rounded-full shadow-inner">
+                                                <div class="w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border rounded-lg">
+                                        <div>
+                                            <div class="text-sm font-medium">Preserve partial results</div>
+                                            <div class="text-xs text-muted-foreground">Save successful items on failure</div>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only" checked>
+                                            <div class="w-11 h-6 bg-blue-600 rounded-full shadow-inner">
+                                                <div class="w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Optimization -->
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 border rounded-lg">
+                                        <div>
+                                            <div class="text-sm font-medium">Cache intermediate results</div>
+                                            <div class="text-xs text-muted-foreground">Speed up repeat executions</div>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only" checked>
+                                            <div class="w-11 h-6 bg-blue-600 rounded-full shadow-inner">
+                                                <div class="w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border rounded-lg">
+                                        <div>
+                                            <div class="text-sm font-medium">Auto-scale workers</div>
+                                            <div class="text-xs text-muted-foreground">Dynamically adjust worker count</div>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only">
+                                            <div class="w-11 h-6 bg-gray-200 rounded-full shadow-inner">
+                                                <div class="w-5 h-5 bg-white rounded-full shadow"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 border rounded-lg">
+                                        <div>
+                                            <div class="text-sm font-medium">Preemptive resource cleanup</div>
+                                            <div class="text-xs text-muted-foreground">Clean up resources during execution</div>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only" checked>
+                                            <div class="w-11 h-6 bg-blue-600 rounded-full shadow-inner">
+                                                <div class="w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Configuration -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">AI Configuration</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Model Settings -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-medium">Model Configuration</h4>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Default AI Model</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="gpt-4-turbo" selected>GPT-4 Turbo (Recommended)</option>
+                                        <option value="gpt-4">GPT-4</option>
+                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Faster)</option>
+                                        <option value="claude-3-opus">Claude 3 Opus</option>
+                                        <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Temperature</label>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs text-muted-foreground">0.0</span>
+                                        <input type="range" min="0" max="1" step="0.1" value="0.2" 
+                                               class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <span class="text-xs text-muted-foreground">1.0</span>
+                                    </div>
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Current: 0.2 (More deterministic responses)
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Max Tokens per Request</label>
+                                    <input type="number" value="2000" min="100" max="8000" 
+                                           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Maximum tokens allowed per AI request
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Request Settings -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-medium">Request Settings</h4>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Request Timeout</label>
+                                    <div class="flex gap-2">
+                                        <input type="number" value="30" min="5" max="300" 
+                                               class="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <span class="px-3 py-2 text-sm text-muted-foreground border rounded-lg bg-gray-50">seconds</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Max Retries</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="0">No retries</option>
+                                        <option value="1">1 retry</option>
+                                        <option value="3" selected>3 retries</option>
+                                        <option value="5">5 retries</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Rate Limit Strategy</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="exponential-backoff" selected>Exponential Backoff</option>
+                                        <option value="fixed-delay">Fixed Delay</option>
+                                        <option value="linear-backoff">Linear Backoff</option>
+                                        <option value="circuit-breaker">Circuit Breaker</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monitoring & Logging -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Monitoring & Logging</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Logging Configuration -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-medium">Logging Configuration</h4>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Log Level</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="error">Error</option>
+                                        <option value="warn">Warning</option>
+                                        <option value="info" selected>Info</option>
+                                        <option value="debug">Debug</option>
+                                        <option value="trace">Trace</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Log Buffer Size</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="1000">1,000 entries</option>
+                                        <option value="5000">5,000 entries</option>
+                                        <option value="10000" selected>10,000 entries</option>
+                                        <option value="50000">50,000 entries</option>
+                                    </select>
+                                </div>
+
+                                <!-- Log Categories -->
+                                <div class="space-y-2">
+                                    <div class="text-sm font-medium">Enable Detailed Logging For:</div>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" checked class="rounded border-gray-300">
+                                            <span class="text-xs">API Requests & Responses</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" checked class="rounded border-gray-300">
+                                            <span class="text-xs">Step Execution Times</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" class="rounded border-gray-300">
+                                            <span class="text-xs">Data Transformation</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" class="rounded border-gray-300">
+                                            <span class="text-xs">Memory Usage</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Monitoring -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-medium">Performance Monitoring</h4>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Metrics Collection Interval</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="1">Every second</option>
+                                        <option value="5" selected>Every 5 seconds</option>
+                                        <option value="10">Every 10 seconds</option>
+                                        <option value="30">Every 30 seconds</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Retention Period</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="1">1 hour</option>
+                                        <option value="24">24 hours</option>
+                                        <option value="168" selected>1 week</option>
+                                        <option value="720">30 days</option>
+                                    </select>
+                                </div>
+
+                                <!-- Alert Thresholds -->
+                                <div class="space-y-3">
+                                    <div class="text-sm font-medium">Alert Thresholds</div>
+                                    <div class="space-y-2">
+                                        <div>
+                                            <label class="text-xs text-muted-foreground">CPU Usage (%)</label>
+                                            <input type="number" value="80" min="1" max="100" 
+                                                   class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-muted-foreground">Memory Usage (%)</label>
+                                            <input type="number" value="85" min="1" max="100" 
+                                                   class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-muted-foreground">Error Rate (%)</label>
+                                            <input type="number" value="5" min="0" max="100" 
+                                                   class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-blue-500">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Preview -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Configuration Preview</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="bg-gray-900 text-gray-300 rounded p-4 font-mono text-xs max-h-96 overflow-y-auto animate-preview-update">
+                            <div class="space-y-1">
+                                <div class="text-yellow-400">{</div>
+                                <div class="ml-2">
+                                    <span class="text-blue-400">"execution"</span>: <span class="text-yellow-400">{</span>
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"maxConcurrentSteps"</span>: <span class="text-green-400">5</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"batchSize"</span>: <span class="text-green-400">5</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"workerThreads"</span>: <span class="text-green-400">8</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"globalTimeout"</span>: <span class="text-orange-400">"30m"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"stepTimeout"</span>: <span class="text-orange-400">"120s"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"memoryLimit"</span>: <span class="text-orange-400">"256MB"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"failFast"</span>: <span class="text-purple-400">true</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"autoRetry"</span>: <span class="text-purple-400">true</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"preservePartialResults"</span>: <span class="text-purple-400">true</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"cacheIntermediateResults"</span>: <span class="text-purple-400">true</span>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="text-yellow-400">},</span>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="text-blue-400">"ai"</span>: <span class="text-yellow-400">{</span>
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"defaultModel"</span>: <span class="text-orange-400">"gpt-4-turbo"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"temperature"</span>: <span class="text-green-400">0.2</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"maxTokens"</span>: <span class="text-green-400">2000</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"requestTimeout"</span>: <span class="text-orange-400">"30s"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"maxRetries"</span>: <span class="text-green-400">3</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"rateLimitStrategy"</span>: <span class="text-orange-400">"exponential-backoff"</span>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="text-yellow-400">},</span>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="text-blue-400">"monitoring"</span>: <span class="text-yellow-400">{</span>
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"logLevel"</span>: <span class="text-orange-400">"info"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"logBufferSize"</span>: <span class="text-green-400">10000</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"metricsInterval"</span>: <span class="text-orange-400">"5s"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"retentionPeriod"</span>: <span class="text-orange-400">"168h"</span>,
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-blue-400">"alertThresholds"</span>: <span class="text-yellow-400">{</span>
+                                </div>
+                                <div class="ml-6">
+                                    <span class="text-blue-400">"cpuUsage"</span>: <span class="text-green-400">80</span>,
+                                </div>
+                                <div class="ml-6">
+                                    <span class="text-blue-400">"memoryUsage"</span>: <span class="text-green-400">85</span>,
+                                </div>
+                                <div class="ml-6">
+                                    <span class="text-blue-400">"errorRate"</span>: <span class="text-green-400">5</span>
+                                </div>
+                                <div class="ml-4">
+                                    <span class="text-yellow-400">}</span>
+                                </div>
+                                <div class="ml-2">
+                                    <span class="text-yellow-400">}</span>
+                                </div>
+                                <div class="text-yellow-400">}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Configuration Actions -->
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="text-sm text-muted-foreground">
+                                Configuration size: 1.2 KB • Last modified: 2 minutes ago
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                                    📋 Copy JSON
+                                </button>
+                                <button class="px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                                    📥 Download
+                                </button>
+                                <button class="px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                                    ✅ Validate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime Engine - Performance Metrics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'metric-update': 'metricUpdate 0.5s ease-out',
+                        'gauge-fill': 'gaugeFill 2s ease-out',
+                        'chart-draw': 'chartDraw 1.5s ease-out',
+                        'performance-pulse': 'performancePulse 2s ease-in-out infinite',
+                        'data-flow': 'dataFlow 3s ease-in-out infinite',
+                        'alert-warning': 'alertWarning 1s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        metricUpdate: {
+                            '0%': { backgroundColor: 'rgb(219 234 254)', transform: 'scale(1.02)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', transform: 'scale(1)' },
+                        },
+                        gaugeFill: {
+                            '0%': { strokeDashoffset: '283' },
+                            '100%': { strokeDashoffset: '85' },
+                        },
+                        chartDraw: {
+                            '0%': { strokeDasharray: '0 1000' },
+                            '100%': { strokeDasharray: '1000 0' },
+                        },
+                        performancePulse: {
+                            '0%, 100%': { opacity: '1', backgroundColor: 'rgb(34 197 94)' },
+                            '50%': { opacity: '0.8', backgroundColor: 'rgb(22 163 74)' },
+                        },
+                        dataFlow: {
+                            '0%': { transform: 'translateX(-100%)', opacity: '0' },
+                            '50%': { transform: 'translateX(0)', opacity: '1' },
+                            '100%': { transform: 'translateX(100%)', opacity: '0' },
+                        },
+                        alertWarning: {
+                            '0%, 100%': { borderColor: 'rgb(245 158 11)' },
+                            '50%': { borderColor: 'rgb(251 191 36)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Performance Metrics</h1>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full animate-performance-pulse">
+                        📊 Live Monitoring
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm text-muted-foreground">
+                        Email Processing • Avg: 3.2s/item • CPU: 65%
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Export Report
+                    </button>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Configure Alerts
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                        Optimize Workflow
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Metric Controls -->
+            <div class="space-y-4">
+                <!-- Performance Overview -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium">Performance Score</h3>
+                    </div>
+
+                    <!-- Performance Gauge -->
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="relative w-20 h-20">
+                            <svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" stroke="#f3f4f6" stroke-width="8" fill="none"/>
+                                <circle cx="50" cy="50" r="45" stroke="#10b981" stroke-width="8" fill="none"
+                                        stroke-dasharray="283" stroke-dashoffset="85" stroke-linecap="round" class="animate-gauge-fill"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-green-600">8.4</div>
+                                    <div class="text-xs text-muted-foreground">Good</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Throughput:</span>
+                            <span class="font-medium text-green-600">18.7 items/min</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Avg. latency:</span>
+                            <span class="font-medium">3.2s</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Error rate:</span>
+                            <span class="font-medium text-green-600">1.2%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Resource usage:</span>
+                            <span class="font-medium text-yellow-600">65%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metric Filters -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Metric Categories</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">📊 Execution Metrics</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">💾 Resource Usage</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">🌐 API Performance</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">🚀 AI Processing</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">🔄 Data Throughput</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Time Range -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Time Range</h3>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-2 py-1 text-xs text-blue-600 bg-blue-50 rounded">
+                            Last 5 minutes
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">
+                            Last 15 minutes
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">
+                            Last hour
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">
+                            Last 24 hours
+                        </button>
+                        <button class="w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">
+                            Custom range
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Performance Alerts -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Active Alerts</h3>
+                    <div class="space-y-2">
+                        <div class="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs animate-alert-warning">
+                            <div class="font-medium text-yellow-900">High CPU Usage</div>
+                            <div class="text-yellow-700">65% - Threshold: 60%</div>
+                            <div class="text-muted-foreground">2 min ago</div>
+                        </div>
+                        <div class="p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                            <div class="font-medium text-blue-900">Memory Watch</div>
+                            <div class="text-blue-700">78% - Threshold: 80%</div>
+                            <div class="text-muted-foreground">5 min ago</div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-3 px-3 py-2 text-xs border border-dashed rounded-lg hover:bg-gray-50 transition-colors">
+                        + Configure Alert
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            📊 Generate Report
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            🔧 Run Diagnostics
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            🎯 Set Baseline
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            💾 Export Metrics
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Metrics Dashboard -->
+            <div class="col-span-3 space-y-6">
+                <!-- Key Performance Indicators -->
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="bg-white rounded-lg border p-4 animate-metric-update">
+                        <div class="text-sm font-medium text-gray-500 mb-1">Throughput</div>
+                        <div class="text-2xl font-bold text-green-600">18.7</div>
+                        <div class="text-xs text-green-600">items/min (+12% vs avg)</div>
+                    </div>
+                    <div class="bg-white rounded-lg border p-4">
+                        <div class="text-sm font-medium text-gray-500 mb-1">Avg Latency</div>
+                        <div class="text-2xl font-bold">3.24s</div>
+                        <div class="text-xs text-muted-foreground">per item (stable)</div>
+                    </div>
+                    <div class="bg-white rounded-lg border p-4">
+                        <div class="text-sm font-medium text-gray-500 mb-1">Success Rate</div>
+                        <div class="text-2xl font-bold text-green-600">98.8%</div>
+                        <div class="text-xs text-green-600">42 / 42 (+0.3%)</div>
+                    </div>
+                    <div class="bg-white rounded-lg border p-4">
+                        <div class="text-sm font-medium text-gray-500 mb-1">CPU Usage</div>
+                        <div class="text-2xl font-bold text-yellow-600">65%</div>
+                        <div class="text-xs text-yellow-600">⚠️ Above threshold</div>
+                    </div>
+                </div>
+
+                <!-- Performance Timeline -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Performance Timeline</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="text-xs text-blue-600 hover:underline">5m</button>
+                                <button class="text-xs text-muted-foreground">15m</button>
+                                <button class="text-xs text-muted-foreground">1h</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="relative" style="height: 300px;">
+                            <!-- Chart Background -->
+                            <svg class="absolute inset-0 w-full h-full">
+                                <!-- Grid lines -->
+                                <defs>
+                                    <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
+                                        <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#f3f4f6" stroke-width="1"/>
+                                    </pattern>
+                                </defs>
+                                <rect width="100%" height="100%" fill="url(#grid)" />
+                                
+                                <!-- Throughput Line -->
+                                <path d="M 20 150 L 80 140 L 140 145 L 200 135 L 260 130 L 320 125 L 380 120 L 440 115 L 500 110 L 560 108" 
+                                      stroke="#10b981" stroke-width="3" fill="none" class="animate-chart-draw"/>
+                                
+                                <!-- Latency Line -->
+                                <path d="M 20 180 L 80 175 L 140 170 L 200 172 L 260 174 L 320 169 L 380 166 L 440 164 L 500 161 L 560 159" 
+                                      stroke="#3b82f6" stroke-width="3" fill="none" class="animate-chart-draw"/>
+                                
+                                <!-- CPU Usage Line -->
+                                <path d="M 20 200 L 80 195 L 140 190 L 200 185 L 260 180 L 320 175 L 380 170 L 440 165 L 500 160 L 560 155" 
+                                      stroke="#f59e0b" stroke-width="3" fill="none" class="animate-chart-draw"/>
+
+                                <!-- Data Points -->
+                                <circle cx="560" cy="108" r="4" fill="#10b981"/>
+                                <circle cx="560" cy="159" r="4" fill="#3b82f6"/>
+                                <circle cx="560" cy="155" r="4" fill="#f59e0b"/>
+                            </svg>
+
+                            <!-- Y-axis Labels -->
+                            <div class="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-muted-foreground py-4">
+                                <span>30</span>
+                                <span>25</span>
+                                <span>20</span>
+                                <span>15</span>
+                                <span>10</span>
+                                <span>5</span>
+                                <span>0</span>
+                            </div>
+
+                            <!-- X-axis Labels -->
+                            <div class="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-muted-foreground px-6">
+                                <span>14:30</span>
+                                <span>14:31</span>
+                                <span>14:32</span>
+                                <span>14:33</span>
+                                <span>14:34</span>
+                                <span>Now</span>
+                            </div>
+
+                            <!-- Legend -->
+                            <div class="absolute top-4 right-4 bg-white border rounded-lg p-3 shadow-sm">
+                                <div class="space-y-2 text-xs">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-0.5 bg-green-500"></div>
+                                        <span>Throughput (items/min)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-0.5 bg-blue-500"></div>
+                                        <span>Latency (seconds)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-0.5 bg-yellow-500"></div>
+                                        <span>CPU Usage (%)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Data Indicator -->
+                            <div class="absolute top-4 left-4 bg-green-100 border border-green-200 rounded-lg px-2 py-1">
+                                <div class="flex items-center gap-1 text-xs text-green-700">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span>Live data</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Metrics Grid -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Execution Metrics -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">Execution Metrics</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <!-- Step Performance -->
+                            <div>
+                                <div class="text-xs text-muted-foreground mb-2">Step Performance (avg time)</div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs">Email Fetch</span>
+                                        <span class="text-xs font-medium">1.2s</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1">
+                                        <div class="bg-green-500 h-1 rounded-full" style="width: 37%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2 mt-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs">AI Processing</span>
+                                        <span class="text-xs font-medium">1.8s</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1">
+                                        <div class="bg-blue-500 h-1 rounded-full" style="width: 56%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2 mt-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs">Task Creation</span>
+                                        <span class="text-xs font-medium">0.4s</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1">
+                                        <div class="bg-purple-500 h-1 rounded-full" style="width: 12%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Queue Metrics -->
+                            <div>
+                                <div class="text-xs text-muted-foreground mb-2">Queue Status</div>
+                                <div class="grid grid-cols-2 gap-3 text-xs">
+                                    <div class="p-2 bg-blue-50 rounded">
+                                        <div class="font-medium text-blue-900">Pending</div>
+                                        <div class="text-blue-700">3 items</div>
+                                    </div>
+                                    <div class="p-2 bg-green-50 rounded">
+                                        <div class="font-medium text-green-900">Processing</div>
+                                        <div class="text-green-700">2 items</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resource Usage -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">Resource Usage</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <!-- CPU Usage -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-muted-foreground">CPU Usage</span>
+                                    <span class="text-xs font-medium">65%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 65%"></div>
+                                </div>
+                                <div class="text-xs text-yellow-600 mt-1">Above threshold (60%)</div>
+                            </div>
+
+                            <!-- Memory Usage -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-muted-foreground">Memory Usage</span>
+                                    <span class="text-xs font-medium">78%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 78%"></div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">124 MB / 160 MB</div>
+                            </div>
+
+                            <!-- Network I/O -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-muted-foreground">Network I/O</span>
+                                    <span class="text-xs font-medium">2.3 MB/s</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <div class="flex-1">
+                                        <div class="text-xs text-muted-foreground mb-1">↓ Down</div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1">
+                                            <div class="bg-green-500 h-1 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <div class="text-xs text-muted-foreground">1.8 MB/s</div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-xs text-muted-foreground mb-1">↑ Up</div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1">
+                                            <div class="bg-blue-500 h-1 rounded-full" style="width: 25%"></div>
+                                        </div>
+                                        <div class="text-xs text-muted-foreground">0.5 MB/s</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Performance Breakdown -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">API Performance Breakdown</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 border-b">
+                                <tr>
+                                    <th class="text-left p-3 font-medium text-muted-foreground">API Service</th>
+                                    <th class="text-left p-3 font-medium text-muted-foreground">Avg Response Time</th>
+                                    <th class="text-left p-3 font-medium text-muted-foreground">Success Rate</th>
+                                    <th class="text-left p-3 font-medium text-muted-foreground">Requests/Min</th>
+                                    <th class="text-left p-3 font-medium text-muted-foreground">Error Rate</th>
+                                    <th class="text-left p-3 font-medium text-muted-foreground">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                            <span class="font-medium">Gmail API</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">847ms</div>
+                                        <div class="text-xs text-muted-foreground">-15% vs baseline</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">99.2%</div>
+                                        <div class="text-xs text-muted-foreground">41/42 success</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="font-medium">8.4</div>
+                                        <div class="text-xs text-muted-foreground">Normal load</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">0.8%</div>
+                                        <div class="text-xs text-muted-foreground">1 failure</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Healthy</span>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50 animate-metric-update">
+                                    <td class="p-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                            <span class="font-medium">OpenAI API</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-blue-600 font-medium">2,341ms</div>
+                                        <div class="text-xs text-muted-foreground">+5% vs baseline</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">100%</div>
+                                        <div class="text-xs text-muted-foreground">42/42 success</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="font-medium">12.6</div>
+                                        <div class="text-xs text-muted-foreground">High load</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">0%</div>
+                                        <div class="text-xs text-muted-foreground">No failures</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Healthy</span>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                            <span class="font-medium">Notion API</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">432ms</div>
+                                        <div class="text-xs text-muted-foreground">-8% vs baseline</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">100%</div>
+                                        <div class="text-xs text-muted-foreground">42/42 success</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="font-medium">6.3</div>
+                                        <div class="text-xs text-muted-foreground">Low load</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="text-green-600 font-medium">0%</div>
+                                        <div class="text-xs text-muted-foreground">No failures</div>
+                                    </td>
+                                    <td class="p-3">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Healthy</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Performance Recommendations -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Performance Recommendations</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg animate-alert-warning">
+                            <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center shrink-0">
+                                <span class="text-white text-xs font-bold">!</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-yellow-900">High CPU Usage Detected</div>
+                                <div class="text-xs text-yellow-700 mt-1">
+                                    CPU usage is at 65%, above the recommended threshold of 60%. Consider optimizing AI processing batch size or increasing compute resources.
+                                </div>
+                                <button class="text-xs text-yellow-600 hover:underline mt-2">View CPU Optimization Guide</button>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-blue-900">Optimize Batch Processing</div>
+                                <div class="text-xs text-blue-700 mt-1">
+                                    Increase batch size from 5 to 8 items to improve throughput efficiency. Current batch processing shows good latency tolerance.
+                                </div>
+                                <button class="text-xs text-blue-600 hover:underline mt-2">Apply Optimization</button>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-green-900">Excellent API Performance</div>
+                                <div class="text-xs text-green-700 mt-1">
+                                    All API integrations are performing well with low error rates and good response times. Current configuration is optimal.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

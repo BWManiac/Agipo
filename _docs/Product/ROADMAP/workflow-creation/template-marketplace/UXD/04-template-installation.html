@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Marketplace - Template Installation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'step-slide': 'stepSlide 0.5s ease-out',
+                        'install-progress': 'installProgress 3s ease-in-out',
+                        'check-appear': 'checkAppear 0.6s ease-out',
+                        'wizard-flow': 'wizardFlow 0.4s ease-in-out',
+                    },
+                    keyframes: {
+                        stepSlide: {
+                            '0%': { opacity: '0', transform: 'translateX(20px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        installProgress: {
+                            '0%': { width: '0%' },
+                            '30%': { width: '35%' },
+                            '60%': { width: '70%' },
+                            '100%': { width: '100%' },
+                        },
+                        checkAppear: {
+                            '0%': { opacity: '0', transform: 'scale(0)' },
+                            '50%': { opacity: '1', transform: 'scale(1.1)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        wizardFlow: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-600 hover:text-gray-900 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-semibold">Install Template</h1>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                        Step 2 of 4
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel Installation
+                    </button>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Save & Continue Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-8">
+            <!-- Left Sidebar: Installation Progress -->
+            <div class="space-y-4">
+                <!-- Template Overview -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-sm">Email Processing Automation</div>
+                            <div class="text-xs text-muted-foreground">Version 2.1.0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Author:</span>
+                            <span class="font-medium">AI Workflows Team</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Category:</span>
+                            <span class="font-medium">Email & Communication</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Rating:</span>
+                            <div class="flex items-center gap-1">
+                                <div class="flex">
+                                    <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    <svg class="w-3 h-3 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">4.8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Installation Steps -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Installation Steps</h3>
+                    <div class="space-y-3">
+                        <!-- Completed Step -->
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-check-appear">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-green-900">Template Selection</div>
+                                <div class="text-xs text-green-700">Validated requirements</div>
+                            </div>
+                        </div>
+
+                        <!-- Current Step -->
+                        <div class="flex items-center gap-3 p-2 bg-blue-50 border-2 border-blue-500 rounded-lg animate-step-slide">
+                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">2</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-blue-900">Configuration</div>
+                                <div class="text-xs text-blue-700">Customize settings</div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Steps -->
+                        <div class="flex items-center gap-3 p-2 bg-gray-50 border border-gray-200 rounded-lg opacity-60">
+                            <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">3</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-600">Dependencies</div>
+                                <div class="text-xs text-gray-500">Install connections</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 bg-gray-50 border border-gray-200 rounded-lg opacity-60">
+                            <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">4</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-600">Finalize</div>
+                                <div class="text-xs text-gray-500">Complete setup</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Requirements -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Requirements Check</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Workspace tier:</span>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="font-medium text-green-600">Pro+</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">API quota:</span>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="font-medium text-green-600">Available</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Storage space:</span>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="font-medium text-green-600">2.4 GB free</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Permissions:</span>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="font-medium text-green-600">Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Installation Preview -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">What will be installed</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span>1 workflow template</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                            <span>3 connection types</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span>6 sub-workflow nodes</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            <span>2 custom functions</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                            <span>Sample data & examples</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Installation Form -->
+            <div class="col-span-3 space-y-6">
+                <!-- Step Header -->
+                <div class="bg-white rounded-lg border p-6 animate-wizard-flow">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold">Configure Template Settings</h3>
+                        <div class="text-sm text-muted-foreground">
+                            Step 2 of 4: Customize the template to fit your workflow needs
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full animate-install-progress" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- General Configuration -->
+                <div class="bg-white rounded-lg border animate-wizard-flow">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">General Settings</h3>
+                        <p class="text-sm text-muted-foreground mt-1">Basic configuration for your email processing workflow</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Workflow Name -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Workflow Name *</label>
+                            <input type="text" 
+                                   value="Email Processing Automation" 
+                                   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="Enter a unique name for this workflow">
+                            <div class="text-xs text-muted-foreground mt-1">This will appear in your workflow list</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Description</label>
+                            <textarea class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-20" 
+                                      placeholder="Describe what this workflow does...">Automated processing of incoming emails with AI-powered content analysis and task creation</textarea>
+                        </div>
+
+                        <!-- Workspace Location -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Install Location *</label>
+                            <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option>My Workspace</option>
+                                <option>Team Workspace</option>
+                                <option>Development Workspace</option>
+                            </select>
+                            <div class="text-xs text-muted-foreground mt-1">Choose where to install this workflow</div>
+                        </div>
+
+                        <!-- Folder Organization -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Folder</label>
+                            <div class="flex gap-2">
+                                <select class="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>/Email & Communication</option>
+                                    <option>/Automation</option>
+                                    <option>/AI Workflows</option>
+                                    <option>Create New Folder...</option>
+                                </select>
+                                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                                    Browse
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Configuration -->
+                <div class="bg-white rounded-lg border animate-wizard-flow">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Email Processing Configuration</h3>
+                        <p class="text-sm text-muted-foreground mt-1">Configure how emails should be processed and analyzed</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Processing Mode -->
+                        <div>
+                            <label class="block text-sm font-medium mb-3">Processing Mode *</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center p-3 border-2 border-blue-500 bg-blue-50 rounded-lg cursor-pointer">
+                                    <input type="radio" name="processing_mode" value="full" checked class="mr-3">
+                                    <div>
+                                        <div class="font-medium text-blue-900">Full Analysis</div>
+                                        <div class="text-xs text-blue-700">Complete content analysis with AI</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="processing_mode" value="basic" class="mr-3">
+                                    <div>
+                                        <div class="font-medium">Basic Processing</div>
+                                        <div class="text-xs text-muted-foreground">Headers and metadata only</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Email Filters -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email Query Filter *</label>
+                            <input type="text" 
+                                   value="is:unread from:team@ OR from:support@" 
+                                   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="Enter Gmail-style query">
+                            <div class="text-xs text-muted-foreground mt-1">Use Gmail search syntax to filter which emails to process</div>
+                        </div>
+
+                        <!-- Batch Processing -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Batch Size</label>
+                                <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>5 emails per batch</option>
+                                    <option>10 emails per batch</option>
+                                    <option>20 emails per batch</option>
+                                    <option>50 emails per batch</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Max Emails per Run</label>
+                                <input type="number" 
+                                       value="50" 
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       min="1" max="500">
+                            </div>
+                        </div>
+
+                        <!-- AI Model Selection -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">AI Model</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center justify-between p-3 border-2 border-blue-500 bg-blue-50 rounded-lg cursor-pointer">
+                                    <div class="flex items-center">
+                                        <input type="radio" name="ai_model" value="gpt4" checked class="mr-3">
+                                        <div>
+                                            <div class="font-medium text-blue-900">GPT-4 Turbo</div>
+                                            <div class="text-xs text-blue-700">Best quality, higher cost</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-blue-700 font-medium">~$0.05/email</span>
+                                </label>
+                                <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <div class="flex items-center">
+                                        <input type="radio" name="ai_model" value="gpt35" class="mr-3">
+                                        <div>
+                                            <div class="font-medium">GPT-3.5 Turbo</div>
+                                            <div class="text-xs text-muted-foreground">Good quality, lower cost</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-muted-foreground font-medium">~$0.01/email</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Features -->
+                        <div>
+                            <label class="block text-sm font-medium mb-3">Analysis Features</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300">
+                                    <span class="text-sm">Priority classification</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300">
+                                    <span class="text-sm">Entity extraction</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300">
+                                    <span class="text-sm">Sentiment analysis</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-gray-300">
+                                    <span class="text-sm">Language detection</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300">
+                                    <span class="text-sm">Action item detection</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-gray-300">
+                                    <span class="text-sm">Attachment processing</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Configuration -->
+                <div class="bg-white rounded-lg border animate-wizard-flow">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Output & Task Configuration</h3>
+                        <p class="text-sm text-muted-foreground mt-1">Configure where processed data should be sent</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Task Creation -->
+                        <div>
+                            <label class="block text-sm font-medium mb-3">Task Creation Target</label>
+                            <div class="space-y-2">
+                                <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>Notion Database: Team Tasks</option>
+                                    <option>Notion Database: Email Inbox</option>
+                                    <option>Airtable: Project Management</option>
+                                    <option>Asana: Email Processing</option>
+                                    <option>No task creation</option>
+                                </select>
+                                <div class="text-xs text-muted-foreground">Tasks will be created for each processed email</div>
+                            </div>
+                        </div>
+
+                        <!-- Task Template -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Task Template</label>
+                            <div class="bg-gray-50 rounded-lg p-3 text-sm">
+                                <div class="mb-2">
+                                    <strong>Title:</strong> 📧 {email.subject}
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Description:</strong> Email from {email.sender} - {analysis.summary}
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Priority:</strong> {analysis.priority}
+                                </div>
+                                <div>
+                                    <strong>Due Date:</strong> {analysis.due_date || "None"}
+                                </div>
+                            </div>
+                            <button class="text-xs text-blue-600 hover:underline mt-2">Customize template</button>
+                        </div>
+
+                        <!-- Data Storage -->
+                        <div>
+                            <label class="block text-sm font-medium mb-3">Data Storage Options</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300">
+                                    <span class="text-sm">Save processed emails to Records</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded border-gray-300">
+                                    <span class="text-sm">Export analysis results to CSV</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-gray-300">
+                                    <span class="text-sm">Send summary reports via email</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-gray-300">
+                                    <span class="text-sm">Archive original emails</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Configuration -->
+                <div class="bg-white rounded-lg border animate-wizard-flow">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Automation & Scheduling</h3>
+                        <p class="text-sm text-muted-foreground mt-1">Configure when and how often this workflow should run</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Trigger Type -->
+                        <div>
+                            <label class="block text-sm font-medium mb-3">Execution Trigger</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="trigger" value="manual" checked class="mr-3">
+                                    <div>
+                                        <div class="font-medium">Manual Only</div>
+                                        <div class="text-xs text-muted-foreground">Run manually when needed</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="trigger" value="scheduled" class="mr-3">
+                                    <div>
+                                        <div class="font-medium">Scheduled</div>
+                                        <div class="text-xs text-muted-foreground">Run automatically on schedule</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="trigger" value="webhook" class="mr-3">
+                                    <div>
+                                        <div class="font-medium">Webhook/API</div>
+                                        <div class="text-xs text-muted-foreground">Trigger via external systems</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Settings (Hidden unless scheduled is selected) -->
+                        <div class="bg-gray-50 rounded-lg p-4 opacity-50">
+                            <div class="text-sm font-medium mb-3 text-gray-600">Schedule Settings</div>
+                            <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                                <div>
+                                    <label class="block mb-1">Frequency</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" disabled>
+                                        <option>Every 30 minutes</option>
+                                        <option>Every hour</option>
+                                        <option>Every 2 hours</option>
+                                        <option>Daily</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block mb-1">Active Hours</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white" disabled>
+                                        <option>Business hours (9 AM - 5 PM)</option>
+                                        <option>Extended hours (7 AM - 7 PM)</option>
+                                        <option>24/7</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Enable scheduled trigger above to configure these settings</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between bg-white rounded-lg border p-6">
+                    <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        ← Back to Template Selection
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Save as Draft
+                        </button>
+                        <button class="px-6 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                            Continue to Dependencies →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

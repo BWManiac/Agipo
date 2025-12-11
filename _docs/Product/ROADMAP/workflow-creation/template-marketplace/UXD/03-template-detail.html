@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Email Processor - Template Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'detail-load': 'detailLoad 0.6s ease-out',
+                        'install-pulse': 'installPulse 2s ease-in-out infinite',
+                        'review-appear': 'reviewAppear 0.4s ease-out',
+                        'tab-switch': 'tabSwitch 0.3s ease-out',
+                        'screenshot-zoom': 'screenshotZoom 0.3s ease-out',
+                    },
+                    keyframes: {
+                        detailLoad: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        installPulse: {
+                            '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.4)' },
+                            '50%': { transform: 'scale(1.05)', boxShadow: '0 0 0 10px rgba(34, 197, 94, 0)' },
+                        },
+                        reviewAppear: {
+                            '0%': { opacity: '0', transform: 'translateX(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        tabSwitch: {
+                            '0%': { opacity: '0', transform: 'translateY(5px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        screenshotZoom: {
+                            '0%': { transform: 'scale(1)' },
+                            '100%': { transform: 'scale(1.05)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-semibold">Smart Email Processor</h1>
+                    <span class="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-medium rounded-full">
+                        ⭐ Featured
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="col-span-2 space-y-8 animate-detail-load">
+                <!-- Template Header -->
+                <div class="bg-white rounded-xl border p-8">
+                    <div class="flex items-start gap-6">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-3xl font-bold mb-2">Smart Email Processor</h2>
+                            <p class="text-lg text-gray-600 mb-4">
+                                Automatically categorize, extract entities, and create tasks from incoming emails using AI-powered analysis.
+                            </p>
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="flex items-center gap-1">
+                                    <div class="flex">
+                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm font-medium">4.9</span>
+                                    <span class="text-sm text-muted-foreground">(127 reviews)</span>
+                                </div>
+                                <span class="text-muted-foreground">•</span>
+                                <span class="text-sm text-muted-foreground">2,431 downloads</span>
+                                <span class="text-muted-foreground">•</span>
+                                <span class="text-sm text-muted-foreground">Updated 2 days ago</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">Email</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">AI</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">Productivity</span>
+                                <span class="px-3 py-1 bg-orange-100 text-orange-700 text-sm rounded-full">Beginner</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screenshot Gallery -->
+                <div class="bg-white rounded-xl border p-6">
+                    <h3 class="text-lg font-semibold mb-4">Screenshots & Demo</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center hover:animate-screenshot-zoom cursor-pointer">
+                            <div class="text-center">
+                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <div class="text-sm text-gray-500">Workflow Overview</div>
+                            </div>
+                        </div>
+                        <div class="aspect-video bg-gradient-to-br from-green-100 to-blue-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center hover:animate-screenshot-zoom cursor-pointer">
+                            <div class="text-center">
+                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                <div class="text-sm text-gray-500">Results Dashboard</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabbed Content -->
+                <div class="bg-white rounded-xl border">
+                    <div class="border-b">
+                        <nav class="flex space-x-8 px-6">
+                            <button class="py-4 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600">
+                                Overview
+                            </button>
+                            <button class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Configuration
+                            </button>
+                            <button class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Dependencies
+                            </button>
+                            <button class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Reviews
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <div class="p-6 animate-tab-switch">
+                        <div class="prose max-w-none">
+                            <h3>What This Template Does</h3>
+                            <p>The Smart Email Processor automatically analyzes incoming emails using advanced AI to extract meaningful information and automate common tasks. Perfect for busy professionals who want to streamline their email workflow.</p>
+                            
+                            <h4>Key Features</h4>
+                            <ul>
+                                <li><strong>Intelligent Categorization:</strong> Automatically sorts emails into predefined categories based on content analysis</li>
+                                <li><strong>Entity Extraction:</strong> Identifies important information like dates, names, amounts, and contact details</li>
+                                <li><strong>Priority Scoring:</strong> Assigns priority levels based on sender importance, urgency indicators, and content analysis</li>
+                                <li><strong>Task Creation:</strong> Automatically creates actionable tasks in your preferred project management tool</li>
+                                <li><strong>Smart Notifications:</strong> Sends intelligent alerts for high-priority emails requiring immediate attention</li>
+                            </ul>
+
+                            <h4>How It Works</h4>
+                            <ol>
+                                <li><strong>Email Ingestion:</strong> Connects to your Gmail account and monitors for new emails</li>
+                                <li><strong>Content Analysis:</strong> Uses GPT-4 to analyze email content, subject, and metadata</li>
+                                <li><strong>Information Extraction:</strong> Identifies key entities, sentiment, and action items</li>
+                                <li><strong>Task Generation:</strong> Creates structured tasks in Notion, Asana, or other tools</li>
+                                <li><strong>Notification:</strong> Sends summary reports and urgent alerts via Slack or email</li>
+                            </ol>
+
+                            <h4>Perfect For</h4>
+                            <ul>
+                                <li>Busy executives managing high email volumes</li>
+                                <li>Customer service teams processing support requests</li>
+                                <li>Sales teams tracking leads and opportunities</li>
+                                <li>Project managers coordinating team communications</li>
+                                <li>Anyone looking to achieve inbox zero efficiently</li>
+                            </ul>
+
+                            <h4>Success Stories</h4>
+                            <blockquote>
+                                <p>"This template reduced my email processing time by 75%. I can now focus on high-value work instead of manually sorting through hundreds of emails daily." - Sarah M., Marketing Director</p>
+                            </blockquote>
+
+                            <blockquote>
+                                <p>"The AI categorization is incredibly accurate. It's like having a personal assistant that never sleeps." - Mike R., Sales Manager</p>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="bg-white rounded-xl border p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold">User Reviews</h3>
+                        <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                            Write Review
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Review 1 -->
+                        <div class="border-b pb-6 animate-review-appear">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-medium">SM</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h4 class="font-medium">Sarah Mitchell</h4>
+                                        <div class="flex text-yellow-400">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground">3 days ago</span>
+                                    </div>
+                                    <p class="text-gray-700">
+                                        Absolutely game-changing! This template has transformed how I handle my daily email workflow. The AI categorization is incredibly accurate, and the task creation feature has helped me never miss important action items. Setup was straightforward even for a non-technical user like me.
+                                    </p>
+                                    <div class="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                                        <button class="flex items-center gap-1 hover:text-blue-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                            </svg>
+                                            <span>Helpful (12)</span>
+                                        </button>
+                                        <button class="flex items-center gap-1 hover:text-blue-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                            </svg>
+                                            <span>Reply</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review 2 -->
+                        <div class="border-b pb-6 animate-review-appear">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-medium">MR</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h4 class="font-medium">Mike Rodriguez</h4>
+                                        <div class="flex text-yellow-400">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground">1 week ago</span>
+                                    </div>
+                                    <p class="text-gray-700">
+                                        Great template overall! The entity extraction works really well for identifying customer information and order details. Only minor issue was the initial setup took a bit longer than expected due to the OAuth configuration, but the documentation was helpful.
+                                    </p>
+                                    <div class="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                                        <button class="flex items-center gap-1 hover:text-blue-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                            </svg>
+                                            <span>Helpful (8)</span>
+                                        </button>
+                                        <button class="flex items-center gap-1 hover:text-blue-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                            </svg>
+                                            <span>Reply</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full py-3 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                            Load More Reviews
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Install Card -->
+                <div class="bg-white rounded-xl border p-6">
+                    <div class="text-center mb-6">
+                        <div class="text-3xl font-bold mb-2">Free</div>
+                        <div class="text-sm text-muted-foreground">Open source template</div>
+                    </div>
+                    <button class="w-full px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors animate-install-pulse mb-4">
+                        Install Template
+                    </button>
+                    <div class="space-y-2 text-sm text-muted-foreground">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Free to use</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>5-minute setup</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Customizable</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Community support</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template Info -->
+                <div class="bg-white rounded-xl border p-6">
+                    <h3 class="font-semibold mb-4">Template Information</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Version:</span>
+                            <span class="font-medium">2.1.0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Size:</span>
+                            <span class="font-medium">1.2 MB</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Complexity:</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Beginner</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Category:</span>
+                            <span class="font-medium">Email Processing</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">License:</span>
+                            <span class="font-medium">MIT</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Updated:</span>
+                            <span class="font-medium">2 days ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Author Info -->
+                <div class="bg-white rounded-xl border p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">A</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">Agipo Team</h3>
+                            <div class="flex items-center gap-1">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Official</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Verified</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Official templates created and maintained by the Agipo team. High-quality, tested, and regularly updated.
+                    </p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Templates:</span>
+                            <span class="font-medium">47</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Downloads:</span>
+                            <span class="font-medium">156,439</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Avg. Rating:</span>
+                            <span class="font-medium">4.8 ⭐</span>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors">
+                        View All Templates
+                    </button>
+                </div>
+
+                <!-- Related Templates -->
+                <div class="bg-white rounded-xl border p-6">
+                    <h3 class="font-semibold mb-4">Related Templates</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">Inbox Zero Automation</h4>
+                                <div class="text-xs text-muted-foreground">⭐ 4.6 • 1.8k downloads</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">Email Sentiment Analyzer</h4>
+                                <div class="text-xs text-muted-foreground">⭐ 4.7 • 967 downloads</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
