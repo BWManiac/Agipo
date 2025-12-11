@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime Engine - Step Debugging</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'debug-highlight': 'debugHighlight 1s ease-in-out infinite',
+                        'breakpoint-pulse': 'breakpointPulse 1.5s ease-in-out infinite',
+                        'variable-update': 'variableUpdate 0.3s ease-out',
+                        'step-execute': 'stepExecute 0.5s ease-out',
+                        'code-focus': 'codeFocus 0.3s ease-out',
+                    },
+                    keyframes: {
+                        debugHighlight: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 252 232)', borderColor: 'rgb(251 191 36)' },
+                            '50%': { backgroundColor: 'rgb(255 251 235)', borderColor: 'rgb(245 158 11)' },
+                        },
+                        breakpointPulse: {
+                            '0%, 100%': { backgroundColor: 'rgb(220 38 38)', transform: 'scale(1)' },
+                            '50%': { backgroundColor: 'rgb(239 68 68)', transform: 'scale(1.1)' },
+                        },
+                        variableUpdate: {
+                            '0%': { backgroundColor: 'rgb(219 234 254)', transform: 'scale(1.02)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', transform: 'scale(1)' },
+                        },
+                        stepExecute: {
+                            '0%': { backgroundColor: 'rgb(220 252 231)', borderColor: 'rgb(34 197 94)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', borderColor: 'rgb(229 231 235)' },
+                        },
+                        codeFocus: {
+                            '0%': { backgroundColor: 'rgb(239 246 255)', transform: 'scale(1.01)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Step Debugger</h1>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
+                        ⏸️ Paused at Breakpoint
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm text-muted-foreground">
+                        Email #15 • Step: Content Parser • Line: 47
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Step Over (F10)
+                    </button>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Step Into (F11)
+                    </button>
+                    <button class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+                        Continue (F5)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Debug Controls -->
+            <div class="space-y-4">
+                <!-- Execution Control -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Execution Control</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
+                            ▶️ Continue
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            ⏭️ Step Over
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            ⬇️ Step Into
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            ⬆️ Step Out
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border border-red-200 text-red-700 rounded-lg hover:bg-red-50 transition-colors">
+                            ⏹️ Stop Debug
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Breakpoints -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Breakpoints</h3>
+                    <div class="space-y-2">
+                        <!-- Active Breakpoint -->
+                        <div class="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded animate-breakpoint-pulse">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">content_parser.py:47</div>
+                                <div class="text-xs text-red-700">Entity extraction loop</div>
+                            </div>
+                            <button class="text-xs text-red-600 hover:text-red-800">✕</button>
+                        </div>
+
+                        <!-- Other Breakpoints -->
+                        <div class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">email_fetcher.py:23</div>
+                                <div class="text-xs text-muted-foreground">Gmail API call</div>
+                            </div>
+                            <button class="text-xs text-gray-500 hover:text-gray-700">✕</button>
+                        </div>
+
+                        <div class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">notion_writer.py:89</div>
+                                <div class="text-xs text-muted-foreground">Database insertion</div>
+                            </div>
+                            <button class="text-xs text-gray-500 hover:text-gray-700">✕</button>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-3 px-3 py-2 text-xs border border-dashed rounded-lg hover:bg-gray-50 transition-colors">
+                        + Add Breakpoint
+                    </button>
+                </div>
+
+                <!-- Call Stack -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Call Stack</h3>
+                    <div class="space-y-1">
+                        <div class="p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                            <div class="font-medium text-blue-900">extract_entities()</div>
+                            <div class="text-blue-700">content_parser.py:47</div>
+                        </div>
+                        <div class="p-2 hover:bg-gray-50 rounded text-xs cursor-pointer">
+                            <div class="font-medium">process_email()</div>
+                            <div class="text-muted-foreground">email_processor.py:124</div>
+                        </div>
+                        <div class="p-2 hover:bg-gray-50 rounded text-xs cursor-pointer">
+                            <div class="font-medium">run_workflow()</div>
+                            <div class="text-muted-foreground">workflow_runner.py:67</div>
+                        </div>
+                        <div class="p-2 hover:bg-gray-50 rounded text-xs cursor-pointer">
+                            <div class="font-medium">main()</div>
+                            <div class="text-muted-foreground">main.py:15</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Watch Variables -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Watch</h3>
+                    <div class="space-y-2">
+                        <div class="p-2 bg-green-50 border border-green-200 rounded text-xs animate-variable-update">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium">current_email</span>
+                                <span class="text-green-600">Object</span>
+                            </div>
+                            <div class="text-muted-foreground truncate">{"subject": "Weekly Sales...", "from": "sarah..."}</div>
+                        </div>
+                        <div class="p-2 border rounded text-xs">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium">entities_found</span>
+                                <span class="text-blue-600">Array[3]</span>
+                            </div>
+                            <div class="text-muted-foreground">["Q4 Performance", "$2.3M", "Sarah Wilson"]</div>
+                        </div>
+                        <div class="p-2 border rounded text-xs">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium">processing_time</span>
+                                <span class="text-purple-600">Float</span>
+                            </div>
+                            <div class="text-muted-foreground">4.237</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <input type="text" placeholder="Add expression to watch..." 
+                               class="w-full px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+
+                <!-- Debug Console -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Debug Console</h3>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 text-xs font-mono h-32 overflow-y-auto">
+                        <div class="text-gray-400"># Debug console - evaluate expressions</div>
+                        <div class="text-white">>>> print(current_email.subject)</div>
+                        <div>"Weekly Sales Report - Q4 Performance"</div>
+                        <div class="text-white">>>> len(entities_found)</div>
+                        <div>3</div>
+                        <div class="text-white flex items-center">
+                            >>> <span class="bg-gray-700 animate-pulse">|</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Debug Panel -->
+            <div class="col-span-3 space-y-6">
+                <!-- Code Editor with Current Line -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b bg-blue-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-medium text-blue-900">content_parser.py</h3>
+                            <div class="text-xs text-blue-700">
+                                Current position: Line 47, Column 12
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <!-- Code Content -->
+                        <div class="p-4 bg-gray-900 text-gray-300 font-mono text-xs overflow-x-auto">
+                            <div class="space-y-1">
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">40</span>
+                                    <span>def extract_entities(email_content, model="gpt-4"):</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">41</span>
+                                    <span class="ml-4">"""Extract entities from email content using AI."""</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">42</span>
+                                    <span class="ml-4">prompt = create_entity_prompt(email_content)</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">43</span>
+                                    <span class="ml-4">response = ai_client.complete(prompt, model=model)</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">44</span>
+                                    <span class="ml-4"></span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">45</span>
+                                    <span class="ml-4">try:</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">46</span>
+                                    <span class="ml-8">entities = parse_ai_response(response)</span>
+                                </div>
+                                <!-- Current Line (highlighted) -->
+                                <div class="flex bg-yellow-500 bg-opacity-20 border-l-4 border-yellow-500 animate-debug-highlight">
+                                    <span class="text-gray-500 w-8 text-right mr-4">47</span>
+                                    <span class="ml-8 text-yellow-200">for entity in entities:</span>
+                                    <div class="absolute right-2 flex items-center">
+                                        <div class="w-3 h-3 bg-red-500 rounded-full animate-breakpoint-pulse"></div>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">48</span>
+                                    <span class="ml-12">if validate_entity(entity):</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">49</span>
+                                    <span class="ml-16">validated_entities.append(entity)</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">50</span>
+                                    <span class="ml-16">log_entity_found(entity)</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">51</span>
+                                    <span class="ml-12">else:</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">52</span>
+                                    <span class="ml-16">log_invalid_entity(entity)</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">53</span>
+                                    <span class="ml-4"></span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">54</span>
+                                    <span class="ml-4">except Exception as e:</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">55</span>
+                                    <span class="ml-8">logger.error(f"Entity extraction failed: {e}")</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="text-gray-500 w-8 text-right mr-4">56</span>
+                                    <span class="ml-8">return []</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Execution Arrow -->
+                        <div class="absolute left-1 top-[200px] w-0 h-0 border-l-4 border-l-yellow-500 border-t-2 border-b-2 border-t-transparent border-b-transparent"></div>
+                    </div>
+                </div>
+
+                <!-- Variable Inspector -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Local Variables -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">Local Variables</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="space-y-3 text-xs">
+                                <!-- Current Email Variable -->
+                                <div class="border rounded-lg p-3 animate-code-focus">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">email_content</span>
+                                        <span class="text-blue-600">String (1,247 chars)</span>
+                                    </div>
+                                    <div class="bg-gray-50 rounded p-2 text-muted-foreground">
+                                        "Hi team,
+
+The Q4 performance numbers are in and I'm excited to share the results. We achieved $2.3M in revenue, which represents a 23% increase from Q3..."
+                                    </div>
+                                    <button class="text-blue-600 hover:underline text-xs mt-1">View full content</button>
+                                </div>
+
+                                <!-- Entities Variable -->
+                                <div class="border rounded-lg p-3 animate-variable-update">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">entities</span>
+                                        <span class="text-green-600">List[3]</span>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2 p-2 bg-blue-50 rounded">
+                                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            <span>[0] "Q4 Performance" (DATE_RANGE)</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 bg-green-50 rounded">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <span>[1] "$2.3M" (FINANCIAL)</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 bg-purple-50 rounded">
+                                            <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                            <span>[2] "Sarah Wilson" (PERSON)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Model Variable -->
+                                <div class="border rounded-lg p-3">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">model</span>
+                                        <span class="text-purple-600">String</span>
+                                    </div>
+                                    <div class="bg-gray-50 rounded p-2 text-muted-foreground">"gpt-4"</div>
+                                </div>
+
+                                <!-- Validated Entities -->
+                                <div class="border rounded-lg p-3">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">validated_entities</span>
+                                        <span class="text-orange-600">List[0]</span>
+                                    </div>
+                                    <div class="bg-gray-50 rounded p-2 text-muted-foreground">[] (empty - being populated)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Response Inspector -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">AI Response Analysis</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="space-y-4 text-xs">
+                                <!-- Request Details -->
+                                <div>
+                                    <div class="text-muted-foreground mb-2">Request Details:</div>
+                                    <div class="bg-blue-50 rounded p-3 space-y-1">
+                                        <div><strong>Model:</strong> gpt-4-turbo</div>
+                                        <div><strong>Temperature:</strong> 0.2</div>
+                                        <div><strong>Max tokens:</strong> 1000</div>
+                                        <div><strong>Prompt length:</strong> 1,847 tokens</div>
+                                    </div>
+                                </div>
+
+                                <!-- Response Metrics -->
+                                <div>
+                                    <div class="text-muted-foreground mb-2">Response Metrics:</div>
+                                    <div class="bg-green-50 rounded p-3 space-y-1">
+                                        <div><strong>Response time:</strong> 2.34s</div>
+                                        <div><strong>Tokens used:</strong> 456 / 1000</div>
+                                        <div><strong>Confidence:</strong> 96.8%</div>
+                                        <div><strong>Status:</strong> Success</div>
+                                    </div>
+                                </div>
+
+                                <!-- Raw Response -->
+                                <div>
+                                    <div class="text-muted-foreground mb-2">AI Response:</div>
+                                    <div class="bg-gray-50 rounded p-3 max-h-32 overflow-y-auto font-mono">
+{
+  "entities": [
+    {
+      "text": "Q4 Performance",
+      "type": "DATE_RANGE",
+      "confidence": 0.95,
+      "start": 127,
+      "end": 141
+    },
+    {
+      "text": "$2.3M",
+      "type": "FINANCIAL",
+      "confidence": 0.98,
+      "start": 234,
+      "end": 239
+    },
+    {
+      "text": "Sarah Wilson",
+      "type": "PERSON", 
+      "confidence": 0.91,
+      "start": 45,
+      "end": 57
+    }
+  ]
+}
+                                    </div>
+                                </div>
+
+                                <!-- Entity Validation Status -->
+                                <div>
+                                    <div class="text-muted-foreground mb-2">Entity Validation:</div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded">
+                                            <span>Q4 Performance</span>
+                                            <span class="text-yellow-600">⏳ Validating</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                            <span>$2.3M</span>
+                                            <span class="text-gray-500">⏸️ Pending</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                            <span>Sarah Wilson</span>
+                                            <span class="text-gray-500">⏸️ Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debug Output -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-medium">Debug Output</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="text-xs text-blue-600 hover:underline">Clear</button>
+                                <button class="text-xs text-blue-600 hover:underline">Filter</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="bg-gray-900 text-gray-300 rounded p-4 font-mono text-xs h-64 overflow-y-auto">
+                            <div class="space-y-1">
+                                <div class="text-gray-500">[09:16:32.123] DEBUG: Starting entity extraction for email #15</div>
+                                <div class="text-blue-400">[09:16:32.156] INFO: Created AI prompt with 1,847 tokens</div>
+                                <div class="text-green-400">[09:16:34.489] SUCCESS: AI response received (456 tokens, 2.34s)</div>
+                                <div class="text-yellow-400">[09:16:34.502] DEBUG: Parsed 3 entities from AI response</div>
+                                <div class="text-purple-400">[09:16:34.503] DEBUG: Entering validation loop for 3 entities</div>
+                                <div class="text-yellow-400 bg-yellow-900 bg-opacity-20">[09:16:34.503] DEBUG: → Currently processing entity[0]: "Q4 Performance"</div>
+                                <div class="text-gray-500">[09:16:34.505] DEBUG: Entity type: DATE_RANGE, confidence: 95%</div>
+                                <div class="text-blue-400">[09:16:34.507] DEBUG: Calling validate_entity() with parameters...</div>
+                                <div class="text-white animate-pulse">⚡ Execution paused at breakpoint (line 47)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step Control Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-muted-foreground">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <span>Execution paused • Next: validate_entity("Q4 Performance")</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors animate-step-execute">
+                                Step Into validate_entity()
+                            </button>
+                            <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                                Step Over (Next Entity)
+                            </button>
+                            <button class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+                                Continue to Next Breakpoint
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
