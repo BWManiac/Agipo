@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'highlight': 'highlight 1s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        highlight: {
+                            '0%': { backgroundColor: 'rgb(254 249 195)' },
+                            '100%': { backgroundColor: 'transparent' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-1">Customer Profiles</h1>
+                    <div class="flex items-center gap-4 text-sm text-gray-600">
+                        <span>48,392 records</span>
+                        <span>•</span>
+                        <span>23 columns</span>
+                        <span>•</span>
+                        <span>2.8 GB</span>
+                        <span>•</span>
+                        <span class="flex items-center gap-1">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            Live
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Export
+                    </button>
+                    <button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium">
+                        Add Record
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6 animate-slide-in">
+            <div class="flex items-center gap-4">
+                <!-- Search -->
+                <div class="flex-1">
+                    <input type="text" placeholder="Search records..." 
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                </div>
+                
+                <!-- Quick Filters -->
+                <div class="flex items-center gap-2">
+                    <button class="px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium">
+                        Active (15,234)
+                    </button>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200">
+                        Inactive (1,892)
+                    </button>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200">
+                        New (423)
+                    </button>
+                </div>
+
+                <!-- Advanced Filters -->
+                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Filters
+                </button>
+                
+                <!-- View Options -->
+                <div class="flex items-center border border-gray-200 rounded-lg">
+                    <button class="p-2 bg-emerald-100 text-emerald-600 rounded-l-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <button class="p-2 bg-white text-gray-400 rounded-r-lg hover:bg-gray-50">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Filters Display -->
+            <div class="mt-4 flex items-center gap-2">
+                <span class="text-sm text-gray-600">Active filters:</span>
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
+                    status = "active"
+                    <button class="hover:bg-blue-200 rounded">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </span>
+                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full flex items-center gap-1">
+                    created_at > "2024-01-01"
+                    <button class="hover:bg-purple-200 rounded">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </span>
+                <button class="text-xs text-gray-500 hover:text-gray-700">Clear all</button>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden animate-fade-in">
+            <!-- Table Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="rounded text-emerald-600">
+                        <span class="text-sm font-medium text-gray-700">15,234 records</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="text-sm text-gray-600 hover:text-gray-900">Bulk Edit</button>
+                        <button class="text-sm text-gray-600 hover:text-gray-900">Delete Selected</button>
+                        <select class="text-sm border border-gray-200 rounded px-2 py-1">
+                            <option>50 per page</option>
+                            <option>100 per page</option>
+                            <option>500 per page</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Content -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left">
+                                <input type="checkbox" class="rounded text-emerald-600">
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                                <div class="flex items-center gap-1">
+                                    Name
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                    </svg>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                                <div class="flex items-center gap-1">
+                                    Email
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                    </svg>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <!-- Row 1 -->
+                        <tr class="hover:bg-gray-50 transition-colors animate-highlight">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-emerald-600">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                                        <span class="text-emerald-600 font-medium text-sm">JD</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">John Doe</p>
+                                        <p class="text-xs text-gray-500">ID: cust_abc123</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">john.doe@email.com</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">San Francisco, CA</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Dec 8, 2024</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <button class="text-emerald-600 hover:text-emerald-800 text-sm">Edit</button>
+                                    <button class="text-gray-600 hover:text-gray-800 text-sm">View</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Row 2 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-emerald-600">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <span class="text-blue-600 font-medium text-sm">JS</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Jane Smith</p>
+                                        <p class="text-xs text-gray-500">ID: cust_def456</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">jane.smith@email.com</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">New York, NY</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Dec 7, 2024</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <button class="text-emerald-600 hover:text-emerald-800 text-sm">Edit</button>
+                                    <button class="text-gray-600 hover:text-gray-800 text-sm">View</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Row 3 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-emerald-600">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                        <span class="text-purple-600 font-medium text-sm">MJ</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Michael Johnson</p>
+                                        <p class="text-xs text-gray-500">ID: cust_ghi789</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">michael.j@email.com</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Pending</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Austin, TX</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Dec 6, 2024</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <button class="text-emerald-600 hover:text-emerald-800 text-sm">Edit</button>
+                                    <button class="text-gray-600 hover:text-gray-800 text-sm">View</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Row 4 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-emerald-600">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                                        <span class="text-pink-600 font-medium text-sm">EB</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Emily Brown</p>
+                                        <p class="text-xs text-gray-500">ID: cust_jkl012</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">emily.brown@email.com</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Inactive</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Seattle, WA</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Dec 5, 2024</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <button class="text-emerald-600 hover:text-emerald-800 text-sm">Edit</button>
+                                    <button class="text-gray-600 hover:text-gray-800 text-sm">View</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Row 5 -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" class="rounded text-emerald-600">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                        <span class="text-indigo-600 font-medium text-sm">DW</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">David Wilson</p>
+                                        <p class="text-xs text-gray-500">ID: cust_mno345</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">david.wilson@email.com</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Miami, FL</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">Dec 4, 2024</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <button class="text-emerald-600 hover:text-emerald-800 text-sm">Edit</button>
+                                    <button class="text-gray-600 hover:text-gray-800 text-sm">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm text-gray-700">
+                        Showing <span class="font-medium">1</span> to <span class="font-medium">50</span> of <span class="font-medium">15,234</span> results
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white text-sm" disabled>Previous</button>
+                        <button class="px-3 py-1 bg-emerald-600 text-white rounded text-sm">1</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white text-sm">2</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white text-sm">3</button>
+                        <span class="px-2 text-gray-500">...</span>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white text-sm">305</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white text-sm">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Bar -->
+        <div class="mt-6 bg-white rounded-xl border border-gray-200 p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-medium text-gray-700">Quick Actions:</span>
+                    <button class="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded text-sm font-medium hover:bg-emerald-200">
+                        Export Selection
+                    </button>
+                    <button class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded text-sm font-medium hover:bg-blue-200">
+                        Bulk Update
+                    </button>
+                    <button class="px-3 py-1.5 bg-purple-100 text-purple-700 rounded text-sm font-medium hover:bg-purple-200">
+                        Create Segment
+                    </button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-600">3 records selected</span>
+                    <button class="text-sm text-gray-600 hover:text-gray-800">Clear Selection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

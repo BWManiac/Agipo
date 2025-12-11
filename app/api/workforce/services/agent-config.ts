@@ -214,3 +214,159 @@ export async function updateWorkflowBindings(
   }
 }
 
+/**
+ * Updates the system prompt assigned to an agent by modifying the source file.
+ */
+export async function updateAgentSystemPrompt(agentId: string, systemPrompt: string): Promise<void> {
+  const folderName = await getAgentFolderPath(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
+  }
+
+  const agentFile = path.join(process.cwd(), "_tables", "agents", folderName, "config.ts");
+  
+  let fileContent: string;
+  try {
+    fileContent = await fs.readFile(agentFile, "utf-8");
+  } catch (error) {
+    throw new Error(`Failed to read agent config file: ${folderName}/config.ts`);
+  }
+  
+  // Escape quotes in systemPrompt
+  const escapedPrompt = systemPrompt.replace(/"/g, '\\"');
+  
+  // Replace systemPrompt field: systemPrompt: "current value",
+  const pattern = /(systemPrompt:\s*)"[^"]*"(\s*,?)/;
+  if (!fileContent.match(pattern)) {
+    throw new Error("Could not find systemPrompt field in agent config");
+  }
+  
+  const updatedContent = fileContent.replace(pattern, `$1"${escapedPrompt}"$2`);
+  await fs.writeFile(agentFile, updatedContent, "utf-8");
+}
+
+/**
+ * Updates the model assigned to an agent by modifying the source file.
+ */
+export async function updateAgentModel(agentId: string, model: string): Promise<void> {
+  const folderName = await getAgentFolderPath(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
+  }
+
+  const agentFile = path.join(process.cwd(), "_tables", "agents", folderName, "config.ts");
+  
+  let fileContent: string;
+  try {
+    fileContent = await fs.readFile(agentFile, "utf-8");
+  } catch (error) {
+    throw new Error(`Failed to read agent config file: ${folderName}/config.ts`);
+  }
+  
+  // Replace model field: model: "current-model",
+  const pattern = /(model:\s*)"[^"]*"(\s*,?)/;
+  if (!fileContent.match(pattern)) {
+    throw new Error("Could not find model field in agent config");
+  }
+  
+  const updatedContent = fileContent.replace(pattern, `$1"${model}"$2`);
+  await fs.writeFile(agentFile, updatedContent, "utf-8");
+}
+
+/**
+ * Updates the maxSteps assigned to an agent by modifying the source file.
+ */
+export async function updateAgentMaxSteps(agentId: string, maxSteps: number): Promise<void> {
+  const folderName = await getAgentFolderPath(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
+  }
+
+  const agentFile = path.join(process.cwd(), "_tables", "agents", folderName, "config.ts");
+  
+  let fileContent: string;
+  try {
+    fileContent = await fs.readFile(agentFile, "utf-8");
+  } catch (error) {
+    throw new Error(`Failed to read agent config file: ${folderName}/config.ts`);
+  }
+  
+  // Check if maxSteps exists: maxSteps: 5,
+  const existingPattern = /(maxSteps:\s*)\d+(\s*,?)/;
+  if (fileContent.match(existingPattern)) {
+    // Update existing field
+    const updatedContent = fileContent.replace(existingPattern, `$1${maxSteps}$2`);
+    await fs.writeFile(agentFile, updatedContent, "utf-8");
+  } else {
+    // Add after model field: model: "...",
+    const modelPattern = /(model:\s*"[^"]*")(\s*,?)/;
+    if (!fileContent.match(modelPattern)) {
+      throw new Error("Could not find model field to insert maxSteps after");
+    }
+    const updatedContent = fileContent.replace(modelPattern, `$1$2\n  maxSteps: ${maxSteps},`);
+    await fs.writeFile(agentFile, updatedContent, "utf-8");
+  }
+}
+
+/**
+ * Updates the objectives assigned to an agent by modifying the source file.
+ */
+export async function updateAgentObjectives(agentId: string, objectives: string[]): Promise<void> {
+  const folderName = await getAgentFolderPath(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
+  }
+
+  const agentFile = path.join(process.cwd(), "_tables", "agents", folderName, "config.ts");
+  
+  let fileContent: string;
+  try {
+    fileContent = await fs.readFile(agentFile, "utf-8");
+  } catch (error) {
+    throw new Error(`Failed to read agent config file: ${folderName}/config.ts`);
+  }
+  
+  // Build array string: ["obj1", "obj2"]
+  const objectivesString = objectives.map(o => `"${o.replace(/"/g, '\\"')}"`).join(", ");
+  
+  // Replace objectives field: objectives: [...],
+  const pattern = /(objectives:\s*)\[[^\]]*\](\s*,?)/;
+  if (!fileContent.match(pattern)) {
+    throw new Error("Could not find objectives field in agent config");
+  }
+  
+  const updatedContent = fileContent.replace(pattern, `$1[${objectivesString}]$2`);
+  await fs.writeFile(agentFile, updatedContent, "utf-8");
+}
+
+/**
+ * Updates the guardrails assigned to an agent by modifying the source file.
+ */
+export async function updateAgentGuardrails(agentId: string, guardrails: string[]): Promise<void> {
+  const folderName = await getAgentFolderPath(agentId);
+  if (!folderName) {
+    throw new Error(`Agent folder not found for agentId: ${agentId}`);
+  }
+
+  const agentFile = path.join(process.cwd(), "_tables", "agents", folderName, "config.ts");
+  
+  let fileContent: string;
+  try {
+    fileContent = await fs.readFile(agentFile, "utf-8");
+  } catch (error) {
+    throw new Error(`Failed to read agent config file: ${folderName}/config.ts`);
+  }
+  
+  // Build array string: ["guard1", "guard2"]
+  const guardrailsString = guardrails.map(g => `"${g.replace(/"/g, '\\"')}"`).join(", ");
+  
+  // Replace guardrails field: guardrails: [...],
+  const pattern = /(guardrails:\s*)\[[^\]]*\](\s*,?)/;
+  if (!fileContent.match(pattern)) {
+    throw new Error("Could not find guardrails field in agent config");
+  }
+  
+  const updatedContent = fileContent.replace(pattern, `$1[${guardrailsString}]$2`);
+  await fs.writeFile(agentFile, updatedContent, "utf-8");
+}
+
