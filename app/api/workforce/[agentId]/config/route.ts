@@ -11,7 +11,7 @@ import {
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { agentId: string } }
+  { params }: { params: Promise<{ agentId: string }> }
 ) {
   // Auth check
   const { userId } = await auth();
@@ -20,6 +20,9 @@ export async function PATCH(
   }
 
   try {
+    // Await params to get agentId (Next.js 15 requirement)
+    const { agentId } = await params;
+    
     // Parse body
     const body = await req.json();
     const { systemPrompt, model, maxSteps, objectives, guardrails } = body;
@@ -33,9 +36,9 @@ export async function PATCH(
         errors.push("systemPrompt: Must be at least 10 characters");
       } else {
         try {
-          await updateAgentSystemPrompt(params.agentId, systemPrompt.trim());
+          await updateAgentSystemPrompt(agentId, systemPrompt.trim());
           updated.push("systemPrompt");
-        } catch (error) {
+        } catch (error: any) {
           errors.push(`systemPrompt: ${error.message}`);
         }
       }
@@ -46,9 +49,9 @@ export async function PATCH(
         errors.push("model: Invalid model ID");
       } else {
         try {
-          await updateAgentModel(params.agentId, model);
+          await updateAgentModel(agentId, model);
           updated.push("model");
-        } catch (error) {
+        } catch (error: any) {
           errors.push(`model: ${error.message}`);
         }
       }
@@ -59,9 +62,9 @@ export async function PATCH(
         errors.push("maxSteps: Must be a positive integer");
       } else {
         try {
-          await updateAgentMaxSteps(params.agentId, maxSteps);
+          await updateAgentMaxSteps(agentId, maxSteps);
           updated.push("maxSteps");
-        } catch (error) {
+        } catch (error: any) {
           errors.push(`maxSteps: ${error.message}`);
         }
       }
@@ -72,9 +75,9 @@ export async function PATCH(
         errors.push("objectives: Must be an array of strings");
       } else {
         try {
-          await updateAgentObjectives(params.agentId, objectives);
+          await updateAgentObjectives(agentId, objectives);
           updated.push("objectives");
-        } catch (error) {
+        } catch (error: any) {
           errors.push(`objectives: ${error.message}`);
         }
       }
@@ -85,9 +88,9 @@ export async function PATCH(
         errors.push("guardrails: Must be an array of strings");
       } else {
         try {
-          await updateAgentGuardrails(params.agentId, guardrails);
+          await updateAgentGuardrails(agentId, guardrails);
           updated.push("guardrails");
-        } catch (error) {
+        } catch (error: any) {
           errors.push(`guardrails: ${error.message}`);
         }
       }

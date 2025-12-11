@@ -18,11 +18,12 @@ export type AgentModalProps = {
   agent: AgentConfig | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onAgentUpdated?: () => void;
 };
 
 export type TabId = "overview" | "chat" | "tasks" | "planner" | "records" | "knowledge" | "capabilities" | "config";
 
-export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
+export function AgentModal({ agent, open, onOpenChange, onAgentUpdated }: AgentModalProps) {
   const activeTab = useAgentModalStore((state) => state.activeTab);
   const setActiveTab = useAgentModalStore((state) => state.setActiveTab);
   const setAgent = useAgentModalStore((state) => state.setAgent);
@@ -57,7 +58,7 @@ export function AgentModal({ agent, open, onOpenChange }: AgentModalProps) {
       case "capabilities":
         return <CapabilitiesTab agent={agent} />;
       case "config":
-        return <ConfigTab agent={agent} />;
+        return <ConfigTab agent={agent} onAgentUpdated={onAgentUpdated} />;
       default:
         return <div className="p-8 text-gray-500 text-sm text-center">Content for {activeTab} coming soon...</div>;
     }
