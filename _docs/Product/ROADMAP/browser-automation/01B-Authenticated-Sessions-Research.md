@@ -362,3 +362,5 @@ await fetch('https://api.anchorbrowser.io/v1/profiles', {
 - [Anchor Browser Authentication Docs](https://docs.anchorbrowser.io/essentials/authentication-and-identity)
 - [Anchor Browser SDK Reference](https://docs.anchorbrowser.io/)
 - Existing code: `app/api/browser-automation/services/anchor-client.ts`
+
+

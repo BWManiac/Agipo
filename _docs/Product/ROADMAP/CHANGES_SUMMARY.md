@@ -133,3 +133,5 @@ _docs/Product/ROADMAP/
 - Research logs focus on discovering what external APIs provide
 - Answers will be filled by researching official documentation
 - Primitives discovered will inform implementation details
+
+

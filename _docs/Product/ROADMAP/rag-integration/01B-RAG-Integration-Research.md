@@ -403,3 +403,5 @@ const indexes = await store.listIndexes();
 - [Mastra RAG Overview](https://mastra.ai/docs/rag/overview)
 - [Mastra Chunking and Embedding](https://mastra.ai/docs/rag/chunking-and-embedding)
 - [Mastra Vector Databases](https://mastra.ai/docs/rag/vector-databases)
+
+

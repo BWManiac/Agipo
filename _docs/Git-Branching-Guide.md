@@ -181,3 +181,5 @@ If you're ever unsure:
 - **You can have multiple branches** - they don't interfere with each other
 
 Remember: The visual tools in Cursor make this much easier than command-line Git. You rarely need to type anything!
+
+

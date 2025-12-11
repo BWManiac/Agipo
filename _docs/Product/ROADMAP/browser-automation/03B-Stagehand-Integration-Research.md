@@ -423,3 +423,5 @@ await browser.close();
 - [Stagehand GitHub](https://github.com/browserbase/stagehand)
 - [Stagehand npm package](https://www.npmjs.com/package/@browserbasehq/stagehand)
 - Existing code: `app/api/browser-automation/services/anchor-agent.ts`
+
+
