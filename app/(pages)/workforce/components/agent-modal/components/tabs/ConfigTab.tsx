@@ -18,9 +18,10 @@ import { getAvailableModels, type ModelInfo } from "@/app/api/workforce/[agentId
 
 interface ConfigTabProps {
   agent: AgentConfig;
+  onAgentUpdated?: () => void;
 }
 
-export function ConfigTab({ agent }: ConfigTabProps) {
+export function ConfigTab({ agent, onAgentUpdated }: ConfigTabProps) {
   const [objectives, setObjectives] = useState(agent.objectives.join("\n"));
   const [systemPrompt, setSystemPrompt] = useState(agent.systemPrompt);
   const [model, setModel] = useState(agent.model);
@@ -91,6 +92,11 @@ export function ConfigTab({ agent }: ConfigTabProps) {
       } else {
         toast.success("Configuration saved successfully");
         setIsDirty(false); // Clear dirty state on successful save
+        
+        // Refresh the agent data in the parent to reflect changes
+        if (onAgentUpdated) {
+          onAgentUpdated();
+        }
       }
 
       // Log what was updated for debugging

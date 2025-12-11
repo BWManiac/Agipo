@@ -226,6 +226,7 @@ export function WorkforceDashboard() {
         onOpenChange={(open) => {
           if (!open) setSelectedAgentId(null);
         }}
+        onAgentUpdated={fetchAgents}
       />
 
       <CreateAgentDialog
