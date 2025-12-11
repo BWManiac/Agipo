@@ -491,38 +491,95 @@ const result = await run.start({
 
 ---
 
-### 5. Composio SDK Requires entityId in tools.execute()
+### 5. Composio SDK Requires userId in tools.execute()
 
-**Problem**: The Composio SDK's `tools.execute()` method requires `entityId` in the metadata. Without it, execution fails with:
+**Problem**: The Composio SDK's `tools.execute()` method requires `userId` in the metadata. Without it, execution fails with:
 
 ```
 Error: entity_id and composio_api_key required in metadata
 ```
 
-**Solution**: Pass `entityId` via runtimeContext and include it in the execute call:
+**Important Naming Distinction**: The error message shows `entity_id` (snake_case) but the SDK interface uses `userId` (camelCase). The SDK internally maps `userId` → `entity_id`.
+
+**Solution**: Pass `userId` via runtimeContext and include it in the execute call:
 
 ```typescript
-// In workflow-tools.ts - pass entityId to runtimeContext
-runtimeContext.set("entityId", userId);
+// In workflow-tools.ts - pass userId to runtimeContext
+runtimeContext.set("userId", userId);
 
 // In generated workflow step code
-const entityId = runtimeContext.get("entityId") as string | undefined;
+const userId = runtimeContext.get("userId") as string | undefined;
 const result = await client.tools.execute(
   "GMAIL_SEND_EMAIL",
   {
     arguments: inputData,
     connectedAccountId: connectionId,
-    entityId,  // Required by Composio SDK
+    userId,  // Required by Composio SDK (maps to entity_id internally)
     dangerouslySkipVersionCheck: true
   }
 );
 ```
 
-**Note**: The `entityId` is typically the user's Clerk userId, which serves as their identity in Composio for connection scoping.
+**Note**: The `userId` is typically the user's Clerk userId, which serves as their identity in Composio for connection scoping.
 
 ---
 
-### 6. Workflow Result Status Handling
+### 6. Composio Output Schema Path Unwrapping
+
+**Problem**: The workflow editor's `StepPathPicker` component displays output paths from the full Composio response schema, but step `execute()` functions return unwrapped data.
+
+**Composio Response Structure**:
+```json
+{
+  "successful": true,
+  "data": {
+    "navigatedUrl": "...",
+    "sessionId": "..."
+  },
+  "error": null
+}
+```
+
+**Step Execute Function**:
+```typescript
+// In step-generator.ts, step execute returns:
+return result.data;  // Unwraps the response
+```
+
+**Symptom**: Bindings stored as `"sourcePath": "data.navigatedUrl"` fail at runtime because `getStepResult()` returns the unwrapped data:
+```typescript
+// WRONG - data.navigatedUrl doesn't exist
+getStepResult("step-1")?.data.navigatedUrl
+
+// CORRECT - navigatedUrl is at the root
+getStepResult("step-1")?.navigatedUrl
+```
+
+**Solution** (StepPathPicker.tsx lines 40-51):
+```typescript
+// IMPORTANT: Composio tools return { successful, data, error } wrapper.
+// Our workflow step execute() returns `result.data` (unwrapping the wrapper).
+// So we need to show paths from inside `data`, not the full response schema.
+const dataSchema = outputParams?.properties?.data;
+if (dataSchema?.type === "object" && dataSchema.properties) {
+  // Use the inner data schema for path selection
+  setSchema({ properties: dataSchema.properties });
+} else {
+  // Fallback to full schema if structure is unexpected
+  setSchema(outputParams);
+}
+```
+
+**Files Updated**:
+- `StepPathPicker.tsx` - Strip `data.` wrapper from schema tree
+- `workflow.json` - Existing bindings corrected (manual fix for existing workflows)
+- `workflow.ts` - Regenerated/corrected mapping code
+
+**Key Insight**: The path picker now correctly shows `navigatedUrl` instead of `data.navigatedUrl`, ensuring bindings match the actual step output structure.
+
+---
+
+### 7. Workflow Result Status Handling
 
 **Result Structure**: Workflow execution returns an object with `status`, `result`, and `steps`:
 
@@ -599,10 +656,10 @@ export async function getWorkflowToolExecutable(
             Object.entries(input).filter(([k]) => !mastraKeys.has(k))
           );
 
-      // 5. Create Map-based runtimeContext with connections AND entityId
+      // 5. Create Map-based runtimeContext with connections AND userId
       const runtimeContext = new Map<string, unknown>();
       runtimeContext.set("connections", binding.connectionBindings);
-      runtimeContext.set("entityId", userId); // Required by Composio SDK
+      runtimeContext.set("userId", userId); // Required by Composio SDK (maps to entity_id internally)
 
       // 6. Execute workflow
       const run = await workflowObj.createRunAsync({ resourceId: userId });
@@ -648,6 +705,8 @@ export async function getWorkflowToolExecutable(
 | 2025-12-10 | Fixed Mastra context injection filtering in workflow-tools.ts | Claude |
 | 2025-12-10 | Added "Critical Learnings: Undocumented Mastra API Behavior" section | Claude |
 | 2025-12-10 | Added Composio entityId requirement (learning #5) | Claude |
+| 2025-12-10 | Fixed: Composio SDK uses `userId` param (not `entityId`) - maps to `entity_id` internally | Claude |
+| 2025-12-10 | Fixed: StepPathPicker now strips `data.` wrapper from Composio output schemas (learning #6) | Claude |
 
 ---
 

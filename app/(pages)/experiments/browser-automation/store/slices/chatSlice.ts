@@ -1,6 +1,8 @@
 /**
  * Chat Slice
  * Manages chat messages and streaming state for browser agent interaction.
+ * Handles user messages, AI responses, and real-time streaming from the browser agent.
+ * Powers the chat interface where users give instructions to the browser automation agent.
  */
 
 import { StateCreator } from "zustand";
@@ -26,37 +28,54 @@ export interface ChatMessage {
   result?: unknown;
 }
 
+// 1. State Interface
 export interface ChatSliceState {
   messages: ChatMessage[];
+  // Array of chat messages between user and browser agent. Powers the chat history display.
   isStreaming: boolean;
+  // Indicates if AI agent is currently streaming a response. Used to show typing indicator.
   chatError: string | null;
+  // Error message if chat request fails. Null when no error.
   abortController: AbortController | null;
+  // AbortController for canceling in-flight chat requests. Used when user clicks stop.
 }
 
+// 2. Actions Interface
 export interface ChatSliceActions {
   sendMessage: (sessionId: string, text: string) => Promise<void>;
+  // Sends a user message to the browser agent and handles streaming response. Called when user submits chat message.
   addMessage: (message: ChatMessage) => void;
+  // Adds a message to the chat history. Called when user sends message or agent responds.
   addStep: (messageId: string, step: AgentStep) => void;
+  // Adds a step to an agent message. Called when agent starts performing an action.
   updateStep: (
     messageId: string,
     stepId: string,
     updates: Partial<AgentStep>
   ) => void;
+  // Updates a step's status or details. Called when step completes or fails.
   setResult: (messageId: string, result: unknown) => void;
+  // Sets the final result for an agent message. Called when task completes.
   stopTask: () => void;
+  // Stops the current streaming task. Called when user clicks stop button.
   clearMessages: () => void;
+  // Clears all chat messages. Called when user starts a new conversation.
   setChatError: (error: string | null) => void;
+  // Sets chat error message. Called when chat request fails.
 }
 
+// 3. Combined Slice Type
 export type ChatSlice = ChatSliceState & ChatSliceActions;
 
+// 4. Initial State
 const initialState: ChatSliceState = {
-  messages: [],
-  isStreaming: false,
-  chatError: null,
-  abortController: null,
+  messages: [], // Start with empty chat - no conversation history yet
+  isStreaming: false, // Start with no streaming - agent isn't generating response initially
+  chatError: null, // No error initially - clean state
+  abortController: null, // No abort controller initially - no request in flight
 };
 
+// 5. Slice Creator
 export const createChatSlice: StateCreator<BrowserStore, [], [], ChatSlice> = (
   set,
   get
@@ -64,6 +83,7 @@ export const createChatSlice: StateCreator<BrowserStore, [], [], ChatSlice> = (
   ...initialState,
 
   sendMessage: async (sessionId, text) => {
+    console.log("💬 ChatSlice: Sending message:", text.substring(0, 50));
     const userMessage: ChatMessage = {
       id: `msg_${Date.now()}`,
       role: "user",
@@ -137,24 +157,33 @@ export const createChatSlice: StateCreator<BrowserStore, [], [], ChatSlice> = (
       }
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
+        console.error("❌ ChatSlice: Chat error:", (error as Error).message);
         set({ chatError: (error as Error).message });
+      } else {
+        console.log("⏹️ ChatSlice: Request aborted");
       }
     } finally {
       set({ isStreaming: false, abortController: null });
+      console.log("✅ ChatSlice: Streaming complete");
     }
   },
 
-  addMessage: (message) =>
-    set((state) => ({ messages: [...state.messages, message] })),
+  addMessage: (message) => {
+    console.log("💬 ChatSlice: Adding message:", message.role);
+    set((state) => ({ messages: [...state.messages, message] }));
+  },
 
-  addStep: (messageId, step) =>
+  addStep: (messageId, step) => {
+    console.log("📝 ChatSlice: Adding step to message:", messageId);
     set((state) => ({
       messages: state.messages.map((m) =>
         m.id === messageId ? { ...m, steps: [...(m.steps || []), step] } : m
       ),
-    })),
+    }));
+  },
 
-  updateStep: (messageId, stepId, updates) =>
+  updateStep: (messageId, stepId, updates) => {
+    console.log("🔄 ChatSlice: Updating step:", stepId, updates.status);
     set((state) => ({
       messages: state.messages.map((m) =>
         m.id === messageId
@@ -166,26 +195,38 @@ export const createChatSlice: StateCreator<BrowserStore, [], [], ChatSlice> = (
             }
           : m
       ),
-    })),
+    }));
+  },
 
-  setResult: (messageId, result) =>
+  setResult: (messageId, result) => {
+    console.log("✅ ChatSlice: Setting result for message:", messageId);
     set((state) => ({
       messages: state.messages.map((m) =>
         m.id === messageId
           ? { ...m, result, content: formatResult(result) }
           : m
       ),
-    })),
+    }));
+  },
 
   stopTask: () => {
+    console.log("⏹️ ChatSlice: Stopping task");
     const { abortController } = get();
     abortController?.abort();
     set({ isStreaming: false, abortController: null });
   },
 
-  clearMessages: () => set({ messages: [] }),
+  clearMessages: () => {
+    console.log("🗑️ ChatSlice: Clearing messages");
+    set({ messages: [] });
+  },
 
-  setChatError: (error) => set({ chatError: error }),
+  setChatError: (error) => {
+    if (error) {
+      console.error("❌ ChatSlice: Setting chat error:", error);
+    }
+    set({ chatError: error });
+  },
 });
 
 function handleSSEEvent(

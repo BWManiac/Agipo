@@ -34,8 +34,21 @@ export function StepPathPicker({ sourceStep, onSelect, onCancel }: StepPathPicke
           `/api/connections/schemas/composio/toolkits/${sourceStep.toolkitSlug}/${sourceStep.toolId}`
         );
         if (!res.ok) throw new Error("Failed to fetch schema");
-        const data = await res.json();
-        setSchema(data.outputParameters || {});
+        const json = await res.json();
+        const outputParams = json.outputParameters || {};
+
+        // IMPORTANT: Composio tools return { successful, data, error } wrapper.
+        // Our workflow step execute() returns `result.data` (unwrapping the wrapper).
+        // So we need to show paths from inside `data`, not the full response schema.
+        // This ensures paths like "navigatedUrl" instead of "data.navigatedUrl".
+        const dataSchema = outputParams?.properties?.data;
+        if (dataSchema?.type === "object" && dataSchema.properties) {
+          // Use the inner data schema for path selection
+          setSchema({ properties: dataSchema.properties });
+        } else {
+          // Fallback to full schema if structure is unexpected
+          setSchema(outputParams);
+        }
       } catch (e) {
         console.error("Failed to fetch schema:", e);
       } finally {

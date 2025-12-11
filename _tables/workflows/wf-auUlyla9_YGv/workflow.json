@@ -130,7 +130,7 @@
           "targetField": "url",
           "sourceType": "step-output",
           "sourceStepId": "hxoEFHJL21nAkQfLsnFAY",
-          "sourcePath": "data.navigatedUrl"
+          "sourcePath": "navigatedUrl"
         }
       }
     },
@@ -148,14 +148,14 @@
           "targetField": "subject",
           "sourceType": "step-output",
           "sourceStepId": "BDHS3ZinvIN94tv0l35Sx",
-          "sourcePath": "data.title"
+          "sourcePath": "title"
         },
         "body": {
           "targetStepId": "4Ouop5jvsC8YbJIek-Qna",
           "targetField": "body",
           "sourceType": "step-output",
           "sourceStepId": "BDHS3ZinvIN94tv0l35Sx",
-          "sourcePath": "data.content"
+          "sourcePath": "content"
         }
       }
     }

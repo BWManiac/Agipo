@@ -93,15 +93,15 @@ export const sendSiteContentToEmailWorkflow = createWorkflow({
   .then(navigateToUrl)
   .map(async ({ inputData, getStepResult }) => {
     return {
-      url: getStepResult("hxoEFHJL21nAkQfLsnFAY")?.data.navigatedUrl
+      url: getStepResult("hxoEFHJL21nAkQfLsnFAY")?.navigatedUrl
     };
   })
   .then(fetchWebpageContent)
   .map(async ({ inputData, getStepResult }) => {
     return {
       recipient_email: inputData["Email Address"],
-      subject: getStepResult("BDHS3ZinvIN94tv0l35Sx")?.data.title,
-      body: getStepResult("BDHS3ZinvIN94tv0l35Sx")?.data.content
+      subject: getStepResult("BDHS3ZinvIN94tv0l35Sx")?.title,
+      body: getStepResult("BDHS3ZinvIN94tv0l35Sx")?.content
     };
   })
   .then(sendEmail)
