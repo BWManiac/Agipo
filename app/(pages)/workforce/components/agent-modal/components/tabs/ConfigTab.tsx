@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import type { AgentConfig } from "@/_tables/types";
 import { getAvailableModels, type ModelInfo } from "@/app/api/workforce/[agentId]/chat/services/models";
 
@@ -22,16 +24,87 @@ export function ConfigTab({ agent }: ConfigTabProps) {
   const [objectives, setObjectives] = useState(agent.objectives.join("\n"));
   const [systemPrompt, setSystemPrompt] = useState(agent.systemPrompt);
   const [model, setModel] = useState(agent.model);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
 
   // Get available models directly (no API call needed)
   const models = getAvailableModels();
 
-  const handleSave = () => {
-    console.log("Saving config:", {
-      objectives: objectives.split("\n"),
-      systemPrompt,
-      model,
-    });
+  // Track changes to enable dirty state
+  useEffect(() => {
+    const hasChanges = 
+      systemPrompt !== agent.systemPrompt ||
+      model !== agent.model ||
+      objectives !== agent.objectives.join("\n");
+    
+    setIsDirty(hasChanges);
+  }, [systemPrompt, model, objectives, agent]);
+
+  // Warn about unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && !isSaving) {
+        e.preventDefault();
+        e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty, isSaving]);
+
+  const handleSave = async () => {
+    // Basic validation
+    if (systemPrompt.trim().length < 10) {
+      toast.error("System prompt must be at least 10 characters");
+      return;
+    }
+
+    if (!model) {
+      toast.error("Please select a model");
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const response = await fetch(`/api/workforce/${agent.id}/config`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemPrompt: systemPrompt.trim(),
+          model,
+          objectives: objectives.split("\n").filter(obj => obj.trim()).map(obj => obj.trim())
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to save configuration");
+      }
+
+      if (data.errors && data.errors.length > 0) {
+        toast.error(`Some fields failed: ${data.errors.join(", ")}`);
+      } else {
+        toast.success("Configuration saved successfully");
+        setIsDirty(false); // Clear dirty state on successful save
+      }
+
+      // Log what was updated for debugging
+      if (data.updated && data.updated.length > 0) {
+        console.log("Updated fields:", data.updated);
+      }
+
+    } catch (error: any) {
+      console.error("Save error:", error);
+      setSaveError(error.message);
+      toast.error(error.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -118,10 +191,29 @@ export function ConfigTab({ agent }: ConfigTabProps) {
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button onClick={handleSave} className="bg-black text-white hover:bg-gray-800">
-              Save Changes
+            <Button 
+              onClick={handleSave} 
+              disabled={isSaving || !isDirty}
+              className="bg-black text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : isDirty ? (
+                "Save Changes"
+              ) : (
+                "No Changes"
+              )}
             </Button>
           </div>
+
+          {saveError && (
+            <div className="text-sm text-red-500 mt-2">
+              {saveError}
+            </div>
+          )}
         </div>
       </div>
     </div>
