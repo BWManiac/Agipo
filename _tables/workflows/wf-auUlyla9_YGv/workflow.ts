@@ -85,21 +85,16 @@ export const sendSiteContentToEmailWorkflow = createWorkflow({
 }),
   outputSchema: z.any()
 })
-  .map(async ({ inputData, getStepResult }) => {
+  .map(async ({ inputData, getStepResult, getInitData }) => {
     return {
-      url: inputData["Website URL"]
+      url: getInitData()["Website URL"]
     };
   })
   .then(navigateToUrl)
-  .map(async ({ inputData, getStepResult }) => {
-    return {
-      url: getStepResult("hxoEFHJL21nAkQfLsnFAY")?.navigatedUrl
-    };
-  })
   .then(fetchWebpageContent)
-  .map(async ({ inputData, getStepResult }) => {
+  .map(async ({ inputData, getStepResult, getInitData }) => {
     return {
-      recipient_email: inputData["Email Address"],
+      recipient_email: getInitData()["Email Address"],
       subject: getStepResult("BDHS3ZinvIN94tv0l35Sx")?.title,
       body: getStepResult("BDHS3ZinvIN94tv0l35Sx")?.content
     };

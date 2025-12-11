@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useWorkflowStore } from "../../../store";
 import { SourceSelector } from "./SourceSelector";
 import type { FieldBinding, WorkflowInputDefinition } from "@/app/api/workflows/types/bindings";
@@ -29,11 +30,15 @@ export function FieldBindingRow({
   workflowInputs,
   isFirstStep,
 }: FieldBindingRowProps) {
-  const { setFieldBinding, steps } = useWorkflowStore();
+  const { setFieldBinding, removeFieldBinding, steps } = useWorkflowStore();
   const isMapped = !!currentBinding;
 
   const handleBindingChange = (binding: FieldBinding) => {
     setFieldBinding(stepId, field.name, binding);
+  };
+
+  const handleClearBinding = () => {
+    removeFieldBinding(stepId, field.name);
   };
 
   // Get display text for current binding
@@ -44,7 +49,11 @@ export function FieldBindingRow({
       case "step-output": {
         const sourceStep = steps.find((s) => s.id === currentBinding.sourceStepId);
         const sourceIndex = steps.findIndex((s) => s.id === currentBinding.sourceStepId);
-        return `Step ${sourceIndex + 1} → ${currentBinding.sourcePath}`;
+        // Strip "data." prefix from display - legacy bindings may have it
+        const displayPath = currentBinding.sourcePath?.startsWith("data.")
+          ? currentBinding.sourcePath.slice(5)
+          : currentBinding.sourcePath;
+        return `Step ${sourceIndex + 1} → ${displayPath}`;
       }
       case "workflow-input":
         return `Workflow Input: ${currentBinding.workflowInputName}`;
@@ -111,6 +120,13 @@ export function FieldBindingRow({
             onChange={handleBindingChange}
             variant="edit"
           />
+          <button
+            onClick={handleClearBinding}
+            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+            title="Clear binding"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
       ) : (
         <SourceSelector

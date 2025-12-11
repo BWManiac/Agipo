@@ -68,13 +68,17 @@ export function OutputBindingsSection({
         ) : (
           usage.map((item, idx) => {
             const targetStepIndex = steps.findIndex((s) => s.id === item.usedByStepId);
+            // Strip "data." prefix from display - legacy bindings may have it
+            const displayPath = item.outputPath.startsWith("data.")
+              ? item.outputPath.slice(5)
+              : item.outputPath;
             return (
               <button
                 key={`${item.outputPath}-${item.usedByField}-${idx}`}
                 onClick={() => onNavigateToStep(item.usedByStepId)}
                 className="w-full flex items-center gap-2 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-200 px-2.5 py-2 text-xs transition-colors group"
               >
-                <span className="text-gray-600 font-mono">{item.outputPath}</span>
+                <span className="text-gray-600 font-mono">{displayPath}</span>
                 <span className="text-gray-400">→</span>
                 <span className="text-gray-700">
                   Step {targetStepIndex + 1}: {item.usedByField}

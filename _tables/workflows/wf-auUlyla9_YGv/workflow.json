@@ -124,15 +124,7 @@
     },
     "BDHS3ZinvIN94tv0l35Sx": {
       "stepId": "BDHS3ZinvIN94tv0l35Sx",
-      "inputBindings": {
-        "url": {
-          "targetStepId": "BDHS3ZinvIN94tv0l35Sx",
-          "targetField": "url",
-          "sourceType": "step-output",
-          "sourceStepId": "hxoEFHJL21nAkQfLsnFAY",
-          "sourcePath": "navigatedUrl"
-        }
-      }
+      "inputBindings": {}
     },
     "4Ouop5jvsC8YbJIek-Qna": {
       "stepId": "4Ouop5jvsC8YbJIek-Qna",
@@ -148,20 +140,20 @@
           "targetField": "subject",
           "sourceType": "step-output",
           "sourceStepId": "BDHS3ZinvIN94tv0l35Sx",
-          "sourcePath": "title"
+          "sourcePath": "data.title"
         },
         "body": {
           "targetStepId": "4Ouop5jvsC8YbJIek-Qna",
           "targetField": "body",
           "sourceType": "step-output",
           "sourceStepId": "BDHS3ZinvIN94tv0l35Sx",
-          "sourcePath": "content"
+          "sourcePath": "data.content"
         }
       }
     }
   },
-  "createdAt": "2025-12-11T00:02:18.635Z",
-  "lastModified": "2025-12-11T00:02:18.738Z",
+  "createdAt": "2025-12-11T01:34:45.525Z",
+  "lastModified": "2025-12-11T01:34:45.568Z",
   "createdBy": "user",
   "published": false
 }
