@@ -96,15 +96,22 @@ export async function buildToolMap(
 
   // Load workflow tools
   const workflowBindings = agentConfig.workflowBindings || [];
+  console.log(`[ChatService] Loading ${workflowBindings.length} workflow tools...`);
   for (const binding of workflowBindings) {
-    const toolDef = await getWorkflowToolExecutable(userId, binding);
-    if (!toolDef) {
-      console.warn(`[ChatService] Workflow tool not found: ${binding.workflowId}; skipping.`);
-      continue;
+    console.log(`[ChatService] Loading workflow binding: ${binding.workflowId}...`);
+    try {
+      const toolDef = await getWorkflowToolExecutable(userId, binding);
+      console.log(`[ChatService] getWorkflowToolExecutable returned: ${toolDef ? 'success' : 'null'}`);
+      if (!toolDef) {
+        console.warn(`[ChatService] Workflow tool not found: ${binding.workflowId}; skipping.`);
+        continue;
+      }
+      // Extract .run property (same pattern as connection tools)
+      toolMap[toolDef.id] = toolDef.run;
+      console.log(`[ChatService] Loaded workflow tool: ${toolDef.id}`);
+    } catch (error) {
+      console.error(`[ChatService] Error loading workflow tool ${binding.workflowId}:`, error);
     }
-    // Extract .run property (same pattern as connection tools)
-    toolMap[toolDef.id] = toolDef.run;
-    console.log(`[ChatService] Loaded workflow tool: ${toolDef.id}`);
   }
   
   console.log(`[ChatService] Loaded ${Object.keys(toolMap).length} tools: ${Object.keys(toolMap).join(", ") || "none"}`);

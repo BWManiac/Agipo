@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { 
-  readWorkflow, 
+import {
+  readWorkflow,
   writeWorkflow,
   deleteWorkflow,
 } from "@/app/api/workflows/services/storage";
@@ -9,6 +9,11 @@ import { WorkflowDefinitionValidator } from "@/app/api/workflows/types";
 import type { StepBindings } from "@/app/api/workflows/types/bindings";
 import { transpileWorkflow } from "./services/transpiler";
 import { writeWorkflowCode } from "./services/storage/code-writer";
+import {
+  addWorkflowToRegistry,
+  getExportNameFromWorkflowFile,
+  removeWorkflowFromRegistry,
+} from "@/app/api/workflows/services/registry-updater";
 
 export const runtime = "nodejs";
 
@@ -123,11 +128,25 @@ export async function PUT(
 
     try {
       const transpileResult = transpileWorkflow(validated, bindings);
-      
+
       if (transpileResult.errors.length === 0) {
         // Transpilation succeeded - write the code
         await writeWorkflowCode(workflowId, transpileResult.code);
         result.files.ts = true;
+
+        // Update workflow registry for Turbopack compatibility
+        try {
+          const exportName = await getExportNameFromWorkflowFile(workflowId);
+          if (exportName) {
+            await addWorkflowToRegistry(workflowId, exportName);
+          }
+        } catch (registryError) {
+          // Registry update is not critical - log but don't fail
+          console.warn(
+            `[workflow-route] Failed to update registry for ${workflowId}:`,
+            registryError
+          );
+        }
       } else {
         // Transpilation had errors but didn't throw
         result.warnings = transpileResult.errors;
@@ -179,14 +198,25 @@ export async function DELETE(
     }
     
     const success = await deleteWorkflow(workflowId);
-    
+
     if (!success) {
       return NextResponse.json(
         { message: "Failed to delete workflow" },
         { status: 500 }
       );
     }
-    
+
+    // Remove from workflow registry
+    try {
+      await removeWorkflowFromRegistry(workflowId);
+    } catch (registryError) {
+      // Registry update is not critical - log but don't fail
+      console.warn(
+        `[workflow-route] Failed to remove ${workflowId} from registry:`,
+        registryError
+      );
+    }
+
     return NextResponse.json({ message: "Workflow deleted" });
   } catch (error) {
     console.error("API Error: Failed to delete workflow:", error);

@@ -1,6 +1,6 @@
 {
   "id": "wf-auUlyla9_YGv",
-  "name": "Woke",
+  "name": "Send Site Content to Email",
   "description": "me",
   "inputSchema": {
     "type": "object",
@@ -12,20 +12,156 @@
     "properties": {},
     "required": []
   },
-  "steps": [],
+  "steps": [
+    {
+      "id": "hxoEFHJL21nAkQfLsnFAY",
+      "type": "composio",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "listIndex": 0,
+      "toolId": "BROWSER_TOOL_NAVIGATE",
+      "toolkitSlug": "browser_tool",
+      "toolkitName": "Browser tool",
+      "toolkitLogo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master//composio-logo.png",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "name": "Navigate to URL",
+      "description": "SESSION FOUNDATION: Always start here - creates browser session and navigates to URL. WORKFLOW: Navigate() → FetchWebpage() → Analysis/Planning → AI Agent or Manual interactions → Verify PROVIDES: Live debugUrl for user, initial page snapshot, persistent session TIP: Always show debugUrl to user before proceeding"
+    },
+    {
+      "id": "BDHS3ZinvIN94tv0l35Sx",
+      "type": "composio",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "listIndex": 0,
+      "toolId": "BROWSER_TOOL_FETCH_WEBPAGE",
+      "toolkitSlug": "browser_tool",
+      "toolkitName": "Browser tool",
+      "toolkitLogo": "https://cdn.jsdelivr.net/gh/ComposioHQ/open-logos@master//composio-logo.png",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "name": "Fetch Webpage Content",
+      "description": "DECISION BRAIN: Essential for analysis, planning, and information gathering. PRIMARY USES: Understand page state, locate elements, verify changes, plan next actions FALLBACK ROLE: When screenshot blocked/fails, use this diligently for information FORMAT: html=element discovery & coordinates | markdown=content analysis HYBRID WORKFLOW: Use for decisions → AI agent for precision clicking"
+    },
+    {
+      "id": "4Ouop5jvsC8YbJIek-Qna",
+      "type": "composio",
+      "position": {
+        "x": 0,
+        "y": 300
+      },
+      "listIndex": 2,
+      "toolId": "GMAIL_SEND_EMAIL",
+      "toolkitSlug": "gmail",
+      "toolkitName": "gmail-oxzcjt",
+      "toolkitLogo": "https://logos.composio.dev/api/gmail",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "name": "Send Email",
+      "description": "Sends an email via Gmail API using the authenticated user's Google profile display name. At least one of recipient_email, cc, or bcc must be provided. At least one of subject or body must be provided. Requires `is_html=True` if the body contains HTML and valid `s3key`, `mimetype`, `name` for any attachment."
+    }
+  ],
   "mappings": [],
   "controlFlow": {
     "type": "sequential",
-    "order": []
+    "order": [
+      "hxoEFHJL21nAkQfLsnFAY",
+      "BDHS3ZinvIN94tv0l35Sx",
+      "4Ouop5jvsC8YbJIek-Qna"
+    ]
   },
   "connections": {},
   "tableRequirements": [],
   "tables": {},
-  "runtimeInputs": [],
+  "runtimeInputs": [
+    {
+      "key": "Email Address",
+      "type": "string",
+      "label": "Email Address",
+      "required": true
+    },
+    {
+      "key": "Website URL",
+      "type": "string",
+      "label": "Website URL",
+      "required": true
+    }
+  ],
   "configs": [],
-  "bindings": {},
-  "createdAt": "2025-12-08T13:36:42.393Z",
-  "lastModified": "2025-12-08T13:36:42.566Z",
+  "bindings": {
+    "hxoEFHJL21nAkQfLsnFAY": {
+      "stepId": "hxoEFHJL21nAkQfLsnFAY",
+      "inputBindings": {
+        "url": {
+          "targetStepId": "hxoEFHJL21nAkQfLsnFAY",
+          "targetField": "url",
+          "sourceType": "workflow-input",
+          "workflowInputName": "Website URL"
+        }
+      }
+    },
+    "BDHS3ZinvIN94tv0l35Sx": {
+      "stepId": "BDHS3ZinvIN94tv0l35Sx",
+      "inputBindings": {
+        "url": {
+          "targetStepId": "BDHS3ZinvIN94tv0l35Sx",
+          "targetField": "url",
+          "sourceType": "step-output",
+          "sourceStepId": "hxoEFHJL21nAkQfLsnFAY",
+          "sourcePath": "data.navigatedUrl"
+        }
+      }
+    },
+    "4Ouop5jvsC8YbJIek-Qna": {
+      "stepId": "4Ouop5jvsC8YbJIek-Qna",
+      "inputBindings": {
+        "recipient_email": {
+          "targetStepId": "4Ouop5jvsC8YbJIek-Qna",
+          "targetField": "recipient_email",
+          "sourceType": "workflow-input",
+          "workflowInputName": "Email Address"
+        },
+        "subject": {
+          "targetStepId": "4Ouop5jvsC8YbJIek-Qna",
+          "targetField": "subject",
+          "sourceType": "step-output",
+          "sourceStepId": "BDHS3ZinvIN94tv0l35Sx",
+          "sourcePath": "data.title"
+        },
+        "body": {
+          "targetStepId": "4Ouop5jvsC8YbJIek-Qna",
+          "targetField": "body",
+          "sourceType": "step-output",
+          "sourceStepId": "BDHS3ZinvIN94tv0l35Sx",
+          "sourcePath": "data.content"
+        }
+      }
+    }
+  },
+  "createdAt": "2025-12-11T00:02:18.635Z",
+  "lastModified": "2025-12-11T00:02:18.738Z",
   "createdBy": "user",
   "published": false
 }

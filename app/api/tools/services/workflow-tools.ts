@@ -29,66 +29,109 @@ export async function getWorkflowToolExecutable(
 ): Promise<ToolDefinition | undefined> {
   try {
     console.log(`[WorkflowTools] Loading workflow: ${binding.workflowId}`);
-    
+
     // 1. Load the workflow executable (transpiled TypeScript file)
-    const workflow = await getWorkflowExecutable(binding.workflowId);
+    console.log(`[WorkflowTools] Step 1: Calling getWorkflowExecutable...`);
+    let workflow: unknown;
+    try {
+      const result = await getWorkflowExecutable(binding.workflowId);
+      console.log(`[WorkflowTools] Step 1a: getWorkflowExecutable resolved`);
+      // Unwrap the wrapper object (used to prevent Promise thenable unwrapping)
+      workflow = result && typeof result === 'object' && '__workflow' in result
+        ? (result as { __workflow: unknown }).__workflow
+        : result;
+    } catch (e) {
+      console.error(`[WorkflowTools] Step 1a: getWorkflowExecutable threw:`, e);
+      throw e;
+    }
+    console.log(`[WorkflowTools] Step 1 done: workflow=${workflow ? 'loaded' : 'null'}`);
     if (!workflow) {
       console.warn(`[WorkflowTools] Workflow not found: ${binding.workflowId}`);
       return undefined;
     }
 
     // 2. Load workflow metadata (name, description, etc.)
+    console.log(`[WorkflowTools] Step 2: Calling getWorkflowMetadata...`);
     const metadata = await getWorkflowMetadata(binding.workflowId);
+    console.log(`[WorkflowTools] Step 2 done: metadata=${metadata ? 'loaded' : 'null'}`);
     if (!metadata) {
       console.warn(`[WorkflowTools] Metadata not found: ${binding.workflowId}`);
       return undefined;
     }
 
-    // 3. Verify workflow has inputSchema (required for tool)
-    if (!workflow || typeof workflow !== 'object' || !('inputSchema' in workflow)) {
+    // 3. Verify workflow has required properties
+    console.log(`[WorkflowTools] Step 3: Checking workflow properties...`);
+    console.log(`[WorkflowTools] Workflow type: ${typeof workflow}`);
+    console.log(`[WorkflowTools] Workflow keys: ${Object.keys(workflow as object).join(', ')}`);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const workflowObj = workflow as any;
+
+    if (!workflowObj.inputSchema) {
       console.warn(`[WorkflowTools] Workflow ${binding.workflowId} missing inputSchema`);
+      return undefined;
+    }
+
+    if (!workflowObj.createRunAsync) {
+      console.warn(`[WorkflowTools] Workflow ${binding.workflowId} missing createRunAsync`);
       return undefined;
     }
 
     // 4. Create the Vercel AI SDK tool that wraps workflow execution
     const toolDescription = metadata.description || `Workflow: ${metadata.name}`;
     
+    console.log(`[WorkflowTools] Creating tool with inputSchema`);
+
     const vercelTool = tool({
       description: toolDescription,
       // Use workflow's inputSchema directly (already Zod, no conversion needed)
-      inputSchema: (workflow as { inputSchema: ZodObject<ZodRawShape> }).inputSchema,
+      inputSchema: workflowObj.inputSchema,
       execute: async (input: Record<string, unknown>) => {
         console.log(`[WorkflowTools] Executing workflow: ${binding.workflowId}`);
-        console.log(`[WorkflowTools] Input:`, JSON.stringify(input, null, 2));
-        
+        console.log(`[WorkflowTools] Raw input:`, JSON.stringify(input, null, 2));
+
         try {
-          // Create runtimeContext object with connection bindings
-          // This is where bound connections (from Phase 10) get passed to workflow steps
-          // The transpiled workflow code expects runtimeContext.get("connections")
-          const runtimeContext = {
-            get: (key: string) => {
-              if (key === "connections") {
-                return binding.connectionBindings;
-              }
-              return undefined;
-            },
-            // Also store as plain object for compatibility
-            connections: binding.connectionBindings
-          };
-          
+          // CRITICAL: Mastra Agent injects extra context into tool arguments.
+          // We need to extract only the workflow's expected input fields.
+          // Mastra injects: threadId, resourceId, memory, runId, runtimeContext, writer, tracingContext, context
+          const mastraInjectedKeys = new Set([
+            'threadId', 'resourceId', 'memory', 'runId', 'runtimeContext',
+            'writer', 'tracingContext', 'context', 'mastra'
+          ]);
+
+          // Extract actual workflow input (may be nested in 'context' or at top level)
+          let workflowInput: Record<string, unknown>;
+          if (input.context && typeof input.context === 'object') {
+            // Input is nested in context object
+            workflowInput = input.context as Record<string, unknown>;
+          } else {
+            // Filter out Mastra-injected keys
+            workflowInput = Object.fromEntries(
+              Object.entries(input).filter(([key]) => !mastraInjectedKeys.has(key))
+            );
+          }
+
+          console.log(`[WorkflowTools] Filtered input:`, JSON.stringify(workflowInput, null, 2));
+
+          // CRITICAL: RuntimeContext must be a Map, not a plain object.
+          // Mastra's execution engine calls runtimeContext.forEach() internally.
+          // This is NOT documented but required for workflow execution.
+          const runtimeContext = new Map<string, unknown>();
+          runtimeContext.set("connections", binding.connectionBindings);
+          // Composio SDK requires userId for tools.execute() calls
+          runtimeContext.set("userId", userId);
+
           // Create workflow run instance
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const workflowExec = workflow as any;
           const run = await workflowExec.createRunAsync({
             resourceId: userId,
           });
-          
-          // Execute workflow with user-provided inputs and runtimeContext
-          // The 'input' parameter comes from the agent's tool call
-          // It matches the workflow's inputSchema (e.g., { URL: "...", "Email Address": "..." })
+
+          // Execute workflow with filtered inputs and Map-based runtimeContext
           const result = await run.start({
-            inputData: input,  // Agent's tool call arguments
-            runtimeContext,    // Connections available to all steps
+            inputData: workflowInput,  // Filtered workflow arguments
+            runtimeContext,            // Map with connections
           });
           
           // Handle execution result

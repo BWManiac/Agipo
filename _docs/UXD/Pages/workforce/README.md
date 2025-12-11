@@ -1,38 +1,29 @@
-# Workforce Page - UXD
+# Workforce UXD
 
-**Status:** Planning  
-**Last Updated:** December 8, 2025
-
----
-
-## Overview
-
-The Workforce page is where users manage their AI agents - view the active roster, monitor performance, and create new agents.
+This folder contains UXD mockups and planning documents for the Workforce feature.
 
 ---
 
-## Current Structure
+## Files
 
-- **Main Page:** Workforce dashboard with active roster
-- **Agent Modal:** Detailed agent management (existing)
-- **Create Agent Flow:** New flow for creating/hiring agents (in planning)
-
----
-
-## Pages
-
-### 1. Workforce Dashboard
-- Active roster of agents
-- Metrics and summary
-- "Hire new agent" entry point
-
-### 2. Create Agent Flow
-See `create-agent-flow/FLOW-PLAN.md` for detailed flow.
+| File | Description |
+|------|-------------|
+| `2025-12-09-create-agent-flow/` | Create agent flow mockups (dated version - current) |
+| `create-agent-flow/` | ~~Duplicate (removed)~~ |
 
 ---
 
-## Related Documentation
+## Create Agent Flow
 
-- [Create Agent Flow Plan](./create-agent-flow/FLOW-PLAN.md)
-- [Workforce Page Improvements Task](../../../_tasks/19-workforce-page-improvements/)
+The create agent flow includes:
+- **Identity Step:** Agent name and basic info
+- **Personality Step:** Agent personality configuration
+- **Capabilities Step:** Tool and capability selection
+- **Sub-Agents Screen:** Sub-agent management
+- **Success State:** Completion and error states
 
+See `2025-12-09-create-agent-flow/create-custom/` for detailed mockups.
+
+---
+
+**Last Updated:** 2025-12-10

@@ -41,16 +41,21 @@ export function generateStepCode(
 
 /**
  * Generates execute body for Composio tool steps.
+ *
+ * NOTE: Composio SDK requires userId in the tools.execute() metadata.
+ * The userId is passed via runtimeContext from the workflow executor.
  */
 function generateComposioExecuteBody(toolId: string, toolkitSlug: string): string {
   return `const client = getComposioClient();
     const connections = runtimeContext.get("connections") as Record<string, string> | undefined;
     const connectionId = connections?.["${toolkitSlug}"];
+    const userId = runtimeContext.get("userId") as string | undefined;
     const result = await client.tools.execute(
       "${toolId}",
       {
         arguments: inputData,
         connectedAccountId: connectionId,
+        userId,
         dangerouslySkipVersionCheck: true
       }
     );

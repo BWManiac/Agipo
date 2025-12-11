@@ -1,8 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
-import { pathToFileURL } from "url";
 import type { WorkflowMetadata } from "@/_tables/types";
 import type { WorkflowDefinition } from "@/app/api/workflows/types/workflow";
+import { getWorkflowFromRegistry } from "@/_tables/workflows/registry";
 
 const WORKFLOWS_DIR = path.join(process.cwd(), "_tables", "workflows");
 
@@ -61,13 +61,17 @@ export async function listAvailableWorkflows(): Promise<WorkflowMetadata[]> {
  * This avoids dynamic import issues in Next.js by extracting metadata from JSON instead.
  */
 export async function getWorkflowMetadata(workflowId: string): Promise<WorkflowMetadata | null> {
+  console.log(`[workflow-loader] getWorkflowMetadata called for: ${workflowId}`);
   const workflowJsonPath = path.join(WORKFLOWS_DIR, workflowId, "workflow.json");
   const workflowTsPath = path.join(WORKFLOWS_DIR, workflowId, "workflow.ts");
+  console.log(`[workflow-loader] Reading: ${workflowJsonPath}`);
 
   try {
     // Read workflow.json
     const workflowJsonContent = await fs.readFile(workflowJsonPath, "utf-8");
+    console.log(`[workflow-loader] JSON read success, parsing...`);
     const workflow: WorkflowDefinition = JSON.parse(workflowJsonContent);
+    console.log(`[workflow-loader] JSON parsed, workflow name: ${workflow.name}`);
 
     // Verify workflow.ts exists (transpiled)
     await fs.access(workflowTsPath);
@@ -100,42 +104,34 @@ export async function getWorkflowMetadata(workflowId: string): Promise<WorkflowM
 
 /**
  * Gets the executable workflow object for a workflow ID.
- * Used for runtime execution.
+ * Uses the static registry to avoid Turbopack dynamic import issues.
+ *
+ * Note: This is intentionally a synchronous function that returns a Promise
+ * to avoid async/await issues with Turbopack module resolution.
  */
-export async function getWorkflowExecutable(workflowId: string): Promise<unknown | null> {
-  const workflowTsPath = path.join(WORKFLOWS_DIR, workflowId, "workflow.ts");
+export function getWorkflowExecutable(workflowId: string): Promise<unknown | null> {
+  console.log(`[workflow-loader] getWorkflowExecutable called for: ${workflowId}`);
 
   try {
-    await fs.access(workflowTsPath);
+    // Use static registry lookup instead of dynamic import
+    // This works with Turbopack because all imports are resolved at build time
+    console.log(`[workflow-loader] Calling getWorkflowFromRegistry...`);
+    const workflow = getWorkflowFromRegistry(workflowId);
+    console.log(`[workflow-loader] getWorkflowFromRegistry returned: ${workflow ? 'object' : 'null'}`);
 
-    // Dynamic import needs file:// URL
-    const fileUrl = pathToFileURL(path.resolve(workflowTsPath)).href;
-    const module = await import(fileUrl);
-
-    // Check for default export first
-    if (module.default) {
-      return module.default;
+    if (workflow) {
+      console.log(`[workflow-loader] Loaded workflow from registry: ${workflowId}`);
+      console.log(`[workflow-loader] Workflow has .then?: ${typeof (workflow as Record<string, unknown>).then}`);
+      console.log(`[workflow-loader] About to return workflow...`);
+      // Wrap in object to prevent Promise from unwrapping thenable workflow object
+      return Promise.resolve({ __workflow: workflow });
     }
 
-    // Workflows use named exports (e.g., export const summarizeSiteEmailWorkflow = ...)
-    // Look for export that has createRunAsync method (Mastra Workflow signature)
-    for (const [key, value] of Object.entries(module)) {
-      if (
-        value &&
-        typeof value === 'object' &&
-        'createRunAsync' in value &&
-        typeof (value as any).createRunAsync === 'function'
-      ) {
-        console.log(`[workflow-loader] Found workflow export: ${key}`);
-        return value;
-      }
-    }
-
-    console.warn(`[workflow-loader] No workflow export found in ${workflowId}. Available exports:`, Object.keys(module));
-    return null;
+    console.warn(`[workflow-loader] Workflow not found in registry: ${workflowId}`);
+    return Promise.resolve(null);
   } catch (error) {
-    console.error(`[workflow-loader] Error loading executable for ${workflowId}:`, error);
-    return null;
+    console.error(`[workflow-loader] Error getting workflow executable for ${workflowId}:`, error);
+    return Promise.resolve(null);
   }
 }
 
