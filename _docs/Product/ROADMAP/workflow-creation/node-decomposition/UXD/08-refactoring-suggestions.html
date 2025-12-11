@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Decomposition - Refactoring Suggestions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'suggestion-appear': 'suggestionAppear 0.5s ease-out',
+                        'impact-pulse': 'impactPulse 2s ease-in-out infinite',
+                        'ai-thinking': 'aiThinking 1.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        suggestionAppear: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        impactPulse: {
+                            '0%, 100%': { backgroundColor: 'rgb(239 246 255)' },
+                            '50%': { backgroundColor: 'rgb(219 234 254)' },
+                        },
+                        aiThinking: {
+                            '0%, 100%': { opacity: '0.5' },
+                            '50%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Workflow Editor</h1>
+                    <span class="px-2 py-1 bg-violet-100 text-violet-700 text-xs font-medium rounded-full">
+                        AI Refactoring
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div class="w-2 h-2 bg-violet-500 rounded-full animate-ai-thinking"></div>
+                        <span>8 suggestions available</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Refresh Suggestions
+                    </button>
+                    <button class="px-4 py-2 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700 transition-colors">
+                        Apply All Recommended
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Suggestion Filters -->
+            <div class="space-y-4">
+                <!-- AI Suggestions Status -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 bg-violet-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium">AI Analysis Status</h3>
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Analysis complete:</span>
+                            <span class="text-green-600 font-medium">✓</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Suggestions found:</span>
+                            <span class="font-medium">8</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">High impact:</span>
+                            <span class="font-medium text-orange-600">3</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Auto-applicable:</span>
+                            <span class="font-medium text-green-600">5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggestion Types -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Filter by Type</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Performance</span>
+                            <span class="ml-auto text-xs text-orange-600 font-medium">3</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Code Reuse</span>
+                            <span class="ml-auto text-xs text-blue-600 font-medium">2</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Simplification</span>
+                            <span class="ml-auto text-xs text-green-600 font-medium">2</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Best Practices</span>
+                            <span class="ml-auto text-xs text-purple-600 font-medium">1</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Impact Level -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Filter by Impact</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">High impact</span>
+                            <span class="ml-auto text-xs text-red-600 font-medium">3</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Medium impact</span>
+                            <span class="ml-auto text-xs text-yellow-600 font-medium">4</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">Low impact</span>
+                            <span class="ml-auto text-xs text-green-600 font-medium">1</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Apply All Safe Changes
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Preview All Changes
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Dismiss All Low Impact
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors">
+                            Run New Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Suggestions Dashboard -->
+            <div class="col-span-3 space-y-4">
+                <!-- Current Context -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold">Email Processing Decomposition</h3>
+                            <div class="text-sm text-muted-foreground">AI has identified 8 optimization opportunities for your workflow structure</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High Impact Suggestions -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold">High Impact Suggestions</h3>
+                    
+                    <!-- Suggestion 1: Performance Optimization -->
+                    <div class="bg-white rounded-lg border animate-suggestion-appear">
+                        <div class="p-4 border-b">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-1">
+                                        <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium">Add Caching Layer to Content Parser</h4>
+                                        <div class="text-xs text-muted-foreground mt-1">Performance • Entity Extraction Node</div>
+                                        <div class="text-xs text-orange-600 mt-1">High Impact • Auto-applicable</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Performance</span>
+                                    <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-700 mb-2">
+                                    The Content Parser is processing similar email formats repeatedly. Adding a caching layer will store 
+                                    parsed templates and reduce processing time by approximately 35% for recurring email patterns.
+                                </p>
+                                <div class="flex items-center gap-4 text-xs text-muted-foreground">
+                                    <span>• Estimated performance gain: +35%</span>
+                                    <span>• Implementation effort: Low</span>
+                                    <span>• Risk level: Minimal</span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                                <div class="text-xs font-medium mb-2">Impact Analysis</div>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="animate-impact-pulse p-2 rounded text-center">
+                                        <div class="text-lg font-bold text-green-600">+35%</div>
+                                        <div class="text-xs text-muted-foreground">Speed</div>
+                                    </div>
+                                    <div class="p-2 text-center">
+                                        <div class="text-lg font-bold text-blue-600">-15%</div>
+                                        <div class="text-xs text-muted-foreground">Resource Usage</div>
+                                    </div>
+                                    <div class="p-2 text-center">
+                                        <div class="text-lg font-bold text-purple-600">+0%</div>
+                                        <div class="text-xs text-muted-foreground">Complexity</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-2 bg-orange-600 text-white text-xs rounded-lg hover:bg-orange-700 transition-colors">
+                                        Apply Suggestion
+                                    </button>
+                                    <button class="px-3 py-2 border text-xs rounded-lg hover:bg-gray-50 transition-colors">
+                                        Preview Changes
+                                    </button>
+                                    <button class="text-xs text-gray-500 hover:text-gray-700">Dismiss</button>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Confidence: 92%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggestion 2: Code Reuse -->
+                    <div class="bg-white rounded-lg border animate-suggestion-appear" style="animation-delay: 0.1s;">
+                        <div class="p-4 border-b">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-1">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium">Extract Reusable Data Validation Component</h4>
+                                        <div class="text-xs text-muted-foreground mt-1">Code Reuse • Multiple Nodes</div>
+                                        <div class="text-xs text-blue-600 mt-1">High Impact • Requires review</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Code Reuse</span>
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-700 mb-2">
+                                    Three sub-workflows (Data Filter, Entity Extraction, Priority Scorer) contain similar data validation logic. 
+                                    Extract this into a reusable validation component to reduce duplication and improve maintainability.
+                                </p>
+                                <div class="flex items-center gap-4 text-xs text-muted-foreground">
+                                    <span>• Code reduction: ~40 lines</span>
+                                    <span>• Affected workflows: 3</span>
+                                    <span>• Maintainability: +45%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                                <div class="text-xs font-medium mb-2">Affected Workflows</div>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-xs">Data Filter - Line 23-31 (validation logic)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                        <span class="text-xs">Entity Extraction - Line 15-22 (similar pattern)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                        <span class="text-xs">Priority Scorer - Line 8-14 (validation subset)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
+                                        Review & Apply
+                                    </button>
+                                    <button class="px-3 py-2 border text-xs rounded-lg hover:bg-gray-50 transition-colors">
+                                        Show Code Diff
+                                    </button>
+                                    <button class="text-xs text-gray-500 hover:text-gray-700">Dismiss</button>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Confidence: 87%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggestion 3: Parallel Execution -->
+                    <div class="bg-white rounded-lg border animate-suggestion-appear" style="animation-delay: 0.2s;">
+                        <div class="p-4 border-b">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mt-1">
+                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium">Enable Parallel Processing for Independent Tasks</h4>
+                                        <div class="text-xs text-muted-foreground mt-1">Performance • Workflow Structure</div>
+                                        <div class="text-xs text-purple-600 mt-1">High Impact • Architecture change</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Architecture</span>
+                                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-700 mb-2">
+                                    Entity Extraction and Priority Scorer can run in parallel after Data Filter completes, 
+                                    as they don't depend on each other. This could reduce overall execution time by 25-30%.
+                                </p>
+                                <div class="flex items-center gap-4 text-xs text-muted-foreground">
+                                    <span>• Execution time reduction: ~25%</span>
+                                    <span>• Complexity: Moderate</span>
+                                    <span>• Resource usage: +10%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                                <div class="text-xs font-medium mb-2">Execution Flow Changes</div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <div>
+                                        <div class="font-medium text-red-600 mb-1">Current: Sequential</div>
+                                        <div>Filter → Extraction → Scorer</div>
+                                        <div class="text-muted-foreground">~8.2s total</div>
+                                    </div>
+                                    <div class="px-2">→</div>
+                                    <div>
+                                        <div class="font-medium text-green-600 mb-1">Proposed: Parallel</div>
+                                        <div>Filter → (Extraction | Scorer)</div>
+                                        <div class="text-muted-foreground">~6.1s total</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-2 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 transition-colors">
+                                        Apply Changes
+                                    </button>
+                                    <button class="px-3 py-2 border text-xs rounded-lg hover:bg-gray-50 transition-colors">
+                                        Simulate Impact</button>
+                                    <button class="text-xs text-gray-500 hover:text-gray-700">Dismiss</button>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Confidence: 78%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medium Impact Suggestions -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold">Medium Impact Suggestions</h3>
+
+                    <!-- Collapsed suggestions preview -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-yellow-600 text-xs font-bold">4</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium">4 Medium Impact Suggestions</div>
+                                        <div class="text-xs text-muted-foreground">Error handling, naming conventions, and minor optimizations</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-2 border text-xs rounded-lg hover:bg-gray-50 transition-colors">
+                                        Apply All Safe
+                                    </button>
+                                    <button class="text-xs text-blue-600 hover:underline">Expand</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights Summary -->
+                <div class="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-200 p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-violet-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-violet-900 mb-2">AI Analysis Summary</h3>
+                            <div class="text-sm text-violet-700 mb-4">
+                                Your decomposition of the Email Processing node was excellent! The AI has identified several 
+                                opportunities to further optimize performance and code quality. The high-impact suggestions 
+                                focus on caching, parallel execution, and code reuse patterns.
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="bg-white rounded-lg p-3 text-center">
+                                    <div class="text-2xl font-bold text-green-600">+47%</div>
+                                    <div class="text-xs text-muted-foreground">Potential Performance Gain</div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center">
+                                    <div class="text-2xl font-bold text-blue-600">-35%</div>
+                                    <div class="text-xs text-muted-foreground">Code Duplication</div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center">
+                                    <div class="text-2xl font-bold text-purple-600">+62%</div>
+                                    <div class="text-xs text-muted-foreground">Maintainability Score</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Implementation Timeline -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Suggested Implementation Order</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <span class="text-green-600 text-xs font-bold">1</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">Add Content Parser Caching</div>
+                                    <div class="text-xs text-muted-foreground">Low risk, high impact. Quick implementation (~30 minutes)</div>
+                                    <div class="text-xs text-green-600 mt-1">Ready to implement</div>
+                                </div>
+                                <button class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors">
+                                    Start
+                                </button>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <span class="text-blue-600 text-xs font-bold">2</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">Extract Validation Component</div>
+                                    <div class="text-xs text-muted-foreground">Moderate complexity. Test thoroughly (~1-2 hours)</div>
+                                    <div class="text-xs text-blue-600 mt-1">Code review recommended</div>
+                                </div>
+                                <button class="px-3 py-1 border text-xs rounded hover:bg-gray-50 transition-colors">
+                                    Review
+                                </button>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <span class="text-purple-600 text-xs font-bold">3</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">Enable Parallel Processing</div>
+                                    <div class="text-xs text-muted-foreground">Architecture change. Requires testing (~2-3 hours)</div>
+                                    <div class="text-xs text-orange-600 mt-1">Plan testing strategy</div>
+                                </div>
+                                <button class="px-3 py-1 border text-xs rounded hover:bg-gray-50 transition-colors">
+                                    Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="mt-6 bg-white rounded-lg border p-4 flex items-center justify-between">
+            <div class="flex items-center gap-6 text-sm text-muted-foreground">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-violet-500 rounded-full animate-ai-thinking"></div>
+                    <span>AI analysis complete</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>5 auto-applicable suggestions</span>
+                </div>
+                <span>Potential improvement: +47% performance</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Export Report
+                </button>
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Schedule Review
+                </button>
+                <button class="px-4 py-2 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700 transition-colors">
+                    Begin Implementation
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

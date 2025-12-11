@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Decomposition - Breakdown Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'pulse-ring': 'pulseRing 2s ease-in-out infinite',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        pulseRing: {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.4)' },
+                            '50%': { boxShadow: '0 0 0 8px rgba(59, 130, 246, 0)' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Workflow Editor</h1>
+                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
+                        Node Decomposition Mode
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Exit Decomposition
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                        Batch Decompose
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Node Selection -->
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Decomposition Candidates</h3>
+                    <div class="space-y-2">
+                        <div class="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                                <span class="text-sm font-medium">Email Processing</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">High complexity (8/10)</div>
+                            <div class="text-xs text-orange-600 mt-1">⚠ Recommended for decomposition</div>
+                        </div>
+                        <div class="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-4 h-4 bg-purple-500 rounded-full"></div>
+                                <span class="text-sm font-medium">Data Analysis</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Medium complexity (6/10)</div>
+                        </div>
+                        <div class="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-4 h-4 bg-indigo-500 rounded-full"></div>
+                                <span class="text-sm font-medium">Report Generation</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">High complexity (7/10)</div>
+                            <div class="text-xs text-blue-600 mt-1">💡 Good candidate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Decomposition Options</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs font-medium">Max Depth</label>
+                            <select class="w-full mt-1 px-2 py-1 text-xs border rounded">
+                                <option>2 levels</option>
+                                <option selected>3 levels</option>
+                                <option>4 levels</option>
+                                <option>5 levels</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium">Strategy</label>
+                            <select class="w-full mt-1 px-2 py-1 text-xs border rounded">
+                                <option>Logical grouping</option>
+                                <option>Process steps</option>
+                                <option selected>Functional decomposition</option>
+                                <option>Error boundaries</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded border-gray-300">
+                                <span class="text-xs">Preserve parameters</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="rounded border-gray-300">
+                                <span class="text-xs">Auto-optimize</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Canvas -->
+            <div class="col-span-3">
+                <div class="bg-white rounded-lg border p-6 relative" style="height: 600px">
+                    <!-- Context Menu (Floating) -->
+                    <div class="absolute bg-white rounded-lg shadow-lg border p-2 z-20 animate-slide-in" style="left: 300px; top: 200px;">
+                        <div class="space-y-1">
+                            <button class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 rounded flex items-center gap-2">
+                                <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                                Decompose Node
+                            </button>
+                            <button class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 rounded flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                View Complexity
+                            </button>
+                            <button class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 rounded flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                                Duplicate Node
+                            </button>
+                            <hr class="my-1">
+                            <button class="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 rounded flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Delete Node
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Grid Background -->
+                    <div class="absolute inset-0 bg-gray-50 rounded-lg" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    
+                    <!-- Workflow Nodes -->
+                    <div class="relative">
+                        <!-- Trigger Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-green-500 p-3 shadow-lg" style="left: 50px; top: 100px; width: 140px;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-xs font-medium">Schedule</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Daily at 9 AM</div>
+                        </div>
+
+                        <!-- Complex Node (Selected for Decomposition) -->
+                        <div class="absolute bg-white rounded-lg border-2 border-red-500 p-3 shadow-lg animate-pulse-ring" style="left: 250px; top: 100px; width: 140px;">
+                            <div class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                Complex
+                            </div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="text-xs font-medium">Email Processing</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Parse, filter, extract</div>
+                            <div class="absolute inset-0 border-2 border-orange-400 rounded-lg pointer-events-none opacity-50 animate-pulse"></div>
+                        </div>
+
+                        <!-- Another Complex Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-purple-500 p-3 shadow-lg" style="left: 450px; top: 100px; width: 140px;">
+                            <div class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                Medium
+                            </div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                <span class="text-xs font-medium">Data Analysis</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Stats & insights</div>
+                        </div>
+
+                        <!-- Simple Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-gray-400 p-3 shadow-lg" style="left: 350px; top: 250px; width: 140px;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-5 h-5 bg-gradient-to-br from-purple-400 to-purple-600 rounded"></div>
+                                <span class="text-xs font-medium">Slack Notify</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Send message</div>
+                        </div>
+
+                        <!-- Connection Lines -->
+                        <svg class="absolute inset-0 pointer-events-none">
+                            <path d="M 190 115 L 250 115" stroke="#10b981" stroke-width="2" fill="none"/>
+                            <path d="M 390 115 L 450 115" stroke="#ef4444" stroke-width="2" fill="none"/>
+                            <path d="M 520 130 L 520 235 L 420 235 L 420 265 L 350 265" stroke="#a855f7" stroke-width="2" fill="none"/>
+                        </svg>
+
+                        <!-- Selection Indicator -->
+                        <div class="absolute rounded-lg border-2 border-blue-500 pointer-events-none" style="left: 248px; top: 98px; width: 144px; height: 84px; border-style: dashed;"></div>
+                    </div>
+
+                    <!-- Decomposition Toolbar -->
+                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg border p-2 flex items-center gap-2">
+                        <button class="px-3 py-2 bg-orange-600 text-white text-xs rounded hover:bg-orange-700 transition-colors flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            Decompose Selected
+                        </button>
+                        <button class="px-3 py-2 border text-xs rounded hover:bg-gray-50 transition-colors">
+                            Preview
+                        </button>
+                        <button class="px-3 py-2 border text-xs rounded hover:bg-gray-50 transition-colors">
+                            Analyze Complexity
+                        </button>
+                    </div>
+
+                    <!-- Complexity Indicator -->
+                    <div class="absolute top-4 right-4 bg-white rounded-lg shadow-lg border p-3">
+                        <h4 class="text-xs font-medium mb-2">Workflow Complexity</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-muted-foreground">Overall</span>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-16 bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-red-500 h-1.5 rounded-full" style="width: 75%"></div>
+                                    </div>
+                                    <span class="text-xs font-medium">7.5/10</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-muted-foreground">Email Processing</span>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-16 bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-red-500 h-1.5 rounded-full" style="width: 90%"></div>
+                                    </div>
+                                    <span class="text-xs font-medium">9.0/10</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-orange-600">
+                                💡 Decomposition could reduce to 4.2/10
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="text-sm text-muted-foreground">
+                        1 node selected • Complexity: 9.0/10
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Select Multiple
+                        </button>
+                        <button class="px-4 py-2 bg-orange-600 text-white text-sm rounded-lg hover:bg-orange-700 transition-colors">
+                            Start Decomposition
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

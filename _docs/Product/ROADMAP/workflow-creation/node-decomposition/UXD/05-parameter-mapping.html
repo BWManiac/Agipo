@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Decomposition - Parameter Mapping</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'flow': 'flow 3s ease-in-out infinite',
+                        'connect': 'connect 0.3s ease-out',
+                        'validate': 'validate 0.5s ease-out',
+                    },
+                    keyframes: {
+                        flow: {
+                            '0%, 100%': { strokeDashoffset: '0' },
+                            '50%': { strokeDashoffset: '-20' },
+                        },
+                        connect: {
+                            '0%': { strokeDasharray: '5 5', opacity: '0.5' },
+                            '100%': { strokeDasharray: '0', opacity: '1' },
+                        },
+                        validate: {
+                            '0%': { backgroundColor: 'rgb(239 246 255)' },
+                            '50%': { backgroundColor: 'rgb(219 234 254)' },
+                            '100%': { backgroundColor: 'rgb(239 246 255)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Workflow Editor</h1>
+                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-full">
+                        Parameter Mapping
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>12 connections validated</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Auto-Map
+                    </button>
+                    <button class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                        Validate Mappings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-5 gap-6">
+            <!-- Left Sidebar: Mapping Controls -->
+            <div class="space-y-4">
+                <!-- Mapping Mode -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Mapping Mode</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="mode" checked class="border-gray-300">
+                            <span class="text-sm">Visual Mapping</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="mode" class="border-gray-300">
+                            <span class="text-sm">Table View</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="mode" class="border-gray-300">
+                            <span class="text-sm">Code Editor</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Type Validation -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Type Checking</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Strict type matching</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Auto type conversion</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">Allow null values</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">Runtime validation</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Clear All Mappings
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Auto-Map by Name
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Auto-Map by Type
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            Suggest Mappings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Validation Status -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Validation Status</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-green-600">✓ Valid mappings:</span>
+                            <span class="font-medium">12</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-orange-600">⚠ Warnings:</span>
+                            <span class="font-medium">2</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-red-600">✗ Errors:</span>
+                            <span class="font-medium">0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">○ Unmapped:</span>
+                            <span class="font-medium">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Mapping Canvas -->
+            <div class="col-span-3">
+                <!-- Node Context -->
+                <div class="bg-white rounded-lg border p-4 mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold">Email Processing → Sub-workflows</h3>
+                            <div class="text-sm text-muted-foreground">Configure parameter flow between parent node and 6 sub-workflows</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameter Mapping Canvas -->
+                <div class="bg-white rounded-lg border relative" style="height: 600px;">
+                    <!-- Input Parameters (Left Side) -->
+                    <div class="absolute left-4 top-8 w-48">
+                        <h4 class="text-sm font-medium mb-3 text-blue-700">Input Parameters</h4>
+                        <div class="space-y-3">
+                            <!-- Email Data Parameter -->
+                            <div class="bg-blue-50 rounded-lg border border-blue-200 p-3" id="param-emailData">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">emailData</span>
+                                    <div class="w-3 h-3 bg-blue-500 rounded-full cursor-pointer hover:bg-blue-600 transition-colors" data-param="emailData"></div>
+                                </div>
+                                <div class="text-xs text-blue-600 mb-1">EmailMessage[]</div>
+                                <div class="text-xs text-muted-foreground">Raw email message objects</div>
+                                <div class="mt-2 flex items-center gap-1">
+                                    <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">Required</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">Array</span>
+                                </div>
+                            </div>
+
+                            <!-- Filter Rules Parameter -->
+                            <div class="bg-purple-50 rounded-lg border border-purple-200 p-3" id="param-filterRules">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">filterRules</span>
+                                    <div class="w-3 h-3 bg-purple-500 rounded-full cursor-pointer hover:bg-purple-600 transition-colors" data-param="filterRules"></div>
+                                </div>
+                                <div class="text-xs text-purple-600 mb-1">FilterConfig</div>
+                                <div class="text-xs text-muted-foreground">Filtering criteria and rules</div>
+                                <div class="mt-2 flex items-center gap-1">
+                                    <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">Required</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">Object</span>
+                                </div>
+                            </div>
+
+                            <!-- Config Parameter -->
+                            <div class="bg-gray-50 rounded-lg border border-gray-200 p-3" id="param-config">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">processingConfig</span>
+                                    <div class="w-3 h-3 bg-gray-400 rounded-full cursor-pointer hover:bg-gray-500 transition-colors" data-param="config"></div>
+                                </div>
+                                <div class="text-xs text-gray-600 mb-1">ProcessingConfig</div>
+                                <div class="text-xs text-muted-foreground">Processing settings</div>
+                                <div class="mt-2 flex items-center gap-1">
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">Optional</span>
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">Object</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-workflow Nodes (Right Side) -->
+                    <div class="absolute right-4 top-8 w-48">
+                        <h4 class="text-sm font-medium mb-3 text-green-700">Sub-workflow Parameters</h4>
+                        <div class="space-y-2">
+                            <!-- Email Ingestion -->
+                            <div class="bg-blue-50 rounded-lg border p-2 animate-validate">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full cursor-pointer hover:bg-blue-600 transition-colors" data-target="ingestion-emails"></div>
+                                        <span class="text-xs font-medium">Email Ingestion</span>
+                                    </div>
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                                <div class="text-xs text-blue-600">emails: EmailMessage[]</div>
+                            </div>
+
+                            <!-- Content Parser -->
+                            <div class="bg-purple-50 rounded-lg border p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-2 h-2 bg-purple-500 rounded-full cursor-pointer hover:bg-purple-600 transition-colors" data-target="parser-content"></div>
+                                        <span class="text-xs font-medium">Content Parser</span>
+                                    </div>
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                                <div class="text-xs text-purple-600">content: EmailContent[]</div>
+                            </div>
+
+                            <!-- Data Filter -->
+                            <div class="bg-green-50 rounded-lg border p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full cursor-pointer hover:bg-green-600 transition-colors" data-target="filter-rules"></div>
+                                        <span class="text-xs font-medium">Data Filter</span>
+                                    </div>
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                                <div class="text-xs text-green-600">rules: FilterConfig</div>
+                            </div>
+
+                            <!-- Entity Extraction -->
+                            <div class="bg-orange-50 rounded-lg border p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-2 h-2 bg-orange-500 rounded-full cursor-pointer hover:bg-orange-600 transition-colors" data-target="extraction-data"></div>
+                                        <span class="text-xs font-medium">Entity Extraction</span>
+                                    </div>
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                </div>
+                                <div class="text-xs text-orange-600">data: FilteredData[]</div>
+                                <div class="text-xs text-orange-500 mt-1">⚠ Type mismatch</div>
+                            </div>
+
+                            <!-- Priority Scorer -->
+                            <div class="bg-red-50 rounded-lg border p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full cursor-pointer hover:bg-red-600 transition-colors" data-target="scorer-metadata"></div>
+                                        <span class="text-xs font-medium">Priority Scorer</span>
+                                    </div>
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                                <div class="text-xs text-red-600">metadata: EmailMetadata[]</div>
+                            </div>
+
+                            <!-- Data Aggregator -->
+                            <div class="bg-indigo-50 rounded-lg border p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-2 h-2 bg-indigo-500 rounded-full cursor-pointer hover:bg-indigo-600 transition-colors" data-target="aggregator-results"></div>
+                                        <span class="text-xs font-medium">Data Aggregator</span>
+                                    </div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                </div>
+                                <div class="text-xs text-indigo-600">results: ProcessedResults[]</div>
+                                <div class="text-xs text-gray-500 mt-1">○ Unmapped</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Connection Lines -->
+                    <svg class="absolute inset-0 pointer-events-none">
+                        <!-- emailData → Email Ingestion -->
+                        <path d="M 240 80 Q 340 80, 440 80" stroke="#3b82f6" stroke-width="2" fill="none" class="animate-flow" stroke-dasharray="8 4"/>
+                        
+                        <!-- filterRules → Data Filter -->
+                        <path d="M 240 160 Q 340 160, 440 200" stroke="#8b5cf6" stroke-width="2" fill="none" class="animate-flow" stroke-dasharray="8 4"/>
+                        
+                        <!-- Internal connections -->
+                        <path d="M 440 100 Q 460 120, 440 140" stroke="#10b981" stroke-width="1.5" fill="none" opacity="0.6"/>
+                        <path d="M 440 160 Q 460 180, 440 200" stroke="#f59e0b" stroke-width="1.5" fill="none" opacity="0.6"/>
+                        
+                        <!-- Warning connection -->
+                        <path d="M 240 140 Q 340 200, 440 260" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="4 4" opacity="0.7"/>
+                        
+                        <!-- Unmapped indication -->
+                        <circle cx="460" cy="360" r="3" fill="#6b7280" opacity="0.5" class="animate-pulse"/>
+                    </svg>
+
+                    <!-- Mapping Details Panel -->
+                    <div class="absolute bottom-4 left-4 right-4 bg-gray-900 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-medium text-white">Active Mapping: emailData → Email Ingestion</h4>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-xs text-green-400">Valid</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 text-xs">
+                            <div>
+                                <div class="text-gray-400 mb-1">Source</div>
+                                <div class="text-blue-400 font-mono">emailData: EmailMessage[]</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-400 mb-1">Transformation</div>
+                                <div class="text-yellow-400 font-mono">direct_pass</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-400 mb-1">Target</div>
+                                <div class="text-green-400 font-mono">emails: EmailMessage[]</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3 text-xs">
+                                <button class="text-blue-400 hover:text-blue-300">Edit Transformation</button>
+                                <button class="text-yellow-400 hover:text-yellow-300">Test Mapping</button>
+                                <button class="text-red-400 hover:text-red-300">Remove</button>
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                Last validated: 2 minutes ago
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: Transformation Editor -->
+            <div class="space-y-4">
+                <!-- Transformation Functions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Transformation Functions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-left text-xs border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                            direct_pass
+                        </button>
+                        <button class="w-full px-3 py-2 text-left text-xs border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                            array_filter
+                        </button>
+                        <button class="w-full px-3 py-2 text-left text-xs border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                            object_transform
+                        </button>
+                        <button class="w-full px-3 py-2 text-left text-xs border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                            type_convert
+                        </button>
+                        <button class="w-full px-3 py-2 text-left text-xs border border-dashed rounded-lg hover:bg-gray-50 transition-colors">
+                            + Custom Function
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Default Values -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Default Values</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs font-medium block mb-1">processingConfig</label>
+                            <textarea class="w-full px-2 py-1 text-xs border rounded font-mono" rows="4">
+{
+  "batchSize": 100,
+  "timeout": 30000,
+  "retries": 3
+}</textarea>
+                        </div>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Apply Defaults
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Type Conversion -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Type Conversion</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-2 bg-yellow-50 border border-yellow-200 rounded">
+                            <div class="font-medium text-yellow-800">Warning: Entity Extraction</div>
+                            <div class="text-yellow-700 mt-1">Expected FilteredData[], got EmailData[]</div>
+                            <button class="text-yellow-600 hover:underline mt-1">Auto-fix conversion</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Rules -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Validation Rules</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Required fields present</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Type compatibility</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">Range validation</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">Custom validators</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="mt-6 bg-white rounded-lg border p-4 flex items-center justify-between">
+            <div class="flex items-center gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span class="text-muted-foreground">12 mappings valid</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span class="text-muted-foreground">2 warnings</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <span class="text-muted-foreground">1 unmapped</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Test All Mappings
+                </button>
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Export Configuration
+                </button>
+                <button class="px-6 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                    Save Mappings
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

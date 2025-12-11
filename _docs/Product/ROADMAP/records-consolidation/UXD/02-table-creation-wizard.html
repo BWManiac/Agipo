@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Table Wizard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-5xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <button class="text-gray-600 hover:text-gray-900 mb-4">← Back to Records</button>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Create New Table</h1>
+            <p class="text-gray-600">Define schema and configure your data table</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-medium text-sm">1</div>
+                    <span class="text-sm font-medium text-gray-900">Basic Info</span>
+                </div>
+                <div class="flex-1 h-1 bg-emerald-600 mx-4"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-medium text-sm">2</div>
+                    <span class="text-sm font-medium text-gray-900">Schema Design</span>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200 mx-4"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-medium text-sm">3</div>
+                    <span class="text-sm text-gray-500">Permissions</span>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200 mx-4"></div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-medium text-sm">4</div>
+                    <span class="text-sm text-gray-500">Review</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Main Content -->
+            <div class="col-span-2">
+                <!-- Schema Builder -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 animate-fade-in">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-semibold text-gray-900">Schema Design</h2>
+                        <button class="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-200 transition-colors">
+                            + Add Column
+                        </button>
+                    </div>
+
+                    <!-- Column List -->
+                    <div class="space-y-3">
+                        <!-- Column 1 - Primary Key -->
+                        <div class="p-4 border-2 border-emerald-200 bg-emerald-50 rounded-lg animate-slide-in">
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 bg-emerald-600 rounded flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-3.586l6.257-6.257A6 6 0 0121 9z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm font-medium text-emerald-900">Primary Key</span>
+                                </div>
+                                <div class="flex-1 grid grid-cols-4 gap-3">
+                                    <input type="text" value="id" class="px-3 py-2 border border-emerald-300 rounded font-mono text-sm">
+                                    <select class="px-3 py-2 border border-emerald-300 rounded text-sm">
+                                        <option>UUID</option>
+                                        <option>Integer</option>
+                                        <option>String</option>
+                                    </select>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" checked disabled class="rounded text-emerald-600">
+                                        <span class="text-xs text-emerald-700">Required</span>
+                                    </div>
+                                    <button class="p-1 hover:bg-emerald-200 rounded" disabled>
+                                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 2 -->
+                        <div class="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                                    <span class="text-gray-600 text-xs font-bold">2</span>
+                                </div>
+                                <div class="flex-1 grid grid-cols-4 gap-3">
+                                    <input type="text" value="name" placeholder="Column name" class="px-3 py-2 border border-gray-200 rounded font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                    <select class="px-3 py-2 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                        <option>String</option>
+                                        <option>Integer</option>
+                                        <option>Float</option>
+                                        <option>Boolean</option>
+                                        <option>Date</option>
+                                        <option>DateTime</option>
+                                        <option>JSON</option>
+                                    </select>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" checked class="rounded text-emerald-600">
+                                        <span class="text-xs text-gray-600">Required</span>
+                                    </div>
+                                    <button class="p-1 hover:bg-gray-200 rounded">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 3 -->
+                        <div class="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                                    <span class="text-gray-600 text-xs font-bold">3</span>
+                                </div>
+                                <div class="flex-1 grid grid-cols-4 gap-3">
+                                    <input type="text" value="email" placeholder="Column name" class="px-3 py-2 border border-gray-200 rounded font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                    <select class="px-3 py-2 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                        <option>String</option>
+                                        <option>Integer</option>
+                                        <option>Float</option>
+                                        <option>Boolean</option>
+                                        <option>Date</option>
+                                        <option>DateTime</option>
+                                        <option>JSON</option>
+                                    </select>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" class="rounded text-emerald-600">
+                                        <span class="text-xs text-gray-600">Required</span>
+                                    </div>
+                                    <button class="p-1 hover:bg-gray-200 rounded">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 4 -->
+                        <div class="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                                    <span class="text-gray-600 text-xs font-bold">4</span>
+                                </div>
+                                <div class="flex-1 grid grid-cols-4 gap-3">
+                                    <input type="text" value="created_at" placeholder="Column name" class="px-3 py-2 border border-gray-200 rounded font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                    <select class="px-3 py-2 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                        <option>DateTime</option>
+                                        <option>String</option>
+                                        <option>Integer</option>
+                                        <option>Float</option>
+                                        <option>Boolean</option>
+                                        <option>Date</option>
+                                        <option>JSON</option>
+                                    </select>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" class="rounded text-emerald-600">
+                                        <span class="text-xs text-gray-600">Required</span>
+                                    </div>
+                                    <button class="p-1 hover:bg-gray-200 rounded">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Column Placeholder -->
+                        <button class="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-emerald-400 hover:bg-emerald-50 transition-all group">
+                            <div class="flex items-center justify-center gap-2 text-gray-500 group-hover:text-emerald-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <span class="text-sm font-medium">Add Column</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <details class="mt-6 group">
+                        <summary class="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
+                            Advanced Schema Options →
+                        </summary>
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Indexing Strategy</label>
+                                    <select class="w-full px-3 py-2 border border-gray-200 rounded">
+                                        <option>Auto (Recommended)</option>
+                                        <option>Manual</option>
+                                        <option>None</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Partitioning</label>
+                                    <select class="w-full px-3 py-2 border border-gray-200 rounded">
+                                        <option>None</option>
+                                        <option>By Date</option>
+                                        <option>By Hash</option>
+                                        <option>By Range</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded text-emerald-600">
+                                    <span class="text-sm text-gray-700">Enable row-level security</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded text-emerald-600">
+                                    <span class="text-sm text-gray-700">Enable audit logging</span>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="space-y-6">
+                <!-- Basic Info Panel -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Table Information</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Table Name</label>
+                            <input type="text" value="user_profiles" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+                            <input type="text" value="User Profiles" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea rows="3" placeholder="Describe the purpose of this table..." class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none">Customer profile information including contact details and preferences</textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                            <select class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                <option>Customer Data</option>
+                                <option>Product Info</option>
+                                <option>Analytics</option>
+                                <option>System Logs</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schema Preview -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Schema Preview</h3>
+                    
+                    <div class="bg-gray-900 rounded-lg p-4 text-xs font-mono">
+                        <div class="text-green-400">CREATE TABLE user_profiles (</div>
+                        <div class="text-blue-300 ml-4">id UUID PRIMARY KEY,</div>
+                        <div class="text-blue-300 ml-4">name VARCHAR(255) NOT NULL,</div>
+                        <div class="text-blue-300 ml-4">email VARCHAR(255),</div>
+                        <div class="text-blue-300 ml-4">created_at TIMESTAMP</div>
+                        <div class="text-green-400">);</div>
+                    </div>
+
+                    <div class="mt-4 text-xs text-gray-500">
+                        <p>• 4 columns defined</p>
+                        <p>• Primary key: id (UUID)</p>
+                        <p>• 2 required fields</p>
+                    </div>
+                </div>
+
+                <!-- Quick Templates -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">Quick Templates</h4>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Customer Records
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Product Catalog
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Event Logs
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Analytics Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex items-center justify-between">
+            <button class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium">
+                ← Previous Step
+            </button>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Save Draft
+                </button>
+                <button class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium">
+                    Next: Permissions →
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

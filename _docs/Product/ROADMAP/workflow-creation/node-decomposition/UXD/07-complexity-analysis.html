@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Decomposition - Complexity Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'gauge-fill': 'gaugeFill 2s ease-out',
+                        'metric-update': 'metricUpdate 0.5s ease-out',
+                        'trend-line': 'trendLine 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        gaugeFill: {
+                            '0%': { strokeDashoffset: '283' },
+                            '100%': { strokeDashoffset: '0' },
+                        },
+                        metricUpdate: {
+                            '0%': { backgroundColor: 'rgb(219 234 254)', transform: 'scale(1.02)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', transform: 'scale(1)' },
+                        },
+                        trendLine: {
+                            '0%, 100%': { strokeDashoffset: '0' },
+                            '50%': { strokeDashoffset: '20' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Workflow Editor</h1>
+                    <span class="px-2 py-1 bg-cyan-100 text-cyan-700 text-xs font-medium rounded-full">
+                        Complexity Analysis
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Analysis complete</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Refresh Analysis
+                    </button>
+                    <button class="px-4 py-2 bg-cyan-600 text-white text-sm rounded-lg hover:bg-cyan-700 transition-colors">
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Analysis Controls -->
+            <div class="space-y-4">
+                <!-- Analysis Scope -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Analysis Scope</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="scope" checked class="border-gray-300">
+                            <span class="text-sm">Current workflow</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="scope" class="border-gray-300">
+                            <span class="text-sm">Full hierarchy</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="scope" class="border-gray-300">
+                            <span class="text-sm">Selected nodes</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="scope" class="border-gray-300">
+                            <span class="text-sm">Compare scenarios</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Metrics Configuration -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Complexity Metrics</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Cyclomatic complexity</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Cognitive load</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Parameter complexity</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300">
+                            <span class="text-xs">Integration dependencies</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">Performance impact</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300">
+                            <span class="text-xs">Maintainability index</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Analysis History -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Recent Analyses</h3>
+                    <div class="space-y-2">
+                        <div class="p-2 bg-blue-50 rounded text-xs">
+                            <div class="font-medium">Email Processing</div>
+                            <div class="text-muted-foreground">2 minutes ago</div>
+                            <div class="text-blue-600">Score: 4.2/10</div>
+                        </div>
+                        <div class="p-2 hover:bg-gray-50 rounded text-xs cursor-pointer">
+                            <div class="font-medium">Task Creation</div>
+                            <div class="text-muted-foreground">1 hour ago</div>
+                            <div class="text-green-600">Score: 2.1/10</div>
+                        </div>
+                        <div class="p-2 hover:bg-gray-50 rounded text-xs cursor-pointer">
+                            <div class="font-medium">Full Workflow</div>
+                            <div class="text-muted-foreground">Yesterday</div>
+                            <div class="text-orange-600">Score: 6.8/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thresholds -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Complexity Thresholds</h3>
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span>Low complexity:</span>
+                                <span class="text-green-600 font-medium">0-3</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1">
+                                <div class="bg-green-500 h-1 rounded-full" style="width: 30%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span>Medium complexity:</span>
+                                <span class="text-yellow-600 font-medium">3-6</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1">
+                                <div class="bg-yellow-500 h-1 rounded-full" style="width: 30%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span>High complexity:</span>
+                                <span class="text-red-600 font-medium">6-10</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1">
+                                <div class="bg-red-500 h-1 rounded-full" style="width: 40%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Analysis Dashboard -->
+            <div class="col-span-3 space-y-6">
+                <!-- Overall Complexity Score -->
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold">Email Processing - Complexity Analysis</h3>
+                        <div class="text-sm text-muted-foreground">Last updated: 2 minutes ago</div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-8">
+                        <!-- Before Score -->
+                        <div class="text-center">
+                            <div class="text-sm font-medium text-muted-foreground mb-3">Before Decomposition</div>
+                            <div class="relative w-24 h-24 mx-auto">
+                                <!-- Circular gauge -->
+                                <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" stroke="#f3f4f6" stroke-width="8" fill="none"/>
+                                    <circle cx="50" cy="50" r="45" stroke="#ef4444" stroke-width="8" fill="none"
+                                            stroke-dasharray="283" stroke-dashoffset="28" stroke-linecap="round" class="animate-gauge-fill"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-red-600">9.0</div>
+                                        <div class="text-xs text-muted-foreground">High</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Improvement Arrow -->
+                        <div class="flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="w-12 h-12 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                                <div class="text-lg font-bold text-green-600">-53%</div>
+                                <div class="text-xs text-muted-foreground">Improvement</div>
+                            </div>
+                        </div>
+
+                        <!-- After Score -->
+                        <div class="text-center">
+                            <div class="text-sm font-medium text-muted-foreground mb-3">After Decomposition</div>
+                            <div class="relative w-24 h-24 mx-auto">
+                                <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" stroke="#f3f4f6" stroke-width="8" fill="none"/>
+                                    <circle cx="50" cy="50" r="45" stroke="#10b981" stroke-width="8" fill="none"
+                                            stroke-dasharray="283" stroke-dashoffset="164" stroke-linecap="round" class="animate-gauge-fill"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-green-600">4.2</div>
+                                        <div class="text-xs text-muted-foreground">Medium</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Metrics -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Complexity Breakdown -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">Complexity Breakdown</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <!-- Cyclomatic Complexity -->
+                            <div class="animate-metric-update">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm">Cyclomatic Complexity</span>
+                                    <span class="text-sm font-medium">3.8/10</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 38%"></div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">Decision points and branching paths</div>
+                            </div>
+
+                            <!-- Cognitive Load -->
+                            <div class="animate-metric-update">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm">Cognitive Load</span>
+                                    <span class="text-sm font-medium">4.1/10</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 41%"></div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">Mental effort to understand workflow</div>
+                            </div>
+
+                            <!-- Parameter Complexity -->
+                            <div class="animate-metric-update">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm">Parameter Complexity</span>
+                                    <span class="text-sm font-medium">4.7/10</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-orange-500 h-2 rounded-full" style="width: 47%"></div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">Input/output parameter intricacy</div>
+                            </div>
+
+                            <!-- Integration Dependencies -->
+                            <div class="animate-metric-update">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm">Integration Dependencies</span>
+                                    <span class="text-sm font-medium">2.9/10</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 29%"></div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">External service dependencies</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node-Level Analysis -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">Sub-workflow Complexity</h3>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <div class="flex items-center justify-between p-2 bg-blue-50 rounded">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                    <span class="text-sm">Email Ingestion</span>
+                                </div>
+                                <span class="text-sm font-medium text-green-600">2.1/10</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-purple-50 rounded">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                    <span class="text-sm">Content Parser</span>
+                                </div>
+                                <span class="text-sm font-medium text-yellow-600">3.4/10</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                    <span class="text-sm">Data Filter</span>
+                                </div>
+                                <span class="text-sm font-medium text-green-600">2.8/10</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-orange-50 rounded">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
+                                    <span class="text-sm">Entity Extraction</span>
+                                </div>
+                                <span class="text-sm font-medium text-orange-600">4.2/10</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-red-50 rounded">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                    <span class="text-sm">Priority Scorer</span>
+                                </div>
+                                <span class="text-sm font-medium text-green-600">1.9/10</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-indigo-50 rounded">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                                    <span class="text-sm">Data Aggregator</span>
+                                </div>
+                                <span class="text-sm font-medium text-green-600">2.3/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complexity Trends -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-medium">Complexity Trends</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="text-xs text-blue-600 hover:underline">7 days</button>
+                                <button class="text-xs text-muted-foreground">30 days</button>
+                                <button class="text-xs text-muted-foreground">90 days</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="relative" style="height: 200px;">
+                            <svg class="absolute inset-0 w-full h-full">
+                                <!-- Trend line for before decomposition -->
+                                <path d="M 20 40 L 80 45 L 140 50 L 200 55 L 260 60 L 320 65 L 380 70" 
+                                      stroke="#ef4444" stroke-width="3" fill="none" class="animate-trend-line" stroke-dasharray="8 4"/>
+                                <!-- Trend line for after decomposition -->
+                                <path d="M 20 120 L 80 115 L 140 110 L 200 108 L 260 105 L 320 102 L 380 100" 
+                                      stroke="#10b981" stroke-width="3" fill="none" class="animate-trend-line" stroke-dasharray="8 4"/>
+                                
+                                <!-- Data points -->
+                                <circle cx="380" cy="70" r="4" fill="#ef4444"/>
+                                <circle cx="380" cy="100" r="4" fill="#10b981"/>
+                            </svg>
+                            
+                            <!-- Labels -->
+                            <div class="absolute top-16 right-4 text-right">
+                                <div class="flex items-center gap-2 text-xs mb-1">
+                                    <div class="w-3 h-0.5 bg-red-500"></div>
+                                    <span>Before (9.0 avg)</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <div class="w-3 h-0.5 bg-green-500"></div>
+                                    <span>After (4.2 avg)</span>
+                                </div>
+                            </div>
+
+                            <!-- Y-axis labels -->
+                            <div class="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-muted-foreground">
+                                <span>10</span>
+                                <span>8</span>
+                                <span>6</span>
+                                <span>4</span>
+                                <span>2</span>
+                                <span>0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Optimization Recommendations</h3>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="flex gap-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-green-900">Decomposition Successful</div>
+                                <div class="text-xs text-green-700 mt-1">
+                                    Breaking down the Email Processing node reduced overall complexity by 53%. The new structure improves maintainability and enables parallel execution.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center shrink-0">
+                                <span class="text-white text-xs font-bold">!</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-yellow-900">Consider Further Decomposition</div>
+                                <div class="text-xs text-yellow-700 mt-1">
+                                    The Entity Extraction sub-workflow still has moderate complexity (4.2/10). Consider breaking it down further into entity recognition and data extraction steps.
+                                </div>
+                                <button class="text-xs text-yellow-600 hover:underline mt-2">Apply Suggestion</button>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-blue-900">Optimization Opportunity</div>
+                                <div class="text-xs text-blue-700 mt-1">
+                                    Add caching to the Content Parser sub-workflow to reduce redundant processing of similar email formats. This could improve performance by ~15%.
+                                </div>
+                                <button class="text-xs text-blue-600 hover:underline mt-2">Learn More</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Before vs After Comparison</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="text-left p-3 font-medium">Metric</th>
+                                    <th class="text-left p-3 font-medium">Before</th>
+                                    <th class="text-left p-3 font-medium">After</th>
+                                    <th class="text-left p-3 font-medium">Change</th>
+                                    <th class="text-left p-3 font-medium">Impact</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr>
+                                    <td class="p-3">Overall Complexity</td>
+                                    <td class="p-3">9.0/10</td>
+                                    <td class="p-3">4.2/10</td>
+                                    <td class="p-3 text-green-600 font-medium">-53%</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">High</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3">Number of Nodes</td>
+                                    <td class="p-3">1</td>
+                                    <td class="p-3">6</td>
+                                    <td class="p-3 text-blue-600 font-medium">+500%</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Medium</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3">Maintainability Index</td>
+                                    <td class="p-3">23</td>
+                                    <td class="p-3">67</td>
+                                    <td class="p-3 text-green-600 font-medium">+191%</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">High</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3">Reusability Score</td>
+                                    <td class="p-3">1.2</td>
+                                    <td class="p-3">3.8</td>
+                                    <td class="p-3 text-green-600 font-medium">+217%</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">High</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3">Testing Complexity</td>
+                                    <td class="p-3">8.5</td>
+                                    <td class="p-3">3.1</td>
+                                    <td class="p-3 text-green-600 font-medium">-64%</td>
+                                    <td class="p-3"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">High</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="mt-6 bg-white rounded-lg border p-4 flex items-center justify-between">
+            <div class="flex items-center gap-6 text-sm text-muted-foreground">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Analysis complete</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span>4 optimization opportunities identified</span>
+                </div>
+                <span>Last updated: 2 minutes ago</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Export Analysis
+                </button>
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Schedule Monitoring
+                </button>
+                <button class="px-4 py-2 bg-cyan-600 text-white text-sm rounded-lg hover:bg-cyan-700 transition-colors">
+                    Apply Optimizations
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

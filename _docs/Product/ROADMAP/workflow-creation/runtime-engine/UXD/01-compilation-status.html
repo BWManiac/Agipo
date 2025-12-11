@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime Engine - Compilation Status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'compile-progress': 'compileProgress 2s ease-in-out',
+                        'success-glow': 'successGlow 0.5s ease-out',
+                        'error-shake': 'errorShake 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        compileProgress: {
+                            '0%': { width: '0%' },
+                            '30%': { width: '25%' },
+                            '60%': { width: '70%' },
+                            '100%': { width: '100%' },
+                        },
+                        successGlow: {
+                            '0%': { backgroundColor: 'rgb(34 197 94)', boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.7)' },
+                            '100%': { backgroundColor: 'rgb(34 197 94)', boxShadow: '0 0 0 10px rgba(34, 197, 94, 0)' },
+                        },
+                        errorShake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-2px)' },
+                            '20%, 40%, 60%, 80%': { transform: 'translateX(2px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Workflow Editor</h1>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                        Runtime Engine
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        View Logs
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                        Save Workflow
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Compilation Status -->
+            <div class="space-y-4">
+                <!-- Current Compilation Status -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium">Compilation Status</h3>
+                    </div>
+
+                    <!-- Success State -->
+                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg mb-3 animate-success-glow">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-green-800">Compilation Successful</span>
+                        </div>
+                        <div class="text-xs text-green-700">Workflow compiled and ready to run</div>
+                        <div class="text-xs text-green-600 mt-1">Completed in 1.3s</div>
+                    </div>
+
+                    <!-- Compilation Details -->
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Generated code:</span>
+                            <span class="font-medium">workflow_v1.ts</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Dependencies:</span>
+                            <span class="font-medium">3 imports</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Registry updated:</span>
+                            <span class="text-green-600 font-medium">✓</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Last compiled:</span>
+                            <span class="font-medium">2 min ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Build Artifacts -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Build Artifacts</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">workflow_v1.ts</div>
+                                <div class="text-xs text-muted-foreground">234 lines</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">source.map</div>
+                                <div class="text-xs text-muted-foreground">Debug mapping</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">validation.json</div>
+                                <div class="text-xs text-muted-foreground">Schema validation</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compilation History -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Recent Compilations</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 p-2 bg-green-50 rounded">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">v1.2 - Just now</div>
+                                <div class="text-xs text-green-600">Success (1.3s)</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">v1.1 - 5 min ago</div>
+                                <div class="text-xs text-green-600">Success (2.1s)</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-xs font-medium">v1.0 - 12 min ago</div>
+                                <div class="text-xs text-orange-600">Warning (3.4s)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content: Compilation Process Visualization -->
+            <div class="col-span-3 space-y-6">
+                <!-- Compilation Pipeline Overview -->
+                <div class="bg-white rounded-lg border p-6">
+                    <h3 class="text-lg font-semibold mb-4">Compilation Pipeline</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Step 1: Validation -->
+                        <div class="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Schema Validation</div>
+                                <div class="text-xs text-muted-foreground">Validate workflow structure and connections</div>
+                            </div>
+                            <div class="text-xs text-green-600 font-medium">Passed (0.2s)</div>
+                        </div>
+
+                        <!-- Step 2: Code Generation -->
+                        <div class="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Code Generation</div>
+                                <div class="text-xs text-muted-foreground">Transpile workflow JSON to TypeScript</div>
+                            </div>
+                            <div class="text-xs text-green-600 font-medium">Completed (0.8s)</div>
+                        </div>
+
+                        <!-- Step 3: Registry Update -->
+                        <div class="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Registry Update</div>
+                                <div class="text-xs text-muted-foreground">Update import registry and clear caches</div>
+                            </div>
+                            <div class="text-xs text-green-600 font-medium">Updated (0.3s)</div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Progress -->
+                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-blue-900">Compilation Complete</span>
+                            <span class="text-xs text-blue-700">1.3s total</span>
+                        </div>
+                        <div class="w-full bg-blue-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full animate-compile-progress" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated Code Preview -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b flex items-center justify-between">
+                        <h3 class="text-sm font-medium">Generated Code Preview</h3>
+                        <div class="flex items-center gap-2">
+                            <button class="text-xs text-blue-600 hover:underline">View Full Code</button>
+                            <button class="text-xs text-blue-600 hover:underline">Download</button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                            <pre class="text-xs text-gray-300 font-mono"><code>import { workflow, step } from '@mastra/core';
+import { composioToolSet } from '@/lib/composio';
+
+export const emailProcessingWorkflow = workflow({
+  name: 'Email Processing Automation',
+  version: '1.2.0',
+})
+  .step('fetchEmails', async () => {
+    const emails = await composioToolSet.gmail.getEmails({
+      query: 'is:unread'
+    });
+    return { emails };
+  })
+  .step('processContent', async ({ emails }) => {
+    const processed = emails.map(email => ({
+      id: email.id,
+      subject: email.subject,
+      content: email.body,
+      metadata: extractMetadata(email)
+    }));
+    return { processed };
+  })
+  .step('createTasks', async ({ processed }) => {
+    const tasks = await Promise.all(
+      processed.map(email => 
+        composioToolSet.notion.createPage({
+          title: email.subject,
+          content: email.content
+        })
+      )
+    );
+    return { tasks };
+  });
+
+export default emailProcessingWorkflow;</code></pre>
+                        </div>
+                        
+                        <div class="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+                            <span>234 lines • 3 steps • 2 integrations</span>
+                            <span>Last updated: 2 minutes ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compilation Issues (Warning State Example) -->
+                <div class="bg-white rounded-lg border" style="display: none;" id="warning-state">
+                    <div class="px-4 py-3 border-b">
+                        <div class="flex items-center gap-2">
+                            <div class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">!</span>
+                            </div>
+                            <h3 class="text-sm font-medium">Compilation Warnings</h3>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                                <span class="text-white text-xs font-bold">!</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-yellow-900">Unused Parameter</div>
+                                <div class="text-xs text-yellow-700 mt-1">
+                                    Parameter 'maxResults' defined but never used in step 'fetchEmails'
+                                </div>
+                                <button class="text-xs text-yellow-600 hover:underline mt-2">Auto-fix</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compilation Error State Example -->
+                <div class="bg-white rounded-lg border animate-error-shake" style="display: none;" id="error-state">
+                    <div class="px-4 py-3 border-b bg-red-50">
+                        <div class="flex items-center gap-2">
+                            <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-sm font-medium text-red-900">Compilation Failed</h3>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-red-900">Missing Integration Connection</div>
+                                <div class="text-xs text-red-700 mt-1">
+                                    Gmail integration is not connected. Please configure the connection before running this workflow.
+                                </div>
+                                <button class="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors mt-2">
+                                    Setup Connection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="mt-6 bg-white rounded-lg border p-4 flex items-center justify-between">
+            <div class="flex items-center gap-6 text-sm text-muted-foreground">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span>Compilation successful</span>
+                </div>
+                <span>Last compiled: 2 minutes ago</span>
+                <span>Ready to execute</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    View Generated Code
+                </button>
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Recompile
+                </button>
+                <button class="px-6 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                    Run Workflow
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

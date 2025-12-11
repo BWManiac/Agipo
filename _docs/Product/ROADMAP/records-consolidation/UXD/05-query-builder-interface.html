@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'query-execute': 'queryExecute 1s ease-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        queryExecute: {
+                            '0%': { backgroundColor: 'rgb(34 197 94)' },
+                            '100%': { backgroundColor: 'rgb(16 185 129)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-1">Query Builder</h1>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <span>Target:</span>
+                        <span class="font-medium">Customer Profiles</span>
+                        <span>•</span>
+                        <span>48,392 records</span>
+                        <span>•</span>
+                        <span>23 columns</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Save Query
+                    </button>
+                    <button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium animate-query-execute">
+                        Run Query
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Query Builder Panel ---->
+            <div class="col-span-3">
+                <!-- Query Type Selector ---->
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm font-medium text-gray-700">Query Type:</span>
+                        <div class="flex items-center border border-gray-200 rounded-lg">
+                            <button class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-l-lg font-medium text-sm">
+                                SELECT
+                            </button>
+                            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-50 font-medium text-sm border-l border-gray-200">
+                                UPDATE
+                            </button>
+                            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-50 font-medium text-sm border-l border-gray-200">
+                                DELETE
+                            </button>
+                            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-50 font-medium text-sm border-l border-gray-200 rounded-r-lg">
+                                AGGREGATE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Query Builder -->
+                <div class="bg-white rounded-xl border border-gray-200 mb-6 animate-fade-in">
+                    <!-- SELECT Section -->
+                    <div class="border-b border-gray-200 p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="font-semibold text-gray-900">SELECT Columns</h3>
+                            <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">5 selected</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Selected Columns -->
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded">
+                                    <input type="checkbox" checked class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">id</span>
+                                    <span class="text-xs text-gray-500">UUID</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded">
+                                    <input type="checkbox" checked class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">name</span>
+                                    <span class="text-xs text-gray-500">String</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded">
+                                    <input type="checkbox" checked class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">email</span>
+                                    <span class="text-xs text-gray-500">String</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded">
+                                    <input type="checkbox" checked class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">status</span>
+                                    <span class="text-xs text-gray-500">String</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded">
+                                    <input type="checkbox" checked class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">created_at</span>
+                                    <span class="text-xs text-gray-500">DateTime</span>
+                                </div>
+                            </div>
+
+                            <!-- Available Columns -->
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 p-2 bg-white border border-gray-200 rounded hover:bg-gray-50">
+                                    <input type="checkbox" class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">phone</span>
+                                    <span class="text-xs text-gray-500">String</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-white border border-gray-200 rounded hover:bg-gray-50">
+                                    <input type="checkbox" class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">location</span>
+                                    <span class="text-xs text-gray-500">String</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-white border border-gray-200 rounded hover:bg-gray-50">
+                                    <input type="checkbox" class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">last_login</span>
+                                    <span class="text-xs text-gray-500">DateTime</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-white border border-gray-200 rounded hover:bg-gray-50">
+                                    <input type="checkbox" class="rounded text-emerald-600">
+                                    <span class="font-mono text-sm">preferences</span>
+                                    <span class="text-xs text-gray-500">JSON</span>
+                                </div>
+                                <button class="w-full text-left text-sm text-emerald-600 hover:text-emerald-800 font-medium">+ Show 14 more columns</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WHERE Section -->
+                    <div class="border-b border-gray-200 p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="font-semibold text-gray-900">WHERE Conditions</h3>
+                            <button class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium hover:bg-blue-200">
+                                + Add Condition
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <!-- Condition 1 -->
+                            <div class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg animate-slide-in">
+                                <select class="px-3 py-1.5 border border-blue-300 rounded text-sm font-mono">
+                                    <option>status</option>
+                                    <option>name</option>
+                                    <option>email</option>
+                                    <option>created_at</option>
+                                </select>
+                                <select class="px-3 py-1.5 border border-blue-300 rounded text-sm">
+                                    <option>=</option>
+                                    <option>!=</option>
+                                    <option>LIKE</option>
+                                    <option>></option>
+                                    <option><</option>
+                                    <option>IN</option>
+                                </select>
+                                <input type="text" value="active" class="px-3 py-1.5 border border-blue-300 rounded text-sm flex-1">
+                                <button class="p-1.5 hover:bg-blue-200 rounded">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Logic Operator -->
+                            <div class="flex items-center justify-center">
+                                <select class="px-3 py-1 bg-gray-100 border border-gray-300 rounded text-sm font-medium">
+                                    <option>AND</option>
+                                    <option>OR</option>
+                                </select>
+                            </div>
+
+                            <!-- Condition 2 -->
+                            <div class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <select class="px-3 py-1.5 border border-blue-300 rounded text-sm font-mono">
+                                    <option>created_at</option>
+                                    <option>status</option>
+                                    <option>name</option>
+                                    <option>email</option>
+                                </select>
+                                <select class="px-3 py-1.5 border border-blue-300 rounded text-sm">
+                                    <option>></option>
+                                    <option>=</option>
+                                    <option>!=</option>
+                                    <option>LIKE</option>
+                                    <option><</option>
+                                    <option>IN</option>
+                                </select>
+                                <input type="date" value="2024-01-01" class="px-3 py-1.5 border border-blue-300 rounded text-sm flex-1">
+                                <button class="p-1.5 hover:bg-blue-200 rounded">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ORDER BY Section -->
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                </svg>
+                            </div>
+                            <h3 class="font-semibold text-gray-900">ORDER BY</h3>
+                            <button class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium hover:bg-purple-200">
+                                + Add Ordering
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <!-- Order 1 -->
+                            <div class="flex items-center gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                <span class="text-sm text-gray-500">1.</span>
+                                <select class="px-3 py-1.5 border border-purple-300 rounded text-sm font-mono flex-1">
+                                    <option>created_at</option>
+                                    <option>name</option>
+                                    <option>email</option>
+                                    <option>status</option>
+                                </select>
+                                <select class="px-3 py-1.5 border border-purple-300 rounded text-sm">
+                                    <option>DESC</option>
+                                    <option>ASC</option>
+                                </select>
+                                <button class="p-1.5 hover:bg-purple-200 rounded">
+                                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Limit -->
+                            <div class="flex items-center gap-3 pt-2">
+                                <span class="text-sm font-medium text-gray-700">LIMIT:</span>
+                                <input type="number" value="100" class="px-3 py-1.5 border border-gray-200 rounded text-sm w-24">
+                                <span class="text-sm text-gray-500">records</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated SQL -->
+                <div class="bg-gray-900 rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-white font-semibold">Generated SQL</h3>
+                        <button class="px-3 py-1.5 bg-gray-700 text-gray-300 rounded text-sm hover:bg-gray-600 font-medium">
+                            Copy
+                        </button>
+                    </div>
+                    <div class="font-mono text-sm text-gray-300 leading-relaxed">
+                        <span class="text-blue-400">SELECT</span> <span class="text-green-400">id</span>, <span class="text-green-400">name</span>, <span class="text-green-400">email</span>, <span class="text-green-400">status</span>, <span class="text-green-400">created_at</span><br>
+                        <span class="text-blue-400">FROM</span> <span class="text-yellow-400">customer_profiles</span><br>
+                        <span class="text-blue-400">WHERE</span> <span class="text-green-400">status</span> <span class="text-red-400">=</span> <span class="text-yellow-400">'active'</span><br>
+                        <span class="text-blue-400">  AND</span> <span class="text-green-400">created_at</span> <span class="text-red-400">></span> <span class="text-yellow-400">'2024-01-01'</span><br>
+                        <span class="text-blue-400">ORDER BY</span> <span class="text-green-400">created_at</span> <span class="text-blue-400">DESC</span><br>
+                        <span class="text-blue-400">LIMIT</span> <span class="text-yellow-400">100</span>;
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="space-y-6">
+                <!-- Query Execution -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Execution</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-gray-600">Estimated Records</span>
+                                <span class="font-medium text-emerald-600">15,234</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-gray-600">Execution Time</span>
+                                <span class="font-medium">~45ms</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Data Transfer</span>
+                                <span class="font-medium">~2.1 MB</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-green-50 border border-green-200 rounded">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+                                <span class="text-sm font-medium text-green-900">Query Valid</span>
+                            </div>
+                            <p class="text-xs text-green-700">All columns exist and conditions are properly formatted.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Queries -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Saved Queries</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="p-3 border border-gray-200 rounded hover:bg-gray-50 cursor-pointer">
+                            <h4 class="font-medium text-gray-900 text-sm">Active Customers</h4>
+                            <p class="text-xs text-gray-600">Recent active users with profiles</p>
+                            <div class="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                <span>Used 5 times</span>
+                                <span>•</span>
+                                <span>2 days ago</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 border border-gray-200 rounded hover:bg-gray-50 cursor-pointer">
+                            <h4 class="font-medium text-gray-900 text-sm">New Signups</h4>
+                            <p class="text-xs text-gray-600">Users created in last 30 days</p>
+                            <div class="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                <span>Used 12 times</span>
+                                <span>•</span>
+                                <span>1 week ago</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 border border-gray-200 rounded hover:bg-gray-50 cursor-pointer">
+                            <h4 class="font-medium text-gray-900 text-sm">Location Analysis</h4>
+                            <p class="text-xs text-gray-600">Customer distribution by city</p>
+                            <div class="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                <span>Used 3 times</span>
+                                <span>•</span>
+                                <span>3 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="mt-3 text-sm text-emerald-600 hover:text-emerald-800 font-medium">View All Queries →</button>
+                </div>
+
+                <!-- Query Templates -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">Quick Templates</h4>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Recent Records
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Count by Status
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Duplicate Check
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 text-left">
+                            Data Quality
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

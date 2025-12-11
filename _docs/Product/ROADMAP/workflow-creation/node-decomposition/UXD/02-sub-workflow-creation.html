@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Decomposition - Sub-workflow Creation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Workflow Editor</h1>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                        Sub-workflow Creation
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Back to Overview
+                    </button>
+                    <button class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+                        Create Sub-workflow
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-5 gap-6">
+            <!-- Left Panel: Original Node Context -->
+            <div class="space-y-4">
+                <!-- Original Node Info -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Original Node
+                    </h3>
+                    <div class="p-3 border-2 border-red-500 rounded-lg bg-red-50">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Email Processing</span>
+                        </div>
+                        <div class="text-xs text-muted-foreground mb-2">Parse emails, extract data, filter content</div>
+                        <div class="text-xs text-red-600">Complexity: 9.0/10</div>
+                    </div>
+                </div>
+
+                <!-- Decomposition Strategy -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Decomposition Strategy</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Strategy:</span>
+                            <span class="font-medium">Functional separation</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Target levels:</span>
+                            <span class="font-medium">3 levels deep</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Expected nodes:</span>
+                            <span class="font-medium">5-7 nodes</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Complexity reduction:</span>
+                            <span class="font-medium text-green-600">~53%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input/Output Preview -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Parameter Flow</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="text-xs font-medium text-muted-foreground mb-1">Inputs</div>
+                            <div class="space-y-1">
+                                <div class="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded border">
+                                    emailData: EmailMessage[]
+                                </div>
+                                <div class="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded border">
+                                    filterRules: FilterConfig
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-medium text-muted-foreground mb-1">Outputs</div>
+                            <div class="space-y-1">
+                                <div class="px-2 py-1 bg-green-50 text-green-700 text-xs rounded border">
+                                    processedEmails: ProcessedEmail[]
+                                </div>
+                                <div class="px-2 py-1 bg-green-50 text-green-700 text-xs rounded border">
+                                    extractedData: ExtractedData
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel: Sub-workflow Builder -->
+            <div class="col-span-3 space-y-4">
+                <!-- AI Generation Progress -->
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium">AI Sub-workflow Generation</h3>
+                        <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            Generating workflow...
+                        </div>
+                    </div>
+
+                    <!-- Progress Steps -->
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Analyzing original node logic</div>
+                                <div class="text-xs text-muted-foreground">Identified 4 distinct functions</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Creating sub-workflow structure</div>
+                                <div class="text-xs text-muted-foreground">Generated 6 interconnected nodes</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 animate-pulse-slow">
+                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                <div class="w-2 h-2 bg-white rounded-full"></div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Optimizing parameter flow</div>
+                                <div class="text-xs text-muted-foreground">Mapping data connections...</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 opacity-50">
+                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Validating workflow logic</div>
+                                <div class="text-xs text-muted-foreground">Pending completion</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generated Sub-workflow Canvas -->
+                    <div class="bg-gray-50 rounded-lg p-4 relative" style="height: 400px;">
+                        <div class="absolute inset-0 bg-gray-50 rounded-lg" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 15px 15px;"></div>
+                        
+                        <!-- Generated Nodes -->
+                        <div class="relative">
+                            <!-- Input Node -->
+                            <div class="absolute bg-white rounded-lg border p-2 shadow-sm animate-slide-in" style="left: 20px; top: 20px; width: 120px;">
+                                <div class="flex items-center gap-1 mb-1">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Email Ingestion</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Receive & validate emails</div>
+                            </div>
+
+                            <!-- Processing Nodes -->
+                            <div class="absolute bg-white rounded-lg border p-2 shadow-sm animate-slide-in" style="left: 170px; top: 20px; width: 120px; animation-delay: 0.1s;">
+                                <div class="flex items-center gap-1 mb-1">
+                                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Content Parser</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Parse HTML & text</div>
+                            </div>
+
+                            <div class="absolute bg-white rounded-lg border p-2 shadow-sm animate-slide-in" style="left: 320px; top: 20px; width: 120px; animation-delay: 0.2s;">
+                                <div class="flex items-center gap-1 mb-1">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Data Filter</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Apply filter rules</div>
+                            </div>
+
+                            <!-- Branch Nodes -->
+                            <div class="absolute bg-white rounded-lg border p-2 shadow-sm animate-slide-in" style="left: 120px; top: 120px; width: 120px; animation-delay: 0.3s;">
+                                <div class="flex items-center gap-1 mb-1">
+                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Entity Extraction</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Extract key entities</div>
+                            </div>
+
+                            <div class="absolute bg-white rounded-lg border p-2 shadow-sm animate-slide-in" style="left: 270px; top: 120px; width: 120px; animation-delay: 0.4s;">
+                                <div class="flex items-center gap-1 mb-1">
+                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Priority Scorer</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Assign priority scores</div>
+                            </div>
+
+                            <!-- Output Node -->
+                            <div class="absolute bg-white rounded-lg border p-2 shadow-sm animate-slide-in" style="left: 195px; top: 220px; width: 120px; animation-delay: 0.5s;">
+                                <div class="flex items-center gap-1 mb-1">
+                                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Data Aggregator</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Combine & format</div>
+                            </div>
+
+                            <!-- Connection Lines -->
+                            <svg class="absolute inset-0 pointer-events-none">
+                                <path d="M 140 35 L 170 35" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                                <path d="M 290 35 L 320 35" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+                                <path d="M 380 50 L 380 80 L 330 80 L 330 135" stroke="#10b981" stroke-width="2" fill="none"/>
+                                <path d="M 230 50 L 230 80 L 180 80 L 180 135" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                                <path d="M 180 150 L 180 200 L 255 200 L 255 220" stroke="#ef4444" stroke-width="2" fill="none"/>
+                                <path d="M 330 150 L 330 200 L 255 200" stroke="#6366f1" stroke-width="2" fill="none"/>
+                            </svg>
+                        </div>
+
+                        <!-- Generation Overlay -->
+                        <div class="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg border p-3 animate-fade-in">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">Creating parameter mappings...</div>
+                                    <div class="text-xs text-muted-foreground">Optimizing data flow between nodes</div>
+                                </div>
+                                <div class="text-xs text-blue-600 font-medium">75%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template Suggestions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        Alternative Template Suggestions
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <div class="text-sm font-medium mb-1">Email Processing Pipeline</div>
+                            <div class="text-xs text-muted-foreground mb-2">Sequential processing with error handling</div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-blue-600">85% match</span>
+                                <button class="text-xs text-blue-600 hover:underline">Apply</button>
+                            </div>
+                        </div>
+                        <div class="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <div class="text-sm font-medium mb-1">Data Extraction Workflow</div>
+                            <div class="text-xs text-muted-foreground mb-2">Parallel processing with validation</div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-green-600">72% match</span>
+                                <button class="text-xs text-blue-600 hover:underline">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Configuration & Controls -->
+            <div class="space-y-4">
+                <!-- Sub-workflow Settings -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Sub-workflow Settings</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs font-medium block mb-1">Name</label>
+                            <input type="text" value="Email Processing Pipeline" class="w-full px-2 py-1 text-xs border rounded">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium block mb-1">Description</label>
+                            <textarea class="w-full px-2 py-1 text-xs border rounded resize-none" rows="2">Parse, filter and extract data from email messages using intelligent content analysis</textarea>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium block mb-1">Category</label>
+                            <select class="w-full px-2 py-1 text-xs border rounded">
+                                <option>Data Processing</option>
+                                <option>Communication</option>
+                                <option>Analysis</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Node Configuration -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Node Configuration</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span>Total nodes:</span>
+                            <span class="font-medium">6</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span>Parallel paths:</span>
+                            <span class="font-medium">2</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span>Max execution time:</span>
+                            <span class="font-medium">~45s</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span>Error handling:</span>
+                            <span class="text-green-600 font-medium">Enabled</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complexity Improvement -->
+                <div class="bg-green-50 rounded-lg border border-green-200 p-4">
+                    <h3 class="text-sm font-medium text-green-900 mb-2">Complexity Improvement</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-green-700">Before decomposition:</span>
+                            <span class="font-medium text-green-900">9.0/10</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-green-700">After decomposition:</span>
+                            <span class="font-medium text-green-900">4.2/10</span>
+                        </div>
+                        <div class="w-full bg-green-200 rounded-full h-1.5 mt-2">
+                            <div class="bg-green-600 h-1.5 rounded-full" style="width: 53%"></div>
+                        </div>
+                        <div class="text-xs text-green-700 text-center">53% complexity reduction</div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
+                            Create Sub-workflow
+                        </button>
+                        <button class="w-full px-3 py-2 border text-xs rounded-lg hover:bg-gray-50 transition-colors">
+                            Preview Changes
+                        </button>
+                        <button class="w-full px-3 py-2 border text-xs rounded-lg hover:bg-gray-50 transition-colors">
+                            Customize Template
+                        </button>
+                        <button class="w-full px-3 py-2 border border-red-500 text-red-600 text-xs rounded-lg hover:bg-red-50 transition-colors">
+                            Cancel Decomposition
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

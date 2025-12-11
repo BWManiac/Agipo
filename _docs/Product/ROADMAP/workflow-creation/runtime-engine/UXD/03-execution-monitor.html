@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime Engine - Execution Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'step-highlight': 'stepHighlight 1s ease-in-out infinite',
+                        'progress-flow': 'progressFlow 2s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'step-complete': 'stepComplete 0.5s ease-out',
+                    },
+                    keyframes: {
+                        stepHighlight: {
+                            '0%, 100%': { borderColor: 'rgb(59 130 246)', boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.4)' },
+                            '50%': { borderColor: 'rgb(59 130 246)', boxShadow: '0 0 0 8px rgba(59, 130, 246, 0)' },
+                        },
+                        progressFlow: {
+                            '0%': { strokeDashoffset: '20' },
+                            '100%': { strokeDashoffset: '0' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                        stepComplete: {
+                            '0%': { backgroundColor: 'rgb(34 197 94)', transform: 'scale(1)' },
+                            '50%': { backgroundColor: 'rgb(34 197 94)', transform: 'scale(1.05)' },
+                            '100%': { backgroundColor: 'rgb(34 197 94)', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Workflow Execution</h1>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full animate-pulse-glow">
+                        Running
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm text-muted-foreground">
+                        Execution ID: <code class="bg-gray-100 px-1 rounded">exec_2024_001</code>
+                    </div>
+                    <button class="px-4 py-2 text-sm border border-red-500 text-red-600 rounded-lg hover:bg-red-50 transition-colors">
+                        Cancel Execution
+                    </button>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Detach & Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Execution Status -->
+            <div class="space-y-4">
+                <!-- Current Status -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium">Execution Status</h3>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="text-sm font-medium text-blue-900 mb-1">Processing Emails</div>
+                            <div class="text-xs text-blue-700">Step 2 of 3 • Content Parser</div>
+                            <div class="text-xs text-blue-600 mt-1">Analyzing 23 emails...</div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-muted-foreground">Overall Progress</span>
+                                <span class="font-medium">67%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 67%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Timing -->
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Started:</span>
+                                <span class="font-medium">2:34 PM</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Elapsed:</span>
+                                <span class="font-medium">2m 45s</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Est. remaining:</span>
+                                <span class="font-medium">1m 12s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step Breakdown -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Step Progress</h3>
+                    <div class="space-y-3">
+                        <!-- Completed Step -->
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-step-complete">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-green-900">Fetch Emails</div>
+                                <div class="text-xs text-green-700">25 emails retrieved</div>
+                            </div>
+                        </div>
+
+                        <!-- Current Step -->
+                        <div class="flex items-center gap-3 p-2 bg-blue-50 border-2 border-blue-500 rounded-lg animate-step-highlight">
+                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-blue-900">Process Content</div>
+                                <div class="text-xs text-blue-700">15 of 25 emails processed</div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Step -->
+                        <div class="flex items-center gap-3 p-2 bg-gray-50 border border-gray-200 rounded-lg opacity-60">
+                            <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-600">Create Tasks</div>
+                                <div class="text-xs text-gray-500">Pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Metrics -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Live Metrics</h3>
+                    <div class="space-y-3 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Items processed:</span>
+                            <span class="font-medium">15 / 25</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Success rate:</span>
+                            <span class="font-medium text-green-600">100%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Avg. processing time:</span>
+                            <span class="font-medium">11.2s/item</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Memory usage:</span>
+                            <span class="font-medium">124 MB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            View Live Logs
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Pause at Next Step
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors">
+                            Download Progress Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Canvas: Visual Execution -->
+            <div class="col-span-3 space-y-6">
+                <!-- Execution Timeline -->
+                <div class="bg-white rounded-lg border p-6">
+                    <h3 class="text-lg font-semibold mb-4">Real-time Execution Flow</h3>
+                    
+                    <div class="relative bg-gray-50 rounded-lg p-6" style="height: 400px;">
+                        <!-- Grid Background -->
+                        <div class="absolute inset-0 bg-gray-50 rounded-lg" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        
+                        <!-- Workflow Nodes -->
+                        <div class="relative">
+                            <!-- Step 1: Fetch Emails (Completed) -->
+                            <div class="absolute bg-white rounded-lg border-2 border-green-500 p-4 shadow-lg" style="left: 50px; top: 150px; width: 160px;">
+                                <div class="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                    ✓ Complete
+                                </div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-semibold">Fetch Emails</div>
+                                        <div class="text-xs text-green-600">1m 15s</div>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mb-2">Gmail API • Query executed</div>
+                                <div class="bg-green-100 rounded p-2">
+                                    <div class="text-xs font-medium text-green-800">Output:</div>
+                                    <div class="text-xs text-green-700">25 emails retrieved</div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Process Content (Current) -->
+                            <div class="absolute bg-white rounded-lg border-2 border-blue-500 p-4 shadow-lg animate-step-highlight" style="left: 280px; top: 150px; width: 160px;">
+                                <div class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                    ⏳ Running
+                                </div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-semibold">Process Content</div>
+                                        <div class="text-xs text-blue-600">1m 30s elapsed</div>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mb-2">AI Processing • Content analysis</div>
+                                <div class="bg-blue-100 rounded p-2">
+                                    <div class="text-xs font-medium text-blue-800">Progress:</div>
+                                    <div class="text-xs text-blue-700">15 / 25 emails (60%)</div>
+                                    <div class="w-full bg-blue-200 rounded-full h-1 mt-1">
+                                        <div class="bg-blue-600 h-1 rounded-full animate-progress-flow" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Create Tasks (Pending) -->
+                            <div class="absolute bg-white rounded-lg border-2 border-gray-300 p-4 shadow-lg opacity-60" style="left: 510px; top: 150px; width: 160px;">
+                                <div class="absolute -top-2 -right-2 bg-gray-400 text-white text-xs px-2 py-0.5 rounded-full">
+                                    ○ Pending
+                                </div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-semibold text-gray-600">Create Tasks</div>
+                                        <div class="text-xs text-gray-500">Waiting...</div>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-muted-foreground mb-2">Notion API • Database insertion</div>
+                                <div class="bg-gray-100 rounded p-2">
+                                    <div class="text-xs font-medium text-gray-600">Ready to execute</div>
+                                    <div class="text-xs text-gray-500">Target: Team Tasks DB</div>
+                                </div>
+                            </div>
+
+                            <!-- Connection Lines -->
+                            <svg class="absolute inset-0 pointer-events-none">
+                                <!-- Completed connection (green) -->
+                                <path d="M 210 175 L 280 175" stroke="#10b981" stroke-width="3" fill="none" />
+                                <polygon points="276,172 284,175 276,178" fill="#10b981"/>
+                                
+                                <!-- Active connection (blue, animated) -->
+                                <path d="M 440 175 L 510 175" stroke="#3b82f6" stroke-width="3" fill="none" 
+                                      stroke-dasharray="8 4" class="animate-progress-flow"/>
+                                <polygon points="506,172 514,175 506,178" fill="#3b82f6"/>
+                            </svg>
+                        </div>
+
+                        <!-- Live Activity Indicator -->
+                        <div class="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg border p-3 animate-pulse-glow">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                                <div class="text-xs font-medium">Live execution in progress...</div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Indicator -->
+                        <div class="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg border p-3">
+                            <div class="text-xs font-medium mb-1">Performance</div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 bg-green-200 rounded-full h-1">
+                                    <div class="bg-green-600 h-1 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <span class="text-xs font-medium text-green-600">Excellent</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Step Details -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b bg-blue-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-medium text-blue-900">Current Step: Process Content</h3>
+                            <div class="text-xs text-blue-700">Step 2 of 3</div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Step Configuration -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Step Configuration</h4>
+                                <div class="space-y-2 text-xs">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-muted-foreground">Processing mode:</span>
+                                        <span class="font-medium">Full content analysis</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-muted-foreground">Batch size:</span>
+                                        <span class="font-medium">5 emails/batch</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-muted-foreground">AI model:</span>
+                                        <span class="font-medium">GPT-4</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-muted-foreground">Timeout:</span>
+                                        <span class="font-medium">30s per email</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Output Preview -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Live Output Preview</h4>
+                                <div class="bg-gray-50 rounded p-3 text-xs">
+                                    <div class="space-y-2">
+                                        <div>
+                                            <div class="font-medium">Email #15 - "Weekly Sales Report"</div>
+                                            <div class="text-muted-foreground">Priority: High • Entities: 3 • Sentiment: Neutral</div>
+                                        </div>
+                                        <div class="border-t pt-2">
+                                            <div class="font-medium">Extracted Metadata:</div>
+                                            <div class="text-muted-foreground">
+                                                • Report Type: Sales Summary<br>
+                                                • Period: Week 49, 2024<br>
+                                                • Urgency: Review Required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Log -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Recent Activity</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="space-y-3 text-xs">
+                            <div class="flex gap-3 animate-fade-in">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2"></div>
+                                <div>
+                                    <div class="text-muted-foreground">2:36:45 PM</div>
+                                    <div class="font-medium">Processing email #15: "Weekly Sales Report"</div>
+                                    <div class="text-muted-foreground">Content analysis in progress...</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full shrink-0 mt-2"></div>
+                                <div>
+                                    <div class="text-muted-foreground">2:36:33 PM</div>
+                                    <div class="font-medium">Completed email #14: "Team Meeting Notes"</div>
+                                    <div class="text-muted-foreground">Processing time: 12.3 seconds</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full shrink-0 mt-2"></div>
+                                <div>
+                                    <div class="text-muted-foreground">2:36:21 PM</div>
+                                    <div class="font-medium">Completed email #13: "Budget Approval Request"</div>
+                                    <div class="text-muted-foreground">High priority detected • Entities extracted</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-4 text-xs text-blue-600 hover:underline">View full activity log →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

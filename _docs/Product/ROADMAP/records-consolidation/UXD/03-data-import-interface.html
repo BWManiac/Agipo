@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Import Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'bounce-gentle': 'bounceGentle 2s infinite',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'progress': 'progress 2s ease-out',
+                    },
+                    keyframes: {
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        progress: {
+                            '0%': { width: '0%' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Import Data</h1>
+            <div class="flex items-center gap-2 text-sm text-gray-600">
+                <span>Target Table:</span>
+                <span class="font-medium">Customer Profiles</span>
+                <span>•</span>
+                <span>23 columns</span>
+                <span>•</span>
+                <span>48,392 existing records</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Import Sources -->
+            <div class="col-span-2">
+                <!-- Import Method Selection -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                    <h2 class="font-semibold text-gray-900 mb-4">Select Import Source</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- File Upload -->
+                        <label class="cursor-pointer">
+                            <input type="radio" name="import_source" value="file" checked class="sr-only peer">
+                            <div class="p-6 border-2 border-emerald-500 bg-emerald-50 rounded-lg peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:border-emerald-400 transition-all">
+                                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-medium text-emerald-900 text-center mb-1">File Upload</h3>
+                                <p class="text-sm text-emerald-700 text-center">CSV, Excel, JSON files</p>
+                            </div>
+                        </label>
+
+                        <!-- Database Connection -->
+                        <label class="cursor-pointer">
+                            <input type="radio" name="import_source" value="database" class="sr-only peer">
+                            <div class="p-6 border-2 border-gray-200 bg-white rounded-lg peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:border-gray-300 transition-all">
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-medium text-gray-900 text-center mb-1">Database</h3>
+                                <p class="text-sm text-gray-600 text-center">MySQL, PostgreSQL, etc.</p>
+                            </div>
+                        </label>
+
+                        <!-- API Import -->
+                        <label class="cursor-pointer">
+                            <input type="radio" name="import_source" value="api" class="sr-only peer">
+                            <div class="p-6 border-2 border-gray-200 bg-white rounded-lg peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:border-gray-300 transition-all">
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-medium text-gray-900 text-center mb-1">API Endpoint</h3>
+                                <p class="text-sm text-gray-600 text-center">REST, GraphQL APIs</p>
+                            </div>
+                        </label>
+
+                        <!-- Third-party Services -->
+                        <label class="cursor-pointer">
+                            <input type="radio" name="import_source" value="service" class="sr-only peer">
+                            <div class="p-6 border-2 border-gray-200 bg-white rounded-lg peer-checked:border-emerald-500 peer-checked:bg-emerald-50 hover:border-gray-300 transition-all">
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-medium text-gray-900 text-center mb-1">Services</h3>
+                                <p class="text-sm text-gray-600 text-center">Shopify, Salesforce, etc.</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- File Upload Area -->
+                <div class="bg-white rounded-xl border border-gray-200">
+                    <div class="border-b border-gray-200 px-6 py-4">
+                        <h3 class="font-semibold text-gray-900">Upload Files</h3>
+                    </div>
+                    
+                    <div class="p-6">
+                        <!-- Drag & Drop Zone -->
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-emerald-400 transition-colors">
+                            <div class="w-16 h-16 bg-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center animate-bounce-gentle">
+                                <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Drop files here or click to browse</h3>
+                            <p class="text-sm text-gray-600 mb-4">Support for CSV, Excel (.xlsx), JSON files up to 500MB</p>
+                            <button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium">
+                                Select Files
+                            </button>
+                        </div>
+
+                        <!-- File Processing Queue -->
+                        <div class="mt-6 space-y-3">
+                            <!-- File 1 - Processing -->
+                            <div class="p-4 border border-emerald-200 bg-emerald-50 rounded-lg">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-start justify-between mb-2">
+                                            <div>
+                                                <p class="font-medium text-gray-900">customers_export_2024.csv</p>
+                                                <p class="text-xs text-gray-600">2.4 MB • 15,847 rows detected</p>
+                                            </div>
+                                            <span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full">Processing</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                                <span>Analyzing columns...</span>
+                                                <span>67%</span>
+                                            </div>
+                                            <div class="w-full bg-emerald-200 rounded-full h-1.5">
+                                                <div class="bg-emerald-600 h-1.5 rounded-full animate-progress" style="width: 67%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3 text-xs">
+                                            <span class="text-green-600">✓ Encoding: UTF-8</span>
+                                            <span class="text-green-600">✓ Headers detected</span>
+                                            <span class="text-yellow-600">⚠ 3 missing columns</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- File 2 - Completed -->
+                            <div class="p-4 border border-green-200 bg-green-50 rounded-lg">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <p class="font-medium text-gray-900">user_metadata.json</p>
+                                                <p class="text-xs text-gray-600">856 KB • 3,421 records analyzed</p>
+                                            </div>
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Ready</span>
+                                        </div>
+                                        <div class="mt-2 flex items-center gap-3 text-xs">
+                                            <span class="text-green-600">✓ Schema validated</span>
+                                            <span class="text-green-600">✓ No duplicates</span>
+                                            <span class="text-green-600">✓ All columns mapped</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="space-y-6">
+                <!-- Column Mapping -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Column Mapping</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
+                            <span class="text-gray-700">name</span>
+                            <span class="text-green-700">→ name</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
+                            <span class="text-gray-700">email</span>
+                            <span class="text-green-700">→ email</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded">
+                            <span class="text-gray-700">phone_number</span>
+                            <span class="text-yellow-700">→ phone</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded">
+                            <span class="text-gray-700">created_date</span>
+                            <span class="text-red-700">→ unmapped</span>
+                        </div>
+                    </div>
+
+                    <button class="mt-3 text-sm text-emerald-600 hover:text-emerald-800 font-medium">
+                        Configure Mapping →
+                    </button>
+                </div>
+
+                <!-- Import Options -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Import Options</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Duplicate Handling</label>
+                            <select class="w-full px-3 py-2 border border-gray-200 rounded text-sm">
+                                <option>Skip duplicates</option>
+                                <option>Update existing</option>
+                                <option>Create new records</option>
+                                <option>Fail on duplicates</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Validation Level</label>
+                            <select class="w-full px-3 py-2 border border-gray-200 rounded text-sm">
+                                <option>Strict (recommended)</option>
+                                <option>Moderate</option>
+                                <option>Lenient</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded text-emerald-600">
+                                <span class="text-sm text-gray-700">Enable data transformation</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded text-emerald-600">
+                                <span class="text-sm text-gray-700">Backup before import</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="rounded text-emerald-600">
+                                <span class="text-sm text-gray-700">Send completion notification</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Import Preview -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Import Summary</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Total Records</span>
+                            <span class="font-medium">19,268</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Valid Records</span>
+                            <span class="font-medium text-green-600">18,847</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Invalid Records</span>
+                            <span class="font-medium text-red-600">421</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">New Records</span>
+                            <span class="font-medium text-blue-600">15,203</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Updates</span>
+                            <span class="font-medium text-yellow-600">3,644</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Est. Duration</span>
+                            <span class="font-medium">~3 minutes</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Storage Impact</span>
+                            <span class="font-medium">+145 MB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="space-y-3">
+                        <button class="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">
+                            Start Import
+                        </button>
+                        <button class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
+                            Preview Data
+                        </button>
+                        <button class="w-full px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+                            Cancel Import
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

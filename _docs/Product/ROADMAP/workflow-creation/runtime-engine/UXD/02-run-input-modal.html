@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime Engine - Run Input Modal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'modal-appear': 'modalAppear 0.3s ease-out',
+                        'form-validate': 'formValidate 0.2s ease-out',
+                    },
+                    keyframes: {
+                        modalAppear: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        formValidate: {
+                            '0%': { borderColor: 'rgb(229 231 235)' },
+                            '100%': { borderColor: 'rgb(34 197 94)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Modal Overlay -->
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-modal-appear">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b bg-blue-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-blue-900">Run Workflow</h2>
+                        <p class="text-sm text-blue-700 mt-0.5">Configure parameters for Email Processing Automation</p>
+                    </div>
+                    <button class="p-2 hover:bg-blue-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="flex">
+                <!-- Main Form -->
+                <div class="flex-1 p-6 overflow-y-auto" style="max-height: 70vh;">
+                    <form class="space-y-6">
+                        <!-- Email Query Parameters -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                Email Fetch Settings
+                            </h3>
+                            
+                            <!-- Gmail Query -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">
+                                        Gmail Query
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           value="is:unread from:team@company.com" 
+                                           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 animate-form-validate"
+                                           placeholder="e.g., is:unread label:important">
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Use Gmail search syntax to filter emails
+                                    </div>
+                                </div>
+
+                                <!-- Max Results -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Maximum Results</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="10">10 emails</option>
+                                        <option value="25" selected>25 emails</option>
+                                        <option value="50">50 emails</option>
+                                        <option value="100">100 emails</option>
+                                    </select>
+                                </div>
+
+                                <!-- Date Range -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">From Date</label>
+                                        <input type="date" 
+                                               value="2024-12-01"
+                                               class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">To Date</label>
+                                        <input type="date" 
+                                               value="2024-12-31"
+                                               class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Configuration -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Processing Options
+                            </h3>
+
+                            <div class="space-y-4">
+                                <!-- Content Processing -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Content Processing Mode</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="processing" value="full" checked class="border-gray-300">
+                                            <span class="text-sm">Full content analysis</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="processing" value="summary" class="border-gray-300">
+                                            <span class="text-sm">Summary only</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="processing" value="metadata" class="border-gray-300">
+                                            <span class="text-sm">Metadata extraction only</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Priority Classification -->
+                                <div>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" checked class="rounded border-gray-300">
+                                        <span class="text-sm">Enable priority classification</span>
+                                    </label>
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Use AI to determine email priority levels
+                                    </div>
+                                </div>
+
+                                <!-- Language Detection -->
+                                <div>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="rounded border-gray-300">
+                                        <span class="text-sm">Detect email language</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notion Integration Settings -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-sm font-medium mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Notion Task Creation
+                            </h3>
+
+                            <div class="space-y-4">
+                                <!-- Database Selection -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">
+                                        Target Database
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Select a database...</option>
+                                        <option value="tasks" selected>📋 Team Tasks</option>
+                                        <option value="projects">🚀 Projects</option>
+                                        <option value="inbox">📥 Inbox</option>
+                                    </select>
+                                </div>
+
+                                <!-- Task Template -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Task Title Template</label>
+                                    <input type="text" 
+                                           value="📧 {subject} - From {sender}"
+                                           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="Use {subject}, {sender}, {date} variables">
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Available variables: {subject}, {sender}, {date}, {priority}
+                                    </div>
+                                </div>
+
+                                <!-- Default Assignee -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Default Assignee</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">No default assignee</option>
+                                        <option value="current" selected>Current user</option>
+                                        <option value="john">John Doe</option>
+                                        <option value="sarah">Sarah Wilson</option>
+                                        <option value="team">Team Lead</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Options -->
+                        <details class="bg-gray-50 rounded-lg">
+                            <summary class="p-4 cursor-pointer text-sm font-medium hover:bg-gray-100 rounded-lg transition-colors">
+                                Advanced Options
+                            </summary>
+                            <div class="px-4 pb-4 space-y-4">
+                                <!-- Execution Timeout -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Execution Timeout</label>
+                                    <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="300">5 minutes</option>
+                                        <option value="600">10 minutes</option>
+                                        <option value="1800" selected>30 minutes</option>
+                                        <option value="3600">1 hour</option>
+                                    </select>
+                                </div>
+
+                                <!-- Error Handling -->
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">On Error</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="error_handling" value="stop" checked class="border-gray-300">
+                                            <span class="text-sm">Stop execution</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="error_handling" value="continue" class="border-gray-300">
+                                            <span class="text-sm">Continue with next item</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="error_handling" value="retry" class="border-gray-300">
+                                            <span class="text-sm">Retry failed steps (max 3 attempts)</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Debug Mode -->
+                                <div>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="rounded border-gray-300">
+                                        <span class="text-sm">Enable debug logging</span>
+                                    </label>
+                                    <div class="text-xs text-muted-foreground mt-1">
+                                        Capture detailed execution logs for troubleshooting
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    </form>
+                </div>
+
+                <!-- Sidebar: Saved Configurations -->
+                <div class="w-80 border-l bg-gray-50 p-4">
+                    <h3 class="text-sm font-medium mb-3">Saved Configurations</h3>
+                    <div class="space-y-2 mb-4">
+                        <button class="w-full p-3 text-left bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
+                            <div class="text-sm font-medium text-blue-900">Daily Email Processing</div>
+                            <div class="text-xs text-blue-700 mt-1">Last used: 2 hours ago</div>
+                            <div class="text-xs text-muted-foreground mt-1">25 emails, team inbox</div>
+                        </button>
+                        <button class="w-full p-3 text-left bg-white border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="text-sm font-medium">Weekly Report Emails</div>
+                            <div class="text-xs text-muted-foreground mt-1">50 emails, reports database</div>
+                        </button>
+                        <button class="w-full p-3 text-left bg-white border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="text-sm font-medium">Support Tickets</div>
+                            <div class="text-xs text-muted-foreground mt-1">100 emails, support queue</div>
+                        </button>
+                    </div>
+
+                    <!-- Save Current Config -->
+                    <div class="border-t pt-4">
+                        <button class="w-full px-3 py-2 text-sm border border-dashed border-gray-300 rounded-lg hover:bg-white transition-colors">
+                            + Save Current Configuration
+                        </button>
+                    </div>
+
+                    <!-- Parameter Preview -->
+                    <div class="mt-6 p-3 bg-white border rounded-lg">
+                        <div class="text-xs font-medium mb-2">Configuration Summary</div>
+                        <div class="space-y-1 text-xs text-muted-foreground">
+                            <div>• Query: "is:unread from:team@..."</div>
+                            <div>• Max results: 25 emails</div>
+                            <div>• Database: Team Tasks</div>
+                            <div>• Processing: Full analysis</div>
+                            <div>• Timeout: 30 minutes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t bg-gray-50 flex items-center justify-between">
+                <div class="text-sm text-muted-foreground">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>All required fields completed</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        Cancel
+                    </button>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-white transition-colors">
+                        Save & Run Later
+                    </button>
+                    <button class="px-6 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-7 4h12l-6 6-6-6z"></path>
+                        </svg>
+                        Start Execution
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Page (Blurred) -->
+    <div class="opacity-30 pointer-events-none">
+        <header class="bg-white border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <h1 class="text-xl font-semibold">Email Processing Automation</h1>
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg">Run Workflow</button>
+                </div>
+            </div>
+        </header>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-white rounded-lg border p-6" style="height: 400px">
+                <div class="bg-gray-100 rounded-lg w-full h-full"></div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

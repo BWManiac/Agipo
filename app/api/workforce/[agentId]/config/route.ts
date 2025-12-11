@@ -20,7 +20,7 @@ export async function PATCH(
   }
 
   try {
-    // Await params to get agentId
+    // Await params to get agentId (Next.js 15 requirement)
     const { agentId } = await params;
     
     // Parse body

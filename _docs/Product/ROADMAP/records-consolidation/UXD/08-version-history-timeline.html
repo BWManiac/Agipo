@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version History Timeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'timeline-pulse': 'timelinePulse 2s infinite',
+                        'version-highlight': 'versionHighlight 1s ease-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        timelinePulse: {
+                            '0%, 100%': { backgroundColor: 'rgb(34 197 94)' },
+                            '50%': { backgroundColor: 'rgb(16 185 129)' },
+                        },
+                        versionHighlight: {
+                            '0%': { backgroundColor: 'rgb(254 249 195)' },
+                            '100%': { backgroundColor: 'transparent' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-1">Version History</h1>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <span>Table:</span>
+                        <span class="font-medium">Customer Profiles</span>
+                        <span>•</span>
+                        <span>Current: v2.4.1</span>
+                        <span>•</span>
+                        <span>47 versions tracked</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Export History
+                    </button>
+                    <button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium">
+                        Create Snapshot
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Timeline View -->
+            <div class="col-span-3">
+                <!-- Timeline Filter Bar -->
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-700">Time Range:</span>
+                                <select class="px-3 py-1.5 border border-gray-200 rounded text-sm">
+                                    <option>Last 30 days</option>
+                                    <option>Last 7 days</option>
+                                    <option>Last 90 days</option>
+                                    <option>All time</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-700">Event Type:</span>
+                                <select class="px-3 py-1.5 border border-gray-200 rounded text-sm">
+                                    <option>All Events</option>
+                                    <option>Schema Changes</option>
+                                    <option>Data Updates</option>
+                                    <option>Rollbacks</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-700">Author:</span>
+                                <select class="px-3 py-1.5 border border-gray-200 rounded text-sm">
+                                    <option>All Users</option>
+                                    <option>Human Users</option>
+                                    <option>AI Agents</option>
+                                    <option>System</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="p-2 bg-gray-100 hover:bg-gray-200 rounded text-gray-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            <button class="p-2 bg-emerald-100 hover:bg-emerald-200 rounded text-emerald-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l6-6v13l6 6V6l-6-6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version Timeline -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 animate-fade-in">
+                    <div class="relative">
+                        <!-- Timeline Line -->
+                        <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+
+                        <!-- Version Events -->
+                        <div class="space-y-6">
+                            <!-- Current Version -->
+                            <div class="relative flex gap-6 animate-version-highlight">
+                                <div class="flex-shrink-0 w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg animate-timeline-pulse">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 bg-emerald-50 border border-emerald-200 rounded-lg p-6">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="font-semibold text-emerald-900">v2.4.1 - Current Version</h3>
+                                            <p class="text-sm text-emerald-700">Added location geocoding and phone validation</p>
+                                        </div>
+                                        <span class="px-3 py-1 bg-emerald-200 text-emerald-800 text-xs rounded-full font-medium">CURRENT</span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-4 mb-3">
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Records:</span>
+                                            <span class="font-medium ml-1">48,392</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Columns:</span>
+                                            <span class="font-medium ml-1">23</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Size:</span>
+                                            <span class="font-medium ml-1">2.8 GB</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                                                    <span class="text-white text-xs font-bold">DA</span>
+                                                </div>
+                                                <span class="text-sm text-emerald-700">Data Agent</span>
+                                            </div>
+                                            <span class="text-xs text-emerald-600">2 minutes ago</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button class="px-3 py-1.5 bg-white border border-emerald-300 text-emerald-700 rounded text-sm hover:bg-emerald-50 font-medium">
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Previous Version -->
+                            <div class="relative flex gap-6">
+                                <div class="flex-shrink-0 w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="font-semibold text-blue-900">v2.4.0 - Schema Update</h3>
+                                            <p class="text-sm text-blue-700">Added preferences column and updated indexes</p>
+                                        </div>
+                                        <span class="px-3 py-1 bg-blue-200 text-blue-800 text-xs rounded-full font-medium">STABLE</span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-4 mb-3">
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Records:</span>
+                                            <span class="font-medium ml-1">48,139</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Columns:</span>
+                                            <span class="font-medium ml-1">21 → 23</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Size:</span>
+                                            <span class="font-medium ml-1">2.7 GB</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                                    <span class="text-white text-xs font-bold">AD</span>
+                                                </div>
+                                                <span class="text-sm text-blue-700">admin@agipo.com</span>
+                                            </div>
+                                            <span class="text-xs text-blue-600">3 hours ago</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button class="px-3 py-1.5 bg-white border border-blue-300 text-blue-700 rounded text-sm hover:bg-blue-50 font-medium">
+                                                Compare
+                                            </button>
+                                            <button class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 font-medium">
+                                                Rollback
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Import -->
+                            <div class="relative flex gap-6">
+                                <div class="flex-shrink-0 w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 bg-purple-50 border border-purple-200 rounded-lg p-6">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="font-semibold text-purple-900">v2.3.8 - Bulk Data Import</h3>
+                                            <p class="text-sm text-purple-700">Imported 12,457 new customer records from CRM system</p>
+                                        </div>
+                                        <span class="px-3 py-1 bg-purple-200 text-purple-800 text-xs rounded-full font-medium">IMPORT</span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-4 mb-3">
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Added:</span>
+                                            <span class="font-medium ml-1 text-green-600">+12,457</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Updated:</span>
+                                            <span class="font-medium ml-1 text-blue-600">2,341</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Duration:</span>
+                                            <span class="font-medium ml-1">4m 23s</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                                                    <span class="text-white text-xs font-bold">IA</span>
+                                                </div>
+                                                <span class="text-sm text-purple-700">Import Agent</span>
+                                            </div>
+                                            <span class="text-xs text-purple-600">1 day ago</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button class="px-3 py-1.5 bg-white border border-purple-300 text-purple-700 rounded text-sm hover:bg-purple-50 font-medium">
+                                                View Import Log
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rollback Event -->
+                            <div class="relative flex gap-6 animate-slide-in">
+                                <div class="flex-shrink-0 w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 bg-orange-50 border border-orange-200 rounded-lg p-6">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="font-semibold text-orange-900">v2.3.7 - Rollback Operation</h3>
+                                            <p class="text-sm text-orange-700">Reverted to v2.3.6 due to data validation errors</p>
+                                        </div>
+                                        <span class="px-3 py-1 bg-orange-200 text-orange-800 text-xs rounded-full font-medium">ROLLBACK</span>
+                                    </div>
+                                    <div class="p-3 bg-orange-100 border border-orange-300 rounded mb-3">
+                                        <p class="text-sm text-orange-900">
+                                            <strong>Reason:</strong> Validation errors in email column detected post-migration. 
+                                            Immediate rollback initiated to maintain data integrity.
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                                                    <span class="text-white text-xs font-bold">SY</span>
+                                                </div>
+                                                <span class="text-sm text-orange-700">System Auto-Recovery</span>
+                                            </div>
+                                            <span class="text-xs text-orange-600">2 days ago</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button class="px-3 py-1.5 bg-white border border-orange-300 text-orange-700 rounded text-sm hover:bg-orange-50 font-medium">
+                                                View Error Log
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Schema Migration -->
+                            <div class="relative flex gap-6">
+                                <div class="flex-shrink-0 w-16 h-16 bg-teal-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 bg-teal-50 border border-teal-200 rounded-lg p-6">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="font-semibold text-teal-900">v2.3.6 - Major Schema Update</h3>
+                                            <p class="text-sm text-teal-700">Migrated to new authentication fields and updated data types</p>
+                                        </div>
+                                        <span class="px-3 py-1 bg-teal-200 text-teal-800 text-xs rounded-full font-medium">MIGRATION</span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-4 mb-3">
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Migration:</span>
+                                            <span class="font-medium ml-1">v2.2.x → v2.3.x</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Duration:</span>
+                                            <span class="font-medium ml-1">12m 45s</span>
+                                        </div>
+                                        <div class="text-sm">
+                                            <span class="text-gray-500">Downtime:</span>
+                                            <span class="font-medium ml-1">0s</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center">
+                                                    <span class="text-white text-xs font-bold">DB</span>
+                                                </div>
+                                                <span class="text-sm text-teal-700">DB Admin</span>
+                                            </div>
+                                            <span class="text-xs text-teal-600">5 days ago</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button class="px-3 py-1.5 bg-white border border-teal-300 text-teal-700 rounded text-sm hover:bg-teal-50 font-medium">
+                                                Migration Report
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Load More -->
+                            <div class="relative flex justify-center">
+                                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                                    Load More Versions (42 remaining)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="space-y-6">
+                <!-- Version Stats -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Version Statistics</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Total Versions</span>
+                            <span class="font-medium">47</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Schema Changes</span>
+                            <span class="font-medium">8</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Data Imports</span>
+                            <span class="font-medium">12</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Rollbacks</span>
+                            <span class="font-medium">3</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Storage Growth</span>
+                            <span class="font-medium text-green-600">+847 MB</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded">
+                            <h4 class="text-sm font-medium text-blue-900 mb-1">Retention Policy</h4>
+                            <p class="text-xs text-blue-700">Keeping 90 days of detailed history, 1 year of snapshots</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    
+                    <div class="space-y-3">
+                        <button class="w-full px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">
+                            Create Manual Snapshot
+                        </button>
+                        
+                        <button class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                            Compare Versions
+                        </button>
+                        
+                        <button class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors">
+                            Schedule Backup
+                        </button>
+                        
+                        <button class="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
+                            Configure Retention
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Change Analytics -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Change Analytics</h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Activity by Day -->
+                        <div>
+                            <span class="text-sm text-gray-600">Activity (Last 7 days)</span>
+                            <div class="flex items-end gap-1 h-8 mt-2">
+                                <div class="w-4 bg-emerald-500 rounded-t" style="height: 60%"></div>
+                                <div class="w-4 bg-emerald-500 rounded-t" style="height: 30%"></div>
+                                <div class="w-4 bg-emerald-500 rounded-t" style="height: 80%"></div>
+                                <div class="w-4 bg-emerald-500 rounded-t" style="height: 45%"></div>
+                                <div class="w-4 bg-emerald-500 rounded-t" style="height: 70%"></div>
+                                <div class="w-4 bg-emerald-500 rounded-t" style="height: 20%"></div>
+                                <div class="w-4 bg-emerald-500 rounded-t" style="height: 90%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Top Contributors -->
+                        <div>
+                            <span class="text-sm text-gray-600">Top Contributors</span>
+                            <div class="mt-2 space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-emerald-500 rounded-full"></div>
+                                    <span class="text-sm">Data Agent (18)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
+                                    <span class="text-sm">admin@agipo.com (8)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 bg-purple-500 rounded-full"></div>
+                                    <span class="text-sm">Import Agent (6)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rollback Warning -->
+                <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-red-900">Rollback Impact</h4>
+                            <p class="text-xs text-red-700 mt-1">Rolling back will affect 8 connected agents and may require data re-processing</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
