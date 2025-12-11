@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Login Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-900 min-h-screen p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Control Bar -->
+        <div class="bg-gray-800 rounded-t-xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-medium">LinkedIn Authentication</h3>
+                        <p class="text-xs text-gray-400">Profile: LinkedIn - Work Account</p>
+                    </div>
+                </div>
+                <div class="px-3 py-1 bg-amber-500 text-amber-900 rounded-full text-sm font-medium animate-pulse-slow">
+                    Manual Login Mode
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 text-sm text-gray-300">
+                    <svg class="w-4 h-4 text-green-400 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span>Browser Connected</span>
+                </div>
+                <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                    Cancel Session
+                </button>
+            </div>
+        </div>
+
+        <!-- Browser Viewport Container -->
+        <div class="bg-white rounded-b-xl shadow-2xl overflow-hidden">
+            <!-- URL Bar -->
+            <div class="bg-gray-100 px-4 py-2 border-b flex items-center gap-3">
+                <div class="flex gap-2">
+                    <button class="w-8 h-8 rounded hover:bg-gray-200 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <button class="w-8 h-8 rounded hover:bg-gray-200 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                    <button class="w-8 h-8 rounded hover:bg-gray-200 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="flex-1 flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border">
+                    <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                    <span class="text-sm text-gray-700">https://www.linkedin.com/login</span>
+                </div>
+            </div>
+
+            <!-- Browser Content (LinkedIn Login Page Mock) -->
+            <div class="h-[600px] bg-gray-50 p-8">
+                <div class="max-w-md mx-auto">
+                    <!-- LinkedIn Logo -->
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 mx-auto mb-4">
+                            <svg class="w-full h-full text-blue-700" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl font-semibold text-gray-900">Sign in</h1>
+                        <p class="text-sm text-gray-600 mt-2">Stay updated on your professional world</p>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <input 
+                                    type="email"
+                                    placeholder="Email or Phone"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    value="john.doe@example.com"
+                                />
+                            </div>
+                            <div>
+                                <input 
+                                    type="password"
+                                    placeholder="Password"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    value="••••••••"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2">
+                                    <span class="text-sm text-gray-700">Remember me</span>
+                                </label>
+                                <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Forgot password?</a>
+                            </div>
+                            <button class="w-full py-3 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors">
+                                Sign in
+                            </button>
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-white text-gray-500">or</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 space-y-3">
+                                <button class="w-full py-2 px-4 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                    Continue with Google
+                                </button>
+                                <button class="w-full py-2 px-4 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                    Sign in with Apple
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-center mt-6 text-sm text-gray-600">
+                        New to LinkedIn? <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Join now</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="mt-6 bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold mb-2">Authentication Instructions</h3>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-start gap-2">
+                            <span class="text-blue-600 font-medium">1.</span>
+                            <span>Enter your LinkedIn credentials in the browser above</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-blue-600 font-medium">2.</span>
+                            <span>Complete any 2FA or security checks if prompted</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-blue-600 font-medium">3.</span>
+                            <span>Navigate to your LinkedIn home page after login</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-blue-600 font-medium">4.</span>
+                            <span>Click "Save Profile" when you're successfully logged in</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <div class="flex gap-2">
+                            <svg class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                            </svg>
+                            <p class="text-xs text-amber-700">
+                                <strong>Security Note:</strong> Your credentials are never stored. Only the authenticated session state is saved locally.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ml-6 space-y-3">
+                    <div class="text-center">
+                        <div class="text-sm text-gray-500 mb-2">Session Status</div>
+                        <div class="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg font-medium">
+                            Not Authenticated
+                        </div>
+                    </div>
+                    
+                    <button disabled class="px-6 py-3 bg-gray-300 text-gray-500 rounded-lg font-medium cursor-not-allowed opacity-50">
+                        Save Profile
+                    </button>
+                    
+                    <button class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium w-full">
+                        Refresh Browser
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="mt-4 flex items-center justify-between text-sm text-gray-400">
+            <div class="flex items-center gap-4">
+                <span>Session ID: prof_linkedin_work_2024_12_11</span>
+                <span>•</span>
+                <span>Browser: Chrome 120</span>
+                <span>•</span>
+                <span>Anchor Profile: Persistent</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                <span>Browser Active</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

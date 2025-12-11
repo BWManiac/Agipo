@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workflow Builder - Natural Language Input</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'pulse-soft': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-border {
+            background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234));
+            padding: 2px;
+            border-radius: 0.75rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">AI Workflow Builder</h1>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Beta</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        View History
+                    </button>
+                    <button class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        Templates
+                    </button>
+                    <button class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        Help
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-8 animate-slide-up">
+            <h2 class="text-3xl font-bold text-foreground mb-3">
+                Describe your workflow in plain English
+            </h2>
+            <p class="text-muted-foreground max-w-2xl mx-auto">
+                Tell me what you want to automate, and I'll create a visual workflow for you. 
+                Be as detailed or as simple as you like - I'll help refine it.
+            </p>
+        </div>
+
+        <!-- Available Context Pills -->
+        <div class="mb-6">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="text-sm font-medium">Available integrations:</span>
+                <span class="text-xs text-muted-foreground">(Click to include in your workflow)</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button class="px-3 py-1.5 bg-white border rounded-full text-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                    <div class="w-4 h-4 bg-gradient-to-br from-red-400 to-red-600 rounded"></div>
+                    Gmail
+                </button>
+                <button class="px-3 py-1.5 bg-white border rounded-full text-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                    <div class="w-4 h-4 bg-gradient-to-br from-purple-400 to-purple-600 rounded"></div>
+                    Slack
+                </button>
+                <button class="px-3 py-1.5 bg-white border rounded-full text-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                    <div class="w-4 h-4 bg-gradient-to-br from-gray-600 to-gray-800 rounded"></div>
+                    GitHub
+                </button>
+                <button class="px-3 py-1.5 bg-white border rounded-full text-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                    <div class="w-4 h-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded"></div>
+                    Google Sheets
+                </button>
+                <button class="px-3 py-1.5 bg-white border rounded-full text-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                    <div class="w-4 h-4 bg-gradient-to-br from-green-400 to-green-600 rounded"></div>
+                    Notion
+                </button>
+                <button class="px-3 py-1.5 bg-white border rounded-full text-sm hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+                    <div class="w-4 h-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded"></div>
+                    LinkedIn
+                </button>
+                <button class="px-3 py-1.5 border border-dashed rounded-full text-sm text-muted-foreground hover:border-gray-400 transition-colors">
+                    + Add Integration
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Input Area -->
+        <div class="gradient-border mb-6">
+            <div class="bg-white rounded-[0.625rem]">
+                <div class="p-6">
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-sm font-medium">What would you like to automate?</label>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-muted-foreground">
+                                    <span id="charCount">0</span> / 1000 characters
+                                </span>
+                                <select class="text-xs border rounded px-2 py-1">
+                                    <option>Simple workflow</option>
+                                    <option>Moderate complexity</option>
+                                    <option>Advanced automation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <textarea 
+                            class="w-full h-32 p-4 border rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="Example: Every morning at 9am, check my Gmail for emails from my team. For each email, extract key points and action items, then create tasks in Notion. Send me a Slack summary of what was created."
+                            oninput="document.getElementById('charCount').textContent = this.value.length"
+                        ></textarea>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm">Include error handling</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm">Optimize for performance</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm">Add logging</span>
+                        </label>
+                    </div>
+
+                    <!-- Recent Prompts Dropdown -->
+                    <details class="mb-4">
+                        <summary class="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                            Recent prompts ▼
+                        </summary>
+                        <div class="mt-2 space-y-2 pl-4">
+                            <button class="text-sm text-left hover:text-blue-600 transition-colors block">
+                                "Monitor competitor pricing and alert on changes"
+                            </button>
+                            <button class="text-sm text-left hover:text-blue-600 transition-colors block">
+                                "Sync customer data between CRM and email marketing"
+                            </button>
+                            <button class="text-sm text-left hover:text-blue-600 transition-colors block">
+                                "Generate weekly reports from multiple data sources"
+                            </button>
+                        </div>
+                    </details>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                                Load Template
+                            </button>
+                            <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                                Import Workflow
+                            </button>
+                        </div>
+                        <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Generate Workflow
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example Prompts Carousel -->
+        <div class="mb-8">
+            <h3 class="text-sm font-medium mb-3">Try these examples:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="bg-white p-4 rounded-lg border hover:border-blue-300 hover:shadow-sm transition-all text-left group">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-blue-200 transition-colors">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-sm mb-1">Email Automation</h4>
+                            <p class="text-xs text-muted-foreground">
+                                "Process incoming emails, categorize them, and create appropriate follow-up tasks"
+                            </p>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="bg-white p-4 rounded-lg border hover:border-blue-300 hover:shadow-sm transition-all text-left group">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-green-200 transition-colors">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-sm mb-1">Data Sync</h4>
+                            <p class="text-xs text-muted-foreground">
+                                "Sync data between Google Sheets and our database every hour"
+                            </p>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="bg-white p-4 rounded-lg border hover:border-blue-300 hover:shadow-sm transition-all text-left group">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-purple-200 transition-colors">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-sm mb-1">Lead Management</h4>
+                            <p class="text-xs text-muted-foreground">
+                                "When a new lead fills our form, add to CRM and trigger nurture sequence"
+                            </p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div class="flex gap-3">
+                <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+                <div>
+                    <h4 class="text-sm font-medium text-blue-900 mb-1">Pro Tips</h4>
+                    <ul class="text-xs text-blue-700 space-y-1">
+                        <li>• Be specific about triggers: "Every Monday at 9am" instead of "weekly"</li>
+                        <li>• Mention the tools you want to use: "Send via Slack" or "Create in Notion"</li>
+                        <li>• Describe conditions: "If the email is from a VIP client, then..."</li>
+                        <li>• I'll handle the technical details - just describe what you want to happen</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

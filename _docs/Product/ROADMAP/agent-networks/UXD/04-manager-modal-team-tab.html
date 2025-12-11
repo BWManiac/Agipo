@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Modal - Team Tab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-900 bg-opacity-50 min-h-screen flex items-center justify-center p-8">
+    <!-- Modal Backdrop -->
+    <div class="max-w-5xl w-full">
+        <!-- Modal Content -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-lg relative">
+                            JM
+                            <div class="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-yellow-900" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-purple-900">Job Application Manager</h2>
+                            <p class="text-sm text-purple-700">Coordinates job search and application workflow</p>
+                        </div>
+                    </div>
+                    <button class="p-2 hover:bg-purple-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="border-b bg-gray-50">
+                <nav class="flex px-6 -mb-px">
+                    <button class="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        Chat
+                    </button>
+                    <button class="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        Configuration
+                    </button>
+                    <button class="px-4 py-3 text-sm font-medium text-purple-600 border-b-2 border-purple-600">
+                        Team
+                        <span class="ml-2 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">5</span>
+                    </button>
+                    <button class="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        Capabilities
+                    </button>
+                    <button class="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        Delegation History
+                    </button>
+                    <button class="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        Analytics
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Team Tab Content -->
+            <div class="p-6">
+                <!-- Team Overview -->
+                <div class="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-semibold text-purple-900 mb-1">Team Overview</h3>
+                            <p class="text-sm text-purple-700">5 specialized agents working together</p>
+                        </div>
+                        <button class="px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Add Agent to Team
+                        </button>
+                    </div>
+                    
+                    <!-- Team Stats -->
+                    <div class="grid grid-cols-4 gap-3 text-sm">
+                        <div class="bg-white rounded-lg p-2.5 text-center">
+                            <div class="text-xl font-bold text-purple-600">247</div>
+                            <div class="text-xs text-gray-600">Total Delegations</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2.5 text-center">
+                            <div class="text-xl font-bold text-green-600">94.3%</div>
+                            <div class="text-xs text-gray-600">Success Rate</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2.5 text-center">
+                            <div class="text-xl font-bold text-blue-600">~3.2m</div>
+                            <div class="text-xs text-gray-600">Avg Response</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2.5 text-center">
+                            <div class="text-xl font-bold text-orange-600">82%</div>
+                            <div class="text-xs text-gray-600">Coverage</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Cards -->
+                <div class="space-y-4">
+                    <!-- Resume Tailor Agent -->
+                    <div class="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all">
+                        <div class="p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+                                        RT
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h4 class="font-semibold">Resume Tailor</h4>
+                                            <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs">Primary Specialist</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Customizes resumes for specific job postings using PDF generation and text analysis</p>
+                                        
+                                        <!-- Capabilities -->
+                                        <div class="mb-3">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-xs font-medium text-gray-500">Capabilities:</span>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1">
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">PDF Generation</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Text Analysis</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Template Formatting</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Keyword Optimization</span>
+                                                <span class="px-2 py-1 bg-blue-100 text-xs text-blue-700 rounded">resume_builder_workflow</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">+3 more</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Performance Metrics -->
+                                        <div class="grid grid-cols-3 gap-4 pt-3 border-t">
+                                            <div>
+                                                <p class="text-xs text-gray-500">Delegations</p>
+                                                <p class="text-sm font-medium">87 tasks</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Success Rate</p>
+                                                <p class="text-sm font-medium text-green-600">98.2%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Avg Time</p>
+                                                <p class="text-sm font-medium">2m 14s</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors" title="View Agent">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Remove from Team">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Scraper Agent -->
+                    <div class="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all">
+                        <div class="p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold">
+                                        JS
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h4 class="font-semibold">Job Scraper</h4>
+                                            <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs">High Usage</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Finds and extracts job postings from various platforms using web scraping</p>
+                                        
+                                        <!-- Capabilities -->
+                                        <div class="mb-3">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-xs font-medium text-gray-500">Capabilities:</span>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1">
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Web Scraping</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Data Extraction</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">URL Parsing</span>
+                                                <span class="px-2 py-1 bg-green-100 text-xs text-green-700 rounded">LinkedIn Connected</span>
+                                                <span class="px-2 py-1 bg-green-100 text-xs text-green-700 rounded">Indeed API</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">+5 more</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Performance Metrics -->
+                                        <div class="grid grid-cols-3 gap-4 pt-3 border-t">
+                                            <div>
+                                                <p class="text-xs text-gray-500">Delegations</p>
+                                                <p class="text-sm font-medium">124 tasks</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Success Rate</p>
+                                                <p class="text-sm font-medium text-green-600">92.7%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Avg Time</p>
+                                                <p class="text-sm font-medium">4m 32s</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors" title="View Agent">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Remove from Team">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Filler Agent -->
+                    <div class="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all">
+                        <div class="p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
+                                        AF
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h4 class="font-semibold">Application Filler</h4>
+                                            <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Automates job application form filling and submission process</p>
+                                        
+                                        <!-- Capabilities -->
+                                        <div class="mb-3">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-xs font-medium text-gray-500">Capabilities:</span>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1">
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Form Filling</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Browser Automation</span>
+                                                <span class="px-2 py-1 bg-blue-100 text-xs text-blue-700 rounded">auto_apply_workflow</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Field Mapping</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">+2 more</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Performance Metrics -->
+                                        <div class="grid grid-cols-3 gap-4 pt-3 border-t">
+                                            <div>
+                                                <p class="text-xs text-gray-500">Delegations</p>
+                                                <p class="text-sm font-medium">36 tasks</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Success Rate</p>
+                                                <p class="text-sm font-medium text-green-600">91.4%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Avg Time</p>
+                                                <p class="text-sm font-medium">3m 18s</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors" title="View Agent">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Remove from Team">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Outreach Agent -->
+                    <div class="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all">
+                        <div class="p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold">
+                                        EO
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h4 class="font-semibold">Email Outreach</h4>
+                                            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">Paused</span>
+                                            <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">Optional</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Drafts and sends follow-up emails to recruiters</p>
+                                        
+                                        <!-- Capabilities -->
+                                        <div class="mb-3">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-xs font-medium text-gray-500">Capabilities:</span>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1">
+                                                <span class="px-2 py-1 bg-green-100 text-xs text-green-700 rounded">Gmail Connected</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Email Drafting</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Template Engine</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">+1 more</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Performance Metrics -->
+                                        <div class="grid grid-cols-3 gap-4 pt-3 border-t">
+                                            <div>
+                                                <p class="text-xs text-gray-500">Delegations</p>
+                                                <p class="text-sm font-medium text-gray-400">0 tasks</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Success Rate</p>
+                                                <p class="text-sm font-medium text-gray-400">--</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Avg Time</p>
+                                                <p class="text-sm font-medium text-gray-400">--</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors" title="View Agent">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Remove from Team">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interview Prep Agent -->
+                    <div class="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all">
+                        <div class="p-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-3 flex-1">
+                                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-bold">
+                                        IP
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h4 class="font-semibold">Interview Prep</h4>
+                                            <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">Recently Added</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Prepares interview questions and talking points based on job descriptions</p>
+                                        
+                                        <!-- Capabilities -->
+                                        <div class="mb-3">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-xs font-medium text-gray-500">Capabilities:</span>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1">
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Question Generation</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">Company Research</span>
+                                                <span class="px-2 py-1 bg-blue-100 text-xs text-blue-700 rounded">interview_prep_workflow</span>
+                                                <span class="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">+2 more</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Performance Metrics -->
+                                        <div class="grid grid-cols-3 gap-4 pt-3 border-t">
+                                            <div>
+                                                <p class="text-xs text-gray-500">Delegations</p>
+                                                <p class="text-sm font-medium">12 tasks</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Success Rate</p>
+                                                <p class="text-sm font-medium text-green-600">100%</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500">Avg Time</p>
+                                                <p class="text-sm font-medium">1m 45s</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors" title="View Agent">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Remove from Team">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Capabilities Summary -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h4 class="font-semibold text-gray-900 mb-3">Combined Team Capabilities</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 mb-2">Tools & Integrations</p>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 bg-white border border-gray-200 text-xs rounded">PDF Generation</span>
+                                <span class="px-2 py-1 bg-white border border-gray-200 text-xs rounded">Web Scraping</span>
+                                <span class="px-2 py-1 bg-white border border-gray-200 text-xs rounded">Browser Automation</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Gmail</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">LinkedIn</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Indeed API</span>
+                                <span class="text-xs text-gray-500">+12 more</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 mb-2">Workflows</p>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">resume_builder_workflow</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">auto_apply_workflow</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">interview_prep_workflow</span>
+                                <span class="text-xs text-gray-500">+2 more</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 pt-3 border-t">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Team coverage for job application workflow:</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-32 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 92%"></div>
+                                </div>
+                                <span class="font-medium text-green-600">92%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="flex justify-between items-center mt-6 pt-6 border-t">
+                    <button class="text-sm text-gray-600 hover:text-gray-900 font-medium">
+                        View Delegation Strategy →
+                    </button>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Export Team Config
+                        </button>
+                        <button class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Validation Error State</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+        .shake { animation: shake 0.5s; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Configuration Validation Error State</h1>
+            <p class="text-sm text-muted-foreground">Shows validation errors with clear feedback and recovery instructions.</p>
+        </div>
+
+        <!-- Agent Modal with Validation Errors -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Modal Header -->
+            <div class="border-b px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                            PM
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold">Product Manager Agent</h2>
+                            <p class="text-xs text-muted-foreground">Configure agent behavior and capabilities</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Error Banner -->
+            <div class="bg-red-50 border-b border-red-200 px-6 py-3">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-medium text-red-900">Configuration validation failed</p>
+                        <p class="text-sm text-red-700 mt-1">Please fix the errors below before saving your changes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Content with Errors -->
+            <div class="flex-1 overflow-y-auto bg-gray-50 p-6">
+                <div class="max-w-2xl mx-auto w-full space-y-6">
+                    <h2 class="text-lg font-semibold">Agent Configuration</h2>
+
+                    <!-- Instructions - ERROR STATE -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-red-300 shadow-sm space-y-4 shake">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="text-sm font-medium text-red-700">Instructions</label>
+                                <span class="text-xs text-red-600 font-medium">Required field</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-2">Define how this agent should behave and respond to users</p>
+                            <div class="relative">
+                                <textarea 
+                                    class="w-full min-h-[200px] px-3 py-2 text-sm border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all font-mono bg-red-50"
+                                    placeholder="You are a helpful Product Manager assistant..."
+                                ></textarea>
+                                <div class="absolute bottom-2 right-2 text-xs text-red-600">
+                                    <span>0 / 4,000 tokens</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 flex items-start gap-2">
+                                <svg class="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                <p class="text-xs text-red-600">Instructions must be at least 10 characters long and cannot be empty.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Selection and Max Steps - WARNING STATE for Model -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <h3 class="text-sm font-medium text-gray-700">Core Settings</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Model Selection - WARNING -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="text-xs font-medium text-amber-600">AI Model</label>
+                                    <span class="text-xs text-amber-600 font-medium">⚠️ Cost warning</span>
+                                </div>
+                                <div class="relative">
+                                    <select class="w-full h-10 px-3 pr-10 text-sm border-2 border-amber-300 rounded-lg appearance-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-amber-50">
+                                        <option value="claude-3-opus" selected>Claude 3 Opus (Legacy)</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-xs text-amber-600">This model is expensive and slower. Consider using GPT-4o or Claude 3.5 Sonnet instead.</p>
+                            </div>
+
+                            <!-- Max Steps - ERROR -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="text-xs font-medium text-red-600">Max Steps</label>
+                                    <span class="text-xs text-red-600 font-medium">Invalid value</span>
+                                </div>
+                                <input 
+                                    type="number" 
+                                    value="-1"
+                                    class="w-full h-10 px-3 text-sm border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all bg-red-50"
+                                    placeholder="5"
+                                />
+                                <p class="mt-1 text-xs text-red-600">Must be a positive integer (minimum 1)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Objectives - ERROR STATE -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-red-300 shadow-sm space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="text-sm font-medium text-red-700">Objectives</label>
+                                <span class="text-xs text-red-600 font-medium">At least one required</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-2">What is this agent trying to achieve? (one per line)</p>
+                            <textarea 
+                                class="w-full min-h-[100px] px-3 py-2 text-sm border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all bg-red-50"
+                                placeholder="- Increase user retention&#10;- Reduce support ticket volume"
+                            ></textarea>
+                            <div class="mt-2 flex items-start gap-2">
+                                <svg class="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                <p class="text-xs text-red-600">Please provide at least one objective for the agent.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guardrails - VALID (to show contrast) -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-1 block">Guardrails</label>
+                            <p class="text-xs text-gray-500 mb-2">Safety rules and limitations (one per line)</p>
+                            <textarea 
+                                class="w-full min-h-[100px] px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="- Never share confidential data&#10;- Always cite sources"
+                            >- Never make final decisions without user approval
+- Always provide multiple options when suggesting features</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Error Summary -->
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <h3 class="text-sm font-medium text-red-900 mb-2">Validation Summary</h3>
+                        <ul class="space-y-1 text-xs text-red-700">
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500 mt-0.5">•</span>
+                                <span><strong>Instructions:</strong> Field is required and must be at least 10 characters</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500 mt-0.5">•</span>
+                                <span><strong>Max Steps:</strong> Must be a positive integer</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500 mt-0.5">•</span>
+                                <span><strong>Objectives:</strong> At least one objective is required</span>
+                            </li>
+                        </ul>
+                        <div class="mt-3 pt-3 border-t border-red-200">
+                            <p class="text-xs text-amber-600">
+                                <strong>Warning:</strong> Selected model (Claude 3 Opus) has high costs. Consider alternatives.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between items-center pt-4">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-red-600 font-medium">
+                                3 errors, 1 warning
+                            </span>
+                            <button 
+                                disabled 
+                                class="px-4 py-2 text-sm font-medium text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed flex items-center gap-2"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inline Validation Example -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Real-time Inline Validation</h3>
+            <p class="text-sm text-gray-600 mb-4">Shows validation happening as user types (on blur or debounced):</p>
+            
+            <div class="space-y-4">
+                <!-- Valid Field -->
+                <div>
+                    <label class="text-xs font-medium text-gray-500 mb-1 block">Field with Valid Input</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            value="Valid configuration value"
+                            class="w-full h-10 px-3 pr-10 text-sm border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-green-50"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3">
+                            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invalid Field -->
+                <div>
+                    <label class="text-xs font-medium text-red-600 mb-1 block">Field with Invalid Input</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            value="x"
+                            class="w-full h-10 px-3 pr-10 text-sm border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all bg-red-50"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3">
+                            <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-red-600">Minimum 3 characters required</p>
+                </div>
+
+                <!-- Validating Field -->
+                <div>
+                    <label class="text-xs font-medium text-gray-500 mb-1 block">Field Being Validated</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            value="Checking availability..."
+                            class="w-full h-10 px-3 pr-10 text-sm border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3">
+                            <svg class="w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-blue-600">Validating...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

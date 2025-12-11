@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import {
   getThreadWithMessages,
   updateThreadTitle,
@@ -15,7 +15,7 @@ export async function GET(
   { params }: { params: Promise<{ tableId: string; threadId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -51,7 +51,7 @@ export async function PATCH(
   { params }: { params: Promise<{ tableId: string; threadId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -87,7 +87,7 @@ export async function DELETE(
   { params }: { params: Promise<{ tableId: string; threadId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

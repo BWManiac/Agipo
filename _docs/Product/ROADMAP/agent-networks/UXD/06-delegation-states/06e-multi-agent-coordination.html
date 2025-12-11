@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delegation State - Multi-Agent Coordination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'rotate': 'rotate 2s linear infinite',
+                    },
+                    keyframes: {
+                        rotate: {
+                            '100%': { transform: 'rotate(360deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-xl font-bold mb-2">Delegation State: Multi-Agent Coordination</h1>
+            <p class="text-sm text-gray-600">Manager coordinating multiple agents working in parallel</p>
+        </div>
+
+        <!-- State Card: Multi-Agent Coordination -->
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4 shadow-sm">
+            <div class="flex items-start gap-3">
+                <!-- Manager with Coordination Indicator -->
+                <div class="relative">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                        RM
+                    </div>
+                    <!-- Coordination Animation -->
+                    <div class="absolute -top-2 -right-2">
+                        <svg class="w-6 h-6 text-indigo-500 animate-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <!-- Status Header -->
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-indigo-900">Research Manager Coordinating</span>
+                            <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">
+                                3 Agents Active
+                            </span>
+                        </div>
+                        <span class="text-xs text-indigo-600">Parallel execution</span>
+                    </div>
+
+                    <!-- Main Task -->
+                    <div class="bg-white/70 rounded-lg p-3 mb-3">
+                        <p class="text-xs text-gray-500 mb-1">Coordinating task:</p>
+                        <p class="text-sm text-gray-800">"Create comprehensive market analysis report for our SaaS product"</p>
+                    </div>
+
+                    <!-- Active Delegations Grid -->
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <!-- Agent 1: Web Scraper -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded bg-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                                    WS
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-medium">Web Scraper</div>
+                                    <div class="text-xs text-green-600">Active</div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-600 mb-2">Gathering competitor data...</div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full animate-pulse" style="width: 75%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">75% • 2:14 elapsed</div>
+                        </div>
+
+                        <!-- Agent 2: Data Analyst -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded bg-cyan-500 flex items-center justify-center text-white text-xs font-bold">
+                                    DA
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-medium">Data Analyst</div>
+                                    <div class="text-xs text-green-600">Active</div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-600 mb-2">Processing market data...</div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-blue-500 h-1.5 rounded-full animate-pulse" style="width: 45%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">45% • 1:32 elapsed</div>
+                        </div>
+
+                        <!-- Agent 3: Report Generator -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-3">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded bg-pink-500 flex items-center justify-center text-white text-xs font-bold">
+                                    RG
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-xs font-medium">Report Generator</div>
+                                    <div class="text-xs text-amber-600">Waiting</div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-600 mb-2">Awaiting data inputs...</div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-gray-400 h-1.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">Queued • Depends on DA</div>
+                        </div>
+                    </div>
+
+                    <!-- Coordination Flow Visualization -->
+                    <div class="bg-indigo-50 rounded-lg p-3 mb-3">
+                        <p class="text-xs font-medium text-indigo-800 mb-2">Execution Strategy:</p>
+                        
+                        <div class="flex items-center justify-between text-xs">
+                            <!-- Phase 1 -->
+                            <div class="text-center">
+                                <div class="px-2 py-1 bg-green-100 text-green-700 rounded mb-1">Phase 1</div>
+                                <div class="flex gap-1 justify-center">
+                                    <div class="w-6 h-6 rounded bg-purple-500 text-white text-xs flex items-center justify-center">W</div>
+                                    <div class="w-6 h-6 rounded bg-cyan-500 text-white text-xs flex items-center justify-center">D</div>
+                                </div>
+                                <div class="text-gray-600 mt-1">Parallel</div>
+                            </div>
+                            
+                            <!-- Arrow -->
+                            <svg class="w-6 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                            </svg>
+                            
+                            <!-- Phase 2 -->
+                            <div class="text-center">
+                                <div class="px-2 py-1 bg-amber-100 text-amber-700 rounded mb-1">Phase 2</div>
+                                <div class="flex gap-1 justify-center">
+                                    <div class="w-6 h-6 rounded bg-pink-500 text-white text-xs flex items-center justify-center">R</div>
+                                </div>
+                                <div class="text-gray-600 mt-1">Sequential</div>
+                            </div>
+                            
+                            <!-- Arrow -->
+                            <svg class="w-6 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                            </svg>
+                            
+                            <!-- Result -->
+                            <div class="text-center">
+                                <div class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded mb-1">Result</div>
+                                <div class="w-6 h-6 rounded bg-green-500 text-white text-xs flex items-center justify-center mx-auto">
+                                    ✓
+                                </div>
+                                <div class="text-gray-600 mt-1">Complete</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inter-Agent Communication -->
+                    <div class="bg-white rounded-lg p-3 mb-3">
+                        <p class="text-xs font-medium text-gray-700 mb-2">Inter-agent communication:</p>
+                        <div class="space-y-1 text-xs">
+                            <div class="flex items-start gap-2">
+                                <span class="text-purple-500">WS→DA:</span>
+                                <span class="text-gray-600">Competitor list (23 companies) transferred</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-cyan-500">DA→RG:</span>
+                                <span class="text-gray-600">Market analysis data pending...</span>
+                            </div>
+                            <div class="flex items-start gap-2 opacity-50">
+                                <span class="text-pink-500">RG:</span>
+                                <span class="text-gray-500">Waiting for input from DA</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resource Usage -->
+                    <div class="grid grid-cols-4 gap-2 mb-3">
+                        <div class="bg-gray-50 rounded p-2 text-center">
+                            <div class="text-xs text-gray-500">CPU</div>
+                            <div class="text-sm font-bold">47%</div>
+                        </div>
+                        <div class="bg-gray-50 rounded p-2 text-center">
+                            <div class="text-xs text-gray-500">Memory</div>
+                            <div class="text-sm font-bold">312MB</div>
+                        </div>
+                        <div class="bg-gray-50 rounded p-2 text-center">
+                            <div class="text-xs text-gray-500">Threads</div>
+                            <div class="text-sm font-bold">3/5</div>
+                        </div>
+                        <div class="bg-gray-50 rounded p-2 text-center">
+                            <div class="text-xs text-gray-500">Queue</div>
+                            <div class="text-sm font-bold">1</div>
+                        </div>
+                    </div>
+
+                    <!-- Manager Status -->
+                    <div class="pt-3 border-t border-indigo-200">
+                        <div class="flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-indigo-600 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6m11-6h-6m-6 0H1" stroke="currentColor" stroke-width="2" opacity="0.3"/>
+                                </svg>
+                                <span class="text-indigo-700">Manager orchestrating workflow</span>
+                            </div>
+                            <button class="text-indigo-600 hover:text-indigo-700 font-medium">
+                                View dependency graph →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Activity Stream -->
+        <div class="mt-6 bg-white rounded-lg border border-gray-200 p-4">
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Live Activity Stream</h3>
+            <div class="space-y-2 max-h-48 overflow-y-auto">
+                <div class="flex items-start gap-3 text-xs">
+                    <span class="text-gray-400 font-mono">10:47:42</span>
+                    <div class="w-5 h-5 rounded bg-purple-500 text-white text-xs flex items-center justify-center">W</div>
+                    <span class="flex-1">Found 147 competitors in target market</span>
+                </div>
+                <div class="flex items-start gap-3 text-xs">
+                    <span class="text-gray-400 font-mono">10:47:45</span>
+                    <div class="w-5 h-5 rounded bg-cyan-500 text-white text-xs flex items-center justify-center">D</div>
+                    <span class="flex-1">Processing pricing data for 89 products</span>
+                </div>
+                <div class="flex items-start gap-3 text-xs">
+                    <span class="text-gray-400 font-mono">10:47:48</span>
+                    <div class="w-5 h-5 rounded bg-purple-500 text-white text-xs flex items-center justify-center">W</div>
+                    <span class="flex-1">Extracting feature comparisons</span>
+                </div>
+                <div class="flex items-start gap-3 text-xs animate-pulse">
+                    <span class="text-gray-400 font-mono">10:47:51</span>
+                    <div class="w-5 h-5 rounded bg-cyan-500 text-white text-xs flex items-center justify-center">D</div>
+                    <span class="flex-1 text-blue-600">Generating market share analysis...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dependency Graph -->
+        <div class="mt-6 bg-gray-50 rounded-lg border border-gray-200 p-4">
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Task Dependencies</h3>
+            <div class="flex items-center justify-center">
+                <svg class="w-full max-w-md" viewBox="0 0 400 200">
+                    <!-- Web Scraper Node -->
+                    <rect x="20" y="40" width="100" height="40" rx="5" fill="#8b5cf6" />
+                    <text x="70" y="65" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Web Scraper</text>
+                    
+                    <!-- Data Analyst Node -->
+                    <rect x="20" y="120" width="100" height="40" rx="5" fill="#06b6d4" />
+                    <text x="70" y="145" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Data Analyst</text>
+                    
+                    <!-- Report Generator Node -->
+                    <rect x="280" y="80" width="100" height="40" rx="5" fill="#ec4899" />
+                    <text x="330" y="105" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Report Gen</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M 120 60 L 280 95" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead)" />
+                    <path d="M 120 140 L 280 105" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead)" />
+                    
+                    <!-- Arrow marker -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#6366f1" />
+                        </marker>
+                    </defs>
+                    
+                    <!-- Status indicators -->
+                    <circle cx="110" cy="50" r="4" fill="#22c55e" class="animate-pulse" />
+                    <circle cx="110" cy="130" r="4" fill="#22c55e" class="animate-pulse" />
+                    <circle cx="290" cy="90" r="4" fill="#fbbf24" />
+                </svg>
+            </div>
+            <div class="flex justify-center gap-4 mt-3 text-xs">
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span>Active</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                    <span>Waiting</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <span>Not Started</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

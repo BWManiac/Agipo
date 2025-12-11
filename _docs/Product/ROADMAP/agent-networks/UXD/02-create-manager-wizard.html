@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Manager Wizard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Modal Container -->
+        <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b bg-gradient-to-r from-purple-50 to-purple-100">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-purple-900">Create Manager Agent</h2>
+                            <p class="text-sm text-purple-700">Set up an agent to coordinate your team</p>
+                        </div>
+                    </div>
+                    <button class="p-2 hover:bg-purple-200 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="px-6 py-3 bg-gray-50 border-b">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-gray-600">Step 3 of 5</span>
+                    <span class="text-xs text-gray-500">60% complete</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-purple-600 h-2 rounded-full transition-all" style="width: 60%"></div>
+                </div>
+                <div class="flex justify-between mt-3 text-xs">
+                    <span class="text-purple-600 font-medium">✓ Identity</span>
+                    <span class="text-purple-600 font-medium">✓ Instructions</span>
+                    <span class="text-purple-600 font-medium">• Team</span>
+                    <span class="text-gray-400">Capabilities</span>
+                    <span class="text-gray-400">Review</span>
+                </div>
+            </div>
+
+            <!-- Step Content: Team Selection -->
+            <div class="p-6">
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2">Select Team Members</h3>
+                    <p class="text-sm text-gray-600">Choose which agents this manager will coordinate. The manager will delegate tasks to these agents based on their specialties.</p>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="mb-4 flex gap-2">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            placeholder="Search agents by name or capability..."
+                            class="w-full px-4 py-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <select class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option>All Agents</option>
+                        <option>Active Only</option>
+                        <option>Unassigned</option>
+                    </select>
+                </div>
+
+                <!-- Agent Selection Grid -->
+                <div class="grid grid-cols-2 gap-3 mb-6 max-h-96 overflow-y-auto">
+                    <!-- Resume Tailor - Selected -->
+                    <div class="border-2 border-purple-500 bg-purple-50 rounded-lg p-4 cursor-pointer transition-all">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                                    RT
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Resume Tailor</h4>
+                                    <span class="inline-flex px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="checkbox" checked class="w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">Customizes resumes for specific job postings</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-white text-xs text-gray-600 rounded">PDF Generation</span>
+                            <span class="px-2 py-0.5 bg-white text-xs text-gray-600 rounded">Text Analysis</span>
+                            <span class="px-2 py-0.5 bg-white text-xs text-gray-600 rounded">+3</span>
+                        </div>
+                    </div>
+
+                    <!-- Job Scraper - Selected -->
+                    <div class="border-2 border-purple-500 bg-purple-50 rounded-lg p-4 cursor-pointer transition-all">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-sm">
+                                    JS
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Job Scraper</h4>
+                                    <span class="inline-flex px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="checkbox" checked class="w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">Finds and extracts job postings from websites</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-white text-xs text-gray-600 rounded">Web Scraping</span>
+                            <span class="px-2 py-0.5 bg-white text-xs text-gray-600 rounded">Data Extract</span>
+                        </div>
+                    </div>
+
+                    <!-- Application Filler - Selected -->
+                    <div class="border-2 border-purple-500 bg-purple-50 rounded-lg p-4 cursor-pointer transition-all">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                                    AF
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Application Filler</h4>
+                                    <span class="inline-flex px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="checkbox" checked class="w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">Fills and submits job applications</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-white text-xs text-gray-600 rounded">Form Filling</span>
+                            <span class="px-2 py-0.5 bg-white text-xs text-gray-600 rounded">Browser Auto</span>
+                        </div>
+                    </div>
+
+                    <!-- Email Writer - Not Selected -->
+                    <div class="border border-gray-200 bg-white rounded-lg p-4 cursor-pointer hover:border-purple-300 hover:bg-purple-50 transition-all">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold text-sm">
+                                    EW
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Email Writer</h4>
+                                    <span class="inline-flex px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="checkbox" class="w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">Drafts professional emails</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-gray-100 text-xs text-gray-600 rounded">Gmail</span>
+                            <span class="px-2 py-0.5 bg-gray-100 text-xs text-gray-600 rounded">Writing</span>
+                        </div>
+                    </div>
+
+                    <!-- Product Manager - Already Assigned -->
+                    <div class="border border-gray-200 bg-gray-50 rounded-lg p-4 opacity-60 cursor-not-allowed">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                                    PM
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Product Manager</h4>
+                                    <span class="inline-flex px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-xs">
+                                        Assigned
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="checkbox" disabled class="w-5 h-5 text-gray-400 rounded border-gray-300">
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2">Already assigned to Research Manager</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-gray-100 text-xs text-gray-500 rounded">Planning</span>
+                            <span class="px-2 py-0.5 bg-gray-100 text-xs text-gray-500 rounded">Analysis</span>
+                        </div>
+                    </div>
+
+                    <!-- Data Analyst - Not Selected -->
+                    <div class="border border-gray-200 bg-white rounded-lg p-4 cursor-pointer hover:border-purple-300 hover:bg-purple-50 transition-all">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold text-sm">
+                                    DA
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm">Data Analyst</h4>
+                                    <span class="inline-flex px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs">
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="checkbox" class="w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">Analyzes data and creates reports</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-gray-100 text-xs text-gray-600 rounded">Charts</span>
+                            <span class="px-2 py-0.5 bg-gray-100 text-xs text-gray-600 rounded">Statistics</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Team Summary -->
+                <div class="bg-purple-50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-medium text-purple-900">Selected Team</h4>
+                        <span class="text-sm text-purple-700">3 agents selected</span>
+                    </div>
+                    <div class="flex gap-2 mb-3">
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-white text-xs font-bold">RT</div>
+                            <div class="w-8 h-8 rounded-full bg-green-500 border-2 border-white flex items-center justify-center text-white text-xs font-bold">JS</div>
+                            <div class="w-8 h-8 rounded-full bg-orange-500 border-2 border-white flex items-center justify-center text-white text-xs font-bold">AF</div>
+                        </div>
+                        <div class="flex-1 flex items-center text-sm text-purple-700">
+                            Resume Tailor, Job Scraper, Application Filler
+                        </div>
+                    </div>
+                    <div class="text-xs text-purple-600">
+                        <p class="mb-1">✓ Full job application workflow coverage</p>
+                        <p>Combined capabilities: Web scraping, PDF generation, form filling, text analysis</p>
+                    </div>
+                </div>
+
+                <!-- Delegation Strategy (Optional) -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Delegation Strategy (Optional)
+                    </label>
+                    <textarea 
+                        rows="3"
+                        placeholder="Describe how this manager should decide which agent to use..."
+                        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >When a user asks about jobs, first use Job Scraper to find opportunities. For each interesting position, use Resume Tailor to customize the resume, then Application Filler to submit. Coordinate all three for end-to-end applications.</textarea>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between pt-6 border-t">
+                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        ← Previous
+                    </button>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <button class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
+                            Next: Capabilities →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative Steps Preview -->
+        <div class="mt-8 grid grid-cols-5 gap-4">
+            <!-- Step 1: Identity -->
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="text-xs font-medium text-gray-500 mb-2">Step 1: Identity</div>
+                <div class="space-y-2">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold mx-auto">
+                        JM
+                    </div>
+                    <p class="text-xs text-center">Job Manager</p>
+                </div>
+            </div>
+
+            <!-- Step 2: Instructions -->
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="text-xs font-medium text-gray-500 mb-2">Step 2: Instructions</div>
+                <p class="text-xs text-gray-600">Coordinate job application workflow...</p>
+            </div>
+
+            <!-- Step 3: Team (Current) -->
+            <div class="bg-purple-100 rounded-lg p-4 border-2 border-purple-500">
+                <div class="text-xs font-medium text-purple-700 mb-2">Step 3: Team ←</div>
+                <div class="flex -space-x-1 justify-center">
+                    <div class="w-6 h-6 rounded-full bg-blue-500 border border-white"></div>
+                    <div class="w-6 h-6 rounded-full bg-green-500 border border-white"></div>
+                    <div class="w-6 h-6 rounded-full bg-orange-500 border border-white"></div>
+                </div>
+            </div>
+
+            <!-- Step 4: Capabilities -->
+            <div class="bg-white rounded-lg p-4 border border-gray-200 opacity-50">
+                <div class="text-xs font-medium text-gray-500 mb-2">Step 4: Capabilities</div>
+                <p class="text-xs text-gray-400">Optional tools...</p>
+            </div>
+
+            <!-- Step 5: Review -->
+            <div class="bg-white rounded-lg p-4 border border-gray-200 opacity-50">
+                <div class="text-xs font-medium text-gray-500 mb-2">Step 5: Review</div>
+                <p class="text-xs text-gray-400">Confirm settings...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

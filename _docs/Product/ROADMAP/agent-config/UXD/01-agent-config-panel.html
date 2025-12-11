@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Configuration Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Agent Configuration Panel</h1>
+            <p class="text-sm text-muted-foreground">Main configuration interface for editing agent settings. Shows all editable fields with validation support.</p>
+        </div>
+
+        <!-- Agent Modal Context -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Modal Header -->
+            <div class="border-b px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <!-- Agent Avatar -->
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                            PM
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold">Product Manager Agent</h2>
+                            <p class="text-xs text-muted-foreground">Configure agent behavior and capabilities</p>
+                        </div>
+                    </div>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configuration Content -->
+            <div class="flex-1 overflow-y-auto bg-gray-50 p-6">
+                <div class="max-w-2xl mx-auto w-full space-y-6">
+                    <h2 class="text-lg font-semibold">Agent Configuration</h2>
+
+                    <!-- Migration Notice -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex gap-3">
+                            <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="text-sm">
+                                <p class="font-medium text-blue-900">Configuration format updated</p>
+                                <p class="text-blue-700 mt-1">Your agent's <code class="px-1 py-0.5 bg-blue-100 rounded">systemPrompt</code> will be automatically migrated to the new <code class="px-1 py-0.5 bg-blue-100 rounded">instructions</code> format when you save.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-1 block">Instructions</label>
+                            <p class="text-xs text-gray-500 mb-2">Define how this agent should behave and respond to users</p>
+                            <div class="relative">
+                                <textarea 
+                                    class="w-full min-h-[200px] px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono"
+                                    placeholder="You are a helpful Product Manager assistant..."
+                                >You are a Product Manager assistant specializing in user research, feature prioritization, and roadmap planning. 
+
+Your primary objectives are:
+- Help teams understand user needs through research and analysis
+- Assist with feature prioritization using data-driven frameworks
+- Support roadmap planning and communication
+- Facilitate stakeholder alignment
+
+Always provide structured, actionable insights backed by best practices in product management.</textarea>
+                                <div class="absolute bottom-2 right-2 text-xs text-gray-400">
+                                    <span>1,250 / 4,000 tokens</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Selection and Max Steps -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <h3 class="text-sm font-medium text-gray-700">Core Settings</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Model Selection -->
+                            <div>
+                                <label class="text-xs font-medium text-gray-500 mb-1 block">AI Model</label>
+                                <div class="relative">
+                                    <select class="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
+                                        <option value="gpt-4o" selected>GPT-4o (Recommended)</option>
+                                        <option value="gpt-4o-mini">GPT-4o Mini (Faster)</option>
+                                        <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+                                        <option value="claude-3-5-haiku">Claude 3.5 Haiku</option>
+                                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500">Fast, capable model with vision support</p>
+                            </div>
+
+                            <!-- Max Steps -->
+                            <div>
+                                <label class="text-xs font-medium text-gray-500 mb-1 block">Max Steps</label>
+                                <input 
+                                    type="number" 
+                                    min="1" 
+                                    value="5"
+                                    class="w-full h-10 px-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    placeholder="5"
+                                />
+                                <p class="mt-1 text-xs text-gray-500">Maximum tool execution steps per turn</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Objectives -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-1 block">Objectives</label>
+                            <p class="text-xs text-gray-500 mb-2">What is this agent trying to achieve? (one per line)</p>
+                            <textarea 
+                                class="w-full min-h-[100px] px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="- Increase user retention&#10;- Reduce support ticket volume"
+                            >- Help teams understand user needs through research
+- Facilitate data-driven decision making
+- Improve product-market fit
+- Accelerate time-to-market for new features</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Guardrails -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 mb-1 block">Guardrails</label>
+                            <p class="text-xs text-gray-500 mb-2">Safety rules and limitations (one per line)</p>
+                            <textarea 
+                                class="w-full min-h-[100px] px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="- Never share confidential data&#10;- Always cite sources"
+                            >- Never make final decisions without user approval
+- Always provide multiple options when suggesting features
+- Respect data privacy and confidentiality
+- Cite sources and methodologies used
+- Avoid making promises about timeline or resources</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Variables & Preferences -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <h3 class="text-sm font-medium text-gray-700">Variables & Preferences</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-medium text-gray-500 mb-1 block">Tone</label>
+                                <select class="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
+                                    <option value="professional" selected>Professional</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="enthusiastic">Enthusiastic</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-gray-500 mb-1 block">Output Length</label>
+                                <select class="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
+                                    <option value="concise" selected>Concise</option>
+                                    <option value="detailed">Detailed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between items-center pt-4">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-gray-500">
+                                Last saved 2 hours ago
+                            </span>
+                            <button class="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State Variations Note -->
+        <div class="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-sm text-yellow-800">
+                <strong>Note:</strong> This mockup shows the main configuration panel with all fields in an editable state. 
+                See separate mockups for validation errors, save success, and other states.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

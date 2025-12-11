@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workflow Builder - Generation Progress</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'progress': 'progress 2s ease-out',
+                        'pulse-ring': 'pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        progress: {
+                            '0%': { width: '0%' },
+                        },
+                        'pulse-ring': {
+                            '0%': { transform: 'scale(0.95)', opacity: '1' },
+                            '50%': { transform: 'scale(1.05)', opacity: '0.7' },
+                            '100%': { transform: 'scale(0.95)', opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">AI Workflow Builder</h1>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full animate-pulse-ring">
+                        Generating...
+                    </span>
+                </div>
+                <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel Generation
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Original Prompt Display -->
+        <div class="bg-white rounded-lg border p-4 mb-6 animate-fade-in">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium mb-1">Your Request:</h3>
+                    <p class="text-sm text-muted-foreground">
+                        "Every morning at 9am, check my Gmail for emails from my team. For each email, extract key points and action items, then create tasks in Notion. Send me a Slack summary of what was created."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Left Column: Generation Stages -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-medium text-muted-foreground">Generation Progress</h3>
+                
+                <!-- Stage 1: Parsing -->
+                <div class="bg-white rounded-lg border p-4 animate-slide-in">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium">Understanding Intent</h4>
+                            <p class="text-xs text-muted-foreground">Parsing your requirements</p>
+                        </div>
+                    </div>
+                    <div class="ml-11 space-y-1 text-xs text-muted-foreground">
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                            </svg>
+                            Daily trigger at 9am
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                            </svg>
+                            Email filtering by sender
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                            </svg>
+                            Content extraction required
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 2: Identifying Components -->
+                <div class="bg-white rounded-lg border p-4 animate-slide-in" style="animation-delay: 0.1s">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium">Identifying Components</h4>
+                            <p class="text-xs text-muted-foreground">Matching capabilities</p>
+                        </div>
+                    </div>
+                    <div class="ml-11 space-y-1 text-xs text-muted-foreground">
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                            </svg>
+                            Gmail integration found
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                            </svg>
+                            Notion API available
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                            </svg>
+                            Slack connection verified
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 3: Building Structure -->
+                <div class="bg-white rounded-lg border p-4 animate-slide-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center animate-pulse-ring">
+                            <svg class="w-4 h-4 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium">Building Structure</h4>
+                            <p class="text-xs text-muted-foreground">Creating workflow nodes...</p>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5 ml-11 mr-4">
+                        <div class="bg-blue-600 h-1.5 rounded-full animate-progress" style="width: 65%"></div>
+                    </div>
+                    <div class="ml-11 mt-2 text-xs text-muted-foreground">
+                        Creating email filter node...
+                    </div>
+                </div>
+
+                <!-- Stage 4: Adding Logic -->
+                <div class="bg-white rounded-lg border p-4 opacity-50">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-gray-400">Adding Logic</h4>
+                            <p class="text-xs text-gray-400">Pending...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 5: Optimization -->
+                <div class="bg-white rounded-lg border p-4 opacity-50">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-gray-400">Optimizing</h4>
+                            <p class="text-xs text-gray-400">Pending...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column: Live Preview -->
+            <div class="col-span-2">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-muted-foreground">Live Preview</h3>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-muted-foreground">Auto-refresh</span>
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border p-6 relative overflow-hidden" style="height: 500px">
+                    <!-- Canvas Grid Background -->
+                    <div class="absolute inset-0 bg-gray-50" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    
+                    <!-- Workflow Nodes Being Generated -->
+                    <div class="relative">
+                        <!-- Trigger Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-green-500 p-3 shadow-lg animate-fade-in" style="left: 50px; top: 50px; width: 180px;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">Schedule Trigger</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Daily at 9:00 AM</div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-green-500 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- Gmail Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-blue-500 p-3 shadow-lg animate-fade-in" style="left: 280px; top: 50px; width: 180px; animation-delay: 0.2s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-gradient-to-br from-red-400 to-red-600 rounded"></div>
+                                </div>
+                                <span class="text-xs font-medium">Gmail: Get Emails</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Filter: team members</div>
+                            <div class="absolute -left-2 top-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- For Each Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-purple-500 p-3 shadow-lg animate-fade-in" style="left: 280px; top: 150px; width: 180px; animation-delay: 0.4s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">For Each Email</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Loop through results</div>
+                            <div class="absolute -left-2 top-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- AI Extract Node (Being Created) -->
+                        <div class="absolute bg-white rounded-lg border-2 border-gray-300 border-dashed p-3 opacity-60 animate-pulse" style="left: 510px; top: 150px; width: 180px;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center animate-spin">
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium text-gray-400">Creating node...</span>
+                            </div>
+                            <div class="text-xs text-gray-400">AI: Extract Info</div>
+                        </div>
+
+                        <!-- Connection Lines -->
+                        <svg class="absolute inset-0 pointer-events-none" style="width: 100%; height: 100%;">
+                            <path d="M 230 75 L 280 75" stroke="#10b981" stroke-width="2" fill="none" class="animate-fade-in"/>
+                            <path d="M 460 75 L 460 125 L 460 175 L 280 175" stroke="#3b82f6" stroke-width="2" fill="none" stroke-dasharray="5,5" class="animate-fade-in" style="animation-delay: 0.3s;"/>
+                            <path d="M 460 175 L 510 175" stroke="#a855f7" stroke-width="2" fill="none" stroke-dasharray="3,3" class="animate-fade-in opacity-50" style="animation-delay: 0.5s;"/>
+                        </svg>
+                    </div>
+
+                    <!-- Generation Stats Overlay -->
+                    <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur rounded-lg p-3 border shadow-sm">
+                        <div class="grid grid-cols-3 gap-4 text-xs">
+                            <div>
+                                <span class="text-muted-foreground">Nodes</span>
+                                <div class="font-medium">4 / 7</div>
+                            </div>
+                            <div>
+                                <span class="text-muted-foreground">Connections</span>
+                                <div class="font-medium">3 / 6</div>
+                            </div>
+                            <div>
+                                <span class="text-muted-foreground">Time</span>
+                                <div class="font-medium">8.2s</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights Panel -->
+                <div class="mt-4 bg-blue-50 rounded-lg p-4 border border-blue-200 animate-fade-in">
+                    <div class="flex gap-3">
+                        <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-900 mb-1">Building your workflow</h4>
+                            <p class="text-xs text-blue-700">
+                                I'm adding error handling for cases where emails might not have clear action items. I'll also include a batch processing optimization to handle multiple emails efficiently.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

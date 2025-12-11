@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -46,7 +46,7 @@ export async function GET(
   { params }: { params: Promise<{ tableId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

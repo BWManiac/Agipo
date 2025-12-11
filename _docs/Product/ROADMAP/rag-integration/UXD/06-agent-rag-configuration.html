@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent RAG Configuration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Configure RAG for Agent</h1>
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-indigo-500 rounded-full text-white text-xs flex items-center justify-center">JH</div>
+                    <span>Job Hunter Agent</span>
+                </div>
+                <span>•</span>
+                <span>Currently using 2 knowledge bases</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Knowledge Base Selection -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+                    <h2 class="font-semibold text-gray-900 mb-4">Assign Knowledge Bases</h2>
+                    
+                    <div class="space-y-3 mb-6">
+                        <!-- Knowledge Base 1 -->
+                        <label class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" checked class="mt-1 rounded text-indigo-600">
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Product Documentation</p>
+                                        <p class="text-sm text-gray-600 mt-1">Technical specs, user guides, and API documentation</p>
+                                        <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                            <span>324 documents</span>
+                                            <span>•</span>
+                                            <span>18.4 GB</span>
+                                            <span>•</span>
+                                            <span>Last updated 2 hours ago</span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Knowledge Base 2 -->
+                        <label class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" checked class="mt-1 rounded text-indigo-600">
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Customer Support FAQs</p>
+                                        <p class="text-sm text-gray-600 mt-1">Common questions, troubleshooting guides, and solutions</p>
+                                        <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                            <span>512 documents</span>
+                                            <span>•</span>
+                                            <span>8.7 GB</span>
+                                            <span>•</span>
+                                            <span>Processing 42 new docs</span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Processing</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Knowledge Base 3 -->
+                        <label class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" class="mt-1 rounded text-indigo-600">
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Company Handbook</p>
+                                        <p class="text-sm text-gray-600 mt-1">HR policies, procedures, benefits, and guidelines</p>
+                                        <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                            <span>87 documents</span>
+                                            <span>•</span>
+                                            <span>2.1 GB</span>
+                                            <span>•</span>
+                                            <span>Last updated yesterday</span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Knowledge Base 4 -->
+                        <label class="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors opacity-60">
+                            <input type="checkbox" disabled class="mt-1 rounded text-gray-400">
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Legal Documents</p>
+                                        <p class="text-sm text-gray-600 mt-1">Contracts, agreements, compliance docs</p>
+                                        <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                            <span>Access restricted</span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">Restricted</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                        + Create New Knowledge Base
+                    </button>
+                </div>
+
+                <!-- RAG Settings -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h2 class="font-semibold text-gray-900 mb-4">RAG Settings</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Retrieval Strategy -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Retrieval Strategy</label>
+                            <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option>Hybrid Search (Semantic + Keyword)</option>
+                                <option>Pure Semantic Search</option>
+                                <option>Keyword Search Only</option>
+                                <option>Custom Strategy</option>
+                            </select>
+                        </div>
+
+                        <!-- Retrieval Parameters -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Top K Results</label>
+                                <input type="number" value="5" min="1" max="20" 
+                                       class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">Number of chunks to retrieve</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Similarity Threshold</label>
+                                <input type="number" value="0.75" min="0" max="1" step="0.05"
+                                       class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">Minimum relevance score</p>
+                            </div>
+                        </div>
+
+                        <!-- Context Injection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Context Injection</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="context" value="auto" checked class="text-indigo-600">
+                                    <span class="text-sm text-gray-700">Automatic (inject relevant chunks into prompts)</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="context" value="manual" class="text-indigo-600">
+                                    <span class="text-sm text-gray-700">Manual (agent decides when to search)</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="context" value="hybrid" class="text-indigo-600">
+                                    <span class="text-sm text-gray-700">Hybrid (auto-inject + manual search capability)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Response Settings -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Response Configuration</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded text-indigo-600">
+                                    <span class="text-sm text-gray-700">Include source citations in responses</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" checked class="rounded text-indigo-600">
+                                    <span class="text-sm text-gray-700">Show confidence scores for retrieved information</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                    <span class="text-sm text-gray-700">Highlight retrieved content in responses</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                    <span class="text-sm text-gray-700">Fall back to general knowledge if no relevant docs found</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Token Budget -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Context Token Budget</label>
+                            <div class="flex items-center gap-3">
+                                <input type="range" min="500" max="4000" value="2000" class="flex-1">
+                                <span class="text-sm text-gray-600 w-16">2000</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Maximum tokens allocated for retrieved context</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="space-y-6">
+                <!-- Preview -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Configuration Preview</h3>
+                    
+                    <div class="bg-indigo-50 rounded-lg p-4 mb-4">
+                        <p class="text-sm font-medium text-indigo-900 mb-2">When this agent receives a query:</p>
+                        <ol class="text-xs text-indigo-700 space-y-1 list-decimal list-inside">
+                            <li>Search across 2 knowledge bases</li>
+                            <li>Retrieve top 5 most relevant chunks</li>
+                            <li>Filter results above 0.75 similarity</li>
+                            <li>Inject context into prompt (max 2000 tokens)</li>
+                            <li>Include source citations in response</li>
+                        </ol>
+                    </div>
+
+                    <button class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
+                        Test Configuration
+                    </button>
+                </div>
+
+                <!-- Cost Estimate -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Cost Estimate</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Embedding lookups</span>
+                            <span class="font-medium">~$0.001/query</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Additional tokens</span>
+                            <span class="font-medium">~$0.004/query</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Storage (monthly)</span>
+                            <span class="font-medium">$2.34</span>
+                        </div>
+                        <div class="pt-3 border-t">
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium text-gray-900">Est. per query</span>
+                                <span class="font-bold text-indigo-600">$0.005</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-900 mb-2">Tips</h4>
+                    <ul class="text-xs text-gray-600 space-y-1">
+                        <li>• Higher K values provide more context but increase costs</li>
+                        <li>• Hybrid search works best for technical queries</li>
+                        <li>• Set similarity threshold based on domain specificity</li>
+                        <li>• Monitor token usage to optimize costs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-6 flex items-center justify-between">
+            <button class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium">
+                Cancel
+            </button>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Save as Template
+                </button>
+                <button class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                    Apply Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

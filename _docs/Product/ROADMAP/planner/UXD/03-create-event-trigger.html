@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event Trigger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-40 animate-fade-in"></div>
+    
+    <!-- Modal -->
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-slide-up">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Create Event Trigger</h2>
+                        <p class="text-sm text-gray-600 mt-1">Automate responses to external events</p>
+                    </div>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                <form class="space-y-6">
+                    <!-- Trigger Name -->
+                    <div class="animate-slide-up">
+                        <label class="block text-sm font-medium text-gray-900 mb-2">
+                            Trigger Name
+                        </label>
+                        <input 
+                            type="text"
+                            placeholder="e.g., New Email Alert"
+                            value="Recruiter Email Response"
+                            class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        <p class="text-xs text-gray-500 mt-1">Choose a descriptive name for this trigger</p>
+                    </div>
+
+                    <!-- Event Source Selection -->
+                    <div class="animate-slide-up" style="animation-delay: 0.1s">
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            Event Source
+                        </label>
+                        
+                        <!-- Integration Grid -->
+                        <div class="grid grid-cols-4 gap-3 mb-4">
+                            <button type="button" class="p-4 border-2 border-purple-500 bg-purple-50 rounded-lg transition-all hover:shadow-md">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-red-600 font-bold text-lg">@</span>
+                                </div>
+                                <div class="text-xs font-medium text-gray-900">Gmail</div>
+                                <div class="text-xs text-gray-500">Email events</div>
+                            </button>
+                            
+                            <button type="button" class="p-4 border border-gray-200 bg-white rounded-lg transition-all hover:border-gray-300 hover:shadow-md">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-purple-600 font-bold text-lg">#</span>
+                                </div>
+                                <div class="text-xs font-medium text-gray-900">Slack</div>
+                                <div class="text-xs text-gray-500">Messages</div>
+                            </button>
+                            
+                            <button type="button" class="p-4 border border-gray-200 bg-white rounded-lg transition-all hover:border-gray-300 hover:shadow-md">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="text-xs font-medium text-gray-900">Calendar</div>
+                                <div class="text-xs text-gray-500">Events</div>
+                            </button>
+                            
+                            <button type="button" class="p-4 border border-gray-200 bg-white rounded-lg transition-all hover:border-gray-300 hover:shadow-md">
+                                <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    </svg>
+                                </div>
+                                <div class="text-xs font-medium text-gray-900">GitHub</div>
+                                <div class="text-xs text-gray-500">Repos</div>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Connected via Composio • 100+ integrations available</span>
+                        </div>
+                    </div>
+
+                    <!-- Event Type Selection (Gmail selected) -->
+                    <div class="animate-slide-up" style="animation-delay: 0.2s">
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            Event Type
+                        </label>
+                        
+                        <div class="space-y-2">
+                            <div class="border-2 border-purple-500 bg-purple-50 rounded-lg p-3 transition-colors">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input type="radio" name="eventType" value="new_email" checked class="text-purple-600 focus:ring-purple-500">
+                                    <div class="flex-1">
+                                        <div class="font-medium text-gray-900">New Email Received</div>
+                                        <div class="text-xs text-gray-600">Triggers when any new email arrives in inbox</div>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="border border-gray-200 bg-white rounded-lg p-3 transition-colors hover:border-gray-300">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input type="radio" name="eventType" value="email_from" class="text-purple-600 focus:ring-purple-500">
+                                    <div class="flex-1">
+                                        <div class="font-medium text-gray-900">Email from Specific Sender</div>
+                                        <div class="text-xs text-gray-600">Triggers for emails from specified addresses</div>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="border border-gray-200 bg-white rounded-lg p-3 transition-colors hover:border-gray-300">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input type="radio" name="eventType" value="email_label" class="text-purple-600 focus:ring-purple-500">
+                                    <div class="flex-1">
+                                        <div class="font-medium text-gray-900">Email with Label</div>
+                                        <div class="text-xs text-gray-600">Triggers when email matches a Gmail label</div>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="border border-gray-200 bg-white rounded-lg p-3 transition-colors hover:border-gray-300">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input type="radio" name="eventType" value="email_attachment" class="text-purple-600 focus:ring-purple-500">
+                                    <div class="flex-1">
+                                        <div class="font-medium text-gray-900">Email with Attachment</div>
+                                        <div class="text-xs text-gray-600">Triggers for emails containing attachments</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Filters -->
+                    <div class="animate-slide-up" style="animation-delay: 0.3s">
+                        <label class="block text-sm font-medium text-gray-900 mb-2">
+                            Event Filters (Optional)
+                        </label>
+                        
+                        <div class="space-y-3">
+                            <!-- Subject Filter -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Subject Contains</label>
+                                <input 
+                                    type="text"
+                                    placeholder="e.g., Job Opportunity, Interview"
+                                    value="recruiter, opportunity, position"
+                                    class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                />
+                            </div>
+                            
+                            <!-- Sender Filter -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">From Domain</label>
+                                <input 
+                                    type="text"
+                                    placeholder="e.g., @linkedin.com, @indeed.com"
+                                    class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                />
+                            </div>
+                            
+                            <!-- Advanced Filters Toggle -->
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                <span class="text-sm text-gray-700">Show advanced JSON filter options</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Type -->
+                    <div class="animate-slide-up" style="animation-delay: 0.4s">
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            What should happen when this trigger fires?
+                        </label>
+                        
+                        <div class="space-y-3">
+                            <!-- Chat Template Option -->
+                            <div class="border-2 border-purple-500 bg-purple-50 rounded-lg p-4 transition-colors">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="radio" name="actionType" value="chat" checked class="mt-1 text-purple-600 focus:ring-purple-500">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                            </svg>
+                                            <span class="font-medium text-purple-900">Start Chat with Template</span>
+                                        </div>
+                                        <p class="text-sm text-purple-700">Begin a conversation with context from the event</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Workflow Option -->
+                            <div class="border border-gray-200 bg-white rounded-lg p-4 transition-colors hover:border-gray-300">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="radio" name="actionType" value="workflow" class="mt-1 text-purple-600 focus:ring-purple-500">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 112 2v6a2 2 0 11-2 2v-2M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M8 6a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V8a2 2 0 00-2-2"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">Execute Workflow</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Run a predefined workflow with event data</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Template Configuration -->
+                    <div class="animate-slide-up" style="animation-delay: 0.5s">
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            Chat Template
+                        </label>
+                        
+                        <!-- Template Editor -->
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">Message Template with Event Variables</span>
+                                <button type="button" class="text-xs text-purple-600 hover:text-purple-700 font-medium">
+                                    Insert Variables
+                                </button>
+                            </div>
+                            <textarea 
+                                rows="5"
+                                class="w-full px-3 py-2 border-0 focus:ring-0 resize-none"
+                            >New recruiter email received!
+
+Subject: {emailSubject}
+From: {emailFrom}
+Time: {eventTime}
+
+Please analyze this recruiter email and:
+1. Extract the key job details (role, company, requirements)
+2. Assess if it matches my profile
+3. Draft an appropriate response
+4. Suggest any questions I should ask
+
+Email content:
+{emailBody}</textarea>
+                        </div>
+
+                        <!-- Event Variables -->
+                        <div class="mt-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                            <div class="text-sm font-medium text-purple-900 mb-2">Available Event Variables:</div>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 transition-colors">
+                                    {emailSubject}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 transition-colors">
+                                    {emailFrom}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 transition-colors">
+                                    {emailBody}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 transition-colors">
+                                    {emailDate}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 transition-colors">
+                                    {attachments}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 transition-colors">
+                                    {eventTime}
+                                </button>
+                            </div>
+                            <p class="text-xs text-purple-700 mt-2">These variables will be replaced with actual email data when the trigger fires</p>
+                        </div>
+                    </div>
+
+                    <!-- Test Trigger -->
+                    <div class="animate-slide-up" style="animation-delay: 0.6s">
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-blue-900 mb-1">Test Your Trigger</h4>
+                                    <p class="text-sm text-blue-700 mb-3">Send a test event to verify your configuration works correctly</p>
+                                    <button type="button" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition-colors">
+                                        Send Test Event
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Webhook Status -->
+                    <div class="animate-slide-up" style="animation-delay: 0.7s">
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">Webhook Configuration</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse-slow"></div>
+                                    <span class="text-xs text-green-600">Connected</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-600 space-y-1">
+                                <div>• Webhook URL will be generated automatically</div>
+                                <div>• Composio handles authentication and security</div>
+                                <div>• Events delivered in real-time via webhooks</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Configuration valid • Ready to activate</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="button" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors">
+                        Create Trigger
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

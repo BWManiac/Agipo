@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'count-up': 'countUp 1s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        countUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">RAG Analytics</h1>
+            <p class="text-gray-600">Performance metrics and usage insights for your RAG system</p>
+        </div>
+
+        <!-- Date Range Selector -->
+        <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium">Today</button>
+                    <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">7 Days</button>
+                    <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">30 Days</button>
+                    <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">90 Days</button>
+                    <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">Custom</button>
+                </div>
+                <button class="px-4 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 font-medium">
+                    Export Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl border border-gray-200 p-6 animate-count-up">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-green-600 font-medium">+23%</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">24,867</p>
+                <p class="text-sm text-gray-600 mt-1">Total Queries</p>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-6 animate-count-up" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-green-600 font-medium">+2.3%</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">92.4%</p>
+                <p class="text-sm text-gray-600 mt-1">Success Rate</p>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-6 animate-count-up" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-yellow-600 font-medium">-12ms</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">156ms</p>
+                <p class="text-sm text-gray-600 mt-1">Avg Latency</p>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-6 animate-count-up" style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-red-600 font-medium">+18%</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">$124.56</p>
+                <p class="text-sm text-gray-600 mt-1">Total Cost</p>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <!-- Query Volume Chart -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-900">Query Volume</h3>
+                    <select class="text-sm border border-gray-200 rounded px-2 py-1">
+                        <option>Hourly</option>
+                        <option>Daily</option>
+                        <option>Weekly</option>
+                    </select>
+                </div>
+                <div class="h-48 flex items-end justify-between gap-2">
+                    <div class="flex-1 bg-indigo-200 rounded-t hover:bg-indigo-300 transition-colors relative group" style="height: 45%">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded">234</div>
+                    </div>
+                    <div class="flex-1 bg-indigo-200 rounded-t hover:bg-indigo-300 transition-colors relative group" style="height: 67%">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded">456</div>
+                    </div>
+                    <div class="flex-1 bg-indigo-200 rounded-t hover:bg-indigo-300 transition-colors relative group" style="height: 82%">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded">567</div>
+                    </div>
+                    <div class="flex-1 bg-indigo-200 rounded-t hover:bg-indigo-300 transition-colors relative group" style="height: 78%">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded">523</div>
+                    </div>
+                    <div class="flex-1 bg-indigo-200 rounded-t hover:bg-indigo-300 transition-colors relative group" style="height: 91%">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded">612</div>
+                    </div>
+                    <div class="flex-1 bg-indigo-200 rounded-t hover:bg-indigo-300 transition-colors relative group" style="height: 73%">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded">489</div>
+                    </div>
+                    <div class="flex-1 bg-indigo-500 rounded-t hover:bg-indigo-600 transition-colors relative group" style="height: 100%">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded">687</div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span>Today</span>
+                </div>
+            </div>
+
+            <!-- Response Time Distribution -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Response Time Distribution</h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">0-100ms</span>
+                            <span class="text-sm font-medium">42%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 42%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">100-200ms</span>
+                            <span class="text-sm font-medium">35%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 35%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">200-500ms</span>
+                            <span class="text-sm font-medium">18%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: 18%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">>500ms</span>
+                            <span class="text-sm font-medium">5%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: 5%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-600">P50:</span>
+                            <span class="font-medium ml-1">124ms</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">P95:</span>
+                            <span class="font-medium ml-1">342ms</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">P99:</span>
+                            <span class="font-medium ml-1">523ms</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Max:</span>
+                            <span class="font-medium ml-1">1,234ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="grid grid-cols-2 gap-6">
+            <!-- Top Queries -->
+            <div class="bg-white rounded-xl border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-900">Top Queries</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">"How to configure OAuth 2.0?"</p>
+                                <p class="text-xs text-gray-500">Product Documentation</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium">234</p>
+                                <p class="text-xs text-gray-500">queries</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">"What is the vacation policy?"</p>
+                                <p class="text-xs text-gray-500">Company Handbook</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium">189</p>
+                                <p class="text-xs text-gray-500">queries</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">"Reset password not working"</p>
+                                <p class="text-xs text-gray-500">Customer FAQs</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium">156</p>
+                                <p class="text-xs text-gray-500">queries</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">"API rate limits"</p>
+                                <p class="text-xs text-gray-500">Product Documentation</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium">134</p>
+                                <p class="text-xs text-gray-500">queries</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Base Performance -->
+            <div class="bg-white rounded-xl border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-900">Knowledge Base Performance</h3>
+                </div>
+                <div class="p-6">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-xs text-gray-500">
+                                <th class="text-left pb-2">Knowledge Base</th>
+                                <th class="text-right pb-2">Queries</th>
+                                <th class="text-right pb-2">Relevance</th>
+                                <th class="text-right pb-2">Latency</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="py-2">
+                                    <p class="text-sm font-medium text-gray-900">Product Docs</p>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">8,234</td>
+                                <td class="py-2 text-right">
+                                    <span class="text-sm text-green-600 font-medium">0.89</span>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">134ms</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">
+                                    <p class="text-sm font-medium text-gray-900">Customer FAQs</p>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">5,123</td>
+                                <td class="py-2 text-right">
+                                    <span class="text-sm text-green-600 font-medium">0.92</span>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">98ms</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">
+                                    <p class="text-sm font-medium text-gray-900">Company Handbook</p>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">2,456</td>
+                                <td class="py-2 text-right">
+                                    <span class="text-sm text-yellow-600 font-medium">0.84</span>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">156ms</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">
+                                    <p class="text-sm font-medium text-gray-900">Legal Docs</p>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">456</td>
+                                <td class="py-2 text-right">
+                                    <span class="text-sm text-green-600 font-medium">0.95</span>
+                                </td>
+                                <td class="py-2 text-right text-sm text-gray-600">203ms</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

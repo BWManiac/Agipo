@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Integration Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-gentle': 'pulseGentle 3s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        pulseGentle: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.8' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8 animate-fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">RAG Integration</h1>
+            <p class="text-gray-600">Manage knowledge bases and document retrieval for intelligent agent responses</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-600">Knowledge Bases</span>
+                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">8</p>
+                <p class="text-xs text-green-600 mt-1">+2 this month</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-600">Total Documents</span>
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">1,247</p>
+                <p class="text-xs text-gray-500 mt-1">142.3 GB storage</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-600">Queries Today</span>
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">3,482</p>
+                <p class="text-xs text-green-600 mt-1">↑ 15% from yesterday</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up" style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-600">Avg Latency</span>
+                    <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-gray-900">124ms</p>
+                <p class="text-xs text-green-600 mt-1">↓ 8ms improvement</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 mb-8 text-white animate-fade-in">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold mb-2">Get Started with RAG</h2>
+                    <p class="text-indigo-100">Create a knowledge base and start augmenting your agent responses with external knowledge</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white/20 backdrop-blur border border-white/30 rounded-lg hover:bg-white/30 transition-colors font-medium">
+                        Upload Documents
+                    </button>
+                    <button class="px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium">
+                        Create Knowledge Base
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Bases Grid -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Your Knowledge Bases</h2>
+                <div class="flex items-center gap-3">
+                    <select class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm">
+                        <option>All Types</option>
+                        <option>Technical Docs</option>
+                        <option>Company Policies</option>
+                        <option>Product Info</option>
+                    </select>
+                    <button class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                        </svg>
+                        Filter
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <!-- Knowledge Base Card 1 -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Product Documentation</h3>
+                        <p class="text-sm text-gray-600 mb-4">Technical specs, user guides, and API documentation for all products</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Documents</span>
+                                <span class="font-medium">324</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Storage</span>
+                                <span class="font-medium">18.4 GB</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Queries/day</span>
+                                <span class="font-medium">~450</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 bg-blue-500 rounded-full border-2 border-white text-white text-xs flex items-center justify-center">JH</div>
+                                <div class="w-6 h-6 bg-purple-500 rounded-full border-2 border-white text-white text-xs flex items-center justify-center">EA</div>
+                                <div class="w-6 h-6 bg-green-500 rounded-full border-2 border-white text-white text-xs flex items-center justify-center">CR</div>
+                            </div>
+                            <span class="text-xs text-gray-500">3 agents connected</span>
+                        </div>
+                    </div>
+                    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                        <button class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Manage →</button>
+                        <button class="text-sm text-gray-600 hover:text-gray-800">Settings</button>
+                    </div>
+                </div>
+
+                <!-- Knowledge Base Card 2 -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Company Handbook</h3>
+                        <p class="text-sm text-gray-600 mb-4">HR policies, procedures, benefits information, and employee guidelines</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Documents</span>
+                                <span class="font-medium">87</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Storage</span>
+                                <span class="font-medium">2.1 GB</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Queries/day</span>
+                                <span class="font-medium">~120</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 bg-orange-500 rounded-full border-2 border-white text-white text-xs flex items-center justify-center">HR</div>
+                            </div>
+                            <span class="text-xs text-gray-500">1 agent connected</span>
+                        </div>
+                    </div>
+                    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                        <button class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Manage →</button>
+                        <button class="text-sm text-gray-600 hover:text-gray-800">Settings</button>
+                    </div>
+                </div>
+
+                <!-- Knowledge Base Card 3 - Processing -->
+                <div class="bg-white rounded-xl border border-yellow-200 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                            </div>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full animate-pulse-gentle">Processing</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Customer Support FAQs</h3>
+                        <p class="text-sm text-gray-600 mb-4">Common questions, troubleshooting guides, and solution articles</p>
+                        
+                        <!-- Processing Status -->
+                        <div class="bg-yellow-50 rounded-lg p-3 mb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-4 h-4 border-2 border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
+                                <span class="text-sm font-medium text-yellow-900">Processing 42 new documents...</span>
+                            </div>
+                            <div class="w-full bg-yellow-200 rounded-full h-2">
+                                <div class="bg-yellow-600 h-2 rounded-full" style="width: 67%"></div>
+                            </div>
+                            <p class="text-xs text-yellow-700 mt-1">28 of 42 complete • ~3 min remaining</p>
+                        </div>
+
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Documents</span>
+                                <span class="font-medium">512 (+42)</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500">Storage</span>
+                                <span class="font-medium">8.7 GB</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                        <button class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">View Progress →</button>
+                        <button class="text-sm text-gray-600 hover:text-gray-800">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity & Performance -->
+        <div class="grid grid-cols-2 gap-6">
+            <!-- Recent Queries -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Recent Queries</h3>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">"How to configure OAuth 2.0?"</p>
+                            <div class="flex items-center gap-4 mt-1">
+                                <span class="text-xs text-gray-500">Product Documentation</span>
+                                <span class="text-xs text-green-600">3 relevant chunks found</span>
+                                <span class="text-xs text-gray-400">2 min ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">"What is the vacation policy?"</p>
+                            <div class="flex items-center gap-4 mt-1">
+                                <span class="text-xs text-gray-500">Company Handbook</span>
+                                <span class="text-xs text-green-600">5 relevant chunks found</span>
+                                <span class="text-xs text-gray-400">8 min ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">"Reset password not working"</p>
+                            <div class="flex items-center gap-4 mt-1">
+                                <span class="text-xs text-gray-500">Customer Support FAQs</span>
+                                <span class="text-xs text-green-600">8 relevant chunks found</span>
+                                <span class="text-xs text-gray-400">15 min ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium">View All Queries →</button>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Query Performance</h3>
+                
+                <div class="space-y-4">
+                    <!-- Relevance Score -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Average Relevance Score</span>
+                            <span class="text-sm font-medium text-gray-900">0.87</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 87%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Response Time -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Response Time (P95)</span>
+                            <span class="text-sm font-medium text-gray-900">182ms</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Cache Hit Rate -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Cache Hit Rate</span>
+                            <span class="text-sm font-medium text-gray-900">72%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: 72%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Query Success Rate -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Query Success Rate</span>
+                            <span class="text-sm font-medium text-gray-900">96.2%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 96%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium">View Analytics →</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

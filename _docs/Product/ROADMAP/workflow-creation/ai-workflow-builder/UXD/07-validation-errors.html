@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workflow Builder - Validation Errors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'shake': 'shake 0.5s ease-in-out',
+                        'pulse-red': 'pulseRed 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' },
+                        },
+                        pulseRed: {
+                            '0%, 100%': { borderColor: 'rgb(239 68 68)' },
+                            '50%': { borderColor: 'rgb(248 113 113)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Error Banner -->
+    <div class="bg-red-50 border-b border-red-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-red-900">Workflow contains 4 errors that must be fixed</h3>
+                        <p class="text-xs text-red-700 mt-0.5">The workflow cannot be saved or executed until all errors are resolved</p>
+                    </div>
+                </div>
+                <button class="text-sm text-red-700 hover:text-red-900 font-medium">
+                    View All Errors
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">AI Workflow Builder</h1>
+                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                        Validation Failed
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Auto-Fix All
+                    </button>
+                    <button class="px-4 py-2 bg-gray-300 text-gray-500 text-sm rounded-lg cursor-not-allowed" disabled>
+                        Save Workflow
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Main Canvas with Errors -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-lg border p-6 relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-medium">Workflow Canvas</h3>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="text-red-600">⚠ 4 errors</span>
+                            <span class="text-yellow-600">⚠ 2 warnings</span>
+                        </div>
+                    </div>
+
+                    <div class="relative" style="height: 500px">
+                        <!-- Canvas Background -->
+                        <div class="absolute inset-0 bg-gray-50 rounded-lg" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        
+                        <!-- Workflow Nodes with Errors -->
+                        <div class="relative p-4">
+                            <!-- Valid Node -->
+                            <div class="absolute bg-white rounded-lg border-2 border-green-500 p-3 shadow-lg" style="left: 50px; top: 100px; width: 140px;">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Schedule</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Valid</div>
+                            </div>
+
+                            <!-- Error 1: Missing Configuration -->
+                            <div class="absolute bg-white rounded-lg border-2 border-red-500 p-3 shadow-lg animate-shake animate-pulse-red" style="left: 230px; top: 100px; width: 140px;">
+                                <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs font-bold">1</span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-5 h-5 bg-red-100 rounded flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs font-medium text-red-700">Gmail</span>
+                                </div>
+                                <div class="text-xs text-red-600">Missing auth</div>
+                            </div>
+
+                            <!-- Error 2: Invalid Connection -->
+                            <div class="absolute bg-white rounded-lg border-2 border-red-500 p-3 shadow-lg" style="left: 410px; top: 100px; width: 140px;">
+                                <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs font-bold">2</span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium text-red-700">Filter</span>
+                                </div>
+                                <div class="text-xs text-red-600">No input connected</div>
+                            </div>
+
+                            <!-- Warning: Performance Issue -->
+                            <div class="absolute bg-white rounded-lg border-2 border-yellow-500 p-3 shadow-lg" style="left: 320px; top: 220px; width: 140px;">
+                                <div class="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs">W</span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium">Loop</span>
+                                </div>
+                                <div class="text-xs text-yellow-600">No limit set</div>
+                            </div>
+
+                            <!-- Error 3: Circular Dependency -->
+                            <div class="absolute bg-white rounded-lg border-2 border-red-500 p-3 shadow-lg animate-pulse-red" style="left: 140px; top: 220px; width: 140px;">
+                                <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs font-bold">3</span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium text-red-700">Transform</span>
+                                </div>
+                                <div class="text-xs text-red-600">Circular ref</div>
+                            </div>
+
+                            <!-- Error 4: Invalid Parameter -->
+                            <div class="absolute bg-white rounded-lg border-2 border-red-500 p-3 shadow-lg" style="left: 320px; top: 340px; width: 140px;">
+                                <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-xs font-bold">4</span>
+                                </div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-5 h-5 bg-purple-100 rounded flex items-center justify-center">
+                                        <div class="w-3 h-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded"></div>
+                                    </div>
+                                    <span class="text-xs font-medium text-red-700">Slack</span>
+                                </div>
+                                <div class="text-xs text-red-600">Invalid channel</div>
+                            </div>
+
+                            <!-- Broken Connection Lines -->
+                            <svg class="absolute inset-0 pointer-events-none">
+                                <path d="M 190 115 L 230 115" stroke="#10b981" stroke-width="2" fill="none"/>
+                                <path d="M 370 115 L 410 115" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="5,5" opacity="0.5"/>
+                                <path d="M 210 235 Q 100 180 140 235" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="3,3"/>
+                                <path d="M 390 260 L 390 340" stroke="#ef4444" stroke-width="2" fill="none" opacity="0.5"/>
+                            </svg>
+
+                            <!-- Error Indicators on Canvas -->
+                            <div class="absolute top-2 right-2 bg-white rounded-lg shadow-lg p-3 border border-red-200">
+                                <h4 class="text-xs font-medium text-red-900 mb-2">Critical Issues</h4>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                        <span class="text-xs text-red-700">Authentication failure</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                        <span class="text-xs text-red-700">Broken connections</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                        <span class="text-xs text-red-700">Circular dependency</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: Error Details -->
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg border">
+                    <div class="p-4 border-b bg-red-50">
+                        <h3 class="text-sm font-medium text-red-900">Validation Errors</h3>
+                        <p class="text-xs text-red-700 mt-1">Fix these issues to proceed</p>
+                    </div>
+                    <div class="max-h-96 overflow-y-auto">
+                        <!-- Error 1 -->
+                        <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shrink-0">
+                                    <span class="text-white text-xs font-bold">1</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-red-900">Missing Authentication</h4>
+                                    <p class="text-xs text-red-700 mt-1">
+                                        Gmail node requires authentication. Connect your Gmail account to proceed.
+                                    </p>
+                                    <div class="mt-2 flex gap-2">
+                                        <button class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
+                                            Connect Gmail
+                                        </button>
+                                        <button class="px-3 py-1 border border-red-300 text-xs rounded hover:bg-red-50">
+                                            Remove Node
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error 2 -->
+                        <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shrink-0">
+                                    <span class="text-white text-xs font-bold">2</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-red-900">Disconnected Node</h4>
+                                    <p class="text-xs text-red-700 mt-1">
+                                        Filter node has no input connection. Connect it to a data source.
+                                    </p>
+                                    <div class="mt-2 flex gap-2">
+                                        <button class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
+                                            Auto-Connect
+                                        </button>
+                                        <button class="px-3 py-1 border border-red-300 text-xs rounded hover:bg-red-50">
+                                            Show in Canvas
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error 3 -->
+                        <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shrink-0">
+                                    <span class="text-white text-xs font-bold">3</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-red-900">Circular Dependency</h4>
+                                    <p class="text-xs text-red-700 mt-1">
+                                        Transform node creates a circular reference. Break the loop to fix.
+                                    </p>
+                                    <div class="mt-2 flex gap-2">
+                                        <button class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
+                                            Break Loop
+                                        </button>
+                                        <button class="px-3 py-1 border border-red-300 text-xs rounded hover:bg-red-50">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error 4 -->
+                        <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shrink-0">
+                                    <span class="text-white text-xs font-bold">4</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-red-900">Invalid Parameter</h4>
+                                    <p class="text-xs text-red-700 mt-1">
+                                        Slack channel "#nonexistent" doesn't exist or bot lacks access.
+                                    </p>
+                                    <div class="mt-2">
+                                        <input type="text" placeholder="#general" class="w-full px-2 py-1 text-xs border rounded mb-2" />
+                                        <button class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 w-full">
+                                            Update Channel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warnings -->
+                <div class="bg-white rounded-lg border">
+                    <div class="p-4 border-b bg-yellow-50">
+                        <h3 class="text-sm font-medium text-yellow-900">Warnings</h3>
+                        <p class="text-xs text-yellow-700 mt-1">Optional improvements</p>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-yellow-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <div>
+                                <h4 class="text-xs font-medium text-yellow-900">Loop without limit</h4>
+                                <p class="text-xs text-yellow-700">Could run indefinitely. Add max iterations.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-yellow-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <div>
+                                <h4 class="text-xs font-medium text-yellow-900">Missing error handler</h4>
+                                <p class="text-xs text-yellow-700">Workflow will stop on first error.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-blue-50 rounded-lg border border-blue-200 p-4">
+                    <h3 class="text-sm font-medium text-blue-900 mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 bg-white border border-blue-300 text-xs rounded hover:bg-blue-50 transition-colors text-left">
+                            🔧 Fix all authentication issues
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-blue-300 text-xs rounded hover:bg-blue-50 transition-colors text-left">
+                            🔗 Reconnect broken links
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-blue-300 text-xs rounded hover:bg-blue-50 transition-colors text-left">
+                            ⚡ Apply suggested fixes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

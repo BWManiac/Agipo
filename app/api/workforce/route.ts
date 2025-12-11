@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { agents } from "@/_tables/agents";
 import type { AgentConfig } from "@/_tables/types";
 
@@ -12,7 +12,7 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     // Authenticate user
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

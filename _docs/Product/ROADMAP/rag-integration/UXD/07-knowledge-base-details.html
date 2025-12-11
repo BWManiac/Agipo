@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <button class="text-gray-600 hover:text-gray-900 mb-4">← Back to Dashboard</button>
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">Product Documentation</h1>
+                    <p class="text-gray-600">Technical specs, user guides, and API documentation for all products</p>
+                    <div class="flex items-center gap-4 mt-3 text-sm text-gray-500">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Created Dec 1, 2024
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Updated 2 hours ago
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Settings
+                    </button>
+                    <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                        Upload Documents
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-5 gap-4 mb-8">
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up">
+                <p class="text-sm font-medium text-gray-600 mb-1">Documents</p>
+                <p class="text-2xl font-bold text-gray-900">324</p>
+                <p class="text-xs text-green-600">+12 this week</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up" style="animation-delay: 0.1s">
+                <p class="text-sm font-medium text-gray-600 mb-1">Total Chunks</p>
+                <p class="text-2xl font-bold text-gray-900">8,429</p>
+                <p class="text-xs text-gray-500">~26/doc avg</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up" style="animation-delay: 0.2s">
+                <p class="text-sm font-medium text-gray-600 mb-1">Storage Used</p>
+                <p class="text-2xl font-bold text-gray-900">18.4 GB</p>
+                <p class="text-xs text-gray-500">82% of limit</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up" style="animation-delay: 0.3s">
+                <p class="text-sm font-medium text-gray-600 mb-1">Queries/Day</p>
+                <p class="text-2xl font-bold text-gray-900">~450</p>
+                <p class="text-xs text-green-600">↑ 15% trend</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200 animate-slide-up" style="animation-delay: 0.4s">
+                <p class="text-sm font-medium text-gray-600 mb-1">Connected Agents</p>
+                <p class="text-2xl font-bold text-gray-900">3</p>
+                <p class="text-xs text-gray-500">All active</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="border-b border-gray-200">
+                <div class="flex">
+                    <button class="px-6 py-3 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50">
+                        Documents
+                    </button>
+                    <button class="px-6 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50">
+                        Analytics
+                    </button>
+                    <button class="px-6 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50">
+                        Connected Agents
+                    </button>
+                    <button class="px-6 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50">
+                        Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Documents Tab Content -->
+            <div class="p-6">
+                <!-- Search and Filters -->
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="flex-1">
+                        <input type="text" placeholder="Search documents..." 
+                               class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    <select class="px-4 py-2 border border-gray-200 rounded-lg">
+                        <option>All Types</option>
+                        <option>PDF</option>
+                        <option>Word</option>
+                        <option>Text</option>
+                        <option>Markdown</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-200 rounded-lg">
+                        <option>Last Modified</option>
+                        <option>Name</option>
+                        <option>Size</option>
+                        <option>Chunks</option>
+                    </select>
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Bulk Actions
+                    </button>
+                </div>
+
+                <!-- Documents Table -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <th class="text-left px-4 py-3">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                </th>
+                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
+                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Chunks</th>
+                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Queries</th>
+                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Modified</th>
+                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <!-- Document Row 1 -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-red-100 rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">API_Documentation_v2.3.pdf</p>
+                                            <p class="text-xs text-gray-500">186 pages</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">PDF</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">8.2 MB</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">156</td>
+                                <td class="px-4 py-3">
+                                    <div>
+                                        <p class="text-sm text-gray-900">234</p>
+                                        <p class="text-xs text-gray-500">This week</p>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">2 hours ago</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-indigo-600 hover:text-indigo-800 text-sm">View</button>
+                                </td>
+                            </tr>
+
+                            <!-- Document Row 2 -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M6,2A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6M6,4H13V9H18V20H6V4M8,12V14H16V12H8M8,16V18H13V16H8Z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Getting_Started_Guide.docx</p>
+                                            <p class="text-xs text-gray-500">42 pages</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">Word</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">2.4 MB</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">34</td>
+                                <td class="px-4 py-3">
+                                    <div>
+                                        <p class="text-sm text-gray-900">89</p>
+                                        <p class="text-xs text-gray-500">This week</p>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">Yesterday</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-indigo-600 hover:text-indigo-800 text-sm">View</button>
+                                </td>
+                            </tr>
+
+                            <!-- Document Row 3 -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3">
+                                    <input type="checkbox" class="rounded text-indigo-600">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">README.md</p>
+                                            <p class="text-xs text-gray-500">8 sections</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">Markdown</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">156 KB</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">12</td>
+                                <td class="px-4 py-3">
+                                    <div>
+                                        <p class="text-sm text-gray-900">453</p>
+                                        <p class="text-xs text-gray-500">This week</p>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">3 days ago</td>
+                                <td class="px-4 py-3">
+                                    <button class="text-indigo-600 hover:text-indigo-800 text-sm">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-4 flex items-center justify-between">
+                    <p class="text-sm text-gray-600">
+                        Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">324</span> documents
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50" disabled>Previous</button>
+                        <button class="px-3 py-1 bg-indigo-600 text-white rounded">1</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">3</button>
+                        <span class="px-2">...</span>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">33</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Usage -->
+        <div class="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Storage & Usage</h3>
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Storage Used</span>
+                        <span class="text-sm font-medium">18.4 GB of 22.5 GB</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 82%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">4.1 GB remaining</p>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Monthly Query Limit</span>
+                        <span class="text-sm font-medium">13,500 of 50,000</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 27%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">36,500 queries remaining</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

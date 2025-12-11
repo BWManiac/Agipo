@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Chunks Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'highlight': 'highlight 2s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        highlight: {
+                            '0%': { backgroundColor: 'rgb(254 249 195)' },
+                            '100%': { backgroundColor: 'transparent' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <button class="text-gray-600 hover:text-gray-900 mb-4">← Back to Knowledge Base</button>
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">API_Documentation_v2.3.pdf</h1>
+                    <div class="flex items-center gap-4 text-sm text-gray-600">
+                        <span>186 pages</span>
+                        <span>•</span>
+                        <span>8.2 MB</span>
+                        <span>•</span>
+                        <span>156 chunks</span>
+                        <span>•</span>
+                        <span>Last processed 2 hours ago</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Reprocess
+                    </button>
+                    <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
+                        View Original
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Info -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="font-semibold text-gray-900 mb-4">Processing Information</h2>
+            <div class="grid grid-cols-4 gap-6">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Chunking Strategy</p>
+                    <p class="font-medium">Fixed Size (512 tokens)</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Overlap</p>
+                    <p class="font-medium">50 tokens</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Embedding Model</p>
+                    <p class="font-medium">text-embedding-ada-002</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Vector Dimension</p>
+                    <p class="font-medium">1536</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Chunks List -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-xl border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h2 class="font-semibold text-gray-900">Document Chunks</h2>
+                            <input type="text" placeholder="Search chunks..." 
+                                   class="px-3 py-1 text-sm border border-gray-200 rounded-lg">
+                        </div>
+                    </div>
+
+                    <div class="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
+                        <!-- Chunk 1 - Selected -->
+                        <div class="p-6 bg-indigo-50 border-l-4 border-indigo-600 cursor-pointer animate-fade-in">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <span class="text-sm font-medium text-indigo-900">Chunk #124</span>
+                                    <span class="ml-2 text-xs text-indigo-600">Page 45, Paragraph 3</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">512 tokens</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">High relevance</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-700 leading-relaxed">
+                                OAuth 2.0 authentication requires configuring client credentials in the developer console. First, register your application to obtain a client ID and client secret. The token refresh flow automatically handles expired tokens by using the refresh token to request new access tokens. Configure the redirect URI to match your application's callback endpoint. The authorization server will validate this URI during the authentication flow...
+                            </div>
+                            <div class="mt-3 flex items-center gap-4 text-xs text-indigo-600">
+                                <button class="hover:text-indigo-800">View Embedding →</button>
+                                <button class="hover:text-indigo-800">View in Context →</button>
+                                <button class="hover:text-indigo-800">Query History →</button>
+                            </div>
+                        </div>
+
+                        <!-- Chunk 2 -->
+                        <div class="p-6 hover:bg-gray-50 cursor-pointer transition-colors">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Chunk #125</span>
+                                    <span class="ml-2 text-xs text-gray-500">Page 45, Paragraph 4</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">498 tokens</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-700 leading-relaxed">
+                                Security best practices for OAuth implementation include: Always use HTTPS for all authentication endpoints to prevent token interception. Implement PKCE (Proof Key for Code Exchange) for public clients to mitigate authorization code interception attacks. Store tokens securely using encryption at rest and never expose them in URLs or logs...
+                            </div>
+                        </div>
+
+                        <!-- Chunk 3 -->
+                        <div class="p-6 hover:bg-gray-50 cursor-pointer transition-colors">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">Chunk #126</span>
+                                    <span class="ml-2 text-xs text-gray-500">Page 46, Paragraph 1</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">506 tokens</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-700 leading-relaxed">
+                                Rate limiting is essential for API stability. Our API implements a token bucket algorithm with the following limits: Standard tier: 100 requests per minute, 1000 requests per hour. Premium tier: 500 requests per minute, 10000 requests per hour. Rate limit headers are included in every response...
+                            </div>
+                        </div>
+
+                        <!-- More chunks... -->
+                    </div>
+
+                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm text-gray-600">
+                                Showing <span class="font-medium">1-10</span> of <span class="font-medium">156</span> chunks
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white">Previous</button>
+                                <button class="px-3 py-1 bg-indigo-600 text-white rounded">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white">2</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white">3</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-white">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chunk Details Sidebar -->
+            <div class="space-y-6">
+                <!-- Embedding Details -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Chunk #124 Details</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-xs font-medium text-gray-600 mb-2">Metadata</p>
+                            <div class="bg-gray-50 rounded p-3 space-y-1 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Document:</span>
+                                    <span class="font-mono">API_Documentation_v2.3.pdf</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Page:</span>
+                                    <span>45</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Position:</span>
+                                    <span>23456-24012</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Created:</span>
+                                    <span>2 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-medium text-gray-600 mb-2">Embedding Vector</p>
+                            <div class="bg-gray-900 rounded p-3 font-mono text-xs text-green-400 overflow-x-auto">
+                                [0.234, -0.156, 0.892, 0.445, -0.123, 0.667, 0.234, -0.789, 0.456, 0.123...]
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Showing first 10 of 1536 dimensions</p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-medium text-gray-600 mb-2">Semantic Neighbors</p>
+                            <div class="space-y-2">
+                                <div class="p-2 bg-gray-50 rounded text-xs">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="font-medium">Chunk #128</span>
+                                        <span class="text-green-600">0.92 similarity</span>
+                                    </div>
+                                    <p class="text-gray-600">Token lifecycle and refresh mechanisms...</p>
+                                </div>
+                                <div class="p-2 bg-gray-50 rounded text-xs">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="font-medium">Chunk #34</span>
+                                        <span class="text-green-600">0.87 similarity</span>
+                                    </div>
+                                    <p class="text-gray-600">Authentication best practices...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Stats -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Usage Statistics</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Retrieved Count</span>
+                            <span class="font-medium">234 times</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Avg Relevance</span>
+                            <span class="font-medium text-green-600">0.89</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Last Retrieved</span>
+                            <span class="font-medium">12 min ago</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Top Query</span>
+                            <span class="font-medium text-xs">"OAuth config"</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t">
+                        <p class="text-xs font-medium text-gray-600 mb-2">Recent Queries</p>
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-600">"How to configure OAuth 2.0?"</p>
+                            <p class="text-xs text-gray-600">"Client credentials setup"</p>
+                            <p class="text-xs text-gray-600">"Token refresh implementation"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-sm font-medium text-gray-700 mb-3">Chunk Actions</p>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                            Edit Chunk Content
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                            Regenerate Embedding
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                            Test Similarity Search
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-red-300 text-red-700 rounded text-sm hover:bg-red-50">
+                            Delete Chunk
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

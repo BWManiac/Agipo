@@ -6,7 +6,7 @@
 
 import { generateId } from "ai";
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { 
   loadAgentConfig, 
   buildToolMap, 
@@ -30,7 +30,7 @@ export async function POST(
 ) {
   try {
     // 1. Auth
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

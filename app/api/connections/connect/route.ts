@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { initiateConnection, initiateApiKeyConnection } from "./services/auth";
 
 export const runtime = "nodejs";
@@ -19,7 +19,7 @@ type ConnectRequest = {
  */
 export async function POST(request: Request) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
 
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

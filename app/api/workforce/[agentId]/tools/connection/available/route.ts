@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import {
   listConnections,
   listAuthConfigs,
@@ -33,7 +33,7 @@ type ConnectionToolInfo = {
  */
 export async function GET() {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
 
     if (!userId) {
       return NextResponse.json(

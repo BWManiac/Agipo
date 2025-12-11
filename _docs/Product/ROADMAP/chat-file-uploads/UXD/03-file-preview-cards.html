@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Preview Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'scale-in': 'scaleIn 0.2s ease-out',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        shimmer: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-5xl mx-auto p-6 h-screen flex flex-col">
+        <!-- Chat Header -->
+        <div class="bg-white rounded-t-xl border border-gray-200 border-b-0 p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold">
+                DA
+            </div>
+            <div>
+                <h3 class="font-semibold">Document Analyzer</h3>
+                <div class="flex items-center gap-2 text-sm text-green-600">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span>Processing files...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages Area with File Previews -->
+        <div class="bg-white border-x border-gray-200 flex-1 overflow-y-auto p-6 space-y-6">
+            <!-- User Message with Multiple Files -->
+            <div class="flex justify-end">
+                <div class="bg-blue-600 text-white rounded-lg p-4 max-w-2xl">
+                    <p class="text-sm mb-3">Please analyze these documents and create a comprehensive summary report covering the key findings from each file.</p>
+                    
+                    <!-- File Preview Grid -->
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <!-- PDF Document Preview -->
+                        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                            <div class="flex items-start gap-3">
+                                <!-- PDF Thumbnail -->
+                                <div class="w-12 h-16 bg-white rounded shadow-sm flex-shrink-0 relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-gradient-to-b from-gray-100 to-gray-200"></div>
+                                    <div class="absolute top-1 left-1 right-1">
+                                        <div class="h-0.5 bg-gray-400 mb-1"></div>
+                                        <div class="h-0.5 bg-gray-400 mb-1"></div>
+                                        <div class="h-0.5 bg-gray-300 mb-1"></div>
+                                        <div class="h-0.5 bg-gray-300 mb-1"></div>
+                                    </div>
+                                    <div class="absolute bottom-1 right-1">
+                                        <div class="w-3 h-3 bg-red-500 rounded-sm flex items-center justify-center">
+                                            <span class="text-[6px] text-white font-bold">PDF</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- File Info -->
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-medium text-white truncate">Q4_Financial_Report.pdf</p>
+                                    <p class="text-xs text-white/70">2.3 MB • 47 pages</p>
+                                    <div class="mt-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-xs text-green-400">Uploaded</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Preview -->
+                            <div class="mt-2 p-2 bg-white/5 rounded text-xs">
+                                <p class="text-white/60 text-[10px] uppercase font-medium mb-1">PREVIEW</p>
+                                <p class="text-white/80 text-xs line-clamp-2">Executive Summary: The fourth quarter showed significant growth in revenue streams, with total earnings...</p>
+                            </div>
+                        </div>
+
+                        <!-- Excel Spreadsheet Preview -->
+                        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                            <div class="flex items-start gap-3">
+                                <!-- Excel Thumbnail -->
+                                <div class="w-12 h-16 bg-white rounded shadow-sm flex-shrink-0 relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-gradient-to-b from-green-50 to-green-100"></div>
+                                    <div class="absolute inset-1">
+                                        <div class="grid grid-cols-3 gap-px h-full">
+                                            <div class="bg-green-200 rounded-sm"></div>
+                                            <div class="bg-green-100"></div>
+                                            <div class="bg-green-100"></div>
+                                            <div class="bg-green-100"></div>
+                                            <div class="bg-green-200"></div>
+                                            <div class="bg-green-100"></div>
+                                            <div class="bg-green-100"></div>
+                                            <div class="bg-green-100"></div>
+                                            <div class="bg-green-200 rounded-sm"></div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute bottom-1 right-1">
+                                        <div class="w-3 h-3 bg-green-600 rounded-sm flex items-center justify-center">
+                                            <span class="text-[5px] text-white font-bold">XL</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- File Info -->
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-medium text-white truncate">Sales_Data_2024.xlsx</p>
+                                    <p class="text-xs text-white/70">847 KB • 12 sheets</p>
+                                    <div class="mt-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-xs text-green-400">Uploaded</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Preview -->
+                            <div class="mt-2 p-2 bg-white/5 rounded text-xs">
+                                <p class="text-white/60 text-[10px] uppercase font-medium mb-1">DATA PREVIEW</p>
+                                <p class="text-white/80 text-xs">1,247 rows • Monthly sales by region, product categories, customer segments</p>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                            <div class="flex items-start gap-3">
+                                <!-- Image Thumbnail -->
+                                <div class="w-12 h-16 bg-white rounded shadow-sm flex-shrink-0 relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200"></div>
+                                    <div class="absolute inset-1 border border-white/50 rounded">
+                                        <div class="w-full h-full bg-gradient-to-br from-blue-300 via-purple-300 to-pink-300 rounded"></div>
+                                    </div>
+                                    <div class="absolute bottom-1 right-1">
+                                        <div class="w-3 h-3 bg-purple-600 rounded-sm flex items-center justify-center">
+                                            <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- File Info -->
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-medium text-white truncate">chart_mockup.png</p>
+                                    <p class="text-xs text-white/70">1.2 MB • 1920×1080</p>
+                                    <div class="mt-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-xs text-green-400">Uploaded</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Analysis -->
+                            <div class="mt-2 p-2 bg-white/5 rounded text-xs">
+                                <p class="text-white/60 text-[10px] uppercase font-medium mb-1">AI ANALYSIS</p>
+                                <p class="text-white/80 text-xs">Bar chart detected • Revenue trends • 4 data series identified</p>
+                            </div>
+                        </div>
+
+                        <!-- Text Document Preview -->
+                        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                            <div class="flex items-start gap-3">
+                                <!-- Text Thumbnail -->
+                                <div class="w-12 h-16 bg-white rounded shadow-sm flex-shrink-0 relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-gray-50"></div>
+                                    <div class="absolute inset-1 space-y-0.5">
+                                        <div class="h-0.5 bg-gray-600"></div>
+                                        <div class="h-0.5 bg-gray-400 w-3/4"></div>
+                                        <div class="h-0.5 bg-gray-400"></div>
+                                        <div class="h-0.5 bg-gray-400 w-5/6"></div>
+                                        <div class="h-0.5 bg-gray-300 w-1/2"></div>
+                                        <div class="h-0.5 bg-gray-400"></div>
+                                        <div class="h-0.5 bg-gray-400 w-4/5"></div>
+                                    </div>
+                                    <div class="absolute bottom-1 right-1">
+                                        <div class="w-3 h-3 bg-gray-600 rounded-sm flex items-center justify-center">
+                                            <span class="text-[6px] text-white font-bold">TXT</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- File Info -->
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-medium text-white truncate">meeting_notes.txt</p>
+                                    <p class="text-xs text-white/70">15 KB • 342 lines</p>
+                                    <div class="mt-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-xs text-green-400">Uploaded</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Preview -->
+                            <div class="mt-2 p-2 bg-white/5 rounded text-xs">
+                                <p class="text-white/60 text-[10px] uppercase font-medium mb-1">CONTENT</p>
+                                <p class="text-white/80 text-xs line-clamp-2">Meeting Date: Dec 10, 2024 Attendees: Sarah, Mike, Alex Topics: Q1 planning, budget allocation...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- File Actions -->
+                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-white/20">
+                        <span class="text-xs text-white/70">4 files ready</span>
+                        <div class="flex gap-2">
+                            <button class="px-2 py-1 bg-white/20 hover:bg-white/30 rounded text-xs text-white transition-colors">
+                                Preview all
+                            </button>
+                            <button class="px-2 py-1 bg-white/20 hover:bg-white/30 rounded text-xs text-white transition-colors">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Processing Response -->
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    DA
+                </div>
+                <div class="bg-gray-100 rounded-lg p-4 max-w-4xl">
+                    <p class="text-sm mb-4">Excellent! I've received all 4 files and I'm now analyzing them. Here's what I can see:</p>
+                    
+                    <!-- File Processing Status -->
+                    <div class="space-y-3">
+                        <!-- Processing PDF -->
+                        <div class="bg-white rounded-lg p-3 border">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-medium">Q4_Financial_Report.pdf</p>
+                                        <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">✓ Completed</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Extracted financial data, charts, and executive summary</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">Revenue: $2.3M</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-green-50 text-green-700 rounded">Growth: +15%</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded">47 pages analyzed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Excel -->
+                        <div class="bg-white rounded-lg p-3 border">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-medium">Sales_Data_2024.xlsx</p>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 bg-gray-200 rounded-full h-1">
+                                                <div class="bg-green-500 h-1 rounded-full animate-pulse" style="width: 75%"></div>
+                                            </div>
+                                            <span class="text-xs text-gray-500">75%</span>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Processing 12 sheets, calculating trends and patterns</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">1,247 records</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-yellow-50 text-yellow-700 rounded">5 regions</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded">23 products</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Image -->
+                        <div class="bg-white rounded-lg p-3 border">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-medium">chart_mockup.png</p>
+                                        <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">✓ Analyzed</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Chart data extracted using OCR and visual analysis</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">Bar chart</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-green-50 text-green-700 rounded">4 data series</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded">Revenue trends</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Text -->
+                        <div class="bg-white rounded-lg p-3 border">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-medium">meeting_notes.txt</p>
+                                        <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">✓ Completed</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Key topics and action items identified</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">3 attendees</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-yellow-50 text-yellow-700 rounded">7 action items</span>
+                                        <span class="text-xs px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded">Q1 planning</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium text-blue-800">Next Steps</p>
+                                <p class="text-xs text-blue-700 mt-1">I'll now create a comprehensive summary report combining insights from all files. This will include financial analysis, sales trends, chart data, and meeting outcomes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="bg-white rounded-b-xl border border-gray-200 border-t-0 p-4">
+            <!-- Input Area -->
+            <div class="flex items-end gap-3">
+                <!-- File Upload Button -->
+                <div class="relative">
+                    <input type="file" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" multiple accept=".pdf,.xlsx,.xls,.csv,.txt,.png,.jpg,.jpeg,.docx,.pptx"/>
+                    <button class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Text Input -->
+                <div class="flex-1 relative">
+                    <textarea 
+                        placeholder="Ask follow-up questions about the uploaded files..."
+                        class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        rows="1"
+                    ></textarea>
+                </div>
+
+                <!-- Send Button -->
+                <button class="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-colors">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Upload hints -->
+            <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                <span>4 files processed</span>
+                <span>•</span>
+                <span>Ready for analysis questions</span>
+                <span>•</span>
+                <span>Upload more files anytime</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import { generateId } from "ai";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { getAgentById } from "@/_tables/agents";
 import {
   buildToolMap,
@@ -21,7 +21,7 @@ export async function POST(
   { params }: { params: Promise<{ tableId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return new Response("Unauthorized", { status: 401 });
     }

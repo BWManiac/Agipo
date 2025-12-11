@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Scheduled Job</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-40 animate-fade-in"></div>
+    
+    <!-- Modal -->
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-scale-in">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Create Scheduled Job</h2>
+                        <p class="text-sm text-gray-600 mt-1">Set up recurring automation to run on a schedule</p>
+                    </div>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                <form class="space-y-6">
+                    <!-- Job Name -->
+                    <div class="animate-slide-up">
+                        <label class="block text-sm font-medium text-gray-900 mb-2">
+                            Job Name
+                        </label>
+                        <input 
+                            type="text"
+                            placeholder="e.g., Daily Job Search Check"
+                            value="Morning Job Application Check"
+                            class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <p class="text-xs text-gray-500 mt-1">Choose a descriptive name for easy identification</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="animate-slide-up" style="animation-delay: 0.1s">
+                        <label class="block text-sm font-medium text-gray-900 mb-2">
+                            Description
+                        </label>
+                        <textarea 
+                            rows="3"
+                            placeholder="Describe what this job does..."
+                            class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >Check LinkedIn and Indeed for new software engineering positions matching my criteria and start a conversation to analyze the results</textarea>
+                        <p class="text-xs text-gray-500 mt-1">Optional description for documentation purposes</p>
+                    </div>
+
+                    <!-- Schedule Configuration -->
+                    <div class="animate-slide-up" style="animation-delay: 0.2s">
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            Schedule
+                        </label>
+                        
+                        <!-- Schedule Type Selector -->
+                        <div class="mb-4">
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" class="p-3 text-center border-2 border-blue-500 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors">
+                                    <div class="text-sm">Quick Presets</div>
+                                </button>
+                                <button type="button" class="p-3 text-center border-2 border-gray-200 bg-white text-gray-700 rounded-lg font-medium transition-colors hover:border-gray-300">
+                                    <div class="text-sm">Visual Builder</div>
+                                </button>
+                                <button type="button" class="p-3 text-center border-2 border-gray-200 bg-white text-gray-700 rounded-lg font-medium transition-colors hover:border-gray-300">
+                                    <div class="text-sm">Custom Cron</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Presets (Active) -->
+                        <div class="space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" class="p-3 text-left border-2 border-blue-500 bg-blue-50 rounded-lg transition-colors">
+                                    <div class="font-medium text-blue-900">Daily at 9:00 AM</div>
+                                    <div class="text-xs text-blue-700 mt-1">Every day at 9:00 AM</div>
+                                </button>
+                                <button type="button" class="p-3 text-left border border-gray-200 bg-white rounded-lg transition-colors hover:border-gray-300">
+                                    <div class="font-medium text-gray-900">Every Monday</div>
+                                    <div class="text-xs text-gray-600 mt-1">Weekly on Mondays at 9:00 AM</div>
+                                </button>
+                                <button type="button" class="p-3 text-left border border-gray-200 bg-white rounded-lg transition-colors hover:border-gray-300">
+                                    <div class="font-medium text-gray-900">Weekdays Only</div>
+                                    <div class="text-xs text-gray-600 mt-1">Monday-Friday at 9:00 AM</div>
+                                </button>
+                                <button type="button" class="p-3 text-left border border-gray-200 bg-white rounded-lg transition-colors hover:border-gray-300">
+                                    <div class="font-medium text-gray-900">Monthly</div>
+                                    <div class="text-xs text-gray-600 mt-1">1st of each month at 9:00 AM</div>
+                                </button>
+                            </div>
+                            
+                            <!-- Time Selector -->
+                            <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                <label class="block text-sm font-medium text-blue-900 mb-2">Execution Time</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="time" value="09:00" class="px-3 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                                    <select class="px-3 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                                        <option>America/New_York (EST)</option>
+                                        <option>America/Los_Angeles (PST)</option>
+                                        <option>Europe/London (GMT)</option>
+                                        <option>UTC</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Preview -->
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm font-medium text-gray-900">Schedule Preview</span>
+                            </div>
+                            <p class="text-sm text-gray-700">Will run <strong>every day at 9:00 AM EST</strong></p>
+                            <div class="mt-2 text-xs text-gray-600">
+                                <p>• Next execution: Tomorrow, Dec 12, 2024 at 9:00 AM</p>
+                                <p>• Cron expression: <code class="bg-gray-200 px-1 rounded">0 9 * * *</code></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Type -->
+                    <div class="animate-slide-up" style="animation-delay: 0.3s">
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            What should happen when this job runs?
+                        </label>
+                        
+                        <div class="space-y-3">
+                            <!-- Chat Template Option -->
+                            <div class="border-2 border-blue-500 bg-blue-50 rounded-lg p-4 transition-colors">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="radio" name="actionType" value="chat" checked class="mt-1 text-blue-600 focus:ring-blue-500">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                            </svg>
+                                            <span class="font-medium text-blue-900">Start Chat with Template</span>
+                                        </div>
+                                        <p class="text-sm text-blue-700">Begin a conversation with the agent using a predefined message template</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Workflow Option -->
+                            <div class="border border-gray-200 bg-white rounded-lg p-4 transition-colors hover:border-gray-300">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="radio" name="actionType" value="workflow" class="mt-1 text-blue-600 focus:ring-blue-500">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 112 2v6a2 2 0 11-2 2v-2M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M8 6a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V8a2 2 0 00-2-2"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">Execute Workflow</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Run a predefined workflow automatically without starting a conversation</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Template Configuration (Visible when Chat option selected) -->
+                    <div class="animate-slide-up" style="animation-delay: 0.4s">
+                        <label class="block text-sm font-medium text-gray-900 mb-3">
+                            Chat Template
+                        </label>
+                        
+                        <!-- Template Editor -->
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-700">Message Template</span>
+                                <button type="button" class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                    Insert Variables
+                                </button>
+                            </div>
+                            <textarea 
+                                rows="4"
+                                placeholder="Type your message template here..."
+                                class="w-full px-3 py-2 border-0 focus:ring-0 resize-none"
+                            >Good morning! It's time for your daily job search. Please check LinkedIn and Indeed for new software engineering positions that match these criteria:
+
+- Remote or hybrid opportunities
+- TypeScript/React experience required
+- Mid to senior level (3-5 years experience)
+- Salary range: $80k-$120k
+
+Let me know what interesting opportunities you find today!</textarea>
+                        </div>
+
+                        <!-- Variable Helper -->
+                        <div class="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="text-sm font-medium text-blue-900 mb-2">Available Variables:</div>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors">
+                                    {date}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors">
+                                    {time}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors">
+                                    {dayOfWeek}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors">
+                                    {userName}
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors">
+                                    {agentName}
+                                </button>
+                            </div>
+                            <p class="text-xs text-blue-700 mt-2">Click variables to insert them into your template</p>
+                        </div>
+
+                        <!-- Template Preview -->
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="text-sm font-medium text-gray-900 mb-2">Preview (with variables filled):</div>
+                            <div class="text-sm text-gray-700 bg-white p-3 rounded border">
+                                Good morning! It's time for your daily job search. Please check LinkedIn and Indeed for new software engineering positions that match these criteria:
+                                <br/><br/>
+                                - Remote or hybrid opportunities<br/>
+                                - TypeScript/React experience required<br/>
+                                - Mid to senior level (3-5 years experience)<br/>
+                                - Salary range: $80k-$120k
+                                <br/><br/>
+                                Let me know what interesting opportunities you find today!
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500">
+                                Variables will be replaced with actual values: Tuesday, December 12, 2024 at 9:00 AM
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="animate-slide-up" style="animation-delay: 0.5s">
+                        <details class="group">
+                            <summary class="cursor-pointer text-sm font-medium text-gray-900 flex items-center gap-2">
+                                <svg class="w-4 h-4 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                Advanced Options
+                            </summary>
+                            
+                            <div class="mt-4 space-y-4 pl-6">
+                                <!-- Retry Configuration -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Retry on Failure</label>
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <span class="text-sm text-gray-600">Automatically retry up to 3 times if job fails</span>
+                                    </div>
+                                </div>
+
+                                <!-- Notification Settings -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Notifications</label>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm text-gray-600">Notify on successful execution</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm text-gray-600">Notify on failure or errors</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tags -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                                    <input 
+                                        type="text"
+                                        placeholder="job-search, daily, automation"
+                                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                    />
+                                    <p class="text-xs text-gray-500 mt-1">Comma-separated tags for organization</p>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Configuration valid • Ready to create</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="button" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                        Create Job
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

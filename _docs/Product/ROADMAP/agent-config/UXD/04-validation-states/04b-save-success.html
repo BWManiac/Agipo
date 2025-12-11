@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Save Success State</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .slide-down { animation: slideDown 0.3s ease-out; }
+        .fade-out { animation: fadeOut 0.3s ease-out forwards; animation-delay: 3s; }
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        .progress-bar { animation: progress 3s linear forwards; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Configuration Save Success State</h1>
+            <p class="text-sm text-muted-foreground">Shows successful save confirmation with auto-dismiss timer and migration notice.</p>
+        </div>
+
+        <!-- Agent Modal with Success State -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Modal Header -->
+            <div class="border-b px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                            PM
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold">Product Manager Agent</h2>
+                            <p class="text-xs text-muted-foreground">Configure agent behavior and capabilities</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Banner with Auto-dismiss -->
+            <div class="bg-green-50 border-b border-green-200 px-6 py-3 slide-down fade-out">
+                <div class="flex items-start gap-3">
+                    <div class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium text-green-900">Configuration saved successfully</p>
+                        <p class="text-sm text-green-700 mt-1">Your changes have been applied and will take effect immediately.</p>
+                        <div class="mt-2 text-xs text-green-600">
+                            <span>Dismissing in 3 seconds...</span>
+                        </div>
+                    </div>
+                    <button class="text-green-600 hover:text-green-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Progress bar for auto-dismiss -->
+                <div class="mt-2 h-0.5 bg-green-200 overflow-hidden">
+                    <div class="h-full bg-green-500 progress-bar"></div>
+                </div>
+            </div>
+
+            <!-- Migration Success Notice -->
+            <div class="bg-blue-50 border-b border-blue-200 px-6 py-3">
+                <div class="flex gap-3">
+                    <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="text-sm">
+                        <p class="font-medium text-blue-900">Configuration migrated successfully</p>
+                        <p class="text-blue-700 mt-1">Your <code class="px-1 py-0.5 bg-blue-100 rounded">systemPrompt</code> has been migrated to the new <code class="px-1 py-0.5 bg-blue-100 rounded">instructions</code> format.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Content - Success State -->
+            <div class="flex-1 overflow-y-auto bg-gray-50 p-6">
+                <div class="max-w-2xl mx-auto w-full space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold">Agent Configuration</h2>
+                        <div class="flex items-center gap-2 text-xs text-green-600">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                            </svg>
+                            <span>All changes saved</span>
+                        </div>
+                    </div>
+
+                    <!-- Instructions - SUCCESS HIGHLIGHT -->
+                    <div class="bg-white p-6 rounded-xl border-2 border-green-300 shadow-sm space-y-4 transition-all">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <label class="text-sm font-medium text-gray-700">Instructions</label>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Updated</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-2">Define how this agent should behave and respond to users</p>
+                            <div class="relative">
+                                <textarea 
+                                    class="w-full min-h-[200px] px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono bg-green-50"
+                                    placeholder="You are a helpful Product Manager assistant..."
+                                >You are a Product Manager assistant specializing in user research, feature prioritization, and roadmap planning. 
+
+Your primary objectives are:
+- Help teams understand user needs through research and analysis
+- Assist with feature prioritization using data-driven frameworks
+- Support roadmap planning and communication
+- Facilitate stakeholder alignment
+
+Always provide structured, actionable insights backed by best practices in product management.</textarea>
+                                <div class="absolute bottom-2 right-2 text-xs text-gray-400">
+                                    <span>1,250 / 4,000 tokens</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Selection and Max Steps -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                        <h3 class="text-sm font-medium text-gray-700">Core Settings</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Model Selection -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <label class="text-xs font-medium text-gray-500">AI Model</label>
+                                    <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Updated</span>
+                                </div>
+                                <div class="relative">
+                                    <select class="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
+                                        <option value="gpt-4o" selected>GPT-4o (Recommended)</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500">Fast, capable model with vision support</p>
+                            </div>
+
+                            <!-- Max Steps -->
+                            <div>
+                                <label class="text-xs font-medium text-gray-500 mb-1 block">Max Steps</label>
+                                <input 
+                                    type="number" 
+                                    min="1" 
+                                    value="10"
+                                    class="w-full h-10 px-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    placeholder="5"
+                                />
+                                <p class="mt-1 text-xs text-gray-500">Maximum tool execution steps per turn</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Change Summary Card -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Summary of Changes</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                </svg>
+                                <div>
+                                    <span class="font-medium">Instructions:</span>
+                                    <span class="text-gray-600 ml-1">Migrated from systemPrompt and updated content</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                </svg>
+                                <div>
+                                    <span class="font-medium">Model:</span>
+                                    <span class="text-gray-600 ml-1">Changed from Claude 3 Opus to GPT-4o</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                </svg>
+                                <div>
+                                    <span class="font-medium">Max Steps:</span>
+                                    <span class="text-gray-600 ml-1">Updated from 5 to 10</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-500">Configuration file updated: <code class="px-1 py-0.5 bg-gray-100 rounded">_tables/agents/pm-agent-xyz/config.ts</code></span>
+                                <button class="text-blue-600 hover:text-blue-700 font-medium">View changes →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between items-center pt-4">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Close
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-green-600 font-medium flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                </svg>
+                                Saved successfully at 2:45 PM
+                            </span>
+                            <button class="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                View Configuration
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save States Timeline -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Save Process Timeline</h3>
+            <div class="space-y-3">
+                <!-- Saving State -->
+                <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-blue-900">Saving configuration...</p>
+                        <p class="text-xs text-blue-700">Validating and updating config.ts file</p>
+                    </div>
+                </div>
+
+                <!-- Migration State -->
+                <div class="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-purple-900">Migrating format...</p>
+                        <p class="text-xs text-purple-700">Converting systemPrompt to instructions</p>
+                    </div>
+                </div>
+
+                <!-- Success State -->
+                <div class="flex items-center gap-3 p-3 bg-green-50 rounded-lg border-2 border-green-300">
+                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-green-900">Configuration saved!</p>
+                        <p class="text-xs text-green-700">All changes applied successfully • File updated</p>
+                    </div>
+                    <span class="text-xs text-gray-500">2:45 PM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

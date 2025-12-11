@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import {
   getThreadWithMessages,
   updateThreadTitle,
@@ -20,7 +20,7 @@ type RouteContext = {
  */
 export async function GET(_request: Request, routeContext: RouteContext) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
@@ -51,7 +51,7 @@ export async function GET(_request: Request, routeContext: RouteContext) {
  */
 export async function PATCH(request: Request, routeContext: RouteContext) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
@@ -91,7 +91,7 @@ export async function PATCH(request: Request, routeContext: RouteContext) {
  */
 export async function DELETE(_request: Request, routeContext: RouteContext) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

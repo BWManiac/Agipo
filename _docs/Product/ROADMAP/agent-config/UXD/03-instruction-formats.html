@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Config - Instruction Formats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Focus states */
+        .focus-ring:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Drag and drop styles */
+        .draggable {
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+        .draggable:active {
+            cursor: grabbing;
+            transform: rotate(2deg);
+        }
+        .draggable:hover {
+            background: #f8fafc;
+        }
+        
+        /* Format switch animation */
+        .format-switch {
+            transition: all 0.3s ease;
+        }
+        
+        /* Subtle hover effects */
+        .hover-lift:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-6">
+    <!-- Mock Agent Modal Container -->
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Agent Header (simplified) -->
+        <div class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span class="text-2xl">🤖</span>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Job Application Agent</h2>
+                        <p class="text-sm text-gray-500">AI Job Hunter • Active</p>
+                    </div>
+                </div>
+                <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="flex gap-1 mt-4">
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Overview</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Chat</button>
+                <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg">Config</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Capabilities</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Tasks</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Knowledge</button>
+            </div>
+        </div>
+
+        <!-- Config Tab Content -->
+        <div class="p-6 space-y-8">
+            <!-- Page Header -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Agent Configuration</h3>
+                <p class="text-sm text-gray-600">Configure your agent's core behavior, personality, and execution settings.</p>
+            </div>
+
+            <!-- Instructions Section - Array Format -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 hover-lift">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-1">
+                            Instructions
+                        </label>
+                        <p class="text-xs text-gray-500">
+                            Define your agent's role, personality, and behavior guidelines
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                            Array Format
+                        </span>
+                        <button class="text-xs text-blue-600 hover:text-blue-700 font-medium" id="formatToggle">
+                            ← Switch to String
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Format Explanation -->
+                <div class="mb-4 bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <div class="flex items-start gap-2">
+                        <svg class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div class="text-xs text-purple-700">
+                            <div class="font-medium">Array Format Benefits</div>
+                            <div class="mt-1">Organize instructions into logical sections. Each item becomes a separate instruction that the agent processes in order. Great for complex, multi-faceted roles.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Array Items List -->
+                <div class="space-y-3" id="instructionsList">
+                    <!-- Instruction Item 1 -->
+                    <div class="draggable flex items-start gap-3 p-4 border border-gray-200 rounded-lg bg-white">
+                        <div class="flex flex-col items-center gap-1 pt-2">
+                            <div class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-medium text-gray-600">
+                                1
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 cursor-grab" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <input 
+                                    type="text" 
+                                    placeholder="Instruction title (optional)"
+                                    value="Core Role Definition"
+                                    class="text-sm font-medium text-gray-900 bg-transparent border-none p-0 focus:ring-0 focus:outline-none placeholder:text-gray-400"
+                                />
+                                <button class="text-red-500 hover:text-red-700 p-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <textarea 
+                                class="w-full h-16 p-3 border border-gray-200 rounded-lg focus-ring resize-none text-sm"
+                                placeholder="Enter instruction text..."
+                            >You are a skilled AI job application assistant. Help users find, apply to, and track job opportunities that match their skills and interests.</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Instruction Item 2 -->
+                    <div class="draggable flex items-start gap-3 p-4 border border-gray-200 rounded-lg bg-white">
+                        <div class="flex flex-col items-center gap-1 pt-2">
+                            <div class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-medium text-gray-600">
+                                2
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 cursor-grab" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <input 
+                                    type="text" 
+                                    placeholder="Instruction title (optional)"
+                                    value="Key Responsibilities"
+                                    class="text-sm font-medium text-gray-900 bg-transparent border-none p-0 focus:ring-0 focus:outline-none placeholder:text-gray-400"
+                                />
+                                <button class="text-red-500 hover:text-red-700 p-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <textarea 
+                                class="w-full h-24 p-3 border border-gray-200 rounded-lg focus-ring resize-none text-sm"
+                                placeholder="Enter instruction text..."
+                            >Key responsibilities include: Research job opportunities across multiple platforms, customize resumes and cover letters for specific positions, track application status and follow-up timing, provide interview preparation and career advice.</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Instruction Item 3 -->
+                    <div class="draggable flex items-start gap-3 p-4 border border-gray-200 rounded-lg bg-white">
+                        <div class="flex flex-col items-center gap-1 pt-2">
+                            <div class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-medium text-gray-600">
+                                3
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 cursor-grab" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <input 
+                                    type="text" 
+                                    placeholder="Instruction title (optional)"
+                                    value="Communication Style"
+                                    class="text-sm font-medium text-gray-900 bg-transparent border-none p-0 focus:ring-0 focus:outline-none placeholder:text-gray-400"
+                                />
+                                <button class="text-red-500 hover:text-red-700 p-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <textarea 
+                                class="w-full h-16 p-3 border border-gray-200 rounded-lg focus-ring resize-none text-sm"
+                                placeholder="Enter instruction text..."
+                            >Always be encouraging, professional, and detail-oriented in your responses. Maintain organized records of all job search activities.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add New Instruction Button -->
+                <div class="mt-4">
+                    <button class="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors text-sm text-gray-600 hover:text-blue-700 font-medium">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add New Instruction
+                    </button>
+                </div>
+
+                <!-- Array Format Info -->
+                <div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+                    <div>
+                        <span class="text-green-600">✓</span> 3 instructions • Total 392 characters
+                    </div>
+                    <div>
+                        Drag items to reorder • Click titles to edit
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model and Other Configs (Collapsed for focus) -->
+            <div class="space-y-4">
+                <div class="bg-white rounded-xl border border-gray-200 p-4 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">Language Model</label>
+                            <p class="text-xs text-gray-500">Currently using Claude 4 Sonnet</p>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            ✓ Configured
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">Objectives & Guardrails</label>
+                            <p class="text-xs text-gray-500">Goals and safety constraints configured</p>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            ✓ Configured
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Actions -->
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">
+                            You have unsaved changes
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                            Reset
+                        </button>
+                        <button class="save-button px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- String Format Modal (Hidden by default) -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-6 hidden" id="stringFormatModal">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Convert to String Format</h3>
+                <button class="p-2 hover:bg-gray-100 rounded-lg" id="closeModal">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-4">
+                    Convert your array of instructions into a single text block. This will combine all instructions into one cohesive prompt.
+                </p>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-start gap-2">
+                        <svg class="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.232 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        <div class="text-xs text-yellow-700">
+                            <div class="font-medium">Converting to string format</div>
+                            <div class="mt-1">Your structured instructions will be combined into a single text block. You can always switch back to array format later.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="block text-sm font-medium text-gray-900 mb-2">Combined Instructions Preview</label>
+                <textarea 
+                    class="w-full h-40 p-4 border border-gray-200 rounded-lg focus-ring resize-none text-sm"
+                    readonly
+                >You are a skilled AI job application assistant. Help users find, apply to, and track job opportunities that match their skills and interests.
+
+Key responsibilities include: Research job opportunities across multiple platforms, customize resumes and cover letters for specific positions, track application status and follow-up timing, provide interview preparation and career advice.
+
+Always be encouraging, professional, and detail-oriented in your responses. Maintain organized records of all job search activities.</textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-3">
+                <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors" id="cancelConversion">
+                    Cancel
+                </button>
+                <button class="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors" id="confirmConversion">
+                    Convert to String
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format toggle functionality
+        document.getElementById('formatToggle').addEventListener('click', function() {
+            document.getElementById('stringFormatModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('stringFormatModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelConversion').addEventListener('click', function() {
+            document.getElementById('stringFormatModal').classList.add('hidden');
+        });
+
+        document.getElementById('confirmConversion').addEventListener('click', function() {
+            // In real implementation, this would convert the format
+            alert('Converted to string format! (This is a demo)');
+            document.getElementById('stringFormatModal').classList.add('hidden');
+        });
+
+        // Add new instruction functionality
+        document.querySelector('.w-full.p-3.border-2').addEventListener('click', function() {
+            const newItem = document.createElement('div');
+            const itemCount = document.querySelectorAll('#instructionsList .draggable').length + 1;
+            
+            newItem.className = 'draggable flex items-start gap-3 p-4 border border-gray-200 rounded-lg bg-white';
+            newItem.innerHTML = `
+                <div class="flex flex-col items-center gap-1 pt-2">
+                    <div class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-medium text-gray-600">
+                        ${itemCount}
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400 cursor-grab" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                        <input 
+                            type="text" 
+                            placeholder="Instruction title (optional)"
+                            class="text-sm font-medium text-gray-900 bg-transparent border-none p-0 focus:ring-0 focus:outline-none placeholder:text-gray-400"
+                        />
+                        <button class="text-red-500 hover:text-red-700 p-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <textarea 
+                        class="w-full h-16 p-3 border border-gray-200 rounded-lg focus-ring resize-none text-sm"
+                        placeholder="Enter instruction text..."
+                    ></textarea>
+                </div>
+            `;
+            
+            document.getElementById('instructionsList').appendChild(newItem);
+            
+            // Focus on the new textarea
+            newItem.querySelector('textarea').focus();
+            
+            // Add delete functionality
+            newItem.querySelector('.text-red-500').addEventListener('click', function() {
+                newItem.remove();
+                updateItemNumbers();
+            });
+        });
+
+        // Delete functionality for existing items
+        document.querySelectorAll('.text-red-500').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.draggable').remove();
+                updateItemNumbers();
+            });
+        });
+
+        function updateItemNumbers() {
+            document.querySelectorAll('#instructionsList .draggable').forEach((item, index) => {
+                item.querySelector('.w-6.h-6').textContent = index + 1;
+            });
+        }
+
+        // Mock save functionality
+        document.querySelector('.save-button').addEventListener('click', function() {
+            this.innerHTML = '<svg class="w-4 h-4 animate-spin mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Saving...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.innerHTML = 'Save Changes';
+                this.disabled = false;
+                
+                document.querySelector('.w-2.h-2.bg-amber-500').classList.add('bg-green-500');
+                document.querySelector('.w-2.h-2.bg-amber-500').classList.remove('bg-amber-500');
+                document.querySelector('.text-sm.text-gray-600').textContent = 'All changes saved';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

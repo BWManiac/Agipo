@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Save Confirmation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'check': 'check 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                    },
+                    keyframes: {
+                        check: {
+                            '0%': { transform: 'scale(0) rotate(45deg)' },
+                            '50%': { transform: 'scale(1.2) rotate(45deg)' },
+                            '100%': { transform: 'scale(1) rotate(45deg)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-8">
+    <div class="max-w-lg w-full">
+        <!-- Success Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up">
+            <!-- Success Icon -->
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-green-600 animate-check" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Profile Saved Successfully!</h2>
+                <p class="text-gray-600">Your LinkedIn session has been securely stored</p>
+            </div>
+
+            <!-- Profile Summary -->
+            <div class="bg-blue-50 rounded-xl p-4 mb-6">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-blue-900">LinkedIn - Work Account</h3>
+                        <p class="text-sm text-blue-700">Personal Account</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span class="text-gray-700">Successfully authenticated</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span class="text-gray-700">Session state preserved</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span class="text-gray-700">Cookies and localStorage saved</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span class="text-gray-700">Ready for automation use</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Profile ID:</span>
+                    <span class="font-mono text-gray-900">linkedin-work-a8f2d9c1</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Created:</span>
+                    <span class="text-gray-900">December 11, 2024 at 2:47 PM</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Service:</span>
+                    <span class="text-gray-900">LinkedIn (linkedin.com)</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Browser:</span>
+                    <span class="text-gray-900">Chrome 120.0.6099.71</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Storage Size:</span>
+                    <span class="text-gray-900">2.4 MB</span>
+                </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="flex gap-3">
+                    <svg class="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-gray-800 mb-1">Security & Privacy</p>
+                        <p class="text-xs text-gray-600">
+                            Your profile data is encrypted and stored locally. No credentials or personal data leave your device. 
+                            The profile can be deleted at any time from the profile dashboard.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    Test Profile Now
+                </button>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="py-2 px-4 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                        View Profile
+                    </button>
+                    <button class="py-2 px-4 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                        Create Another
+                    </button>
+                </div>
+                
+                <button class="w-full py-2 text-gray-500 hover:text-gray-700 transition-colors text-sm">
+                    Return to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Tips -->
+        <div class="mt-6 bg-white rounded-xl p-4 shadow-sm">
+            <h3 class="font-medium text-gray-900 mb-2">What's Next?</h3>
+            <ul class="space-y-1 text-sm text-gray-600">
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-medium">•</span>
+                    <span>Use this profile in browser automation workflows</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-medium">•</span>
+                    <span>Create agents that can access LinkedIn without login prompts</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-medium">•</span>
+                    <span>Profile stays active until you logout from LinkedIn manually</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

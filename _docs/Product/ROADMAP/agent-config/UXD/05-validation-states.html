@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Config - Validation States</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Focus states */
+        .focus-ring:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Error states */
+        .error-ring:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        /* Validation animations */
+        .validation-error {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+        
+        /* Success states */
+        .success-border {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+        
+        /* Subtle hover effects */
+        .hover-lift:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-6">
+    <!-- Mock Agent Modal Container -->
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Agent Header (simplified) -->
+        <div class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span class="text-2xl">🤖</span>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Job Application Agent</h2>
+                        <p class="text-sm text-gray-500">AI Job Hunter • Active</p>
+                    </div>
+                </div>
+                <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="flex gap-1 mt-4">
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Overview</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Chat</button>
+                <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg">Config</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Capabilities</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Tasks</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Knowledge</button>
+            </div>
+        </div>
+
+        <!-- Config Tab Content -->
+        <div class="p-6 space-y-8">
+            <!-- Page Header -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Agent Configuration</h3>
+                <p class="text-sm text-gray-600">Configure your agent's core behavior, personality, and execution settings.</p>
+            </div>
+
+            <!-- Form Validation Alert -->
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <h4 class="text-sm font-medium text-red-900 mb-1">Please fix the following errors:</h4>
+                        <ul class="text-sm text-red-700 space-y-1">
+                            <li>• Instructions must be at least 10 characters long</li>
+                            <li>• Please select a valid model</li>
+                            <li>• Max steps must be a number between 1 and 50</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Form -->
+            <div class="space-y-6">
+                <!-- Instructions Section - WITH VALIDATION ERROR -->
+                <div class="bg-white rounded-xl border border-red-200 p-6 hover-lift validation-error">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">
+                                Instructions
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <p class="text-xs text-gray-500">
+                                Define your agent's role, personality, and behavior guidelines
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                String Format
+                            </span>
+                            <button class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                Switch to Array →
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <textarea 
+                        class="w-full h-32 p-4 border border-red-300 rounded-lg error-ring resize-none custom-scrollbar text-sm bg-red-50"
+                        placeholder="Describe your agent's role and behavior..."
+                    >Hi</textarea>
+
+                    <div class="mt-3 flex items-start justify-between">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-sm text-red-600 font-medium">Instructions must be at least 10 characters</span>
+                        </div>
+                        <div class="text-xs text-red-500">
+                            2 / 10 minimum characters
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Selection Section - WITH VALIDATION ERROR -->
+                <div class="bg-white rounded-xl border border-red-200 p-6 hover-lift validation-error">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-900 mb-1">
+                            Language Model
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-gray-500">
+                            Choose the AI model that powers your agent's responses
+                        </p>
+                    </div>
+
+                    <div class="relative">
+                        <select class="w-full p-3 border border-red-300 rounded-lg error-ring text-sm appearance-none bg-red-50 pr-10">
+                            <option value="" selected>-- Select a model --</option>
+                            <option value="anthropic/claude-sonnet-4-20250514">Claude 4 Sonnet • Most capable</option>
+                            <option value="openai/gpt-4o">GPT-4o • Strong reasoning</option>
+                            <option value="google/gemini-3-pro">Gemini 3 Pro • Fast responses</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-sm text-red-600 font-medium">Please select a model</span>
+                    </div>
+                </div>
+
+                <!-- Objectives Section - VALID -->
+                <div class="bg-white rounded-xl border border-green-200 p-6 hover-lift">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-900 mb-1">
+                            Objectives
+                        </label>
+                        <p class="text-xs text-gray-500">
+                            Define specific goals and success metrics for this agent
+                        </p>
+                    </div>
+                    
+                    <textarea 
+                        class="w-full h-20 p-4 border border-green-300 rounded-lg success-border resize-none custom-scrollbar text-sm bg-green-50"
+                        placeholder="What should this agent accomplish?"
+                    >Help users land their dream job by:
+1. Finding 5-10 quality job matches per week
+2. Achieving 80%+ application completion rate
+3. Securing 2+ interviews per month through tailored applications</textarea>
+
+                    <div class="mt-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-sm text-green-600 font-medium">Objectives look good!</span>
+                        <span class="text-xs text-gray-500 ml-auto">178 characters</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Options Toggle -->
+            <div class="border-t border-gray-200 pt-6">
+                <button class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                    <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    Advanced Options
+                    <span class="text-xs text-gray-500">(maxSteps, provider settings)</span>
+                </button>
+            </div>
+
+            <!-- Advanced Options Content -->
+            <div class="space-y-6">
+                <!-- Max Steps Configuration - WITH VALIDATION ERROR -->
+                <div class="bg-white rounded-xl border border-red-200 p-6 hover-lift validation-error">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-900 mb-1">
+                            Maximum Steps
+                        </label>
+                        <p class="text-xs text-gray-500">
+                            Limit the number of tool calls per conversation turn (1-50)
+                        </p>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="flex-1 max-w-xs">
+                            <input 
+                                type="number" 
+                                value="75"
+                                class="w-full p-3 border border-red-300 rounded-lg error-ring text-sm bg-red-50"
+                                placeholder="5"
+                            />
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs text-gray-600">
+                                <strong>Range:</strong> 1-50 steps
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                Higher values allow more complex reasoning but may increase costs
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-sm text-red-600 font-medium">Max steps must be between 1 and 50</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Actions -->
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span class="text-sm text-red-600 font-medium">
+                            Please fix errors before saving
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                            Reset
+                        </button>
+                        <button class="save-button px-6 py-2 bg-gray-400 text-white text-sm font-medium rounded-lg cursor-not-allowed" disabled>
+                            Fix Errors to Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Validation Examples Panel -->
+    <div class="max-w-4xl mx-auto mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gray-50 border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-semibold text-gray-900">Validation Examples</h3>
+            <p class="text-sm text-gray-600">Different validation states and feedback patterns</p>
+        </div>
+        
+        <div class="p-6 space-y-6">
+            <!-- Real-time Validation Example -->
+            <div>
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">Real-time Validation</h4>
+                <div class="space-y-3">
+                    <!-- Too short -->
+                    <div class="border border-red-200 rounded-lg p-3">
+                        <input 
+                            type="text" 
+                            value="AI"
+                            class="w-full border border-red-300 rounded p-2 text-sm bg-red-50"
+                            placeholder="Agent name..."
+                        />
+                        <div class="text-xs text-red-600 mt-1">Name must be at least 3 characters</div>
+                    </div>
+                    
+                    <!-- Just right -->
+                    <div class="border border-green-200 rounded-lg p-3">
+                        <input 
+                            type="text" 
+                            value="Job Assistant"
+                            class="w-full border border-green-300 rounded p-2 text-sm bg-green-50"
+                            placeholder="Agent name..."
+                        />
+                        <div class="text-xs text-green-600 mt-1">✓ Good name!</div>
+                    </div>
+                    
+                    <!-- Warning state -->
+                    <div class="border border-amber-200 rounded-lg p-3">
+                        <input 
+                            type="text" 
+                            value="Super long agent name that might be too long for display"
+                            class="w-full border border-amber-300 rounded p-2 text-sm bg-amber-50"
+                            placeholder="Agent name..."
+                        />
+                        <div class="text-xs text-amber-600 mt-1">⚠ Name is quite long. Consider shortening for better display.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading Validation -->
+            <div>
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">Loading Validation</h4>
+                <div class="border border-gray-200 rounded-lg p-3">
+                    <input 
+                        type="text" 
+                        value="Checking availability..."
+                        class="w-full border border-blue-300 rounded p-2 text-sm bg-blue-50"
+                        disabled
+                    />
+                    <div class="flex items-center gap-2 text-xs text-blue-600 mt-1">
+                        <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Checking if name is available...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Multiple Errors -->
+            <div>
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">Multiple Field Errors</h4>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h5 class="text-sm font-medium text-red-900 mb-2">Configuration has multiple issues:</h5>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-start gap-2">
+                            <span class="text-red-500 mt-0.5">•</span>
+                            <div>
+                                <span class="font-medium">Instructions:</span>
+                                <span class="text-red-700"> Must be at least 10 characters long</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-red-500 mt-0.5">•</span>
+                            <div>
+                                <span class="font-medium">Model:</span>
+                                <span class="text-red-700"> Please select a valid model</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-red-500 mt-0.5">•</span>
+                            <div>
+                                <span class="font-medium">Max Steps:</span>
+                                <span class="text-red-700"> Must be a number between 1 and 50</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock real-time validation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Instructions validation
+            const instructionsField = document.querySelector('textarea');
+            instructionsField.addEventListener('input', function() {
+                const value = this.value;
+                const errorDiv = this.parentElement.querySelector('.text-red-600');
+                const countDiv = this.parentElement.querySelector('.text-red-500');
+                
+                if (value.length >= 10) {
+                    this.classList.remove('border-red-300', 'bg-red-50');
+                    this.classList.add('border-green-300', 'bg-green-50');
+                    if (errorDiv) {
+                        errorDiv.textContent = '✓ Instructions look good!';
+                        errorDiv.classList.remove('text-red-600');
+                        errorDiv.classList.add('text-green-600');
+                    }
+                    if (countDiv) {
+                        countDiv.textContent = `${value.length} characters`;
+                        countDiv.classList.remove('text-red-500');
+                        countDiv.classList.add('text-green-600');
+                    }
+                } else {
+                    this.classList.remove('border-green-300', 'bg-green-50');
+                    this.classList.add('border-red-300', 'bg-red-50');
+                    if (errorDiv) {
+                        errorDiv.textContent = 'Instructions must be at least 10 characters';
+                        errorDiv.classList.remove('text-green-600');
+                        errorDiv.classList.add('text-red-600');
+                    }
+                    if (countDiv) {
+                        countDiv.textContent = `${value.length} / 10 minimum characters`;
+                        countDiv.classList.remove('text-green-600');
+                        countDiv.classList.add('text-red-500');
+                    }
+                }
+                
+                checkFormValid();
+            });
+            
+            // Model selection validation
+            const modelSelect = document.querySelector('select');
+            modelSelect.addEventListener('change', function() {
+                const errorDiv = this.parentElement.parentElement.querySelector('.text-red-600');
+                
+                if (this.value) {
+                    this.classList.remove('border-red-300', 'bg-red-50');
+                    this.classList.add('border-green-300', 'bg-green-50');
+                    this.parentElement.parentElement.classList.remove('border-red-200');
+                    this.parentElement.parentElement.classList.add('border-green-200');
+                    
+                    if (errorDiv) {
+                        errorDiv.textContent = '✓ Model selected';
+                        errorDiv.classList.remove('text-red-600');
+                        errorDiv.classList.add('text-green-600');
+                    }
+                } else {
+                    this.classList.remove('border-green-300', 'bg-green-50');
+                    this.classList.add('border-red-300', 'bg-red-50');
+                    this.parentElement.parentElement.classList.remove('border-green-200');
+                    this.parentElement.parentElement.classList.add('border-red-200');
+                    
+                    if (errorDiv) {
+                        errorDiv.textContent = 'Please select a model';
+                        errorDiv.classList.remove('text-green-600');
+                        errorDiv.classList.add('text-red-600');
+                    }
+                }
+                
+                checkFormValid();
+            });
+            
+            // Max steps validation
+            const maxStepsInput = document.querySelector('input[type="number"]');
+            maxStepsInput.addEventListener('input', function() {
+                const value = parseInt(this.value);
+                const errorDiv = this.parentElement.parentElement.querySelector('.text-red-600');
+                
+                if (value >= 1 && value <= 50) {
+                    this.classList.remove('border-red-300', 'bg-red-50');
+                    this.classList.add('border-green-300', 'bg-green-50');
+                    this.parentElement.parentElement.parentElement.classList.remove('border-red-200');
+                    this.parentElement.parentElement.parentElement.classList.add('border-green-200');
+                    
+                    if (errorDiv) {
+                        errorDiv.textContent = '✓ Valid range';
+                        errorDiv.classList.remove('text-red-600');
+                        errorDiv.classList.add('text-green-600');
+                    }
+                } else {
+                    this.classList.remove('border-green-300', 'bg-green-50');
+                    this.classList.add('border-red-300', 'bg-red-50');
+                    this.parentElement.parentElement.parentElement.classList.remove('border-green-200');
+                    this.parentElement.parentElement.parentElement.classList.add('border-red-200');
+                    
+                    if (errorDiv) {
+                        errorDiv.textContent = 'Max steps must be between 1 and 50';
+                        errorDiv.classList.remove('text-green-600');
+                        errorDiv.classList.add('text-red-600');
+                    }
+                }
+                
+                checkFormValid();
+            });
+            
+            function checkFormValid() {
+                const instructions = document.querySelector('textarea').value;
+                const model = document.querySelector('select').value;
+                const maxSteps = parseInt(document.querySelector('input[type="number"]').value);
+                const saveButton = document.querySelector('.save-button');
+                const statusIndicator = document.querySelector('.w-2.h-2');
+                const statusText = statusIndicator.parentElement.querySelector('span');
+                const alert = document.querySelector('.bg-red-50.border.border-red-200');
+                
+                const isValid = instructions.length >= 10 && model && maxSteps >= 1 && maxSteps <= 50;
+                
+                if (isValid) {
+                    saveButton.disabled = false;
+                    saveButton.textContent = 'Save Changes';
+                    saveButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    saveButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    
+                    statusIndicator.classList.remove('bg-red-500');
+                    statusIndicator.classList.add('bg-green-500');
+                    statusText.textContent = 'Ready to save';
+                    statusText.classList.remove('text-red-600', 'font-medium');
+                    statusText.classList.add('text-gray-600');
+                    
+                    alert.style.display = 'none';
+                } else {
+                    saveButton.disabled = true;
+                    saveButton.textContent = 'Fix Errors to Save';
+                    saveButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    saveButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    
+                    statusIndicator.classList.remove('bg-green-500');
+                    statusIndicator.classList.add('bg-red-500');
+                    statusText.textContent = 'Please fix errors before saving';
+                    statusText.classList.add('text-red-600', 'font-medium');
+                    statusText.classList.remove('text-gray-600');
+                    
+                    alert.style.display = 'block';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

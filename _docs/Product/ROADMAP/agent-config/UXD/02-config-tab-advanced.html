@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Config - Advanced Options</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Focus states */
+        .focus-ring:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Animation for save button */
+        .save-button {
+            transition: all 0.2s ease;
+        }
+        .save-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Subtle hover effects */
+        .hover-lift:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Collapsible animation */
+        .collapsible {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .collapsible.closed {
+            max-height: 0;
+            opacity: 0;
+        }
+        
+        .collapsible.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-6">
+    <!-- Mock Agent Modal Container -->
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Agent Header (simplified) -->
+        <div class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span class="text-2xl">🤖</span>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Job Application Agent</h2>
+                        <p class="text-sm text-gray-500">AI Job Hunter • Active</p>
+                    </div>
+                </div>
+                <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="flex gap-1 mt-4">
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Overview</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Chat</button>
+                <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg">Config</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Capabilities</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Tasks</button>
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">Knowledge</button>
+            </div>
+        </div>
+
+        <!-- Config Tab Content -->
+        <div class="p-6 space-y-8">
+            <!-- Page Header -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Agent Configuration</h3>
+                <p class="text-sm text-gray-600">Configure your agent's core behavior, personality, and execution settings.</p>
+            </div>
+
+            <!-- Configuration Form -->
+            <div class="space-y-6">
+                <!-- Instructions Section (Collapsed) -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">
+                                Instructions
+                            </label>
+                            <p class="text-xs text-gray-500">
+                                Define your agent's role, personality, and behavior guidelines
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                ✓ Configured
+                            </span>
+                            <button class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Selection Section (Collapsed) -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">
+                                Language Model
+                            </label>
+                            <p class="text-xs text-gray-500">
+                                Currently using Claude 4 Sonnet
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                ✓ Configured
+                            </span>
+                            <button class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Objectives Section (Collapsed) -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">
+                                Objectives
+                            </label>
+                            <p class="text-xs text-gray-500">
+                                Define specific goals and success metrics for this agent
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                ✓ Configured
+                            </span>
+                            <button class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Options - EXPANDED -->
+            <div class="border-t border-gray-200 pt-6">
+                <button class="flex items-center gap-2 text-sm font-medium text-gray-900 mb-6 transition-colors" id="advancedToggle">
+                    <svg class="w-4 h-4 transform rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    Advanced Options
+                    <span class="text-xs text-gray-500">(maxSteps, provider settings)</span>
+                </button>
+
+                <!-- Advanced Options Content - VISIBLE -->
+                <div class="space-y-6 collapsible open" id="advancedContent">
+                    <!-- Max Steps Configuration -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6 hover-lift">
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">
+                                Maximum Steps
+                            </label>
+                            <p class="text-xs text-gray-500">
+                                Limit the number of tool calls per conversation turn (1-50)
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1 max-w-xs">
+                                <input 
+                                    type="number" 
+                                    min="1" 
+                                    max="50" 
+                                    value="5"
+                                    class="w-full p-3 border border-gray-200 rounded-lg focus-ring text-sm"
+                                    placeholder="5"
+                                />
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs text-gray-600">
+                                    <strong>Current:</strong> 5 steps (default)
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">
+                                    Higher values allow more complex reasoning but may increase costs
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Help Examples -->
+                        <div class="mt-4 bg-blue-50 rounded-lg p-4">
+                            <div class="text-xs text-blue-700 mb-2 font-medium">Recommended settings:</div>
+                            <div class="grid grid-cols-3 gap-3 text-xs">
+                                <div class="bg-white rounded-lg p-2 border border-blue-100">
+                                    <div class="font-medium text-blue-900">Simple tasks</div>
+                                    <div class="text-blue-700">1-3 steps</div>
+                                    <div class="text-blue-600 mt-1">Q&A, search, basic analysis</div>
+                                </div>
+                                <div class="bg-white rounded-lg p-2 border border-blue-200 ring-2 ring-blue-200">
+                                    <div class="font-medium text-blue-900">Complex workflows</div>
+                                    <div class="text-blue-700">5-10 steps</div>
+                                    <div class="text-blue-600 mt-1">Multi-step processes, research</div>
+                                </div>
+                                <div class="bg-white rounded-lg p-2 border border-blue-100">
+                                    <div class="font-medium text-blue-900">Advanced automation</div>
+                                    <div class="text-blue-700">10+ steps</div>
+                                    <div class="text-blue-600 mt-1">Complex integrations, long tasks</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Provider Options -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6 hover-lift">
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">
+                                Provider Options
+                            </label>
+                            <p class="text-xs text-gray-500">
+                                Configure model-specific settings and optimizations
+                            </p>
+                        </div>
+
+                        <!-- Claude-specific options -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Reasoning Mode</div>
+                                    <div class="text-xs text-gray-500">Enable step-by-step reasoning for complex problems</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Response Caching</div>
+                                    <div class="text-xs text-gray-500">Cache responses for repeated queries to reduce latency</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Temperature</div>
+                                    <div class="text-xs text-gray-500">Control randomness in responses (0.0 = deterministic, 1.0 = creative)</div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="100" 
+                                        value="50" 
+                                        class="w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    />
+                                    <span class="text-sm font-medium text-gray-700 w-8">0.5</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.232 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <div class="text-xs text-amber-700">
+                                        <div class="font-medium">Provider-specific settings</div>
+                                        <div class="mt-1">These options are specific to Claude. Switching to a different model may reset these settings.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Execution Limits -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6 hover-lift">
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-900 mb-1">
+                                Execution Limits
+                            </label>
+                            <p class="text-xs text-gray-500">
+                                Set safety limits and timeouts for agent execution
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-2">
+                                    Timeout (minutes)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    min="1" 
+                                    max="60" 
+                                    value="10"
+                                    class="w-full p-3 border border-gray-200 rounded-lg focus-ring text-sm"
+                                    placeholder="10"
+                                />
+                                <div class="text-xs text-gray-500 mt-1">Maximum time per conversation turn</div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-2">
+                                    Cost Limit ($)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    min="0.01" 
+                                    max="10" 
+                                    step="0.01"
+                                    value="0.50"
+                                    class="w-full p-3 border border-gray-200 rounded-lg focus-ring text-sm"
+                                    placeholder="0.50"
+                                />
+                                <div class="text-xs text-gray-500 mt-1">Maximum cost per conversation turn</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Actions -->
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">
+                            You have unsaved changes
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                            Reset
+                        </button>
+                        <button class="save-button px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock toggle functionality (for demonstration)
+        document.getElementById('advancedToggle').addEventListener('click', function() {
+            const content = document.getElementById('advancedContent');
+            const arrow = this.querySelector('svg');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                content.classList.add('closed');
+                arrow.classList.remove('rotate-90');
+            } else {
+                content.classList.remove('closed');
+                content.classList.add('open');
+                arrow.classList.add('rotate-90');
+            }
+        });
+
+        // Mock save functionality
+        document.querySelector('.save-button').addEventListener('click', function() {
+            this.innerHTML = '<svg class="w-4 h-4 animate-spin mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Saving...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.innerHTML = 'Save Changes';
+                this.disabled = false;
+                
+                document.querySelector('.w-2.h-2.bg-amber-500').classList.add('bg-green-500');
+                document.querySelector('.w-2.h-2.bg-amber-500').classList.remove('bg-amber-500');
+                document.querySelector('.text-sm.text-gray-600').textContent = 'All changes saved';
+            }, 1500);
+        });
+
+        // Temperature slider
+        document.querySelector('input[type="range"]').addEventListener('input', function() {
+            const value = (this.value / 100).toFixed(1);
+            document.querySelector('.w-8').textContent = value;
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { listConnections } from "@/app/api/connections/services/composio";
 
 export const runtime = "nodejs";
@@ -10,7 +10,7 @@ export const runtime = "nodejs";
  */
 export async function GET() {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
 
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

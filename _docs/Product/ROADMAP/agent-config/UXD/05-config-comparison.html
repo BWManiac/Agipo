@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Comparison View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .diff-add { background-color: rgb(220 252 231); }
+        .diff-remove { background-color: rgb(254 226 226); }
+        .diff-line-add { background-color: rgb(187 247 208); border-left: 3px solid rgb(34 197 94); }
+        .diff-line-remove { background-color: rgb(254 202 202); border-left: 3px solid rgb(239 68 68); }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Configuration Comparison View</h1>
+            <p class="text-sm text-muted-foreground">Side-by-side comparison of configuration changes before saving.</p>
+        </div>
+
+        <!-- Comparison Modal -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Header -->
+            <div class="border-b px-6 py-4 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold">Review Configuration Changes</h2>
+                        <p class="text-xs text-muted-foreground mt-1">Compare your changes before saving to the configuration file</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="flex items-center gap-1">
+                                <span class="w-3 h-3 bg-red-200 rounded"></span>
+                                <span class="text-gray-600">Removed</span>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <span class="w-3 h-3 bg-green-200 rounded"></span>
+                                <span class="text-gray-600">Added</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Summary Bar -->
+            <div class="bg-blue-50 border-b border-blue-200 px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4 text-sm">
+                        <span class="font-medium text-blue-900">5 fields modified</span>
+                        <span class="text-blue-700">•</span>
+                        <span class="text-blue-700">+42 lines added</span>
+                        <span class="text-blue-700">•</span>
+                        <span class="text-blue-700">-18 lines removed</span>
+                    </div>
+                    <button class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                        Collapse unchanged fields
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comparison Content -->
+            <div class="flex divide-x">
+                <!-- Current Configuration (Left) -->
+                <div class="flex-1">
+                    <div class="px-6 py-3 bg-gray-50 border-b">
+                        <h3 class="text-sm font-medium text-gray-700">Current Configuration</h3>
+                        <p class="text-xs text-gray-500">Last saved: 2 hours ago</p>
+                    </div>
+                    <div class="p-6 space-y-6 max-h-[600px] overflow-y-auto">
+                        <!-- Instructions Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Instructions</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono space-y-1">
+                                    <div class="diff-line-remove px-2 py-1 -mx-2">
+                                        <span class="text-red-700">systemPrompt: "You are a helpful Product Manager assistant."</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Model Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Model</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono">
+                                    <div class="diff-line-remove px-2 py-1 -mx-2">
+                                        <span class="text-red-700">model: "claude-3-opus-20240229"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Max Steps Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Max Steps</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono">
+                                    <div class="diff-line-remove px-2 py-1 -mx-2">
+                                        <span class="text-red-700">maxSteps: 5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Objectives Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Objectives</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono space-y-1">
+                                    <div class="px-2 py-1">objectives: [</div>
+                                    <div class="diff-line-remove px-2 py-1 ml-4">
+                                        <span class="text-red-700">  "Assist with product management"</span>
+                                    </div>
+                                    <div class="px-2 py-1">]</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Unchanged Field Example -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Status</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+                                <div class="text-sm font-mono">
+                                    <div class="px-2 py-1">status: "active"</div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">No changes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Configuration (Right) -->
+                <div class="flex-1">
+                    <div class="px-6 py-3 bg-gray-50 border-b">
+                        <h3 class="text-sm font-medium text-gray-700">New Configuration</h3>
+                        <p class="text-xs text-gray-500">Unsaved changes</p>
+                    </div>
+                    <div class="p-6 space-y-6 max-h-[600px] overflow-y-auto">
+                        <!-- Instructions Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Instructions</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono space-y-1">
+                                    <div class="diff-line-add px-2 py-1 -mx-2">
+                                        <span class="text-green-700">instructions: "You are a Product Manager assistant specializing in user research, feature prioritization, and roadmap planning.</span>
+                                    </div>
+                                    <div class="diff-line-add px-2 py-1 -mx-2 mt-1">
+                                        <span class="text-green-700">Your primary objectives are:</span>
+                                    </div>
+                                    <div class="diff-line-add px-2 py-1 -mx-2">
+                                        <span class="text-green-700">- Help teams understand user needs through research and analysis</span>
+                                    </div>
+                                    <div class="diff-line-add px-2 py-1 -mx-2">
+                                        <span class="text-green-700">- Assist with feature prioritization using data-driven frameworks</span>
+                                    </div>
+                                    <div class="diff-line-add px-2 py-1 -mx-2">
+                                        <span class="text-green-700">- Support roadmap planning and communication"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Model Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Model</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono">
+                                    <div class="diff-line-add px-2 py-1 -mx-2">
+                                        <span class="text-green-700">model: "gpt-4o"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Max Steps Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Max Steps</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono">
+                                    <div class="diff-line-add px-2 py-1 -mx-2">
+                                        <span class="text-green-700">maxSteps: 10</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Objectives Field -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Objectives</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="text-sm font-mono space-y-1">
+                                    <div class="px-2 py-1">objectives: [</div>
+                                    <div class="diff-line-add px-2 py-1 ml-4">
+                                        <span class="text-green-700">  "Help teams understand user needs through research",</span>
+                                    </div>
+                                    <div class="diff-line-add px-2 py-1 ml-4">
+                                        <span class="text-green-700">  "Facilitate data-driven decision making",</span>
+                                    </div>
+                                    <div class="diff-line-add px-2 py-1 ml-4">
+                                        <span class="text-green-700">  "Improve product-market fit",</span>
+                                    </div>
+                                    <div class="diff-line-add px-2 py-1 ml-4">
+                                        <span class="text-green-700">  "Accelerate time-to-market for new features"</span>
+                                    </div>
+                                    <div class="px-2 py-1">]</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Unchanged Field Example -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 mb-1 block">Status</label>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+                                <div class="text-sm font-mono">
+                                    <div class="px-2 py-1">status: "active"</div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">No changes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="border-t px-6 py-4 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <button class="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+                            Revert All Changes
+                        </button>
+                    </div>
+                    <button class="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Apply Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unified Diff View -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="border-b px-6 py-4 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold">Unified Diff View</h3>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Side by Side
+                        </button>
+                        <button class="px-3 py-1.5 text-xs font-medium text-white bg-black rounded-lg">
+                            Unified
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6">
+                <pre class="text-xs font-mono bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+<span class="text-gray-500">--- _tables/agents/pm-agent-xyz/config.ts    (current)</span>
+<span class="text-gray-500">+++ _tables/agents/pm-agent-xyz/config.ts    (modified)</span>
+<span class="text-gray-500">@@ -8,7 +8,15 @@</span>
+   avatar: "🎯",
+   description: "Product management assistant",
+<span class="text-red-400">-  systemPrompt: "You are a helpful Product Manager assistant.",</span>
+<span class="text-green-400">+  instructions: "You are a Product Manager assistant specializing in user research, feature prioritization, and roadmap planning.</span>
+<span class="text-green-400">+</span>
+<span class="text-green-400">+  Your primary objectives are:</span>
+<span class="text-green-400">+  - Help teams understand user needs through research and analysis</span>
+<span class="text-green-400">+  - Assist with feature prioritization using data-driven frameworks</span>
+<span class="text-green-400">+  - Support roadmap planning and communication</span>
+<span class="text-green-400">+  - Facilitate stakeholder alignment</span>
+<span class="text-green-400">+</span>
+<span class="text-green-400">+  Always provide structured, actionable insights backed by best practices in product management.",</span>
+<span class="text-red-400">-  model: "claude-3-opus-20240229",</span>
+<span class="text-green-400">+  model: "gpt-4o",</span>
+<span class="text-red-400">-  maxSteps: 5,</span>
+<span class="text-green-400">+  maxSteps: 10,</span>
+<span class="text-gray-500">@@ -16,7 +24,10 @@</span>
+   objectives: [
+<span class="text-red-400">-    "Assist with product management"</span>
+<span class="text-green-400">+    "Help teams understand user needs through research",</span>
+<span class="text-green-400">+    "Facilitate data-driven decision making",</span>
+<span class="text-green-400">+    "Improve product-market fit",</span>
+<span class="text-green-400">+    "Accelerate time-to-market for new features"</span>
+   ],
+                </pre>
+            </div>
+        </div>
+
+        <!-- Individual Field Revert Options -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Selective Revert</h3>
+            <p class="text-sm text-gray-600 mb-4">Choose which changes to keep or revert:</p>
+            
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded border-gray-300">
+                        <div>
+                            <span class="text-sm font-medium">Instructions</span>
+                            <span class="text-xs text-gray-500 ml-2">systemPrompt → instructions (migration)</span>
+                        </div>
+                    </div>
+                    <button class="text-xs text-blue-600 hover:text-blue-700">Revert this field</button>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded border-gray-300">
+                        <div>
+                            <span class="text-sm font-medium">Model</span>
+                            <span class="text-xs text-gray-500 ml-2">claude-3-opus → gpt-4o</span>
+                        </div>
+                    </div>
+                    <button class="text-xs text-blue-600 hover:text-blue-700">Revert this field</button>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded border-gray-300">
+                        <div>
+                            <span class="text-sm font-medium">Max Steps</span>
+                            <span class="text-xs text-gray-500 ml-2">5 → 10</span>
+                        </div>
+                    </div>
+                    <button class="text-xs text-blue-600 hover:text-blue-700">Revert this field</button>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" checked class="w-4 h-4 text-blue-600 rounded border-gray-300">
+                        <div>
+                            <span class="text-sm font-medium">Objectives</span>
+                            <span class="text-xs text-gray-500 ml-2">1 → 4 objectives</span>
+                        </div>
+                    </div>
+                    <button class="text-xs text-blue-600 hover:text-blue-700">Revert this field</button>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Revert Unchecked
+                </button>
+                <button class="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
+                    Apply Selected Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

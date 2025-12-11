@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job History & Logs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-down': 'slideDown 0.3s ease-out',
+                        'pulse-subtle': 'pulseSubtle 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        pulseSubtle: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Execution History</h1>
+                <p class="text-gray-600">View past executions, logs, and performance metrics</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <select class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>Last 90 days</option>
+                    <option>All time</option>
+                </select>
+                <button class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Export CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-5 gap-4 mb-8">
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <p class="text-sm font-medium text-gray-600 mb-1">Total Executions</p>
+                <p class="text-2xl font-bold text-gray-900">1,247</p>
+                <p class="text-xs text-green-600 mt-1">↑ 12% from last period</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <p class="text-sm font-medium text-gray-600 mb-1">Success Rate</p>
+                <p class="text-2xl font-bold text-gray-900">94.3%</p>
+                <p class="text-xs text-green-600 mt-1">↑ 2.1% from last period</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <p class="text-sm font-medium text-gray-600 mb-1">Avg Duration</p>
+                <p class="text-2xl font-bold text-gray-900">2m 34s</p>
+                <p class="text-xs text-red-600 mt-1">↑ 5s from last period</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <p class="text-sm font-medium text-gray-600 mb-1">Failed Jobs</p>
+                <p class="text-2xl font-bold text-gray-900">71</p>
+                <p class="text-xs text-red-600 mt-1">↑ 3 from last period</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <p class="text-sm font-medium text-gray-600 mb-1">Active Triggers</p>
+                <p class="text-2xl font-bold text-gray-900">23</p>
+                <p class="text-xs text-gray-500 mt-1">5 jobs, 18 events</p>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+            <div class="flex items-center gap-4">
+                <div class="flex-1">
+                    <input type="text" placeholder="Search by job name, agent, or ID..." 
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition-colors">
+                        ✓ Success
+                    </button>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+                        ✗ Failed
+                    </button>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+                        ⟳ Running
+                    </button>
+                    <div class="w-px h-6 bg-gray-300"></div>
+                    <button class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+                        All Types
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Execution History Table -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job/Trigger</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Started</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Agent</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <!-- Row 1 - Success -->
+                    <tr class="hover:bg-gray-50 transition-colors animate-fade-in">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-medium text-gray-900">Daily Job Search</p>
+                                <p class="text-xs text-gray-500">ID: job_abc123</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Scheduled</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-green-600">Success</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">Today, 09:00 AM</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">3m 45s</td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-900">Job Hunter Agent</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Logs →</button>
+                        </td>
+                    </tr>
+
+                    <!-- Row 2 - Failed -->
+                    <tr class="hover:bg-gray-50 transition-colors animate-fade-in" style="animation-delay: 0.1s">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-medium text-gray-900">New Email Alert</p>
+                                <p class="text-xs text-gray-500">ID: trg_def456</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Event</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                <span class="text-sm text-red-600">Failed</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">Today, 08:47 AM</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">0m 15s</td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-900">Email Assistant</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button class="text-red-600 hover:text-red-800 text-sm font-medium">Debug →</button>
+                        </td>
+                    </tr>
+
+                    <!-- Row 3 - Running -->
+                    <tr class="hover:bg-gray-50 transition-colors animate-fade-in" style="animation-delay: 0.2s">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-medium text-gray-900">Weekly Report</p>
+                                <p class="text-xs text-gray-500">ID: job_ghi789</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Workflow</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse-subtle"></div>
+                                <span class="text-sm text-blue-600">Running</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">Today, 08:30 AM</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">32m 10s</td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-900">Analytics Agent</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Monitor →</button>
+                        </td>
+                    </tr>
+
+                    <!-- Expandable Log Row -->
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td colspan="7" class="p-0">
+                            <details class="group">
+                                <summary class="cursor-pointer">
+                                    <div class="flex items-center justify-between px-6 py-4">
+                                        <div class="flex items-center gap-6">
+                                            <div>
+                                                <p class="font-medium text-gray-900">GitHub PR Review</p>
+                                                <p class="text-xs text-gray-500">ID: trg_jkl012</p>
+                                            </div>
+                                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Event</span>
+                                            <div class="flex items-center gap-1">
+                                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                <span class="text-sm text-green-600">Success</span>
+                                            </div>
+                                            <span class="text-sm text-gray-600">Today, 07:15 AM</span>
+                                            <span class="text-sm text-gray-600">1m 23s</span>
+                                            <span class="text-sm text-gray-900">Code Review Agent</span>
+                                        </div>
+                                        <span class="text-blue-600 group-open:rotate-90 transition-transform">→</span>
+                                    </div>
+                                </summary>
+                                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 animate-slide-down">
+                                    <!-- Log Output -->
+                                    <div class="bg-gray-900 rounded-lg p-4 text-xs font-mono">
+                                        <pre class="text-green-400">[2024-12-11 07:15:00] INFO: GitHub webhook received
+[2024-12-11 07:15:01] INFO: Event type: pull_request
+[2024-12-11 07:15:01] INFO: PR #423: "Add user authentication feature"
+[2024-12-11 07:15:02] INFO: Starting code review agent...
+[2024-12-11 07:15:05] INFO: Analyzing 15 changed files
+[2024-12-11 07:15:12] INFO: Running security checks...
+[2024-12-11 07:15:18] INFO: Running code quality checks...
+[2024-12-11 07:15:45] INFO: Generating review summary...
+[2024-12-11 07:15:52] INFO: Posted 3 comments to PR
+[2024-12-11 07:16:23] SUCCESS: Review completed successfully</pre>
+                                    </div>
+
+                                    <!-- Execution Details -->
+                                    <div class="grid grid-cols-3 gap-6 mt-4">
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Trigger Details</h4>
+                                            <div class="text-xs space-y-1">
+                                                <div><span class="text-gray-600">Source:</span> GitHub</div>
+                                                <div><span class="text-gray-600">Repository:</span> agipo/frontend</div>
+                                                <div><span class="text-gray-600">Event:</span> pull_request.opened</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Performance Metrics</h4>
+                                            <div class="text-xs space-y-1">
+                                                <div><span class="text-gray-600">API Calls:</span> 8</div>
+                                                <div><span class="text-gray-600">Memory Used:</span> 124 MB</div>
+                                                <div><span class="text-gray-600">Tokens Used:</span> 2,341</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Actions</h4>
+                                            <div class="space-y-2">
+                                                <button class="text-blue-600 hover:text-blue-800 text-xs">View Full Logs</button>
+                                                <button class="text-blue-600 hover:text-blue-800 text-xs">View Chat Thread</button>
+                                                <button class="text-blue-600 hover:text-blue-800 text-xs">Re-run Job</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+
+                    <!-- More rows... -->
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-medium text-gray-900">Backup Database</p>
+                                <p class="text-xs text-gray-500">ID: job_mno345</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Scheduled</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-green-600">Success</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">Today, 03:00 AM</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">5m 12s</td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-900">System Admin</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Logs →</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-medium text-gray-900">Calendar Sync</p>
+                                <p class="text-xs text-gray-500">ID: trg_pqr678</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Event</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                <span class="text-sm text-yellow-600">Warning</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">Yesterday, 11:30 PM</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">8m 45s</td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-900">Calendar Agent</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button class="text-yellow-600 hover:text-yellow-800 text-sm font-medium">Review →</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">1,247</span> executions
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-white transition-colors" disabled>
+                        Previous
+                    </button>
+                    <button class="px-3 py-1 bg-blue-600 text-white rounded-lg">1</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-white transition-colors">2</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-white transition-colors">3</button>
+                    <span class="px-2">...</span>
+                    <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-white transition-colors">125</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-white transition-colors">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Chart Section -->
+        <div class="mt-8 grid grid-cols-2 gap-6">
+            <!-- Success Rate Trend -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Success Rate Trend</h3>
+                <div class="h-48 bg-gradient-to-t from-green-50 to-white rounded-lg flex items-end justify-around p-4">
+                    <div class="w-8 bg-green-500 rounded-t" style="height: 85%"></div>
+                    <div class="w-8 bg-green-500 rounded-t" style="height: 88%"></div>
+                    <div class="w-8 bg-green-500 rounded-t" style="height: 92%"></div>
+                    <div class="w-8 bg-green-500 rounded-t" style="height: 90%"></div>
+                    <div class="w-8 bg-green-500 rounded-t" style="height: 93%"></div>
+                    <div class="w-8 bg-green-500 rounded-t" style="height: 91%"></div>
+                    <div class="w-8 bg-green-500 rounded-t" style="height: 94%"></div>
+                </div>
+                <div class="flex justify-around mt-2 text-xs text-gray-600">
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span>Sun</span>
+                </div>
+            </div>
+
+            <!-- Execution Volume -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Execution Volume</h3>
+                <div class="h-48 bg-gradient-to-t from-blue-50 to-white rounded-lg flex items-end justify-around p-4">
+                    <div class="w-8 bg-blue-500 rounded-t" style="height: 60%"></div>
+                    <div class="w-8 bg-blue-500 rounded-t" style="height: 75%"></div>
+                    <div class="w-8 bg-blue-500 rounded-t" style="height: 80%"></div>
+                    <div class="w-8 bg-blue-500 rounded-t" style="height: 70%"></div>
+                    <div class="w-8 bg-blue-500 rounded-t" style="height: 85%"></div>
+                    <div class="w-8 bg-blue-500 rounded-t" style="height: 45%"></div>
+                    <div class="w-8 bg-blue-500 rounded-t" style="height: 40%"></div>
+                </div>
+                <div class="flex justify-around mt-2 text-xs text-gray-600">
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span>Sun</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

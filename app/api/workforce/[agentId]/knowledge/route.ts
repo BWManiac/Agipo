@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { getWorkingMemory, clearWorkingMemory } from "./services/knowledge-service";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ export async function GET(
   routeContext: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
@@ -43,7 +43,7 @@ export async function DELETE(
   routeContext: { params: Promise<{ agentId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

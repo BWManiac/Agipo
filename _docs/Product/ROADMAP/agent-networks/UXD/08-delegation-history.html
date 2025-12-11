@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delegation History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Delegation History</h1>
+            <p class="text-sm text-muted-foreground">View past delegations and their results</p>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex gap-2">
+                    <!-- Time Range -->
+                    <select class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option>Last 24 hours</option>
+                        <option selected>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>All time</option>
+                    </select>
+                    
+                    <!-- Status Filter -->
+                    <select class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option>All Status</option>
+                        <option>Completed</option>
+                        <option>Failed</option>
+                        <option>Partial</option>
+                        <option>Active</option>
+                    </select>
+                    
+                    <!-- Agent Filter -->
+                    <select class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option>All Agents</option>
+                        <option>Resume Tailor</option>
+                        <option>Job Scraper</option>
+                        <option>Application Filler</option>
+                        <option>Email Outreach</option>
+                    </select>
+                    
+                    <!-- Search -->
+                    <div class="relative">
+                        <input 
+                            type="text"
+                            placeholder="Search tasks..."
+                            class="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        />
+                        <svg class="w-4 h-4 absolute left-2.5 top-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <button class="px-3 py-1.5 text-sm text-purple-600 hover:text-purple-700 font-medium">
+                    Export History →
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-500">Total Delegations</span>
+                    <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    </svg>
+                </div>
+                <div class="text-2xl font-bold">247</div>
+                <div class="text-xs text-green-600">↑ 12% from last week</div>
+            </div>
+            
+            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-500">Success Rate</span>
+                    <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </div>
+                <div class="text-2xl font-bold">94.3%</div>
+                <div class="text-xs text-gray-600">233 successful</div>
+            </div>
+            
+            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-500">Avg Duration</span>
+                    <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                </div>
+                <div class="text-2xl font-bold">3.2m</div>
+                <div class="text-xs text-amber-600">↓ 18% faster</div>
+            </div>
+            
+            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-500">Most Used Agent</span>
+                    <svg class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div class="text-lg font-bold">Job Scraper</div>
+                <div class="text-xs text-gray-600">89 delegations</div>
+            </div>
+        </div>
+
+        <!-- Delegation Timeline -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Table Header -->
+            <div class="px-6 py-3 bg-gray-50 border-b text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-3">Task</div>
+                    <div class="col-span-2">Delegated To</div>
+                    <div class="col-span-1">Status</div>
+                    <div class="col-span-2">Duration</div>
+                    <div class="col-span-2">Time</div>
+                    <div class="col-span-2 text-right">Actions</div>
+                </div>
+            </div>
+            
+            <!-- Delegation Items -->
+            <div class="divide-y divide-gray-200">
+                <!-- Item 1 - Recent Success -->
+                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                        <div class="col-span-3">
+                            <p class="text-sm font-medium text-gray-900">Apply to 3 Frontend positions</p>
+                            <p class="text-xs text-gray-500">User: "Apply to top matches"</p>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 rounded bg-green-500 border-2 border-white flex items-center justify-center text-white text-xs">JS</div>
+                                <div class="w-6 h-6 rounded bg-blue-500 border-2 border-white flex items-center justify-center text-white text-xs">RT</div>
+                                <div class="w-6 h-6 rounded bg-orange-500 border-2 border-white flex items-center justify-center text-white text-xs">AF</div>
+                            </div>
+                            <span class="text-xs text-gray-500 mt-1">3 agents</span>
+                        </div>
+                        <div class="col-span-1">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                Completed
+                            </span>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm font-medium">10m 24s</div>
+                            <div class="text-xs text-gray-500">3 sequential</div>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm">Today, 10:32</div>
+                            <div class="text-xs text-gray-500">2 hours ago</div>
+                        </div>
+                        <div class="col-span-2 text-right">
+                            <button class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                View Details →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 - Partial Success -->
+                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                        <div class="col-span-3">
+                            <p class="text-sm font-medium text-gray-900">Research competitor pricing</p>
+                            <p class="text-xs text-gray-500">User: "Analyze top 5 competitors"</p>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 rounded bg-purple-500 border-2 border-white flex items-center justify-center text-white text-xs">WS</div>
+                                <div class="w-6 h-6 rounded bg-cyan-500 border-2 border-white flex items-center justify-center text-white text-xs">DA</div>
+                            </div>
+                            <span class="text-xs text-gray-500 mt-1">2 agents</span>
+                        </div>
+                        <div class="col-span-1">
+                            <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
+                                Partial
+                            </span>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm font-medium">7m 18s</div>
+                            <div class="text-xs text-gray-500">2 parallel</div>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm">Today, 09:15</div>
+                            <div class="text-xs text-gray-500">3 hours ago</div>
+                        </div>
+                        <div class="col-span-2 text-right">
+                            <button class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                View Details →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 - Failed -->
+                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                        <div class="col-span-3">
+                            <p class="text-sm font-medium text-gray-900">Send follow-up emails</p>
+                            <p class="text-xs text-gray-500">User: "Follow up on applications"</p>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 rounded bg-pink-500 border-2 border-white flex items-center justify-center text-white text-xs">EO</div>
+                            </div>
+                            <span class="text-xs text-gray-500 mt-1">1 agent</span>
+                        </div>
+                        <div class="col-span-1">
+                            <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                                Failed
+                            </span>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm font-medium">0m 45s</div>
+                            <div class="text-xs text-red-500">Timeout</div>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm">Yesterday</div>
+                            <div class="text-xs text-gray-500">18 hours ago</div>
+                        </div>
+                        <div class="col-span-2 text-right">
+                            <button class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                View Error →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 - Currently Active -->
+                <div class="px-6 py-4 hover:bg-gray-50 transition-colors bg-blue-50">
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                        <div class="col-span-3">
+                            <p class="text-sm font-medium text-gray-900">Generate weekly report</p>
+                            <p class="text-xs text-gray-500">User: "Create activity summary"</p>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 rounded bg-cyan-500 border-2 border-white flex items-center justify-center text-white text-xs">DA</div>
+                                <div class="w-6 h-6 rounded bg-pink-500 border-2 border-white flex items-center justify-center text-white text-xs">RG</div>
+                            </div>
+                            <span class="text-xs text-gray-500 mt-1">2 agents</span>
+                        </div>
+                        <div class="col-span-1">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                                Active
+                            </span>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm font-medium">2m 37s</div>
+                            <div class="text-xs text-blue-600">In progress...</div>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm">Now</div>
+                            <div class="text-xs text-gray-500">Started 2m ago</div>
+                        </div>
+                        <div class="col-span-2 text-right">
+                            <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                Monitor →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- More items... -->
+                <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                        <div class="col-span-3">
+                            <p class="text-sm font-medium text-gray-900">Interview prep for Vercel</p>
+                            <p class="text-xs text-gray-500">User: "Prepare for frontend interview"</p>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 rounded bg-indigo-500 border-2 border-white flex items-center justify-center text-white text-xs">IP</div>
+                            </div>
+                            <span class="text-xs text-gray-500 mt-1">1 agent</span>
+                        </div>
+                        <div class="col-span-1">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                Completed
+                            </span>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm font-medium">1m 45s</div>
+                            <div class="text-xs text-gray-500">1 task</div>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-sm">2 days ago</div>
+                            <div class="text-xs text-gray-500">Dec 9, 14:20</div>
+                        </div>
+                        <div class="col-span-2 text-right">
+                            <button class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                View Details →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-6 py-3 bg-gray-50 border-t flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of{' '}
+                    <span class="font-medium">247</span> results
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50" disabled>
+                        Previous
+                    </button>
+                    <button class="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg">1</button>
+                    <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-100">2</button>
+                    <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-100">3</button>
+                    <span class="px-3 py-1 text-sm">...</span>
+                    <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-100">50</button>
+                    <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-100">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Performance Chart -->
+        <div class="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold mb-4">Agent Performance (Last 7 Days)</h3>
+            <div class="grid grid-cols-5 gap-4">
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center text-white font-bold mx-auto mb-2">JS</div>
+                    <p class="text-xs font-medium">Job Scraper</p>
+                    <p class="text-lg font-bold">89</p>
+                    <p class="text-xs text-gray-500">tasks</p>
+                    <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
+                        <div class="bg-green-500 h-1 rounded-full" style="width: 92%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">92% success</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold mx-auto mb-2">RT</div>
+                    <p class="text-xs font-medium">Resume Tailor</p>
+                    <p class="text-lg font-bold">67</p>
+                    <p class="text-xs text-gray-500">tasks</p>
+                    <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
+                        <div class="bg-green-500 h-1 rounded-full" style="width: 98%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">98% success</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-lg bg-orange-500 flex items-center justify-center text-white font-bold mx-auto mb-2">AF</div>
+                    <p class="text-xs font-medium">App Filler</p>
+                    <p class="text-lg font-bold">45</p>
+                    <p class="text-xs text-gray-500">tasks</p>
+                    <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
+                        <div class="bg-amber-500 h-1 rounded-full" style="width: 88%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">88% success</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-lg bg-cyan-500 flex items-center justify-center text-white font-bold mx-auto mb-2">DA</div>
+                    <p class="text-xs font-medium">Data Analyst</p>
+                    <p class="text-lg font-bold">32</p>
+                    <p class="text-xs text-gray-500">tasks</p>
+                    <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
+                        <div class="bg-green-500 h-1 rounded-full" style="width: 100%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">100% success</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-lg bg-pink-500 flex items-center justify-center text-white font-bold mx-auto mb-2">EO</div>
+                    <p class="text-xs font-medium">Email Out</p>
+                    <p class="text-lg font-bold">14</p>
+                    <p class="text-xs text-gray-500">tasks</p>
+                    <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
+                        <div class="bg-red-500 h-1 rounded-full" style="width: 71%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">71% success</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

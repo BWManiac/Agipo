@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delegation State - Delegation Complete</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'check': 'check 0.5s ease-in-out',
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                    },
+                    keyframes: {
+                        check: {
+                            '0%': { transform: 'scale(0) rotate(45deg)' },
+                            '50%': { transform: 'scale(1.2) rotate(45deg)' },
+                            '100%': { transform: 'scale(1) rotate(45deg)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-xl font-bold mb-2">Delegation State: Delegation Complete</h1>
+            <p class="text-sm text-gray-600">Sub-agent has completed task and returned results</p>
+        </div>
+
+        <!-- State Card: Delegation Complete -->
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 shadow-sm">
+            <div class="flex items-start gap-3">
+                <!-- Success Indicator -->
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white animate-check" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <!-- Status Header -->
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-green-900">Delegation Complete</span>
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Success</span>
+                        </div>
+                        <span class="text-xs text-gray-600">Completed in 3m 42s</span>
+                    </div>
+
+                    <!-- Completed Task Summary -->
+                    <div class="bg-white/70 rounded-lg p-3 mb-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                                    RT
+                                </div>
+                                <span class="text-sm font-medium">Resume Tailor</span>
+                            </div>
+                            <div class="text-xs text-green-600 font-medium">✓ Task Complete</div>
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 mb-1">Completed task:</p>
+                        <p class="text-sm text-gray-800">"Customize resume for Senior Frontend Developer position at Vercel"</p>
+                    </div>
+
+                    <!-- Results Summary -->
+                    <div class="bg-green-50 rounded-lg p-3 mb-3">
+                        <p class="text-xs font-medium text-green-800 mb-2">Results delivered:</p>
+                        <div class="space-y-2">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm text-green-900">Tailored Resume Generated</div>
+                                    <div class="text-xs text-green-700">resume_vercel_frontend_2024.pdf (247KB)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm text-green-900">92% Match Score</div>
+                                    <div class="text-xs text-green-700">Optimized for job requirements</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm text-green-900">Key Changes Made</div>
+                                    <div class="text-xs text-green-700">15 keywords added, 3 sections restructured</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <div class="bg-white rounded-lg p-2 text-center">
+                            <div class="text-lg font-bold text-gray-900">3:42</div>
+                            <div class="text-xs text-gray-500">Duration</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2 text-center">
+                            <div class="text-lg font-bold text-green-600">92%</div>
+                            <div class="text-xs text-gray-500">Match Score</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2 text-center">
+                            <div class="text-lg font-bold text-blue-600">15</div>
+                            <div class="text-xs text-gray-500">Keywords Added</div>
+                        </div>
+                    </div>
+
+                    <!-- Manager Processing Results -->
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                        <div class="flex items-start gap-2">
+                            <div class="w-6 h-6 rounded bg-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                                JM
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-medium text-purple-800 mb-1">Manager processing results</p>
+                                <p class="text-xs text-purple-700">Resume successfully tailored. Ready for application submission. Would you like me to proceed with applying to this position?</p>
+                                
+                                <!-- Next Actions -->
+                                <div class="mt-2 flex gap-2">
+                                    <button class="px-3 py-1 bg-purple-600 text-white rounded text-xs hover:bg-purple-700">
+                                        Proceed to Apply
+                                    </button>
+                                    <button class="px-3 py-1 bg-white text-purple-600 border border-purple-300 rounded text-xs hover:bg-purple-50">
+                                        Review Resume First
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result Actions -->
+                    <div class="mt-3 pt-3 border-t border-green-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3 text-xs">
+                            <button class="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Download Result
+                            </button>
+                            <button class="flex items-center gap-1 text-gray-600 hover:text-gray-700 font-medium">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                View Details
+                            </button>
+                        </div>
+                        <span class="text-xs text-gray-500">
+                            Result ID: #del-2024-1211-rt-3842
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Results (Expandable) -->
+        <div class="mt-6 bg-white rounded-lg border border-gray-200">
+            <details class="group">
+                <summary class="px-4 py-3 cursor-pointer hover:bg-gray-50 flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700">Detailed Results</span>
+                    <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </summary>
+                
+                <div class="px-4 py-3 border-t">
+                    <!-- Keywords Optimization -->
+                    <div class="mb-4">
+                        <h4 class="text-xs font-medium text-gray-700 mb-2">Keywords Optimization</h4>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">React</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Next.js</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">TypeScript</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Vercel</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Edge Functions</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Performance</span>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">+9 more</span>
+                        </div>
+                    </div>
+
+                    <!-- Sections Modified -->
+                    <div class="mb-4">
+                        <h4 class="text-xs font-medium text-gray-700 mb-2">Sections Modified</h4>
+                        <div class="space-y-1 text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                                <span>Professional Summary - Tailored to Vercel's mission</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                                <span>Experience - Emphasized frontend performance work</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                                <span>Skills - Reordered to match job requirements</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confidence Analysis -->
+                    <div>
+                        <h4 class="text-xs font-medium text-gray-700 mb-2">Match Confidence</h4>
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-xs">
+                                <span>Technical Skills</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 95%"></div>
+                                    </div>
+                                    <span>95%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span>Experience Level</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 88%"></div>
+                                    </div>
+                                    <span>88%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span>Cultural Fit</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-amber-500 h-1.5 rounded-full" style="width: 92%"></div>
+                                    </div>
+                                    <span>92%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- Timeline -->
+        <div class="mt-6 bg-white rounded-lg border border-gray-200 p-4">
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Execution Timeline</h3>
+            <div class="space-y-2 text-xs">
+                <div class="flex gap-3">
+                    <span class="text-gray-400 font-mono">10:32:15</span>
+                    <span>Manager received request</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-gray-400 font-mono">10:32:17</span>
+                    <span>Task delegated to Resume Tailor</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-gray-400 font-mono">10:32:18</span>
+                    <span>Agent acknowledged task</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-gray-400 font-mono">10:32:25</span>
+                    <span>Analysis phase started</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="text-gray-400 font-mono">10:34:12</span>
+                    <span>Resume generation started</span>
+                </div>
+                <div class="flex gap-3 text-green-600 font-medium">
+                    <span class="text-gray-400 font-mono">10:35:59</span>
+                    <span>Task completed successfully</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

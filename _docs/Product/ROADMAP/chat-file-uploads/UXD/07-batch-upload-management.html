@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Upload Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'progress-slow': 'progress 4s ease-in-out infinite',
+                        'pulse-ring': 'pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
+                        'slide-in-stagger': 'slideInStagger 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        progress: {
+                            '0%': { width: '0%' },
+                            '50%': { width: '75%' },
+                            '100%': { width: '100%' },
+                        },
+                        pulseRing: {
+                            '0%': { transform: 'scale(0.33)', opacity: '1' },
+                            '80%, 100%': { transform: 'scale(2.33)', opacity: '0' },
+                        },
+                        slideInStagger: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-5xl mx-auto p-6 h-screen flex flex-col">
+        <!-- Chat Header -->
+        <div class="bg-white rounded-t-xl border border-gray-200 border-b-0 p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold">
+                BM
+            </div>
+            <div>
+                <h3 class="font-semibold">Batch Manager</h3>
+                <div class="flex items-center gap-2 text-sm text-amber-600">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                    <span>Managing 8 files • 3 processing</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="bg-white border-x border-gray-200 flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- User Message -->
+            <div class="flex justify-end">
+                <div class="bg-blue-600 text-white rounded-lg p-3 max-w-md">
+                    <p class="text-sm">I need to analyze all quarterly reports from this year. I'm uploading Q1-Q4 data, financial summaries, and comparison charts. Please process them all and create a comprehensive annual analysis.</p>
+                </div>
+            </div>
+
+            <!-- Batch Upload Interface -->
+            <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-semibold text-amber-800 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                        Batch Upload Manager
+                    </h4>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-amber-700">8 files • 24.7 MB total</span>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 bg-amber-200 hover:bg-amber-300 text-amber-800 rounded text-xs font-medium transition-colors">
+                                Pause All
+                            </button>
+                            <button class="px-3 py-1 bg-red-200 hover:bg-red-300 text-red-800 rounded text-xs font-medium transition-colors">
+                                Cancel Batch
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overall Progress -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between text-sm text-amber-800 mb-2">
+                        <span>Overall Progress</span>
+                        <span>5 of 8 completed (62%)</span>
+                    </div>
+                    <div class="w-full bg-amber-200 rounded-full h-3 overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-500 to-green-500 h-full rounded-full transition-all duration-500" style="width: 62%">
+                            <div class="h-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse-ring"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-amber-700 mt-1">
+                        <span>ETA: 3 minutes</span>
+                        <span>Average speed: 1.8 MB/s</span>
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div class="space-y-2 max-h-96 overflow-y-auto">
+                    <!-- Completed Files -->
+                    <div class="bg-white rounded-lg p-3 border border-green-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">Q1_Financial_Report.pdf</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">✓ Analyzed</span>
+                                        <button class="p-1 hover:bg-gray-100 rounded transition-colors">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500">2.3 MB • Processed in 45s • 127 insights extracted</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 border border-green-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">Q1_Sales_Data.xlsx</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">✓ Analyzed</span>
+                                        <button class="p-1 hover:bg-gray-100 rounded transition-colors">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500">1.8 MB • Processed in 32s • 2,341 records analyzed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Currently Processing -->
+                    <div class="bg-white rounded-lg p-3 border border-blue-200">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">Q2_Financial_Report.pdf</p>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">Processing</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">2.1 MB • Analyzing content...</p>
+                            </div>
+                        </div>
+                        <div class="ml-11">
+                            <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                                <div class="bg-blue-500 h-1.5 rounded-full transition-all animate-progress-slow" style="width: 73%"></div>
+                            </div>
+                            <div class="text-xs text-blue-700 space-y-0.5">
+                                <div>✓ Text extraction complete (89 pages)</div>
+                                <div>✓ Table detection and parsing finished</div>
+                                <div class="text-blue-600">→ Running financial analysis algorithms...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 border border-blue-200">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">Annual_Comparison_Charts.zip</p>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">Extracting</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">4.2 MB • Extracting archive contents...</p>
+                            </div>
+                        </div>
+                        <div class="ml-11">
+                            <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                                <div class="bg-blue-500 h-1.5 rounded-full transition-all" style="width: 45%"></div>
+                            </div>
+                            <div class="text-xs text-blue-700 space-y-0.5">
+                                <div>✓ Archive validation successful</div>
+                                <div class="text-blue-600">→ Extracting 23 image files...</div>
+                                <div class="text-gray-500">○ Image analysis pending</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Files -->
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 opacity-60">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-300 rounded flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-600">Q3_Financial_Report.pdf</p>
+                                    <span class="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">Queued</span>
+                                </div>
+                                <p class="text-xs text-gray-500">2.8 MB • Position #3 in queue</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 opacity-60">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-300 rounded flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-600">Q4_Projections.xlsx</p>
+                                    <span class="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">Queued</span>
+                                </div>
+                                <p class="text-xs text-gray-500">1.2 MB • Position #4 in queue</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Batch Actions -->
+                <div class="mt-4 pt-3 border-t border-amber-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-medium text-amber-800">Batch Options:</span>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded border-amber-300 text-amber-600 focus:ring-amber-500"/>
+                                <span class="text-xs text-amber-700">Auto-analyze when complete</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="rounded border-amber-300 text-amber-600 focus:ring-amber-500"/>
+                                <span class="text-xs text-amber-700">Cross-reference data</span>
+                            </label>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded text-xs font-medium transition-colors">
+                                Priority Queue
+                            </button>
+                            <button class="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-800 rounded text-xs font-medium transition-colors">
+                                View Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Status Update -->
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    BM
+                </div>
+                <div class="bg-gray-100 rounded-lg p-4 max-w-4xl">
+                    <p class="text-sm mb-3">I'm processing your quarterly reports batch! Here's what I can tell you so far from the completed files:</p>
+                    
+                    <!-- Preliminary Insights -->
+                    <div class="bg-white rounded-lg p-3 border mb-3">
+                        <h5 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
+                                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/>
+                            </svg>
+                            Preliminary Analysis (Q1 Data)
+                        </h5>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div class="text-center p-2 bg-blue-50 rounded">
+                                <div class="text-lg font-bold text-blue-600">$1.8M</div>
+                                <div class="text-xs text-blue-800">Q1 Revenue</div>
+                            </div>
+                            <div class="text-center p-2 bg-green-50 rounded">
+                                <div class="text-lg font-bold text-green-600">23%</div>
+                                <div class="text-xs text-green-800">Growth Rate</div>
+                            </div>
+                            <div class="text-center p-2 bg-purple-50 rounded">
+                                <div class="text-lg font-bold text-purple-600">94.2%</div>
+                                <div class="text-xs text-purple-800">Client Retention</div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600">Full year-over-year comparison will be available once all quarters are processed.</p>
+                    </div>
+
+                    <!-- Processing Status -->
+                    <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-4 h-4 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-blue-800">Currently Processing</span>
+                        </div>
+                        <p class="text-sm text-blue-700">Q2 financial report is 73% complete. I'm extracting financial metrics, identifying trends, and preparing cross-quarter comparisons. The comprehensive annual analysis will be ready once all files are processed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Complete Notification -->
+            <div class="bg-green-50 rounded-lg p-4 border border-green-200 animate-slide-in-stagger">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h5 class="font-medium text-green-800 mb-2">Batch Processing Update</h5>
+                        <p class="text-sm text-green-700 mb-3">Q2_Financial_Report.pdf has been successfully analyzed! Cross-referencing with Q1 data reveals:</p>
+                        <ul class="text-xs text-green-700 space-y-1 mb-3">
+                            <li>• Revenue growth accelerated to 31% in Q2</li>
+                            <li>• Customer acquisition costs decreased by 12%</li>
+                            <li>• New product line showing strong early traction</li>
+                        </ul>
+                        <button class="px-3 py-1 bg-green-200 hover:bg-green-300 text-green-800 rounded text-xs font-medium transition-colors">
+                            View Q1-Q2 Comparison
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="bg-white rounded-b-xl border border-gray-200 border-t-0 p-4">
+            <!-- Batch Status Bar -->
+            <div class="mb-3 p-2 bg-amber-50 rounded-lg border border-amber-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-medium text-amber-800">Batch Status:</span>
+                        <span class="text-xs text-amber-700">5/8 files processed</span>
+                        <span class="text-xs text-amber-700">•</span>
+                        <span class="text-xs text-amber-700">3 minutes remaining</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-2 py-1 bg-amber-200 hover:bg-amber-300 text-amber-800 rounded text-xs transition-colors">
+                            Manage Queue
+                        </button>
+                        <button class="px-2 py-1 bg-green-200 hover:bg-green-300 text-green-800 rounded text-xs transition-colors">
+                            View Progress
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="flex items-end gap-3">
+                <!-- File Upload Button (Add to batch) -->
+                <div class="relative">
+                    <input type="file" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" multiple accept=".pdf,.xlsx,.xls,.csv,.txt,.png,.jpg,.jpeg,.docx,.pptx"/>
+                    <button class="w-10 h-10 bg-amber-100 hover:bg-amber-200 rounded-lg flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Text Input -->
+                <div class="flex-1 relative">
+                    <textarea 
+                        placeholder="Add more files to batch or ask questions about processed data..."
+                        class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                        rows="1"
+                    ></textarea>
+                </div>
+
+                <!-- Send Button -->
+                <button class="w-10 h-10 bg-amber-600 hover:bg-amber-700 rounded-lg flex items-center justify-center transition-colors">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Upload hints -->
+            <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                <span>Batch processing active</span>
+                <span>•</span>
+                <span>Add files with + button</span>
+                <span>•</span>
+                <span>Auto-analysis enabled</span>
+                <span>•</span>
+                <span>Cross-file insights ready</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

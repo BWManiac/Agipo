@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workflow Builder - Workflow Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'zoom-in': 'zoomIn 0.3s ease-out',
+                        'pulse-soft': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        zoomIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">AI Workflow Builder</h1>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                        Generation Complete
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Edit Workflow
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                        Save & Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-6">
+            <!-- Left Sidebar: Workflow Info -->
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Workflow Details</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs text-muted-foreground">Name</label>
+                            <input type="text" value="Email to Task Automation" class="w-full mt-1 px-2 py-1 text-sm border rounded" />
+                        </div>
+                        <div>
+                            <label class="text-xs text-muted-foreground">Description</label>
+                            <textarea class="w-full mt-1 px-2 py-1 text-sm border rounded h-16 resize-none">Process team emails and create Notion tasks with Slack notifications</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Statistics</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Nodes</span>
+                            <span class="font-medium">8</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Connections</span>
+                            <span class="font-medium">7</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Integrations</span>
+                            <span class="font-medium">3</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Est. Runtime</span>
+                            <span class="font-medium">45-60s</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Complexity</span>
+                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs">Medium</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Used Integrations</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 bg-gradient-to-br from-red-400 to-red-600 rounded"></div>
+                            <span class="text-xs">Gmail</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 bg-gradient-to-br from-gray-600 to-gray-800 rounded"></div>
+                            <span class="text-xs">Notion</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 bg-gradient-to-br from-purple-400 to-purple-600 rounded"></div>
+                            <span class="text-xs">Slack</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Canvas: Interactive Workflow -->
+            <div class="col-span-3">
+                <div class="bg-white rounded-lg border relative overflow-hidden" style="height: 600px">
+                    <!-- Canvas Controls -->
+                    <div class="absolute top-4 right-4 z-10 flex gap-2">
+                        <button class="p-2 bg-white rounded-lg border shadow-sm hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                            </svg>
+                        </button>
+                        <button class="p-2 bg-white rounded-lg border shadow-sm hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
+                            </svg>
+                        </button>
+                        <button class="p-2 bg-white rounded-lg border shadow-sm hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Grid Background -->
+                    <div class="absolute inset-0 bg-gray-50" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    
+                    <!-- Workflow Nodes -->
+                    <div class="relative p-8">
+                        <!-- Trigger Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-green-500 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 50px; top: 200px; width: 160px;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">Schedule</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Daily 9:00 AM</div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-green-500 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- Gmail Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-blue-500 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 250px; top: 200px; width: 160px; animation-delay: 0.1s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-gradient-to-br from-red-400 to-red-600 rounded"></div>
+                                </div>
+                                <span class="text-xs font-medium">Gmail</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Get team emails</div>
+                            <div class="absolute -left-2 top-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- Filter Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-yellow-500 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 450px; top: 200px; width: 160px; animation-delay: 0.2s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-yellow-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">Filter</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Team members only</div>
+                            <div class="absolute -left-2 top-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- Loop Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-purple-500 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 450px; top: 300px; width: 160px; animation-delay: 0.3s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">For Each</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Process emails</div>
+                            <div class="absolute -left-2 top-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- AI Extract Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-indigo-500 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 650px; top: 300px; width: 160px; animation-delay: 0.4s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">AI Extract</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Key points & tasks</div>
+                            <div class="absolute -left-2 top-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                            <div class="absolute -bottom-2 left-1/2 w-4 h-4 bg-indigo-500 rounded-full border-2 border-white transform -translate-x-1/2"></div>
+                        </div>
+
+                        <!-- Notion Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-gray-600 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 550px; top: 400px; width: 160px; animation-delay: 0.5s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-gradient-to-br from-gray-600 to-gray-800 rounded"></div>
+                                </div>
+                                <span class="text-xs font-medium">Notion</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Create tasks</div>
+                            <div class="absolute -top-2 left-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-x-1/2"></div>
+                            <div class="absolute -right-2 top-1/2 w-4 h-4 bg-gray-600 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                        </div>
+
+                        <!-- Aggregate Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-orange-500 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 750px; top: 400px; width: 160px; animation-delay: 0.6s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-orange-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">Aggregate</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Collect results</div>
+                            <div class="absolute -left-2 top-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-y-1/2"></div>
+                            <div class="absolute -bottom-2 left-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-white transform -translate-x-1/2"></div>
+                        </div>
+
+                        <!-- Slack Node -->
+                        <div class="absolute bg-white rounded-lg border-2 border-purple-600 p-3 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-zoom-in" style="left: 650px; top: 500px; width: 160px; animation-delay: 0.7s;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded"></div>
+                                </div>
+                                <span class="text-xs font-medium">Slack</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Send summary</div>
+                            <div class="absolute -top-2 left-1/2 w-4 h-4 bg-gray-300 rounded-full border-2 border-white transform -translate-x-1/2"></div>
+                        </div>
+
+                        <!-- Connection Lines -->
+                        <svg class="absolute inset-0 pointer-events-none" style="width: 100%; height: 100%;">
+                            <!-- Schedule to Gmail -->
+                            <path d="M 210 215 L 250 215" stroke="#10b981" stroke-width="2" fill="none"/>
+                            <!-- Gmail to Filter -->
+                            <path d="M 410 215 L 450 215" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                            <!-- Filter to Loop -->
+                            <path d="M 530 230 L 530 285 L 530 315 L 450 315" stroke="#eab308" stroke-width="2" fill="none"/>
+                            <!-- Loop to AI Extract -->
+                            <path d="M 610 315 L 650 315" stroke="#a855f7" stroke-width="2" fill="none"/>
+                            <!-- AI Extract to Notion -->
+                            <path d="M 730 340 L 730 385 L 630 385 L 630 415 L 550 415" stroke="#6366f1" stroke-width="2" fill="none"/>
+                            <!-- Notion to Aggregate -->
+                            <path d="M 710 415 L 750 415" stroke="#4b5563" stroke-width="2" fill="none"/>
+                            <!-- Aggregate to Slack -->
+                            <path d="M 830 440 L 830 485 L 730 485 L 730 515 L 650 515" stroke="#f97316" stroke-width="2" fill="none"/>
+                        </svg>
+
+                        <!-- Node Hover Info (Example for one node) -->
+                        <div class="absolute bg-gray-900 text-white p-2 rounded text-xs shadow-lg opacity-0 hover:opacity-100 transition-opacity pointer-events-none" style="left: 680px; top: 270px;">
+                            <div class="font-medium mb-1">AI: Extract Information</div>
+                            <div class="text-gray-300">Uses GPT-4 to extract:</div>
+                            <ul class="text-gray-400 ml-2 mt-1">
+                                <li>• Key points</li>
+                                <li>• Action items</li>
+                                <li>• Deadlines</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Minimap -->
+                    <div class="absolute bottom-4 left-4 w-32 h-24 bg-white/90 backdrop-blur border rounded shadow-sm p-2">
+                        <div class="text-xs text-muted-foreground mb-1">Minimap</div>
+                        <div class="relative w-full h-16 bg-gray-100 rounded">
+                            <!-- Miniature representation of nodes -->
+                            <div class="absolute w-1 h-1 bg-green-500 rounded-full" style="left: 10%; top: 40%;"></div>
+                            <div class="absolute w-1 h-1 bg-blue-500 rounded-full" style="left: 30%; top: 40%;"></div>
+                            <div class="absolute w-1 h-1 bg-yellow-500 rounded-full" style="left: 50%; top: 40%;"></div>
+                            <div class="absolute w-1 h-1 bg-purple-500 rounded-full" style="left: 50%; top: 60%;"></div>
+                            <div class="absolute w-1 h-1 bg-indigo-500 rounded-full" style="left: 70%; top: 60%;"></div>
+                            <div class="absolute w-1 h-1 bg-gray-600 rounded-full" style="left: 60%; top: 80%;"></div>
+                            <div class="absolute w-1 h-1 bg-orange-500 rounded-full" style="left: 80%; top: 80%;"></div>
+                            <div class="absolute w-1 h-1 bg-purple-600 rounded-full" style="left: 70%; top: 95%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions Bar -->
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Regenerate
+                        </button>
+                        <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Edit in Canvas
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Test Workflow
+                        </button>
+                        <button class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Accept & Deploy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

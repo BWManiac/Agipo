@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Variable Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'highlight': 'highlight 2s ease-in-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        highlight: {
+                            '0%, 100%': { backgroundColor: 'transparent' },
+                            '50%': { backgroundColor: 'rgb(254 249 195)' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Template Variable Editor</h1>
+            <p class="text-gray-600">Create dynamic templates with variables that get replaced at runtime</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Template Editor (Left) -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <!-- Editor Header -->
+                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <h3 class="font-semibold text-gray-900">Message Template</h3>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">5 variables used</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="p-1.5 hover:bg-gray-200 rounded transition-colors">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </button>
+                            <button class="p-1.5 hover:bg-gray-200 rounded transition-colors">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Editor Content -->
+                    <div class="p-6">
+                        <div class="relative">
+                            <div class="absolute inset-0 p-4 pointer-events-none">
+                                <!-- Syntax Highlighting Overlay -->
+                                <div class="font-mono text-sm leading-relaxed whitespace-pre-wrap">Good <span class="bg-yellow-100 text-yellow-800 px-1 rounded">{timeOfDay}</span>! It's <span class="bg-yellow-100 text-yellow-800 px-1 rounded">{date}</span> at <span class="bg-yellow-100 text-yellow-800 px-1 rounded">{time}</span>.
+
+I'm starting your <span class="bg-yellow-100 text-yellow-800 px-1 rounded">{jobName}</span> job.
+
+<span class="bg-blue-100 text-blue-800 px-1 rounded">{{#if eventData}}</span>
+New event received:
+- Type: <span class="bg-yellow-100 text-yellow-800 px-1 rounded">{eventData.type}</span>
+- Source: <span class="bg-yellow-100 text-yellow-800 px-1 rounded">{eventData.source}</span>
+- Details: <span class="bg-yellow-100 text-yellow-800 px-1 rounded">{eventData.description}</span>
+<span class="bg-blue-100 text-blue-800 px-1 rounded">{{/if}}</span>
+
+Let me process this request for you.</div>
+                            </div>
+                            <textarea 
+                                class="w-full h-64 p-4 font-mono text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-transparent relative z-10"
+                                style="color: transparent; caret-color: black;"
+                            >Good {timeOfDay}! It's {date} at {time}.
+
+I'm starting your {jobName} job.
+
+{{#if eventData}}
+New event received:
+- Type: {eventData.type}
+- Source: {eventData.source}
+- Details: {eventData.description}
+{{/if}}
+
+Let me process this request for you.</textarea>
+                        </div>
+
+                        <!-- Editor Toolbar -->
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors">
+                                    Undo
+                                </button>
+                                <button class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors">
+                                    Redo
+                                </button>
+                                <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                                <button class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors">
+                                    Format
+                                </button>
+                                <button class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors">
+                                    Validate
+                                </button>
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                Line 1, Col 1 • 245 characters
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div class="border-t border-gray-200">
+                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                            <h4 class="font-medium text-gray-900">Live Preview</h4>
+                        </div>
+                        <div class="p-6">
+                            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                <p class="text-sm text-blue-900 whitespace-pre-wrap animate-highlight">Good morning! It's Tuesday, December 12, 2024 at 09:00 AM.
+
+I'm starting your Daily Job Search job.
+
+Let me process this request for you.</p>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-500">
+                                Preview shows template with sample values. Actual values will be injected at runtime.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variables Panel (Right) -->
+            <div class="space-y-6">
+                <!-- System Variables -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden animate-slide-in">
+                    <div class="px-4 py-3 bg-blue-50 border-b border-blue-200">
+                        <h3 class="font-medium text-blue-900">System Variables</h3>
+                        <p class="text-xs text-blue-700 mt-1">Always available in all templates</p>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{date}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Current date (YYYY-MM-DD)</p>
+                        </button>
+                        
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{time}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Current time (HH:MM AM/PM)</p>
+                        </button>
+                        
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{dayOfWeek}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Day name (Monday, Tuesday...)</p>
+                        </button>
+                        
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{timeOfDay}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">morning/afternoon/evening</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Job Variables -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden animate-slide-in" style="animation-delay: 0.1s">
+                    <div class="px-4 py-3 bg-green-50 border-b border-green-200">
+                        <h3 class="font-medium text-green-900">Job Variables</h3>
+                        <p class="text-xs text-green-700 mt-1">Context from the scheduled job</p>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{jobName}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Name of the running job</p>
+                        </button>
+                        
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{jobId}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Unique job identifier</p>
+                        </button>
+                        
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{schedule}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Cron schedule expression</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event Variables -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden animate-slide-in" style="animation-delay: 0.2s">
+                    <div class="px-4 py-3 bg-purple-50 border-b border-purple-200">
+                        <h3 class="font-medium text-purple-900">Event Variables</h3>
+                        <p class="text-xs text-purple-700 mt-1">Available when triggered by events</p>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm font-mono text-gray-900">{eventData}</code>
+                                <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Full event payload object</p>
+                        </button>
+                        
+                        <div class="pl-3 border-l-2 border-purple-200 space-y-2">
+                            <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm font-mono text-gray-900">{eventData.type}</code>
+                                    <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full text-left p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm font-mono text-gray-900">{eventData.source}</code>
+                                    <svg class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Variables -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden animate-slide-in" style="animation-delay: 0.3s">
+                    <div class="px-4 py-3 bg-orange-50 border-b border-orange-200">
+                        <h3 class="font-medium text-orange-900">Custom Variables</h3>
+                        <p class="text-xs text-orange-700 mt-1">Define your own variables</p>
+                    </div>
+                    <div class="p-4">
+                        <div class="space-y-2 mb-3">
+                            <div class="flex items-center gap-2">
+                                <code class="text-sm font-mono text-gray-900">{userCriteria}</code>
+                                <button class="p-1 hover:bg-gray-100 rounded">
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <input type="text" value="Remote TypeScript roles" class="w-full px-2 py-1 text-xs border border-gray-200 rounded">
+                        </div>
+                        
+                        <button class="w-full px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-800 rounded-lg text-sm font-medium transition-colors">
+                            + Add Custom Variable
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Functions -->
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">Template Functions</h4>
+                    <div class="space-y-2 text-xs">
+                        <div>
+                            <code class="bg-white px-1 rounded">{{#if condition}}</code>
+                            <span class="text-gray-600 ml-1">Conditional blocks</span>
+                        </div>
+                        <div>
+                            <code class="bg-white px-1 rounded">{{#each array}}</code>
+                            <span class="text-gray-600 ml-1">Loop through arrays</span>
+                        </div>
+                        <div>
+                            <code class="bg-white px-1 rounded">{{uppercase text}}</code>
+                            <span class="text-gray-600 ml-1">Text transformation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validation Status -->
+        <div class="mt-6 p-4 bg-green-50 rounded-xl border border-green-200">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-green-900">Template Valid</p>
+                    <p class="text-sm text-green-700">All variables are properly formatted and will be replaced at runtime</p>
+                </div>
+                <button class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                    Save Template
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { createAgent } from "../services/agent-creator";
 
 export const runtime = "nodejs";
@@ -26,7 +26,7 @@ const CreateAgentBodySchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

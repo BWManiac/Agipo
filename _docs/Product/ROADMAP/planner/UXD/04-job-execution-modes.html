@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Execution Modes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'slide-left': 'slideLeft 0.5s ease-out',
+                        'slide-right': 'slideRight 0.5s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        slideLeft: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideRight: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Choose Execution Mode</h1>
+            <p class="text-gray-600">Select how your scheduled job or event trigger should execute</p>
+        </div>
+
+        <!-- Comparison Grid -->
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <!-- Chat Template Mode -->
+            <div class="animate-slide-right">
+                <div class="bg-white rounded-xl border-2 border-blue-200 overflow-hidden hover:shadow-lg transition-shadow">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold">Chat Template</h2>
+                                <p class="text-blue-100 text-sm">Interactive conversation mode</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">Best for complex tasks</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">Human oversight</span>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <!-- How it Works -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">How It Works</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-blue-600">1</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Job/Trigger Activates</p>
+                                        <p class="text-xs text-gray-600">Scheduled time arrives or event occurs</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-blue-600">2</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Conversation Starts</p>
+                                        <p class="text-xs text-gray-600">New chat thread created with template message</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-blue-600">3</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Agent Responds</p>
+                                        <p class="text-xs text-gray-600">AI processes request and provides response</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-blue-600">4</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Interactive Follow-up</p>
+                                        <p class="text-xs text-gray-600">Continue conversation for refinement</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best For -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Best For</h3>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Tasks requiring human review or approval</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Complex analysis needing discussion</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Creative tasks with multiple iterations</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Notifications you want to see and act on</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Example Template -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Example Template</h3>
+                            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                <pre class="text-xs text-blue-900 whitespace-pre-wrap">Good morning! It's {dayOfWeek} at {time}.
+
+I've found 3 new job opportunities that match your criteria:
+- Senior Frontend Developer at TechCorp
+- React Developer at StartupXYZ  
+- Full Stack Engineer at BigCo
+
+Would you like me to analyze these positions and draft applications?</pre>
+                            </div>
+                        </div>
+
+                        <!-- Variables Available -->
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-3">Template Variables</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">{date}</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">{time}</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">{dayOfWeek}</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">{userName}</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">{eventData.*}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-6 py-4 bg-blue-50 border-t border-blue-200">
+                        <button class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                            Select Chat Template Mode
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Execution Mode -->
+            <div class="animate-slide-left">
+                <div class="bg-white rounded-xl border-2 border-purple-200 overflow-hidden hover:shadow-lg transition-shadow">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 text-white">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 112 2v6a2 2 0 11-2 2v-2M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M8 6a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V8a2 2 0 00-2-2"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold">Execute Workflow</h2>
+                                <p class="text-purple-100 text-sm">Fully automated execution</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">Hands-free automation</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">Predictable results</span>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <!-- How it Works -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">How It Works</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-purple-600">1</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Job/Trigger Activates</p>
+                                        <p class="text-xs text-gray-600">Scheduled time arrives or event occurs</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-purple-600">2</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Workflow Executes</p>
+                                        <p class="text-xs text-gray-600">Pre-defined workflow runs automatically</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-purple-600">3</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Actions Complete</p>
+                                        <p class="text-xs text-gray-600">All workflow steps execute in sequence</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold text-purple-600">4</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Results Logged</p>
+                                        <p class="text-xs text-gray-600">Execution results saved for review</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Best For -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Best For</h3>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Repetitive, well-defined tasks</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Data processing and transformations</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Background operations without UI</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Integration and sync operations</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Example Workflow -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Example Workflow</h3>
+                            <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center">
+                                            <span class="text-xs text-white font-bold">1</span>
+                                        </div>
+                                        <span class="text-xs text-purple-900">Search job boards for new positions</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center">
+                                            <span class="text-xs text-white font-bold">2</span>
+                                        </div>
+                                        <span class="text-xs text-purple-900">Filter by criteria (location, salary, etc)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center">
+                                            <span class="text-xs text-white font-bold">3</span>
+                                        </div>
+                                        <span class="text-xs text-purple-900">Save matches to database</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 bg-purple-600 rounded flex items-center justify-center">
+                                            <span class="text-xs text-white font-bold">4</span>
+                                        </div>
+                                        <span class="text-xs text-purple-900">Send summary email notification</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input Mapping -->
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-3">Workflow Inputs</h3>
+                            <div class="bg-gray-50 rounded-lg p-3 border">
+                                <div class="text-xs text-gray-600 space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono bg-white px-1 rounded">executionTime</span>
+                                        <span>→ Current timestamp</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono bg-white px-1 rounded">eventData</span>
+                                        <span>→ Full event payload</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono bg-white px-1 rounded">agentConfig</span>
+                                        <span>→ Agent settings</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-6 py-4 bg-purple-50 border-t border-purple-200">
+                        <button class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors">
+                            Select Workflow Execution Mode
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Comparison</h3>
+                
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-2 text-sm font-medium text-gray-900">Feature</th>
+                            <th class="text-center py-2 text-sm font-medium text-blue-600">Chat Template</th>
+                            <th class="text-center py-2 text-sm font-medium text-purple-600">Execute Workflow</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 text-gray-700">User Interaction</td>
+                            <td class="text-center py-3">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Required</span>
+                            </td>
+                            <td class="text-center py-3">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">Not Required</span>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 text-gray-700">Execution Speed</td>
+                            <td class="text-center py-3">Variable</td>
+                            <td class="text-center py-3">Fast</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 text-gray-700">Flexibility</td>
+                            <td class="text-center py-3">High</td>
+                            <td class="text-center py-3">Fixed</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 text-gray-700">Monitoring</td>
+                            <td class="text-center py-3">Via Chat UI</td>
+                            <td class="text-center py-3">Logs & Metrics</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 text-gray-700">Error Handling</td>
+                            <td class="text-center py-3">Interactive Recovery</td>
+                            <td class="text-center py-3">Automated Retry</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 text-gray-700">Best Use Case</td>
+                            <td class="text-center py-3">Complex, Creative</td>
+                            <td class="text-center py-3">Simple, Repetitive</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-medium text-blue-900 mb-2">Not Sure Which to Choose?</h4>
+                    <p class="text-sm text-blue-800 mb-3">Here's a simple rule of thumb:</p>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Choose <strong>Chat Template</strong> if you want to be notified and have a conversation about the task</li>
+                        <li>• Choose <strong>Execute Workflow</strong> if you want the task done automatically without your involvement</li>
+                        <li>• You can always change the execution mode later if your needs change</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -4,14 +4,13 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
-  // Temporarily disable auth for Phase 0 spike testing
-  "/api/browser-automation/spike(.*)",
-  "/api/dox/spike(.*)",
-  // Docs API - temporarily public for development
-  "/api/docs(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  if (process.env.BYPASS_AUTH === "true") {
+    return;
+  }
+
   if (!isPublicRoute(req)) {
     await auth.protect();
   }

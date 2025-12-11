@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Configuration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Manager Configuration</h1>
+            <p class="text-sm text-muted-foreground">Configure delegation strategy and coordination preferences</p>
+        </div>
+
+        <!-- Configuration Panel -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Panel Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-b">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold relative">
+                        JM
+                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <svg class="w-2.5 h-2.5 text-yellow-900" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-purple-900">Job Application Manager</h2>
+                        <p class="text-sm text-purple-700">Manager-specific configuration</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Sections -->
+            <div class="p-6 space-y-6">
+                <!-- Delegation Instructions -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Delegation Instructions
+                        <span class="text-xs text-gray-500 font-normal ml-2">How should this manager decide which agent to use?</span>
+                    </label>
+                    <textarea 
+                        rows="6"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Describe the delegation strategy..."
+                    >You are a manager coordinating job application workflows. When a user asks about jobs:
+
+1. Use Job Scraper for finding and extracting job listings
+2. Use Resume Tailor when customization for specific positions is needed  
+3. Use Application Filler for submitting applications
+4. Use Email Outreach for follow-ups if requested
+5. Coordinate multiple agents for end-to-end application processes
+
+Always prioritize quality over speed. Ensure each agent completes their task before proceeding to dependent tasks.</textarea>
+                    <div class="flex justify-between mt-2">
+                        <span class="text-xs text-gray-500">Markdown supported</span>
+                        <span class="text-xs text-gray-500">487 / 2000 characters</span>
+                    </div>
+                </div>
+
+                <!-- Routing Strategy -->
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Routing Strategy</h3>
+                    <div class="space-y-3">
+                        <!-- Decision Criteria -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium">Decision Criteria</p>
+                                <p class="text-xs text-gray-500">How to select agents for tasks</p>
+                            </div>
+                            <select class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option selected>Best Match (AI-driven)</option>
+                                <option>Priority Order</option>
+                                <option>Round Robin</option>
+                                <option>Load Balanced</option>
+                            </select>
+                        </div>
+
+                        <!-- Parallel Execution -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium">Parallel Execution</p>
+                                <p class="text-xs text-gray-500">Allow multiple agents to work simultaneously</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Max Delegation Depth -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium">Max Delegation Depth</p>
+                                <p class="text-xs text-gray-500">Maximum levels of sub-delegation</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="w-8 h-8 rounded border border-gray-300 hover:bg-gray-100">−</button>
+                                <span class="w-12 text-center font-medium">2</span>
+                                <button class="w-8 h-8 rounded border border-gray-300 hover:bg-gray-100">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Coordination -->
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Team Coordination</h3>
+                    <div class="space-y-3">
+                        <!-- Communication Style -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">Communication Style</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button class="px-3 py-2 text-sm bg-purple-100 text-purple-700 border border-purple-300 rounded-lg">
+                                    Detailed
+                                </button>
+                                <button class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    Summary
+                                </button>
+                                <button class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    Minimal
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">How much detail to share about delegations</p>
+                        </div>
+
+                        <!-- Result Aggregation -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">Result Aggregation</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="px-3 py-2 text-sm bg-purple-100 text-purple-700 border border-purple-300 rounded-lg">
+                                    Manager Summarizes
+                                </button>
+                                <button class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    Pass Through Raw
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fallback Behavior -->
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Fallback Behavior</h3>
+                    <div class="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                        <p class="text-sm font-medium text-amber-900 mb-2">When no suitable agent is found:</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2">
+                                <input type="radio" name="fallback" checked class="text-purple-600">
+                                <span class="text-sm">Ask user for clarification</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="radio" name="fallback" class="text-purple-600">
+                                <span class="text-sm">Make best guess and proceed</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="radio" name="fallback" class="text-purple-600">
+                                <span class="text-sm">Refuse task with explanation</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="radio" name="fallback" class="text-purple-600">
+                                <span class="text-sm">Use manager's own capabilities</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Handling -->
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Error Handling</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                <span class="text-sm">Agent Failure</span>
+                            </div>
+                            <select class="px-3 py-1 text-sm border border-gray-200 rounded-lg">
+                                <option>Retry with same agent (max 2x)</option>
+                                <option>Try alternative agent</option>
+                                <option>Report and continue</option>
+                                <option>Halt workflow</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                                </svg>
+                                <span class="text-sm">Timeout</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input 
+                                    type="number" 
+                                    value="300" 
+                                    class="w-20 px-2 py-1 text-sm border border-gray-200 rounded-lg"
+                                />
+                                <span class="text-sm text-gray-500">seconds</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings -->
+                <details class="group">
+                    <summary class="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">Advanced Settings</summary>
+                    <div class="mt-4 space-y-3">
+                        <!-- Memory Sharing -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium">Share Context Between Agents</p>
+                                <p class="text-xs text-gray-500">Allow agents to access shared memory</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Logging Level -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="text-sm font-medium">Logging Level</span>
+                            <select class="px-3 py-1 text-sm border border-gray-200 rounded-lg">
+                                <option>Error Only</option>
+                                <option>Warning</option>
+                                <option selected>Info</option>
+                                <option>Debug</option>
+                                <option>Verbose</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+                <p class="text-xs text-gray-500">Changes auto-save after 2 seconds</p>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Reset to Defaults
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
+                        Save Configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

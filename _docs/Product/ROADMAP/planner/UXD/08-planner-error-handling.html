@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner Error Handling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'shake': 'shake 0.5s ease-in-out',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'pulse-error': 'pulseError 2s infinite',
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseError: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 242 242)' },
+                            '50%': { backgroundColor: 'rgb(254 226 226)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Error Handling & Recovery</h1>
+            <p class="text-gray-600">Manage failed jobs and triggers with smart recovery options</p>
+        </div>
+
+        <!-- Error Summary -->
+        <div class="bg-red-50 rounded-xl border border-red-200 p-6 mb-8 animate-pulse-error">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-lg font-semibold text-red-900 mb-2">5 Jobs Require Attention</h2>
+                    <p class="text-red-700 mb-4">Several scheduled jobs and triggers have encountered errors in the last 24 hours</p>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-3 border border-red-300">
+                            <div class="text-2xl font-bold text-red-600">3</div>
+                            <div class="text-sm text-red-700">Connection Errors</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-red-300">
+                            <div class="text-2xl font-bold text-red-600">1</div>
+                            <div class="text-sm text-red-700">Timeout</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-red-300">
+                            <div class="text-2xl font-bold text-red-600">1</div>
+                            <div class="text-sm text-red-700">Invalid Config</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                    Retry All Failed
+                </button>
+            </div>
+        </div>
+
+        <!-- Failed Jobs List -->
+        <div class="space-y-4">
+            <!-- Connection Error -->
+            <div class="bg-white rounded-xl border border-red-200 overflow-hidden animate-shake">
+                <div class="px-6 py-4 bg-red-50 border-b border-red-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-red-900">Gmail Connection Failed</h3>
+                                <p class="text-sm text-red-700">Event Trigger: New Email Alert</p>
+                            </div>
+                        </div>
+                        <span class="text-xs text-red-600">Failed 15 minutes ago</span>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <!-- Error Details -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Error Details</h4>
+                        <div class="space-y-2 text-sm">
+                            <div>
+                                <span class="font-medium text-gray-700">Error Code:</span>
+                                <code class="ml-2 bg-red-100 text-red-700 px-2 py-0.5 rounded">AUTH_EXPIRED</code>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Message:</span>
+                                <span class="ml-2 text-gray-600">OAuth token has expired and needs refresh</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Last Successful Run:</span>
+                                <span class="ml-2 text-gray-600">Yesterday at 3:45 PM</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Retry Attempts:</span>
+                                <span class="ml-2 text-gray-600">2 of 3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Log -->
+                    <details class="mb-4">
+                        <summary class="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
+                            View Full Error Log →
+                        </summary>
+                        <div class="mt-2 bg-gray-900 rounded-lg p-3 text-xs text-green-400 font-mono">
+                            <pre>[2024-12-11 09:15:23] ERROR: Gmail API authentication failed
+[2024-12-11 09:15:23] Details: {
+  "error": "invalid_grant",
+  "error_description": "Token has been expired or revoked",
+  "composio_trigger_id": "trg_abc123",
+  "agent_id": "agent_xyz789"
+}
+[2024-12-11 09:15:24] Attempting retry 1 of 3...
+[2024-12-11 09:16:24] ERROR: Retry failed with same error
+[2024-12-11 09:17:24] Attempting retry 2 of 3...
+[2024-12-11 09:18:24] ERROR: Maximum retries reached</pre>
+                        </div>
+                    </details>
+
+                    <!-- Recovery Options -->
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-4">
+                        <h4 class="font-medium text-blue-900 mb-3">Recommended Recovery Actions</h4>
+                        <div class="space-y-2">
+                            <button class="w-full text-left p-3 bg-white hover:bg-blue-100 rounded-lg border border-blue-300 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Refresh OAuth Connection</p>
+                                            <p class="text-xs text-gray-600">Re-authenticate with Gmail to restore access</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-blue-600">→</span>
+                                </div>
+                            </button>
+
+                            <button class="w-full text-left p-3 bg-white hover:bg-blue-100 rounded-lg border border-blue-300 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Retry with Exponential Backoff</p>
+                                            <p class="text-xs text-gray-600">Retry in 5 minutes, then 15, then 45</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-blue-600">→</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                            Fix Connection
+                        </button>
+                        <button class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors">
+                            Retry Now
+                        </button>
+                        <button class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors">
+                            Disable Trigger
+                        </button>
+                        <button class="px-4 py-2 text-red-600 hover:text-red-700 font-medium transition-colors">
+                            Ignore Error
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeout Error -->
+            <div class="bg-white rounded-xl border border-yellow-200 overflow-hidden animate-fade-in">
+                <div class="px-6 py-4 bg-yellow-50 border-b border-yellow-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-yellow-900">Workflow Execution Timeout</h3>
+                                <p class="text-sm text-yellow-700">Weekly Performance Review</p>
+                            </div>
+                        </div>
+                        <span class="text-xs text-yellow-600">Failed 2 hours ago</span>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <!-- Timeout Details -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="font-medium text-gray-700">Execution Time:</span>
+                                <span class="ml-2 text-gray-600">15 minutes (timeout: 10 min)</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Last Step:</span>
+                                <span class="ml-2 text-gray-600">Data aggregation (step 3/5)</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Data Processed:</span>
+                                <span class="ml-2 text-gray-600">75,234 records</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Memory Used:</span>
+                                <span class="ml-2 text-gray-600">892 MB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggested Fixes -->
+                    <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200 mb-4">
+                        <h4 class="font-medium text-yellow-900 mb-2">Suggested Optimizations</h4>
+                        <ul class="space-y-1 text-sm text-yellow-800">
+                            <li>• Increase timeout limit to 20 minutes</li>
+                            <li>• Process data in smaller batches (10k records at a time)</li>
+                            <li>• Add checkpointing to resume from last successful step</li>
+                            <li>• Consider running during off-peak hours</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors">
+                            Increase Timeout & Retry
+                        </button>
+                        <button class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors">
+                            Resume from Checkpoint
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Error -->
+            <div class="bg-white rounded-xl border border-purple-200 overflow-hidden animate-fade-in">
+                <div class="px-6 py-4 bg-purple-50 border-b border-purple-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-.835-2.126-.835-2.898 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-purple-900">Invalid Template Configuration</h3>
+                                <p class="text-sm text-purple-700">Daily Job Search</p>
+                            </div>
+                        </div>
+                        <span class="text-xs text-purple-600">Failed 5 hours ago</span>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <!-- Configuration Issue -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Template Validation Errors</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="p-2 bg-red-50 rounded border border-red-200">
+                                <code class="text-red-700">Line 5: Undefined variable {userProfile.skills}</code>
+                            </div>
+                            <div class="p-2 bg-red-50 rounded border border-red-200">
+                                <code class="text-red-700">Line 12: Invalid conditional syntax {{#if eventData..type}}</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template Editor Preview -->
+                    <div class="bg-gray-900 rounded-lg p-3 mb-4 text-xs font-mono">
+                        <div class="text-gray-400">1  | Good {timeOfDay}!</div>
+                        <div class="text-gray-400">2  | </div>
+                        <div class="text-gray-400">3  | Searching for jobs matching:</div>
+                        <div class="text-gray-400">4  | - Location: {userProfile.location}</div>
+                        <div class="text-red-400 bg-red-900/20">5  | - Skills: {userProfile.skills} <span class="text-red-500">← undefined</span></div>
+                        <div class="text-gray-400">6  | </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors">
+                            Edit Template
+                        </button>
+                        <button class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors">
+                            Use Default Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Error Settings -->
+        <div class="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Error Handling Settings</h3>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Retry Policy</label>
+                    <select class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option>Exponential Backoff (Default)</option>
+                        <option>Linear Retry</option>
+                        <option>Immediate Retry</option>
+                        <option>No Automatic Retry</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Maximum Retries</label>
+                    <input type="number" value="3" min="0" max="10" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Error Notifications</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-600">Email on critical errors</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-600">In-app notifications</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-600">Slack alerts</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Auto-Recovery</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-600">Auto-refresh expired tokens</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-600">Fallback to cached data</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-600">Circuit breaker pattern</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                    Save Error Settings
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

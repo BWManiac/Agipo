@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workflow Builder - AI Suggestions Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                        'pulse-border': 'pulseBorder 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        slideInRight: {
+                            '0%': { transform: 'translateX(100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        pulseBorder: {
+                            '0%, 100%': { borderColor: 'rgb(59 130 246)' },
+                            '50%': { borderColor: 'rgb(147 51 234)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">AI Workflow Builder</h1>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                        4 Suggestions Available
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        Dismiss All
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                        Apply All Suggestions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Main Workflow Canvas -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-lg border p-6 relative" style="height: 600px">
+                    <!-- Canvas Background -->
+                    <div class="absolute inset-0 bg-gray-50 rounded-lg" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    
+                    <!-- Workflow with Highlighted Issues -->
+                    <div class="relative">
+                        <!-- Normal Nodes -->
+                        <div class="absolute bg-white rounded-lg border-2 border-green-500 p-3 shadow-lg" style="left: 50px; top: 100px; width: 140px;">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-5 h-5 bg-green-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">Schedule</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Daily 9 AM</div>
+                        </div>
+
+                        <!-- Node with Warning (Suggestion 1) -->
+                        <div class="absolute bg-white rounded-lg border-2 border-yellow-500 p-3 shadow-lg animate-pulse-border" style="left: 230px; top: 100px; width: 140px;">
+                            <div class="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">1</span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-5 h-5 bg-red-100 rounded flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-gradient-to-br from-red-400 to-red-600 rounded"></div>
+                                </div>
+                                <span class="text-xs font-medium">Gmail</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Get emails</div>
+                        </div>
+
+                        <!-- Node with Error (Suggestion 2) -->
+                        <div class="absolute bg-white rounded-lg border-2 border-red-500 p-3 shadow-lg" style="left: 410px; top: 100px; width: 140px;">
+                            <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">2</span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-5 h-5 bg-purple-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">Loop</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">No error handling</div>
+                        </div>
+
+                        <!-- Node with Performance Issue (Suggestion 3) -->
+                        <div class="absolute bg-white rounded-lg border-2 border-orange-500 p-3 shadow-lg animate-pulse-border" style="left: 320px; top: 220px; width: 140px;">
+                            <div class="absolute -top-2 -right-2 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">3</span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-5 h-5 bg-indigo-100 rounded flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-medium">AI Extract</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Inefficient</div>
+                        </div>
+
+                        <!-- Node with Security Issue (Suggestion 4) -->
+                        <div class="absolute bg-white rounded-lg border-2 border-purple-500 p-3 shadow-lg" style="left: 320px; top: 340px; width: 140px;">
+                            <div class="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">4</span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-5 h-5 bg-purple-100 rounded flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded"></div>
+                                </div>
+                                <span class="text-xs font-medium">Slack</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">Send summary</div>
+                        </div>
+
+                        <!-- Connection Lines -->
+                        <svg class="absolute inset-0 pointer-events-none">
+                            <path d="M 190 115 L 230 115" stroke="#10b981" stroke-width="2" fill="none"/>
+                            <path d="M 370 115 L 410 115" stroke="#eab308" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 480 130 L 480 205 L 390 205 L 390 235 L 320 235" stroke="#ef4444" stroke-width="2" fill="none"/>
+                            <path d="M 390 260 L 390 340" stroke="#f97316" stroke-width="2" fill="none" stroke-dasharray="3,3"/>
+                        </svg>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur rounded-lg p-3 border">
+                        <div class="text-xs font-medium mb-2">Issue Types</div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <span class="text-xs text-muted-foreground">Warning</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <span class="text-xs text-muted-foreground">Error</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
+                                <span class="text-xs text-muted-foreground">Performance</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                <span class="text-xs text-muted-foreground">Security</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: AI Suggestions -->
+            <div class="space-y-4 animate-slide-in-right">
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-medium">AI Suggestions</h3>
+                        <button class="text-xs text-muted-foreground hover:text-foreground">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="text-xs text-muted-foreground mb-4">
+                        I've analyzed your workflow and found opportunities for improvement
+                    </div>
+                </div>
+
+                <!-- Suggestion 1 -->
+                <div class="bg-yellow-50 rounded-lg border border-yellow-200 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                            <span class="text-white text-xs font-bold">1</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-yellow-900 mb-1">Add Rate Limiting</h4>
+                            <p class="text-xs text-yellow-700 mb-2">
+                                Gmail API has rate limits. Add a delay between requests to avoid hitting limits when processing many emails.
+                            </p>
+                            <div class="bg-white/80 rounded p-2 mb-2">
+                                <code class="text-xs text-yellow-800">Add: Delay node (2s) after Gmail</code>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700 transition-colors">
+                                    Apply Fix
+                                </button>
+                                <button class="px-3 py-1 border border-yellow-300 text-xs rounded hover:bg-yellow-100 transition-colors">
+                                    Learn More
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggestion 2 -->
+                <div class="bg-red-50 rounded-lg border border-red-200 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                            <span class="text-white text-xs font-bold">2</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-red-900 mb-1">Missing Error Handling</h4>
+                            <p class="text-xs text-red-700 mb-2">
+                                Your loop doesn't handle failures. If one email fails, the entire workflow stops.
+                            </p>
+                            <div class="bg-white/80 rounded p-2 mb-2">
+                                <code class="text-xs text-red-800">Wrap loop body in Try/Catch</code>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors">
+                                    Apply Fix
+                                </button>
+                                <button class="px-3 py-1 border border-red-300 text-xs rounded hover:bg-red-100 transition-colors">
+                                    Ignore
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggestion 3 -->
+                <div class="bg-orange-50 rounded-lg border border-orange-200 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                            <span class="text-white text-xs font-bold">3</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-orange-900 mb-1">Optimize AI Calls</h4>
+                            <p class="text-xs text-orange-700 mb-2">
+                                Processing emails one-by-one is slow. Batch multiple emails for AI extraction.
+                            </p>
+                            <div class="bg-white/80 rounded p-2 mb-2">
+                                <div class="text-xs text-orange-800">
+                                    <div>• Batch size: 5 emails</div>
+                                    <div>• Est. speedup: 3-4x</div>
+                                    <div>• Cost savings: ~60%</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 bg-orange-600 text-white text-xs rounded hover:bg-orange-700 transition-colors">
+                                    Optimize
+                                </button>
+                                <button class="px-3 py-1 border border-orange-300 text-xs rounded hover:bg-orange-100 transition-colors">
+                                    Skip
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggestion 4 -->
+                <div class="bg-purple-50 rounded-lg border border-purple-200 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                            <span class="text-white text-xs font-bold">4</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-purple-900 mb-1">Secure Sensitive Data</h4>
+                            <p class="text-xs text-purple-700 mb-2">
+                                Email content might contain sensitive information. Add data masking before sending to Slack.
+                            </p>
+                            <div class="bg-white/80 rounded p-2 mb-2">
+                                <div class="text-xs text-purple-800">
+                                    <div>• Mask email addresses</div>
+                                    <div>• Redact phone numbers</div>
+                                    <div>• Hide personal info</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition-colors">
+                                    Add Security
+                                </button>
+                                <button class="px-3 py-1 border border-purple-300 text-xs rounded hover:bg-purple-100 transition-colors">
+                                    Review
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alternative Approach -->
+                <div class="bg-blue-50 rounded-lg border border-blue-200 p-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-900 mb-1">Alternative Approach</h4>
+                            <p class="text-xs text-blue-700 mb-2">
+                                Consider using Gmail's built-in filters to pre-process emails before your workflow runs. This could reduce API calls by 70%.
+                            </p>
+                            <button class="text-xs text-blue-600 hover:text-blue-800 underline">
+                                Show me how →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

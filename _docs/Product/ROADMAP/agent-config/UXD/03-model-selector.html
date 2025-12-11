@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Selector - Expanded View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Model Selector</h1>
+            <p class="text-sm text-muted-foreground">Model selection dropdown with detailed capabilities and cost information.</p>
+        </div>
+
+        <!-- Collapsed State -->
+        <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-sm font-medium text-gray-700 mb-4">Collapsed State (Default)</h3>
+            <div>
+                <label class="text-xs font-medium text-gray-500 mb-1 block">AI Model</label>
+                <div class="relative">
+                    <button class="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg text-left focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                                <span class="text-[10px] font-bold text-white">4o</span>
+                            </div>
+                            <span class="font-medium">GPT-4o</span>
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Recommended</span>
+                        </div>
+                    </button>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Fast, capable model with vision support • $2.50 / 1M input tokens</p>
+            </div>
+        </div>
+
+        <!-- Expanded State -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-4">Expanded State (Dropdown Open)</h3>
+                <div>
+                    <label class="text-xs font-medium text-gray-500 mb-1 block">AI Model</label>
+                    <div class="relative">
+                        <!-- Selected Value -->
+                        <button class="w-full h-10 px-3 pr-10 text-sm border-2 border-blue-500 rounded-lg text-left bg-white flex items-center justify-between shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                                    <span class="text-[10px] font-bold text-white">4o</span>
+                                </div>
+                                <span class="font-medium">GPT-4o</span>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Recommended</span>
+                            </div>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-10 overflow-hidden">
+                            <!-- OpenAI Models -->
+                            <div class="px-3 py-2 bg-gray-50 border-b">
+                                <p class="text-xs font-medium text-gray-500">OpenAI Models</p>
+                            </div>
+                            
+                            <!-- GPT-4o (Selected) -->
+                            <button class="w-full px-3 py-3 hover:bg-blue-50 transition-colors border-l-2 border-blue-500 bg-blue-50">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-8 h-8 rounded bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-white">4o</span>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-medium text-sm">GPT-4o</span>
+                                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Recommended</span>
+                                                <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-0.5">Latest multimodal model with 128K context</p>
+                                            <div class="flex items-center gap-4 mt-1">
+                                                <span class="text-xs text-gray-400">💰 $2.50/1M in • $10/1M out</span>
+                                                <span class="text-xs text-gray-400">⚡ Fast</span>
+                                                <span class="text-xs text-gray-400">👁️ Vision</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <!-- GPT-4o-mini -->
+                            <button class="w-full px-3 py-3 hover:bg-gray-50 transition-colors text-left">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shrink-0">
+                                        <span class="text-xs font-bold text-white">4m</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-sm">GPT-4o-mini</span>
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">Cost-effective</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-0.5">Affordable small model with great performance</p>
+                                        <div class="flex items-center gap-4 mt-1">
+                                            <span class="text-xs text-gray-400">💰 $0.15/1M in • $0.60/1M out</span>
+                                            <span class="text-xs text-gray-400">⚡⚡ Very Fast</span>
+                                            <span class="text-xs text-gray-400">👁️ Vision</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <!-- Anthropic Models -->
+                            <div class="px-3 py-2 bg-gray-50 border-b border-t mt-2">
+                                <p class="text-xs font-medium text-gray-500">Anthropic Models</p>
+                            </div>
+                            
+                            <!-- Claude 3.5 Sonnet -->
+                            <button class="w-full px-3 py-3 hover:bg-gray-50 transition-colors text-left">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shrink-0">
+                                        <span class="text-xs font-bold text-white">CS</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-sm">Claude 3.5 Sonnet</span>
+                                            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full">Advanced</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-0.5">Most capable Claude model with 200K context</p>
+                                        <div class="flex items-center gap-4 mt-1">
+                                            <span class="text-xs text-gray-400">💰 $3/1M in • $15/1M out</span>
+                                            <span class="text-xs text-gray-400">⚡ Fast</span>
+                                            <span class="text-xs text-gray-400">👁️ Vision</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <!-- Claude 3.5 Haiku -->
+                            <button class="w-full px-3 py-3 hover:bg-gray-50 transition-colors text-left">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center shrink-0">
+                                        <span class="text-xs font-bold text-white">CH</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-sm">Claude 3.5 Haiku</span>
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">Fast & Affordable</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-0.5">Fastest Claude model for simple tasks</p>
+                                        <div class="flex items-center gap-4 mt-1">
+                                            <span class="text-xs text-gray-400">💰 $0.25/1M in • $1.25/1M out</span>
+                                            <span class="text-xs text-gray-400">⚡⚡⚡ Ultra Fast</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <!-- Google Models -->
+                            <div class="px-3 py-2 bg-gray-50 border-b border-t mt-2">
+                                <p class="text-xs font-medium text-gray-500">Google Models</p>
+                            </div>
+                            
+                            <!-- Gemini 1.5 Pro -->
+                            <button class="w-full px-3 py-3 hover:bg-gray-50 transition-colors text-left">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shrink-0">
+                                        <span class="text-xs font-bold text-white">GP</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-sm">Gemini 1.5 Pro</span>
+                                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded-full">Long Context</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-0.5">1M token context window for large documents</p>
+                                        <div class="flex items-center gap-4 mt-1">
+                                            <span class="text-xs text-gray-400">💰 $3.50/1M in • $10.50/1M out</span>
+                                            <span class="text-xs text-gray-400">⚡ Fast</span>
+                                            <span class="text-xs text-gray-400">👁️ Vision</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <!-- Gemini 1.5 Flash -->
+                            <button class="w-full px-3 py-3 hover:bg-gray-50 transition-colors text-left border-b">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded bg-gradient-to-br from-blue-400 to-green-500 flex items-center justify-center shrink-0">
+                                        <span class="text-xs font-bold text-white">GF</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-sm">Gemini 1.5 Flash</span>
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">Speed Optimized</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-0.5">Fast multimodal model for high-volume tasks</p>
+                                        <div class="flex items-center gap-4 mt-1">
+                                            <span class="text-xs text-gray-400">💰 $0.075/1M in • $0.30/1M out</span>
+                                            <span class="text-xs text-gray-400">⚡⚡⚡ Ultra Fast</span>
+                                            <span class="text-xs text-gray-400">👁️ Vision</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Comparison Table -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Model Comparison</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-2 px-3">Model</th>
+                            <th class="text-left py-2 px-3">Context</th>
+                            <th class="text-left py-2 px-3">Input Cost</th>
+                            <th class="text-left py-2 px-3">Output Cost</th>
+                            <th class="text-left py-2 px-3">Speed</th>
+                            <th class="text-left py-2 px-3">Features</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-2 px-3 font-medium">GPT-4o</td>
+                            <td class="py-2 px-3">128K</td>
+                            <td class="py-2 px-3">$2.50/1M</td>
+                            <td class="py-2 px-3">$10/1M</td>
+                            <td class="py-2 px-3">⚡ Fast</td>
+                            <td class="py-2 px-3">Vision, Functions, JSON</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-2 px-3 font-medium">GPT-4o-mini</td>
+                            <td class="py-2 px-3">128K</td>
+                            <td class="py-2 px-3">$0.15/1M</td>
+                            <td class="py-2 px-3">$0.60/1M</td>
+                            <td class="py-2 px-3">⚡⚡ Very Fast</td>
+                            <td class="py-2 px-3">Vision, Functions, JSON</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-2 px-3 font-medium">Claude 3.5 Sonnet</td>
+                            <td class="py-2 px-3">200K</td>
+                            <td class="py-2 px-3">$3/1M</td>
+                            <td class="py-2 px-3">$15/1M</td>
+                            <td class="py-2 px-3">⚡ Fast</td>
+                            <td class="py-2 px-3">Vision, Functions</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-2 px-3 font-medium">Gemini 1.5 Pro</td>
+                            <td class="py-2 px-3">1M</td>
+                            <td class="py-2 px-3">$3.50/1M</td>
+                            <td class="py-2 px-3">$10.50/1M</td>
+                            <td class="py-2 px-3">⚡ Fast</td>
+                            <td class="py-2 px-3">Vision, Functions, Audio</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Type Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-5xl mx-auto p-6 h-screen flex flex-col">
+        <!-- Chat Header -->
+        <div class="bg-white rounded-t-xl border border-gray-200 border-b-0 p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold">
+                FS
+            </div>
+            <div>
+                <h3 class="font-semibold">File Specialist</h3>
+                <div class="flex items-center gap-2 text-sm text-green-600">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span>Ready • Supports 15+ file types</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="bg-white border-x border-gray-200 flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- User Question -->
+            <div class="flex justify-end">
+                <div class="bg-blue-600 text-white rounded-lg p-3 max-w-xs">
+                    <p class="text-sm">What types of files can you work with? I have various documents and data files I'd like to analyze.</p>
+                </div>
+            </div>
+
+            <!-- Agent Response with File Type Support -->
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    FS
+                </div>
+                <div class="bg-gray-100 rounded-lg p-4 max-w-4xl">
+                    <p class="text-sm mb-4">I can work with a wide variety of file types! Here's a complete breakdown of what I support and what I can do with each type:</p>
+                    
+                    <!-- Document Types -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 2h12v10H4V5z"/>
+                                </svg>
+                            </div>
+                            Document Types
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-red-600">PDF</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">PDF Documents</p>
+                                        <p class="text-xs text-gray-500">Text extraction, table analysis</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Text extraction</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Table parsing</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Summarization</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-blue-600">DOC</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Word Documents</p>
+                                        <p class="text-xs text-gray-500">Content editing, review</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Content review</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Style analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Editing suggestions</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-orange-600">PPT</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">PowerPoint</p>
+                                        <p class="text-xs text-gray-500">Slide analysis, content extraction</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Slide content</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Structure analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Text extraction</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-gray-600">TXT</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Text Files</p>
+                                        <p class="text-xs text-gray-500">Code review, content analysis</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Text analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Code review</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Pattern detection</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Types -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                            </div>
+                            Data & Spreadsheet Types
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-green-600">XLS</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Excel Files</p>
+                                        <p class="text-xs text-gray-500">Data analysis, visualization</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Data analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Chart generation</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Statistical analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-yellow-50 text-yellow-700 rounded">✓ Pivot tables</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-teal-600">CSV</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">CSV Files</p>
+                                        <p class="text-xs text-gray-500">Data processing, cleaning</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Data cleaning</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Transformation</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Aggregation</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-indigo-600">JSON</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">JSON Data</p>
+                                        <p class="text-xs text-gray-500">Structure analysis, transformation</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Structure analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Data extraction</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Validation</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-pink-600">XML</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">XML Files</p>
+                                        <p class="text-xs text-gray-500">Schema analysis, parsing</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Schema validation</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Data extraction</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Transformation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Media Types -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            Image & Media Types
+                        </h4>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Images</p>
+                                        <p class="text-xs text-gray-500">PNG, JPG, GIF</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Visual analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ OCR text extraction</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Object detection</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Video</p>
+                                        <p class="text-xs text-gray-500">MP4, AVI, MOV</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Frame analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Thumbnails</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Metadata</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Audio</p>
+                                        <p class="text-xs text-gray-500">MP3, WAV, M4A</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Transcription</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Summarization</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code & Technical -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                                <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            Code & Technical Files
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-yellow-600">JS</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">JavaScript/TypeScript</p>
+                                        <p class="text-xs text-gray-500">Code review, optimization</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Code review</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Bug detection</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Optimization</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-3 border">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-xs font-bold text-blue-600">PY</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Python</p>
+                                        <p class="text-xs text-gray-500">Script analysis, debugging</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Code analysis</span>
+                                    <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Performance tips</span>
+                                    <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Documentation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Archive Types -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-orange-100 rounded flex items-center justify-center">
+                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                            </div>
+                            Archive & Compressed Files
+                        </h4>
+                        <div class="bg-white rounded-lg p-3 border">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-xs font-bold text-orange-600">ZIP</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">Archive Files</p>
+                                    <p class="text-xs text-gray-500">ZIP, RAR, 7Z - Extract and analyze contents</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="text-xs px-2 py-0.5 bg-green-50 text-green-700 rounded">✓ Content extraction</span>
+                                <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded">✓ Structure analysis</span>
+                                <span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 rounded">✓ Batch processing</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Size & Limits -->
+                    <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-amber-100 rounded flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-amber-800 mb-2">Important Limits & Considerations</h5>
+                                <ul class="text-sm text-amber-700 space-y-1">
+                                    <li>• <strong>Maximum file size:</strong> 10MB per file</li>
+                                    <li>• <strong>Batch uploads:</strong> Up to 10 files at once</li>
+                                    <li>• <strong>Processing time:</strong> Large files may take 1-2 minutes</li>
+                                    <li>• <strong>Security:</strong> All files are scanned for viruses before processing</li>
+                                    <li>• <strong>Privacy:</strong> Files are automatically deleted after 24 hours</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Follow-up message -->
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    FS
+                </div>
+                <div class="bg-gray-100 rounded-lg p-3 max-w-lg">
+                    <p class="text-sm">Feel free to upload any combination of these file types! I can analyze them individually or look for patterns and connections across multiple files. What would you like to start with?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="bg-white rounded-b-xl border border-gray-200 border-t-0 p-4">
+            <!-- Input Area -->
+            <div class="flex items-end gap-3">
+                <!-- File Upload Button -->
+                <div class="relative">
+                    <input type="file" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" multiple accept=".pdf,.xlsx,.xls,.csv,.txt,.png,.jpg,.jpeg,.docx,.pptx,.zip,.rar,.7z,.json,.xml,.js,.ts,.py,.mp3,.mp4,.mov,.avi"/>
+                    <button class="w-10 h-10 bg-cyan-100 hover:bg-cyan-200 rounded-lg flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Text Input -->
+                <div class="flex-1 relative">
+                    <textarea 
+                        placeholder="Upload any supported file type or ask questions..."
+                        class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
+                        rows="1"
+                    ></textarea>
+                </div>
+
+                <!-- Send Button -->
+                <button class="w-10 h-10 bg-cyan-600 hover:bg-cyan-700 rounded-lg flex items-center justify-center transition-colors">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- File Support Summary -->
+            <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                <span>15+ file types supported</span>
+                <span>•</span>
+                <span>10MB max per file</span>
+                <span>•</span>
+                <span>Batch upload up to 10 files</span>
+                <span>•</span>
+                <span>Auto-analysis & insights</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

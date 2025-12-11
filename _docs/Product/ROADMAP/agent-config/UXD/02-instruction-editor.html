@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instruction Editor - Focused View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .markdown-preview h1 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0; }
+        .markdown-preview h2 { font-size: 1.25rem; font-weight: 600; margin: 0.75rem 0; }
+        .markdown-preview ul { list-style-type: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
+        .markdown-preview li { margin: 0.25rem 0; }
+        .markdown-preview strong { font-weight: 600; }
+        .markdown-preview code { background: rgb(243 244 246); padding: 0.125rem 0.25rem; border-radius: 0.25rem; font-size: 0.875rem; }
+    </style>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-5xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">Instruction Editor - Focused View</h1>
+            <p class="text-sm text-muted-foreground">Rich text editor for agent instructions with markdown support and token counting.</p>
+        </div>
+
+        <!-- Main Editor Card -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Editor Header -->
+            <div class="border-b px-6 py-4 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold">Agent Instructions</h2>
+                        <p class="text-xs text-muted-foreground mt-1">Define how your agent should behave and respond</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <!-- Format Toggle -->
+                        <div class="flex items-center gap-1 bg-white border rounded-lg p-1">
+                            <button class="px-3 py-1.5 text-xs font-medium bg-blue-500 text-white rounded">
+                                Edit
+                            </button>
+                            <button class="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded transition-colors">
+                                Preview
+                            </button>
+                        </div>
+                        <!-- Token Counter -->
+                        <div class="text-sm">
+                            <span class="text-gray-500">Tokens:</span>
+                            <span class="font-medium ml-1">1,250</span>
+                            <span class="text-gray-400">/ 4,000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formatting Toolbar -->
+            <div class="border-b px-6 py-2 bg-white flex items-center gap-1">
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Bold">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6zM6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"></path>
+                    </svg>
+                </button>
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Italic">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4h4M14 4L8 20M6 20h4"></path>
+                    </svg>
+                </button>
+                <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Heading 1">
+                    <span class="text-sm font-bold">H1</span>
+                </button>
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Heading 2">
+                    <span class="text-sm font-bold">H2</span>
+                </button>
+                <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Bullet List">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Numbered List">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                    </svg>
+                </button>
+                <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Code">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                </button>
+                <button class="p-2 hover:bg-gray-100 rounded transition-colors" title="Link">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Editor Content -->
+            <div class="p-6">
+                <div class="min-h-[400px] relative">
+                    <textarea class="w-full h-full min-h-[400px] p-4 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono resize-none" placeholder="Enter your agent instructions using Markdown formatting...">You are a **Product Manager assistant** specializing in user research, feature prioritization, and roadmap planning.
+
+# Core Responsibilities
+
+## User Research
+- Conduct and analyze user interviews
+- Synthesize feedback into actionable insights
+- Identify patterns and pain points
+- Create user personas and journey maps
+
+## Feature Prioritization
+- Apply frameworks like RICE, Value vs. Effort, Kano Model
+- Consider technical feasibility and business impact
+- Balance user needs with business objectives
+- Maintain a clear prioritization rationale
+
+## Roadmap Planning
+- Create quarterly and annual roadmaps
+- Communicate plans to stakeholders
+- Track progress against objectives
+- Adjust plans based on new information
+
+# Communication Style
+
+- Be **data-driven** in your recommendations
+- Provide **structured responses** with clear sections
+- Use **bullet points** for clarity
+- Include **actionable next steps**
+- Support arguments with **evidence and examples**
+
+# Constraints
+
+- Never make final decisions without user approval
+- Always provide multiple options when suggesting features
+- Respect data privacy and confidentiality
+- Cite sources and methodologies used
+- Avoid making promises about timeline or resources
+
+# Response Format
+
+When answering questions, structure your response as:
+
+1. **Summary**: Brief overview of the recommendation
+2. **Analysis**: Detailed breakdown of the situation
+3. **Options**: Multiple approaches with pros/cons
+4. **Recommendation**: Your suggested path forward
+5. **Next Steps**: Concrete actions to take</textarea>
+                </div>
+
+                <!-- Helper Text -->
+                <div class="mt-4 flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
+                    <svg class="w-4 h-4 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="text-xs text-blue-700">
+                        <p class="font-medium mb-1">Markdown formatting supported</p>
+                        <p>Use **bold**, *italic*, # headings, - bullet points, and `code` formatting. The formatted text will be shown in Preview mode.</p>
+                    </div>
+                </div>
+
+                <!-- Token Usage Bar -->
+                <div class="mt-4">
+                    <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+                        <span>Token usage</span>
+                        <span>31.25% of maximum</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full" style="width: 31.25%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-gray-400 mt-1">
+                        <span>Safe range</span>
+                        <span class="text-orange-500">Warning at 3,000 tokens</span>
+                        <span class="text-red-500">Max at 4,000 tokens</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Mode Example -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="border-b px-6 py-4 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Preview Mode</h2>
+                    <div class="flex items-center gap-1 bg-white border rounded-lg p-1">
+                        <button class="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded transition-colors">
+                            Edit
+                        </button>
+                        <button class="px-3 py-1.5 text-xs font-medium bg-blue-500 text-white rounded">
+                            Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 markdown-preview">
+                <p>You are a <strong>Product Manager assistant</strong> specializing in user research, feature prioritization, and roadmap planning.</p>
+                
+                <h1>Core Responsibilities</h1>
+                
+                <h2>User Research</h2>
+                <ul>
+                    <li>Conduct and analyze user interviews</li>
+                    <li>Synthesize feedback into actionable insights</li>
+                    <li>Identify patterns and pain points</li>
+                    <li>Create user personas and journey maps</li>
+                </ul>
+                
+                <h2>Feature Prioritization</h2>
+                <ul>
+                    <li>Apply frameworks like RICE, Value vs. Effort, Kano Model</li>
+                    <li>Consider technical feasibility and business impact</li>
+                    <li>Balance user needs with business objectives</li>
+                    <li>Maintain a clear prioritization rationale</li>
+                </ul>
+                
+                <p class="mt-4 text-sm text-gray-500">... preview continues ...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

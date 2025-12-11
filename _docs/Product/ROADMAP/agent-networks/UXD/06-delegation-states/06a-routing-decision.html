@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delegation State - Routing Decision</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'thinking': 'thinking 2s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                    },
+                    keyframes: {
+                        thinking: {
+                            '0%, 100%': { opacity: '0.3' },
+                            '50%': { opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-xl font-bold mb-2">Delegation State: Routing Decision</h1>
+            <p class="text-sm text-gray-600">Manager analyzing request and determining which agent(s) to delegate to</p>
+        </div>
+
+        <!-- State Card: Routing Decision -->
+        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-4 shadow-sm">
+            <div class="flex items-start gap-3">
+                <!-- Manager Avatar with Animation -->
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                        JM
+                    </div>
+                    <!-- Thinking Indicator -->
+                    <div class="absolute -top-1 -right-1">
+                        <div class="relative">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full animate-ping absolute"></div>
+                            <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <!-- Status Header -->
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="font-medium text-purple-900">Manager Analyzing Request</span>
+                        <div class="flex items-center gap-1 text-xs text-purple-600">
+                            <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Routing...</span>
+                        </div>
+                    </div>
+
+                    <!-- User Request -->
+                    <div class="bg-white/70 rounded-lg p-3 mb-3">
+                        <p class="text-xs text-gray-500 mb-1">Analyzing request:</p>
+                        <p class="text-sm text-gray-800">"Research competitors for our new SaaS product and create a comparison matrix"</p>
+                    </div>
+
+                    <!-- Thinking Process (Animated) -->
+                    <div class="space-y-2 mb-3">
+                        <div class="flex items-center gap-2 animate-fade-in" style="animation-delay: 0.2s">
+                            <div class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-purple-700">Identifying task requirements...</span>
+                        </div>
+                        <div class="flex items-center gap-2 animate-fade-in" style="animation-delay: 0.6s">
+                            <div class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-purple-700">Evaluating team capabilities...</span>
+                        </div>
+                        <div class="flex items-center gap-2 animate-fade-in" style="animation-delay: 1s">
+                            <div class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-purple-700">Determining optimal delegation strategy...</span>
+                        </div>
+                    </div>
+
+                    <!-- Agent Candidates (Thinking) -->
+                    <div class="bg-white rounded-lg p-3">
+                        <p class="text-xs font-medium text-gray-700 mb-2">Considering agents:</p>
+                        
+                        <div class="space-y-2">
+                            <!-- Web Scraper - High Match -->
+                            <div class="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded animate-fade-in" style="animation-delay: 1.2s">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-purple-500 text-white text-xs flex items-center justify-center font-bold">WS</div>
+                                    <span class="text-xs font-medium">Web Scraper</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex gap-0.5">
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-gray-200 rounded-full"></div>
+                                    </div>
+                                    <span class="text-xs text-green-600 font-medium">85% match</span>
+                                </div>
+                            </div>
+
+                            <!-- Data Analyst - High Match -->
+                            <div class="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded animate-fade-in" style="animation-delay: 1.4s">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-cyan-500 text-white text-xs flex items-center justify-center font-bold">DA</div>
+                                    <span class="text-xs font-medium">Data Analyst</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex gap-0.5">
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-green-400 rounded-full"></div>
+                                    </div>
+                                    <span class="text-xs text-green-600 font-medium">92% match</span>
+                                </div>
+                            </div>
+
+                            <!-- Report Generator - Medium Match -->
+                            <div class="flex items-center justify-between p-2 bg-amber-50 border border-amber-200 rounded opacity-60 animate-fade-in" style="animation-delay: 1.6s">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-pink-500 text-white text-xs flex items-center justify-center font-bold">RG</div>
+                                    <span class="text-xs font-medium">Report Generator</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex gap-0.5">
+                                        <div class="w-1 h-3 bg-amber-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-amber-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-amber-400 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-gray-200 rounded-full"></div>
+                                        <div class="w-1 h-3 bg-gray-200 rounded-full"></div>
+                                    </div>
+                                    <span class="text-xs text-amber-600 font-medium">60% match</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Decision Preview -->
+                        <div class="mt-3 pt-3 border-t border-gray-200 animate-fade-in" style="animation-delay: 2s">
+                            <div class="flex items-center gap-2 text-xs text-purple-700">
+                                <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="font-medium">Optimal strategy identified: Sequential delegation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Routing Plan Preview -->
+                    <div class="mt-3 p-3 bg-purple-100 rounded-lg animate-fade-in" style="animation-delay: 2.5s">
+                        <p class="text-xs font-medium text-purple-900 mb-2">Routing Plan:</p>
+                        <div class="space-y-1 text-xs text-purple-700">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono">1.</span>
+                                <span class="font-medium">Web Scraper</span>
+                                <span>→ Gather competitor data</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono">2.</span>
+                                <span class="font-medium">Data Analyst</span>
+                                <span>→ Create comparison matrix</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative States -->
+        <div class="mt-8 space-y-4">
+            <h3 class="text-sm font-medium text-gray-700">Alternative Routing Scenarios:</h3>
+            
+            <!-- Parallel Routing -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span class="text-sm font-medium">Parallel Delegation</span>
+                </div>
+                <p class="text-xs text-gray-600 mb-2">When tasks can be executed independently:</p>
+                <div class="flex items-center gap-2 text-xs bg-blue-50 rounded p-2">
+                    <span>Multiple agents selected simultaneously</span>
+                    <span class="text-blue-600">• Faster execution</span>
+                </div>
+            </div>
+
+            <!-- Uncertain Routing -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                    <span class="text-sm font-medium">Uncertain Match</span>
+                </div>
+                <p class="text-xs text-gray-600 mb-2">When no agent has high confidence match:</p>
+                <div class="flex items-center gap-2 text-xs bg-amber-50 rounded p-2">
+                    <span>Manager requests clarification or suggests alternatives</span>
+                </div>
+            </div>
+
+            <!-- Direct Execution -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <span class="text-sm font-medium">Manager Direct Execution</span>
+                </div>
+                <p class="text-xs text-gray-600 mb-2">When manager has direct tools:</p>
+                <div class="flex items-center gap-2 text-xs bg-purple-50 rounded p-2">
+                    <span>Manager handles task without delegation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

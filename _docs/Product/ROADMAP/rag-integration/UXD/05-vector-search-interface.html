@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Search Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'pulse-gentle': 'pulseGentle 2s infinite',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'highlight': 'highlight 1s ease-out',
+                    },
+                    keyframes: {
+                        pulseGentle: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        highlight: {
+                            '0%': { backgroundColor: 'rgb(254 249 195)' },
+                            '100%': { backgroundColor: 'transparent' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Vector Search Testing</h1>
+            <p class="text-gray-600">Test queries and explore retrieval results from your knowledge base</p>
+        </div>
+
+        <!-- Search Interface -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <div class="flex items-start gap-4">
+                <div class="flex-1">
+                    <textarea 
+                        placeholder="Enter your search query or question..."
+                        rows="3"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none">How do I configure OAuth 2.0 authentication for the API? I need to set up client credentials and understand the token refresh flow.</textarea>
+                </div>
+                <div class="space-y-3">
+                    <button class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Search
+                    </button>
+                    <button class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Clear
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Settings -->
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <div class="grid grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Knowledge Base</label>
+                        <select class="w-full px-3 py-1.5 text-sm border border-gray-200 rounded">
+                            <option>Product Documentation</option>
+                            <option>Company Handbook</option>
+                            <option>Customer FAQs</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Search Type</label>
+                        <select class="w-full px-3 py-1.5 text-sm border border-gray-200 rounded">
+                            <option>Hybrid (Semantic + Keyword)</option>
+                            <option>Semantic Only</option>
+                            <option>Keyword Only</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Top K Results</label>
+                        <input type="number" value="5" min="1" max="20" class="w-full px-3 py-1.5 text-sm border border-gray-200 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Min Similarity</label>
+                        <input type="number" value="0.75" min="0" max="1" step="0.05" class="w-full px-3 py-1.5 text-sm border border-gray-200 rounded">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="grid grid-cols-3 gap-6">
+            <!-- Results List -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-xl border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h2 class="font-semibold text-gray-900">Search Results</h2>
+                            <span class="text-sm text-gray-600">5 chunks found • 124ms</span>
+                        </div>
+                    </div>
+
+                    <div class="divide-y divide-gray-200">
+                        <!-- Result 1 -->
+                        <div class="p-6 hover:bg-gray-50 transition-colors animate-fade-in cursor-pointer">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-green-600 font-bold">1</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">OAuth 2.0 Configuration Guide</p>
+                                        <p class="text-xs text-gray-500">API_Documentation_v2.3.pdf • Page 45 • Chunk 124</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                                        0.92 similarity
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-700 leading-relaxed">
+                                <span class="bg-yellow-200 animate-highlight">OAuth 2.0 authentication</span> requires configuring <span class="bg-yellow-200 animate-highlight">client credentials</span> in the developer console. First, register your application to obtain a client ID and client secret. The <span class="bg-yellow-200 animate-highlight">token refresh flow</span> automatically handles expired tokens by using the refresh token to request new access tokens. Configure the redirect URI to match your application's callback endpoint...
+                            </div>
+                            <div class="mt-3 flex items-center gap-4">
+                                <button class="text-xs text-indigo-600 hover:text-indigo-800">View Full Chunk →</button>
+                                <button class="text-xs text-gray-600 hover:text-gray-800">View Source Document →</button>
+                            </div>
+                        </div>
+
+                        <!-- Result 2 -->
+                        <div class="p-6 hover:bg-gray-50 transition-colors animate-fade-in cursor-pointer" style="animation-delay: 0.1s">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-blue-600 font-bold">2</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Authentication Best Practices</p>
+                                        <p class="text-xs text-gray-500">Security_Guidelines.pdf • Page 12 • Chunk 34</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                                        0.87 similarity
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-700 leading-relaxed">
+                                When implementing <span class="bg-yellow-200">OAuth 2.0</span>, always use HTTPS for all endpoints. Store client secrets securely using environment variables or a secrets management service. Implement proper token storage with encryption at rest. The refresh token should be stored separately from the access token and rotated regularly...
+                            </div>
+                            <div class="mt-3 flex items-center gap-4">
+                                <button class="text-xs text-indigo-600 hover:text-indigo-800">View Full Chunk →</button>
+                                <button class="text-xs text-gray-600 hover:text-gray-800">View Source Document →</button>
+                            </div>
+                        </div>
+
+                        <!-- Result 3 -->
+                        <div class="p-6 hover:bg-gray-50 transition-colors animate-fade-in cursor-pointer" style="animation-delay: 0.2s">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-purple-600 font-bold">3</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Token Lifecycle Management</p>
+                                        <p class="text-xs text-gray-500">API_Documentation_v2.3.pdf • Page 47 • Chunk 128</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">
+                                        0.83 similarity
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-700 leading-relaxed">
+                                Access tokens typically expire after 1 hour. The <span class="bg-yellow-200">refresh token</span> can be used to obtain new access tokens without requiring user re-authentication. Implement automatic token refresh by checking the token expiry before each API call. If the token has less than 5 minutes remaining, proactively refresh it...
+                            </div>
+                            <div class="mt-3 flex items-center gap-4">
+                                <button class="text-xs text-indigo-600 hover:text-indigo-800">View Full Chunk →</button>
+                                <button class="text-xs text-gray-600 hover:text-gray-800">View Source Document →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Query Analysis -->
+            <div class="space-y-6">
+                <!-- Query Embedding -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Query Analysis</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-xs font-medium text-gray-600 mb-2">Detected Keywords</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded">OAuth 2.0</span>
+                                <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded">authentication</span>
+                                <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded">client credentials</span>
+                                <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded">token refresh</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-medium text-gray-600 mb-2">Semantic Concepts</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">Authorization</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">Security</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">API Access</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-medium text-gray-600 mb-2">Query Embedding</p>
+                            <div class="bg-gray-50 rounded p-2 font-mono text-xs text-gray-600">
+                                [0.234, -0.156, 0.892, 0.445...]
+                                <br/>Dimension: 1536
+                                <br/>Model: text-embedding-ada-002
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Performance</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Query Time</span>
+                            <span class="text-sm font-medium">124ms</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Embedding Time</span>
+                            <span class="text-sm font-medium">82ms</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Search Time</span>
+                            <span class="text-sm font-medium">38ms</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Reranking Time</span>
+                            <span class="text-sm font-medium">4ms</span>
+                        </div>
+                        <div class="pt-3 border-t">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Chunks Searched</span>
+                                <span class="text-sm font-medium">3,482</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Above Threshold</span>
+                                <span class="text-sm font-medium">5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Options -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-sm font-medium text-gray-700 mb-3">Export Results</p>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                            Export as JSON
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                            Copy to Clipboard
+                        </button>
+                        <button class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                            Save Search Config
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

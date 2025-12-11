@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getAuthUser } from "@/lib/auth";
 import { disconnectAccount } from "../connect/services/auth";
 
 export const runtime = "nodejs";
@@ -10,7 +10,7 @@ export const runtime = "nodejs";
  */
 export async function DELETE(request: Request) {
   try {
-    const { userId } = await auth();
+    const { userId } = await getAuthUser();
 
     if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
