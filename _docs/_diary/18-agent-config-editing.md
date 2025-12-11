@@ -98,26 +98,102 @@ Updated `app/(pages)/workforce/components/agent-modal/components/tabs/ConfigTab.
 - Body: `{ systemPrompt, model, objectives }`
 - Response: `{ success: boolean, updated: string[], errors?: string[] }`
 
+### Phase 3: Polish and Edge Cases ✅
+
+Added polish features to ConfigTab:
+- **Dirty State Tracking**: Compares current values with original agent values
+- **Save Button State**: Disabled when no changes, shows "No Changes" text
+- **Unsaved Changes Warning**: Browser warning when navigating away with unsaved changes
+- **Auto Clear Dirty State**: Resets dirty state on successful save
+- **Enhanced Button States**: Shows "Saving...", "Save Changes", or "No Changes"
+
 ## Testing Strategy
 
 ### Manual Testing Checklist
 - [ ] Save button triggers API call
-- [ ] Loading state displays during save
+- [ ] Loading state displays during save  
 - [ ] Success toast appears
 - [ ] Error handling works
 - [ ] Changes persist after refresh
 - [ ] Validation prevents invalid saves
+- [ ] Dirty state tracking works
+- [ ] Unsaved changes warning appears
+- [ ] Button shows correct states
 
 ### API Testing Commands
 ```bash
-# Will add curl commands for testing each endpoint
+# Test systemPrompt update
+curl -X PATCH http://localhost:3000/api/workforce/1ae3aa46-b7b4-4477-916d-85ca120fe9e2/config \
+  -H "Content-Type: application/json" \
+  -b "$(cat ~/.clerk_session_cookies)" \
+  -d '{"systemPrompt": "You are a highly intelligent AI assistant"}'
+
+# Test model update
+curl -X PATCH http://localhost:3000/api/workforce/1ae3aa46-b7b4-4477-916d-85ca120fe9e2/config \
+  -H "Content-Type: application/json" \
+  -b "$(cat ~/.clerk_session_cookies)" \
+  -d '{"model": "anthropic/claude-3-5-sonnet"}'
+
+# Test validation errors
+curl -X PATCH http://localhost:3000/api/workforce/1ae3aa46-b7b4-4477-916d-85ca120fe9e2/config \
+  -H "Content-Type: application/json" \
+  -b "$(cat ~/.clerk_session_cookies)" \
+  -d '{"systemPrompt": "Short", "model": "invalid-model"}'
+
+# Test multiple fields
+curl -X PATCH http://localhost:3000/api/workforce/1ae3aa46-b7b4-4477-916d-85ca120fe9e2/config \
+  -H "Content-Type: application/json" \
+  -b "$(cat ~/.clerk_session_cookies)" \
+  -d '{
+    "systemPrompt": "You are an expert AI assistant", 
+    "model": "google/gemini-2.5-flash",
+    "objectives": ["Help users", "Be accurate"]
+  }'
 ```
 
 ### Test Scenarios
-1. **Happy Path**: Update all fields successfully
-2. **Validation**: Test invalid model IDs, short prompts
-3. **Partial Updates**: Some fields succeed, others fail
-4. **Edge Cases**: Missing fields, special characters
+
+#### 1. Happy Path Testing
+- Open agent modal → Config tab
+- Edit systemPrompt: "You are a helpful AI assistant specialized in customer support"
+- Change model from current to different model
+- Add objectives: "Provide excellent support\nResolve issues quickly"
+- Click "Save Changes"
+- **Expected**: Success toast, changes persist, dirty state clears
+
+#### 2. Validation Testing
+- Clear systemPrompt to empty or very short text
+- **Expected**: Error toast "System prompt must be at least 10 characters"
+- Select invalid model (if possible)
+- **Expected**: Error handling
+
+#### 3. Dirty State Testing  
+- Open Config tab
+- **Expected**: Button shows "No Changes" and is disabled
+- Edit any field
+- **Expected**: Button shows "Save Changes" and is enabled
+- Try to navigate away
+- **Expected**: Browser warning about unsaved changes
+- Save successfully
+- **Expected**: Button returns to "No Changes" state
+
+#### 4. Loading State Testing
+- Edit fields and click "Save Changes"
+- **Expected**: Button shows "Saving..." with spinner and is disabled
+- Wait for completion
+- **Expected**: Button returns to normal state
+
+#### 5. Error Handling Testing
+- Simulate network error (disconnect internet)
+- Try to save
+- **Expected**: Error toast and error message below button
+
+#### 6. Persistence Testing
+- Make changes and save
+- Refresh page
+- **Expected**: Changes are still there
+- Check config file directly
+- **Expected**: File contains updated values
 
 ## Issues Encountered
 

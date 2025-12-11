@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -26,9 +26,33 @@ export function ConfigTab({ agent }: ConfigTabProps) {
   const [model, setModel] = useState(agent.model);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
 
   // Get available models directly (no API call needed)
   const models = getAvailableModels();
+
+  // Track changes to enable dirty state
+  useEffect(() => {
+    const hasChanges = 
+      systemPrompt !== agent.systemPrompt ||
+      model !== agent.model ||
+      objectives !== agent.objectives.join("\n");
+    
+    setIsDirty(hasChanges);
+  }, [systemPrompt, model, objectives, agent]);
+
+  // Warn about unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && !isSaving) {
+        e.preventDefault();
+        e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty, isSaving]);
 
   const handleSave = async () => {
     // Basic validation
@@ -66,6 +90,7 @@ export function ConfigTab({ agent }: ConfigTabProps) {
         toast.error(`Some fields failed: ${data.errors.join(", ")}`);
       } else {
         toast.success("Configuration saved successfully");
+        setIsDirty(false); // Clear dirty state on successful save
       }
 
       // Log what was updated for debugging
@@ -168,16 +193,18 @@ export function ConfigTab({ agent }: ConfigTabProps) {
           <div className="flex justify-end pt-4">
             <Button 
               onClick={handleSave} 
-              disabled={isSaving}
-              className="bg-black text-white hover:bg-gray-800"
+              disabled={isSaving || !isDirty}
+              className="bg-black text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
                 </>
-              ) : (
+              ) : isDirty ? (
                 "Save Changes"
+              ) : (
+                "No Changes"
               )}
             </Button>
           </div>
