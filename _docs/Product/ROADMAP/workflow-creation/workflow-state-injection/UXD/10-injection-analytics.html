@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injection Analytics - Agipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'rgb(79, 70, 229)',
+                        'primary-dark': 'rgb(67, 56, 202)',
+                        secondary: 'rgb(16, 185, 129)',
+                        accent: 'rgb(245, 158, 11)',
+                        background: 'rgb(249, 250, 251)',
+                        surface: 'rgb(255, 255, 255)',
+                        'surface-dark': 'rgb(243, 244, 246)',
+                        text: 'rgb(17, 24, 39)',
+                        'text-secondary': 'rgb(75, 85, 99)',
+                        'text-muted': 'rgb(156, 163, 175)',
+                        border: 'rgb(229, 231, 235)',
+                        error: 'rgb(239, 68, 68)',
+                        warning: 'rgb(245, 158, 11)',
+                        success: 'rgb(34, 197, 94)',
+                        info: 'rgb(59, 130, 246)'
+                    },
+                    animation: {
+                        'analytics-load': 'analytics-load 0.8s ease-out',
+                        'chart-draw': 'chart-draw 2s ease-in-out',
+                        'metric-counter': 'metric-counter 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        'trend-flow': 'trend-flow 3s ease-in-out infinite',
+                        'insight-reveal': 'insight-reveal 0.6s ease-out',
+                        'data-refresh': 'data-refresh 0.4s ease-in-out'
+                    },
+                    keyframes: {
+                        'analytics-load': {
+                            'from': { transform: 'translateY(20px) scale(0.95)', opacity: '0' },
+                            'to': { transform: 'translateY(0) scale(1)', opacity: '1' }
+                        },
+                        'chart-draw': {
+                            '0%': { strokeDasharray: '0 100' },
+                            '100%': { strokeDasharray: '100 0' }
+                        },
+                        'metric-counter': {
+                            '0%': { transform: 'scale(0.8)', opacity: '0' },
+                            '50%': { transform: 'scale(1.1)', opacity: '0.8' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        'trend-flow': {
+                            '0%, 100%': { transform: 'translateX(0) scale(1)' },
+                            '50%': { transform: 'translateX(2px) scale(1.02)' }
+                        },
+                        'insight-reveal': {
+                            'from': { transform: 'translateX(-10px)', opacity: '0' },
+                            'to': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        'data-refresh': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- Header -->
+    <header class="bg-surface border-b border-border px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button class="flex items-center space-x-2 text-text-secondary hover:text-text transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold">Injection Analytics</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 text-sm text-text-secondary">
+                    <span>Last Updated:</span>
+                    <span class="font-medium">2 minutes ago</span>
+                    <button class="text-primary hover:text-primary-dark transition-colors animate-data-refresh">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                </div>
+                <select class="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                    <option>Last 24 Hours</option>
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>Last 3 Months</option>
+                </select>
+                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                    Export Report
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Analytics Sidebar -->
+        <aside class="w-80 bg-surface border-r border-border min-h-[calc(100vh-73px)]">
+            <div class="p-6">
+                <!-- Key Metrics Summary -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Key Metrics</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-primary/5 border border-primary/20 rounded-lg animate-analytics-load">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Total Injections</span>
+                                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                            <p class="text-2xl font-bold text-primary animate-metric-counter">24,847</p>
+                            <p class="text-xs text-success">+12.5% from last period</p>
+                        </div>
+
+                        <div class="p-4 bg-secondary/5 border border-secondary/20 rounded-lg animate-analytics-load" style="animation-delay: 0.1s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Success Rate</span>
+                                <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-2xl font-bold text-secondary animate-metric-counter">98.7%</p>
+                            <p class="text-xs text-success">+0.3% improvement</p>
+                        </div>
+
+                        <div class="p-4 bg-warning/5 border border-warning/20 rounded-lg animate-analytics-load" style="animation-delay: 0.2s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Avg Latency</span>
+                                <svg class="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-2xl font-bold text-warning animate-metric-counter">42ms</p>
+                            <p class="text-xs text-error">+5ms from target</p>
+                        </div>
+
+                        <div class="p-4 bg-error/5 border border-error/20 rounded-lg animate-analytics-load" style="animation-delay: 0.3s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Error Rate</span>
+                                <svg class="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-2xl font-bold text-error animate-metric-counter">1.3%</p>
+                            <p class="text-xs text-error">+0.2% from last period</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Options -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">Filters</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium mb-2">Injection Type</label>
+                            <select class="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <option>All Types</option>
+                                <option>Data Injection</option>
+                                <option>Feature Flags</option>
+                                <option>Environment Variables</option>
+                                <option>Configuration</option>
+                                <option>Secrets</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium mb-2">Environment</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" class="text-primary focus:ring-primary" checked>
+                                    <span class="text-sm">Production</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" class="text-primary focus:ring-primary">
+                                    <span class="text-sm">Staging</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" class="text-primary focus:ring-primary">
+                                    <span class="text-sm">Development</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium mb-2">Workflow</label>
+                            <select class="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <option>All Workflows</option>
+                                <option>Customer Onboarding</option>
+                                <option>Data Processing</option>
+                                <option>User Authentication</option>
+                                <option>Payment Processing</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Injection Sources -->
+                <div>
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">Top Sources</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg animate-insight-reveal">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-primary rounded-full animate-trend-flow"></div>
+                                <span class="text-sm font-medium">Customer API</span>
+                            </div>
+                            <span class="text-xs text-text-secondary">8,342</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg animate-insight-reveal" style="animation-delay: 0.1s;">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-secondary rounded-full animate-trend-flow"></div>
+                                <span class="text-sm font-medium">Feature Manager</span>
+                            </div>
+                            <span class="text-xs text-text-secondary">6,127</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg animate-insight-reveal" style="animation-delay: 0.2s;">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-accent rounded-full animate-trend-flow"></div>
+                                <span class="text-sm font-medium">Config DB</span>
+                            </div>
+                            <span class="text-xs text-text-secondary">4,891</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg animate-insight-reveal" style="animation-delay: 0.3s;">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-info rounded-full animate-trend-flow"></div>
+                                <span class="text-sm font-medium">Secrets Vault</span>
+                            </div>
+                            <span class="text-xs text-text-secondary">3,487</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Analytics Dashboard -->
+        <main class="flex-1 p-6">
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Injection Volume Chart -->
+                <div class="bg-surface rounded-xl border border-border p-6 animate-analytics-load">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold">Injection Volume Trends</h3>
+                        <select class="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                            <option>Hourly</option>
+                            <option>Daily</option>
+                            <option>Weekly</option>
+                        </select>
+                    </div>
+
+                    <!-- Chart Area -->
+                    <div class="relative h-64">
+                        <svg class="w-full h-full" viewBox="0 0 400 200">
+                            <!-- Grid Lines -->
+                            <defs>
+                                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgb(229, 231, 235)" stroke-width="1" opacity="0.3"/>
+                                </pattern>
+                            </defs>
+                            <rect width="400" height="200" fill="url(#grid)"/>
+                            
+                            <!-- Chart Lines -->
+                            <path d="M 20 150 L 80 120 L 140 100 L 200 110 L 260 85 L 320 90 L 380 70" 
+                                  fill="none" stroke="rgb(79, 70, 229)" stroke-width="3" class="animate-chart-draw"/>
+                            
+                            <!-- Data Points -->
+                            <circle cx="20" cy="150" r="4" fill="rgb(79, 70, 229)" class="animate-metric-counter"/>
+                            <circle cx="80" cy="120" r="4" fill="rgb(79, 70, 229)" class="animate-metric-counter" style="animation-delay: 0.1s;"/>
+                            <circle cx="140" cy="100" r="4" fill="rgb(79, 70, 229)" class="animate-metric-counter" style="animation-delay: 0.2s;"/>
+                            <circle cx="200" cy="110" r="4" fill="rgb(79, 70, 229)" class="animate-metric-counter" style="animation-delay: 0.3s;"/>
+                            <circle cx="260" cy="85" r="4" fill="rgb(79, 70, 229)" class="animate-metric-counter" style="animation-delay: 0.4s;"/>
+                            <circle cx="320" cy="90" r="4" fill="rgb(79, 70, 229)" class="animate-metric-counter" style="animation-delay: 0.5s;"/>
+                            <circle cx="380" cy="70" r="4" fill="rgb(79, 70, 229)" class="animate-metric-counter" style="animation-delay: 0.6s;"/>
+                            
+                            <!-- Labels -->
+                            <text x="20" y="190" text-anchor="middle" fill="rgb(156, 163, 175)" font-size="10">00:00</text>
+                            <text x="80" y="190" text-anchor="middle" fill="rgb(156, 163, 175)" font-size="10">04:00</text>
+                            <text x="140" y="190" text-anchor="middle" fill="rgb(156, 163, 175)" font-size="10">08:00</text>
+                            <text x="200" y="190" text-anchor="middle" fill="rgb(156, 163, 175)" font-size="10">12:00</text>
+                            <text x="260" y="190" text-anchor="middle" fill="rgb(156, 163, 175)" font-size="10">16:00</text>
+                            <text x="320" y="190" text-anchor="middle" fill="rgb(156, 163, 175)" font-size="10">20:00</text>
+                            <text x="380" y="190" text-anchor="middle" fill="rgb(156, 163, 175)" font-size="10">24:00</text>
+                        </svg>
+                    </div>
+
+                    <!-- Chart Legend -->
+                    <div class="flex items-center justify-between mt-4 text-sm text-text-secondary">
+                        <span>Peak: 2,847 injections at 16:00</span>
+                        <span>Avg: 1,935 injections/hour</span>
+                    </div>
+                </div>
+
+                <!-- Success Rate Chart -->
+                <div class="bg-surface rounded-xl border border-border p-6 animate-analytics-load" style="animation-delay: 0.1s;">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold">Success Rate Analysis</h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-success rounded-full"></div>
+                            <span class="text-sm text-text-secondary">Success</span>
+                            <div class="w-3 h-3 bg-error rounded-full ml-4"></div>
+                            <span class="text-sm text-text-secondary">Errors</span>
+                        </div>
+                    </div>
+
+                    <!-- Donut Chart -->
+                    <div class="relative flex items-center justify-center h-64">
+                        <svg class="w-48 h-48" viewBox="0 0 42 42">
+                            <!-- Background Circle -->
+                            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="rgb(229, 231, 235)" stroke-width="3"/>
+                            <!-- Success Arc -->
+                            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="rgb(34, 197, 94)" stroke-width="3" 
+                                    stroke-dasharray="98.7 1.3" stroke-dashoffset="25" class="animate-chart-draw"/>
+                            <!-- Error Arc -->
+                            <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="rgb(239, 68, 68)" stroke-width="3" 
+                                    stroke-dasharray="1.3 98.7" stroke-dashoffset="-73.7" class="animate-chart-draw" style="animation-delay: 0.5s;"/>
+                        </svg>
+                        
+                        <!-- Center Text -->
+                        <div class="absolute text-center">
+                            <p class="text-2xl font-bold text-success animate-metric-counter">98.7%</p>
+                            <p class="text-sm text-text-secondary">Success Rate</p>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown -->
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div class="text-center p-3 bg-success/5 rounded-lg">
+                            <p class="text-lg font-bold text-success">24,523</p>
+                            <p class="text-xs text-text-secondary">Successful</p>
+                        </div>
+                        <div class="text-center p-3 bg-error/5 rounded-lg">
+                            <p class="text-lg font-bold text-error">324</p>
+                            <p class="text-xs text-text-secondary">Failed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-surface rounded-xl border border-border p-6 text-center animate-analytics-load">
+                    <div class="w-12 h-12 mx-auto bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-2xl font-bold animate-metric-counter">42ms</p>
+                    <p class="text-sm text-text-secondary">Avg Latency</p>
+                    <div class="mt-2 text-xs">
+                        <span class="text-error">+5ms</span>
+                        <span class="text-text-muted"> vs target</span>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-xl border border-border p-6 text-center animate-analytics-load" style="animation-delay: 0.1s;">
+                    <div class="w-12 h-12 mx-auto bg-secondary/10 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </div>
+                    <p class="text-2xl font-bold animate-metric-counter">1,935</p>
+                    <p class="text-sm text-text-secondary">Throughput/Hour</p>
+                    <div class="mt-2 text-xs">
+                        <span class="text-success">+12%</span>
+                        <span class="text-text-muted"> vs last week</span>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-xl border border-border p-6 text-center animate-analytics-load" style="animation-delay: 0.2s;">
+                    <div class="w-12 h-12 mx-auto bg-warning/10 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-2xl font-bold animate-metric-counter">2.3s</p>
+                    <p class="text-sm text-text-secondary">P95 Latency</p>
+                    <div class="mt-2 text-xs">
+                        <span class="text-warning">Within SLA</span>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-xl border border-border p-6 text-center animate-analytics-load" style="animation-delay: 0.3s;">
+                    <div class="w-12 h-12 mx-auto bg-info/10 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-2xl font-bold animate-metric-counter">68</p>
+                    <p class="text-sm text-text-secondary">Active Rules</p>
+                    <div class="mt-2 text-xs">
+                        <span class="text-success">3 conflicts resolved</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analytics Tables -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Top Performing Injections -->
+                <div class="bg-surface rounded-xl border border-border p-6 animate-analytics-load">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Top Performing Injections</h3>
+                        <button class="text-primary hover:text-primary-dark transition-colors text-sm">View All</button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="border-b border-border">
+                                <tr>
+                                    <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Rule Name</th>
+                                    <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Executions</th>
+                                    <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Success Rate</th>
+                                    <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Avg Latency</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                <tr class="hover:bg-surface-dark transition-colors animate-insight-reveal">
+                                    <td class="py-3 text-sm font-medium">user_preferences_injection</td>
+                                    <td class="py-3 text-sm">8,342</td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-success/10 text-success rounded-full text-xs">99.2%</span>
+                                    </td>
+                                    <td class="py-3 text-sm">34ms</td>
+                                </tr>
+
+                                <tr class="hover:bg-surface-dark transition-colors animate-insight-reveal" style="animation-delay: 0.1s;">
+                                    <td class="py-3 text-sm font-medium">admin_access_rules</td>
+                                    <td class="py-3 text-sm">6,127</td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-success/10 text-success rounded-full text-xs">100%</span>
+                                    </td>
+                                    <td class="py-3 text-sm">28ms</td>
+                                </tr>
+
+                                <tr class="hover:bg-surface-dark transition-colors animate-insight-reveal" style="animation-delay: 0.2s;">
+                                    <td class="py-3 text-sm font-medium">environment_config</td>
+                                    <td class="py-3 text-sm">4,891</td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-warning/10 text-warning rounded-full text-xs">97.8%</span>
+                                    </td>
+                                    <td class="py-3 text-sm">52ms</td>
+                                </tr>
+
+                                <tr class="hover:bg-surface-dark transition-colors animate-insight-reveal" style="animation-delay: 0.3s;">
+                                    <td class="py-3 text-sm font-medium">api_key_injection</td>
+                                    <td class="py-3 text-sm">3,487</td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-success/10 text-success rounded-full text-xs">98.9%</span>
+                                    </td>
+                                    <td class="py-3 text-sm">41ms</td>
+                                </tr>
+
+                                <tr class="hover:bg-surface-dark transition-colors animate-insight-reveal" style="animation-delay: 0.4s;">
+                                    <td class="py-3 text-sm font-medium">feature_flag_toggle</td>
+                                    <td class="py-3 text-sm">2,156</td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-error/10 text-error rounded-full text-xs">94.2%</span>
+                                    </td>
+                                    <td class="py-3 text-sm">67ms</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Error Analysis -->
+                <div class="bg-surface rounded-xl border border-border p-6 animate-analytics-load" style="animation-delay: 0.1s;">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Error Analysis</h3>
+                        <button class="text-primary hover:text-primary-dark transition-colors text-sm">View Details</button>
+                    </div>
+
+                    <!-- Error Categories -->
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center justify-between p-3 bg-error/5 border border-error/20 rounded-lg animate-insight-reveal">
+                            <div>
+                                <p class="text-sm font-medium">Timeout Errors</p>
+                                <p class="text-xs text-text-secondary">Connection timeouts and slow responses</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-error">127</p>
+                                <p class="text-xs text-text-secondary">39% of errors</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-warning/5 border border-warning/20 rounded-lg animate-insight-reveal" style="animation-delay: 0.1s;">
+                            <div>
+                                <p class="text-sm font-medium">Validation Errors</p>
+                                <p class="text-xs text-text-secondary">Schema and data validation failures</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-warning">89</p>
+                                <p class="text-xs text-text-secondary">27% of errors</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-info/5 border border-info/20 rounded-lg animate-insight-reveal" style="animation-delay: 0.2s;">
+                            <div>
+                                <p class="text-sm font-medium">Rule Conflicts</p>
+                                <p class="text-xs text-text-secondary">Priority and logical conflicts</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-info">63</p>
+                                <p class="text-xs text-text-secondary">19% of errors</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-accent/5 border border-accent/20 rounded-lg animate-insight-reveal" style="animation-delay: 0.3s;">
+                            <div>
+                                <p class="text-sm font-medium">Source Unavailable</p>
+                                <p class="text-xs text-text-secondary">External service failures</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-accent">45</p>
+                                <p class="text-xs text-text-secondary">14% of errors</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Trend -->
+                    <div>
+                        <h4 class="font-medium mb-3">Error Trend (Last 7 Days)</h4>
+                        <div class="relative h-32">
+                            <svg class="w-full h-full" viewBox="0 0 300 100">
+                                <!-- Error trend line -->
+                                <path d="M 20 80 L 60 70 L 100 65 L 140 72 L 180 68 L 220 60 L 260 55" 
+                                      fill="none" stroke="rgb(239, 68, 68)" stroke-width="2" class="animate-chart-draw"/>
+                                
+                                <!-- Data points -->
+                                <circle cx="20" cy="80" r="3" fill="rgb(239, 68, 68)" class="animate-metric-counter"/>
+                                <circle cx="60" cy="70" r="3" fill="rgb(239, 68, 68)" class="animate-metric-counter" style="animation-delay: 0.1s;"/>
+                                <circle cx="100" cy="65" r="3" fill="rgb(239, 68, 68)" class="animate-metric-counter" style="animation-delay: 0.2s;"/>
+                                <circle cx="140" cy="72" r="3" fill="rgb(239, 68, 68)" class="animate-metric-counter" style="animation-delay: 0.3s;"/>
+                                <circle cx="180" cy="68" r="3" fill="rgb(239, 68, 68)" class="animate-metric-counter" style="animation-delay: 0.4s;"/>
+                                <circle cx="220" cy="60" r="3" fill="rgb(239, 68, 68)" class="animate-metric-counter" style="animation-delay: 0.5s;"/>
+                                <circle cx="260" cy="55" r="3" fill="rgb(239, 68, 68)" class="animate-metric-counter" style="animation-delay: 0.6s;"/>
+                            </svg>
+                        </div>
+                        <p class="text-xs text-success text-center mt-2">↓ 23% reduction in errors this week</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights and Recommendations -->
+            <div class="mt-6 bg-surface rounded-xl border border-border p-6 animate-analytics-load">
+                <h3 class="text-lg font-semibold mb-4">AI-Powered Insights & Recommendations</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="p-4 bg-primary/5 border border-primary/20 rounded-lg animate-insight-reveal">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <h4 class="font-medium text-primary">Performance Opportunity</h4>
+                        </div>
+                        <p class="text-sm text-text-secondary">Optimizing the 'user_preferences_injection' rule could reduce latency by 12ms for 8.3K daily executions.</p>
+                    </div>
+
+                    <div class="p-4 bg-warning/5 border border-warning/20 rounded-lg animate-insight-reveal" style="animation-delay: 0.1s;">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <h4 class="font-medium text-warning">Reliability Alert</h4>
+                        </div>
+                        <p class="text-sm text-text-secondary">The 'feature_flag_toggle' rule has a 5.8% error rate. Consider adding retry logic and fallback values.</p>
+                    </div>
+
+                    <div class="p-4 bg-success/5 border border-success/20 rounded-lg animate-insight-reveal" style="animation-delay: 0.2s;">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h4 class="font-medium text-success">Scaling Success</h4>
+                        </div>
+                        <p class="text-sm text-text-secondary">Injection throughput increased 23% with 98.7% reliability. Current capacity can handle 3x traffic growth.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Marketplace - Template Customization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'node-edit': 'nodeEdit 0.3s ease-out',
+                        'customization-slide': 'customizationSlide 0.4s ease-in-out',
+                        'parameter-highlight': 'parameterHighlight 2s ease-in-out infinite',
+                        'workflow-preview': 'workflowPreview 0.5s ease-out',
+                    },
+                    keyframes: {
+                        nodeEdit: {
+                            '0%': { transform: 'scale(1)', borderColor: 'rgb(229 231 235)' },
+                            '50%': { transform: 'scale(1.02)', borderColor: 'rgb(59 130 246)' },
+                            '100%': { transform: 'scale(1)', borderColor: 'rgb(59 130 246)' },
+                        },
+                        customizationSlide: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        parameterHighlight: {
+                            '0%, 100%': { backgroundColor: 'rgb(255 255 255)' },
+                            '50%': { backgroundColor: 'rgb(219 234 254)' },
+                        },
+                        workflowPreview: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-600 hover:text-gray-900 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-semibold">Customize Template</h1>
+                    <span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
+                        Advanced Mode
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm text-muted-foreground">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span>3 nodes modified</span>
+                        </div>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Reset to Default
+                    </button>
+                    <button class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition-colors">
+                        Save Customizations
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-8">
+            <!-- Left Sidebar: Customization Tools -->
+            <div class="space-y-4">
+                <!-- Template Overview -->
+                <div class="bg-white rounded-lg border p-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-sm">Email Processing Automation</div>
+                            <div class="text-xs text-muted-foreground">6 nodes • 2 integrations</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Complexity:</span>
+                            <span class="font-medium text-green-600">Low (2.3/10)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Est. runtime:</span>
+                            <span class="font-medium">3-5 minutes</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Cost per run:</span>
+                            <span class="font-medium">~$0.05</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customization Mode -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Customization Mode</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="mode" value="basic" class="border-gray-300">
+                            <span class="text-sm">Basic Parameters</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="mode" value="advanced" checked class="border-gray-300">
+                            <span class="text-sm">Advanced Editing</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="mode" value="code" class="border-gray-300">
+                            <span class="text-sm">Code Editor</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Available Components -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Add Components</h3>
+                    <div class="space-y-2">
+                        <div class="p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                                <span class="text-xs font-medium">Data Filter</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground mt-1">Filter data based on conditions</div>
+                        </div>
+                        
+                        <div class="p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                <span class="text-xs font-medium">Data Transform</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground mt-1">Transform and reshape data</div>
+                        </div>
+                        
+                        <div class="p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-purple-500 rounded"></div>
+                                <span class="text-xs font-medium">Condition Logic</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground mt-1">Add branching logic</div>
+                        </div>
+                        
+                        <div class="p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-orange-500 rounded"></div>
+                                <span class="text-xs font-medium">HTTP Request</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground mt-1">Call external APIs</div>
+                        </div>
+
+                        <div class="p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-cyan-500 rounded"></div>
+                                <span class="text-xs font-medium">Wait/Delay</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground mt-1">Add timing delays</div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-3 px-3 py-2 text-xs border border-dashed rounded-lg hover:bg-gray-50 transition-colors">
+                        Browse All Components
+                    </button>
+                </div>
+
+                <!-- Node Properties -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Selected Node</h3>
+                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                            <span class="text-sm font-medium text-blue-900">Content Parser</span>
+                        </div>
+                        <div class="text-xs text-blue-700">AI-powered email content analysis</div>
+                    </div>
+                    
+                    <div class="space-y-2 text-xs">
+                        <div>
+                            <label class="block font-medium mb-1">Processing Mode</label>
+                            <select class="w-full px-2 py-1 border rounded text-xs">
+                                <option>Full analysis</option>
+                                <option>Headers only</option>
+                                <option>Custom extraction</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block font-medium mb-1">Batch Size</label>
+                            <input type="number" value="5" class="w-full px-2 py-1 border rounded text-xs" min="1" max="20">
+                        </div>
+                        
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded border-gray-300">
+                                <span>Extract entities</span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded border-gray-300">
+                                <span>Sentiment analysis</span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="rounded border-gray-300">
+                                <span>Language detection</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template History -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Change History</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-2 bg-blue-50 rounded">
+                            <div class="font-medium text-blue-900">Modified Content Parser</div>
+                            <div class="text-blue-700">Changed batch size to 5</div>
+                            <div class="text-blue-600">2 minutes ago</div>
+                        </div>
+                        
+                        <div class="p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <div class="font-medium">Added Priority Filter</div>
+                            <div class="text-muted-foreground">High priority emails only</div>
+                            <div class="text-muted-foreground">5 minutes ago</div>
+                        </div>
+                        
+                        <div class="p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <div class="font-medium">Updated Task Creator</div>
+                            <div class="text-muted-foreground">Changed template format</div>
+                            <div class="text-muted-foreground">8 minutes ago</div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-2 text-xs text-blue-600 hover:underline">View full history</button>
+                </div>
+            </div>
+
+            <!-- Main Canvas: Visual Editor -->
+            <div class="col-span-3 space-y-6">
+                <!-- Canvas Header -->
+                <div class="bg-white rounded-lg border p-6 animate-workflow-preview">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold">Visual Workflow Editor</h3>
+                        <div class="flex items-center gap-2">
+                            <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">
+                                Zoom to Fit
+                            </button>
+                            <div class="flex items-center gap-1 px-2 py-1 text-xs border rounded">
+                                <button class="hover:bg-gray-50 px-1 rounded">−</button>
+                                <span>100%</span>
+                                <button class="hover:bg-gray-50 px-1 rounded">+</button>
+                            </div>
+                            <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">
+                                Grid
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Mini Navigator -->
+                    <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span>Click nodes to edit properties</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span>Drag from connection points to link nodes</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                            <span>Right-click for context menu</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workflow Canvas -->
+                <div class="bg-white rounded-lg border animate-workflow-preview">
+                    <div class="p-6">
+                        <div class="relative bg-gray-50 rounded-lg p-8" style="height: 500px;">
+                            <!-- Grid Background -->
+                            <div class="absolute inset-0 bg-gray-50 rounded-lg" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                            
+                            <!-- Workflow Nodes -->
+                            <div class="relative">
+                                <!-- Start Node -->
+                                <div class="absolute bg-white rounded-lg border-2 border-green-500 p-4 shadow-lg" style="left: 50px; top: 40px; width: 140px;">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold">Trigger</div>
+                                            <div class="text-xs text-green-600">Manual/Scheduled</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Connection point -->
+                                    <div class="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow"></div>
+                                </div>
+
+                                <!-- Email Fetcher Node -->
+                                <div class="absolute bg-white rounded-lg border-2 border-red-500 p-4 shadow-lg" style="left: 250px; top: 40px; width: 140px;">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold">Email Fetcher</div>
+                                            <div class="text-xs text-red-600">Gmail API</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Connection points -->
+                                    <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow"></div>
+                                    <div class="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow"></div>
+                                </div>
+
+                                <!-- Priority Filter Node (New) -->
+                                <div class="absolute bg-white rounded-lg border-2 border-yellow-500 p-4 shadow-lg" style="left: 450px; top: 40px; width: 140px;">
+                                    <div class="absolute -top-2 -right-2 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                        NEW
+                                    </div>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold">Priority Filter</div>
+                                            <div class="text-xs text-yellow-600">High priority only</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Connection points -->
+                                    <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white shadow"></div>
+                                    <div class="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white shadow"></div>
+                                </div>
+
+                                <!-- Content Parser Node (Selected/Modified) -->
+                                <div class="absolute bg-white rounded-lg border-2 border-blue-500 p-4 shadow-xl animate-node-edit" style="left: 250px; top: 180px; width: 140px;">
+                                    <div class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                        MODIFIED
+                                    </div>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold">Content Parser</div>
+                                            <div class="text-xs text-blue-600">AI Analysis</div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-blue-50 rounded p-1 text-xs">
+                                        <div class="text-blue-800 font-medium">Batch: 5 emails</div>
+                                        <div class="text-blue-700">+ Entity extraction</div>
+                                    </div>
+                                    
+                                    <!-- Connection points -->
+                                    <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow"></div>
+                                    <div class="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow"></div>
+                                </div>
+
+                                <!-- Task Creator Node -->
+                                <div class="absolute bg-white rounded-lg border-2 border-purple-500 p-4 shadow-lg" style="left: 450px; top: 180px; width: 140px;">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold">Task Creator</div>
+                                            <div class="text-xs text-purple-600">Notion DB</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Connection points -->
+                                    <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white shadow"></div>
+                                    <div class="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white shadow"></div>
+                                </div>
+
+                                <!-- Success Node -->
+                                <div class="absolute bg-white rounded-lg border-2 border-green-500 p-4 shadow-lg" style="left: 650px; top: 110px; width: 140px;">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold">Success</div>
+                                            <div class="text-xs text-green-600">Complete</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Connection point -->
+                                    <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow"></div>
+                                </div>
+
+                                <!-- Connection Lines -->
+                                <svg class="absolute inset-0 pointer-events-none" style="width: 100%; height: 100%;">
+                                    <!-- Trigger to Email Fetcher -->
+                                    <path d="M 190 80 L 250 80" stroke="#10b981" stroke-width="2" fill="none" />
+                                    <polygon points="246,77 254,80 246,83" fill="#10b981"/>
+                                    
+                                    <!-- Email Fetcher to Priority Filter -->
+                                    <path d="M 390 80 L 450 80" stroke="#eab308" stroke-width="2" fill="none" />
+                                    <polygon points="446,77 454,80 446,83" fill="#eab308"/>
+                                    
+                                    <!-- Priority Filter to Content Parser -->
+                                    <path d="M 520 100 Q 535 140 320 180" stroke="#3b82f6" stroke-width="2" fill="none" />
+                                    <polygon points="316,177 324,183 316,186" fill="#3b82f6"/>
+                                    
+                                    <!-- Content Parser to Task Creator -->
+                                    <path d="M 390 220 L 450 220" stroke="#8b5cf6" stroke-width="2" fill="none" />
+                                    <polygon points="446,217 454,220 446,223" fill="#8b5cf6"/>
+                                    
+                                    <!-- Task Creator to Success -->
+                                    <path d="M 590 200 Q 620 180 650 150" stroke="#10b981" stroke-width="2" fill="none" />
+                                    <polygon points="646,147 654,153 646,156" fill="#10b981"/>
+                                </svg>
+
+                                <!-- Floating Action Menu -->
+                                <div class="absolute bg-white rounded-lg shadow-xl border p-3" style="right: 50px; top: 300px;">
+                                    <div class="text-xs font-medium mb-2">Quick Actions</div>
+                                    <div class="space-y-1">
+                                        <button class="w-full px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                                            Add Node
+                                        </button>
+                                        <button class="w-full px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">
+                                            Test Flow
+                                        </button>
+                                        <button class="w-full px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">
+                                            Export
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Node Configuration Panel -->
+                <div class="bg-white rounded-lg border animate-customization-slide">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Content Parser Configuration</h3>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Modified</span>
+                                <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">
+                                    Reset to Default
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Core Settings -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-4">Core Settings</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">Processing Mode</label>
+                                        <select class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="full" selected>Full content analysis</option>
+                                            <option value="headers">Headers and metadata only</option>
+                                            <option value="custom">Custom extraction rules</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">Batch Size</label>
+                                        <div class="flex items-center gap-3">
+                                            <input type="range" min="1" max="20" value="5" class="flex-1 animate-parameter-highlight">
+                                            <input type="number" value="5" min="1" max="20" class="w-16 px-2 py-1 text-sm border rounded">
+                                        </div>
+                                        <div class="text-xs text-muted-foreground mt-1">
+                                            Smaller batches = slower but more reliable
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium mb-2">AI Model</label>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center justify-between p-2 border rounded cursor-pointer hover:bg-gray-50">
+                                                <div class="flex items-center gap-2">
+                                                    <input type="radio" name="model" value="gpt4" checked>
+                                                    <span class="text-sm">GPT-4 Turbo</span>
+                                                </div>
+                                                <span class="text-xs text-muted-foreground">$0.05/email</span>
+                                            </label>
+                                            <label class="flex items-center justify-between p-2 border rounded cursor-pointer hover:bg-gray-50">
+                                                <div class="flex items-center gap-2">
+                                                    <input type="radio" name="model" value="gpt35">
+                                                    <span class="text-sm">GPT-3.5 Turbo</span>
+                                                </div>
+                                                <span class="text-xs text-muted-foreground">$0.01/email</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analysis Features -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-4">Analysis Features</h4>
+                                <div class="space-y-3">
+                                    <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" checked class="rounded border-gray-300">
+                                            <div>
+                                                <div class="text-sm font-medium">Priority Classification</div>
+                                                <div class="text-xs text-muted-foreground">Detect urgency and importance</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-green-600 font-medium">Enabled</span>
+                                    </label>
+
+                                    <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" checked class="rounded border-gray-300">
+                                            <div>
+                                                <div class="text-sm font-medium">Entity Extraction</div>
+                                                <div class="text-xs text-muted-foreground">Extract people, dates, companies</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-green-600 font-medium">Enabled</span>
+                                    </label>
+
+                                    <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" checked class="rounded border-gray-300">
+                                            <div>
+                                                <div class="text-sm font-medium">Sentiment Analysis</div>
+                                                <div class="text-xs text-muted-foreground">Positive, negative, neutral tone</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-green-600 font-medium">Enabled</span>
+                                    </label>
+
+                                    <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="rounded border-gray-300">
+                                            <div>
+                                                <div class="text-sm font-medium">Language Detection</div>
+                                                <div class="text-xs text-muted-foreground">Identify email language</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-gray-500">Disabled</span>
+                                    </label>
+
+                                    <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" class="rounded border-gray-300">
+                                            <div>
+                                                <div class="text-sm font-medium">Attachment Analysis</div>
+                                                <div class="text-xs text-muted-foreground">Process PDF and image attachments</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-orange-600 font-medium">Premium</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Configuration -->
+                        <div class="mt-6">
+                            <h4 class="text-sm font-medium mb-3">Advanced Configuration</h4>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <label class="block font-medium mb-1">Timeout (seconds)</label>
+                                        <input type="number" value="30" class="w-full px-2 py-1 text-sm border rounded">
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium mb-1">Max retries</label>
+                                        <input type="number" value="3" class="w-full px-2 py-1 text-sm border rounded">
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium mb-1">Error handling</label>
+                                        <select class="w-full px-2 py-1 text-sm border rounded">
+                                            <option>Continue on error</option>
+                                            <option>Stop workflow</option>
+                                            <option>Skip and log</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium mb-1">Output format</label>
+                                        <select class="w-full px-2 py-1 text-sm border rounded">
+                                            <option>Structured JSON</option>
+                                            <option>Plain text</option>
+                                            <option>Custom schema</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Prompt Configuration -->
+                        <div class="mt-6">
+                            <h4 class="text-sm font-medium mb-3">Custom Analysis Prompt</h4>
+                            <div class="border rounded-lg p-4">
+                                <textarea class="w-full h-24 text-sm resize-none border-0 focus:ring-0 focus:outline-none" placeholder="Enter custom prompt for AI analysis...">Analyze this email and extract:
+1. Priority level (high/medium/low)
+2. Key entities (people, companies, dates)
+3. Action items or requests
+4. Sentiment and urgency indicators
+
+Be concise but thorough in your analysis.</textarea>
+                                <div class="flex items-center justify-between mt-2 text-xs">
+                                    <span class="text-muted-foreground">Characters: 234/500</span>
+                                    <button class="text-blue-600 hover:underline">Use template</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test & Preview -->
+                <div class="bg-white rounded-lg border animate-customization-slide">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Test Configuration</h3>
+                        <p class="text-sm text-muted-foreground mt-1">Test your changes with sample data</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Sample Input -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Sample Email Input</h4>
+                                <div class="border rounded-lg p-4 bg-gray-50">
+                                    <div class="text-sm mb-2">
+                                        <strong>Subject:</strong> Urgent: Q4 Sales Report Review Needed
+                                    </div>
+                                    <div class="text-sm mb-2">
+                                        <strong>From:</strong> sarah.wilson@company.com
+                                    </div>
+                                    <div class="text-sm">
+                                        <strong>Body:</strong> Hi team, I need everyone to review the Q4 sales report by Friday. The numbers look concerning and we need to discuss our strategy for next quarter. Please prioritize this - the board meeting is Monday morning.
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                                        Run Test Analysis
+                                    </button>
+                                    <button class="ml-2 px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                                        Load Different Sample
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Expected Output -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Analysis Output</h4>
+                                <div class="border rounded-lg p-4 bg-green-50">
+                                    <div class="space-y-3 text-sm">
+                                        <div>
+                                            <span class="font-medium">Priority:</span> 
+                                            <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded ml-2">High</span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Entities:</span>
+                                            <div class="mt-1 space-x-1">
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Sarah Wilson</span>
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Q4 Sales Report</span>
+                                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Friday deadline</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Sentiment:</span> 
+                                            <span class="text-orange-600 ml-2">Urgent/Concerned</span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Action Required:</span> 
+                                            <span class="text-red-600 ml-2">Yes - Review by Friday</span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium">Confidence:</span> 
+                                            <span class="text-green-600 ml-2">94.2%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="text-sm font-medium text-blue-900 mb-1">Performance Impact</div>
+                                    <div class="text-xs text-blue-700">
+                                        Processing time: ~3.2s • Token usage: 1,247 • Cost: $0.06
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between bg-white rounded-lg border p-6">
+                    <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        ← Back to Installation
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Preview Changes
+                        </button>
+                        <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Export Template
+                        </button>
+                        <button class="px-6 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition-colors">
+                            Install with Customizations
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

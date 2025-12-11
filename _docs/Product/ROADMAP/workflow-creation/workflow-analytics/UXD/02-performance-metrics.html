@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Metrics - Workflow Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: 'rgb(240, 253, 244)',
+                            500: 'rgb(34, 197, 94)',
+                            600: 'rgb(22, 163, 74)',
+                            700: 'rgb(21, 128, 61)'
+                        },
+                        secondary: {
+                            50: 'rgb(248, 250, 252)',
+                            100: 'rgb(241, 245, 249)',
+                            600: 'rgb(71, 85, 105)',
+                            700: 'rgb(51, 65, 85)',
+                            800: 'rgb(30, 41, 59)',
+                            900: 'rgb(15, 23, 42)'
+                        },
+                        warning: {
+                            50: 'rgb(255, 251, 235)',
+                            500: 'rgb(245, 158, 11)',
+                            600: 'rgb(217, 119, 6)'
+                        },
+                        danger: {
+                            50: 'rgb(254, 242, 242)',
+                            500: 'rgb(239, 68, 68)',
+                            600: 'rgb(220, 38, 38)'
+                        }
+                    },
+                    animation: {
+                        'performance-pulse': 'performance-pulse 2s ease-in-out infinite',
+                        'metric-bar': 'metric-bar 1.5s ease-out forwards',
+                        'time-chart': 'time-chart 3s ease-in-out forwards',
+                        'resource-gauge': 'resource-gauge 2s ease-out forwards',
+                        'comparison-slide': 'comparison-slide 0.8s ease-out forwards'
+                    },
+                    keyframes: {
+                        'performance-pulse': {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.7)' },
+                            '50%': { boxShadow: '0 0 0 8px rgba(34, 197, 94, 0)' }
+                        },
+                        'metric-bar': {
+                            '0%': { width: '0%', opacity: '0.5' },
+                            '100%': { opacity: '1' }
+                        },
+                        'time-chart': {
+                            '0%': { strokeDasharray: '0 100', opacity: '0.6' },
+                            '100%': { opacity: '1' }
+                        },
+                        'resource-gauge': {
+                            '0%': { transform: 'rotate(-90deg)', opacity: '0.7' },
+                            '100%': { opacity: '1' }
+                        },
+                        'comparison-slide': {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-secondary-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-secondary-200">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-4">
+                <button class="p-2 hover:bg-secondary-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-semibold text-secondary-900">Performance Metrics</h1>
+                <div class="flex items-center space-x-2 text-secondary-600">
+                    <span class="text-sm">Workflow:</span>
+                    <span class="font-medium">Customer Onboarding</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <select class="bg-white border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>Last 90 days</option>
+                    <option>Custom range</option>
+                </select>
+                <button class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    Export Report
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-sm border-r border-secondary-200">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 bg-primary-50 text-primary-700 rounded-lg font-medium">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Performance</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Usage Patterns</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Error Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Cost Analysis</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <div class="p-6">
+                <!-- Performance Overview Cards -->
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6 animate-performance-pulse">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Avg Execution Time</h3>
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">2.4s</div>
+                        <div class="text-sm text-primary-600">↓ 18% vs last week</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">P95 Latency</h3>
+                            <div class="w-8 h-8 bg-warning-50 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">5.8s</div>
+                        <div class="text-sm text-warning-600">↑ 5% vs last week</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Throughput</h3>
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">156/min</div>
+                        <div class="text-sm text-primary-600">↑ 12% vs last week</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Error Rate</h3>
+                            <div class="w-8 h-8 bg-danger-50 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-danger-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">0.3%</div>
+                        <div class="text-sm text-primary-600">↓ 0.2% vs last week</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- Execution Time Breakdown -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Execution Time Breakdown</h3>
+                            <button class="text-secondary-500 hover:text-secondary-700">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">Data Validation</span>
+                                <span class="text-sm text-secondary-600">0.8s</span>
+                            </div>
+                            <div class="w-full bg-secondary-200 rounded-full h-2">
+                                <div class="bg-primary-500 h-2 rounded-full animate-metric-bar" style="width: 33%"></div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">API Calls</span>
+                                <span class="text-sm text-secondary-600">1.2s</span>
+                            </div>
+                            <div class="w-full bg-secondary-200 rounded-full h-2">
+                                <div class="bg-warning-500 h-2 rounded-full animate-metric-bar" style="width: 50%"></div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">Data Processing</span>
+                                <span class="text-sm text-secondary-600">0.4s</span>
+                            </div>
+                            <div class="w-full bg-secondary-200 rounded-full h-2">
+                                <div class="bg-primary-500 h-2 rounded-full animate-metric-bar" style="width: 17%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Response Time Distribution -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Response Time Distribution</h3>
+                            <select class="bg-white border border-secondary-300 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-primary-500">
+                                <option>Last 24h</option>
+                                <option>Last 7d</option>
+                                <option>Last 30d</option>
+                            </select>
+                        </div>
+                        <div class="h-48 flex items-end justify-between space-x-2">
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-500 w-8 animate-time-chart" style="height: 80px"></div>
+                                <span class="text-xs text-secondary-600 mt-2">&lt;1s</span>
+                                <span class="text-xs font-medium text-secondary-800">45%</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-400 w-8 animate-time-chart" style="height: 120px"></div>
+                                <span class="text-xs text-secondary-600 mt-2">1-3s</span>
+                                <span class="text-xs font-medium text-secondary-800">38%</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-warning-500 w-8 animate-time-chart" style="height: 60px"></div>
+                                <span class="text-xs text-secondary-600 mt-2">3-5s</span>
+                                <span class="text-xs font-medium text-secondary-800">12%</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-danger-500 w-8 animate-time-chart" style="height: 20px"></div>
+                                <span class="text-xs text-secondary-600 mt-2">&gt;5s</span>
+                                <span class="text-xs font-medium text-secondary-800">5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <!-- Resource Utilization -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Resource Utilization</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">CPU</span>
+                                <span class="text-sm text-secondary-600">65%</span>
+                            </div>
+                            <div class="relative w-20 h-20 mx-auto">
+                                <svg class="w-20 h-20 transform -rotate-90">
+                                    <circle cx="40" cy="40" r="30" stroke="rgb(241, 245, 249)" stroke-width="6" fill="none"></circle>
+                                    <circle cx="40" cy="40" r="30" stroke="rgb(34, 197, 94)" stroke-width="6" fill="none" 
+                                            stroke-dasharray="188" stroke-dashoffset="66" class="animate-resource-gauge"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-sm font-bold text-secondary-900">65%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">Memory</span>
+                                <span class="text-sm text-secondary-600">82%</span>
+                            </div>
+                            <div class="relative w-20 h-20 mx-auto">
+                                <svg class="w-20 h-20 transform -rotate-90">
+                                    <circle cx="40" cy="40" r="30" stroke="rgb(241, 245, 249)" stroke-width="6" fill="none"></circle>
+                                    <circle cx="40" cy="40" r="30" stroke="rgb(245, 158, 11)" stroke-width="6" fill="none" 
+                                            stroke-dasharray="188" stroke-dashoffset="34" class="animate-resource-gauge"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-sm font-bold text-secondary-900">82%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node Performance -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Node Performance</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-primary-50 rounded-lg animate-comparison-slide">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                    <span class="text-sm font-medium">Data Transform</span>
+                                </div>
+                                <span class="text-sm text-secondary-600">0.2s</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-warning-50 rounded-lg animate-comparison-slide" style="animation-delay: 0.1s">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-warning-500 rounded-full"></div>
+                                    <span class="text-sm font-medium">API Gateway</span>
+                                </div>
+                                <span class="text-sm text-secondary-600">1.8s</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg animate-comparison-slide" style="animation-delay: 0.2s">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-secondary-500 rounded-full"></div>
+                                    <span class="text-sm font-medium">Email Send</span>
+                                </div>
+                                <span class="text-sm text-secondary-600">0.3s</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-danger-50 rounded-lg animate-comparison-slide" style="animation-delay: 0.3s">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-danger-500 rounded-full"></div>
+                                    <span class="text-sm font-medium">DB Query</span>
+                                </div>
+                                <span class="text-sm text-secondary-600">2.1s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Trends -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Performance Trends</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-secondary-700">Peak performance time</span>
+                                <span class="text-sm font-medium text-secondary-900">2:00 - 4:00 AM</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-secondary-700">Slowest period</span>
+                                <span class="text-sm font-medium text-secondary-900">9:00 - 11:00 AM</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-secondary-700">Weekly pattern</span>
+                                <span class="text-sm font-medium text-secondary-900">Tue-Thu optimal</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-secondary-700">Performance score</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-16 bg-secondary-200 rounded-full h-2">
+                                        <div class="bg-primary-500 h-2 rounded-full" style="width: 85%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-secondary-900">85/100</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Recommendations -->
+                <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                    <h3 class="text-lg font-semibold text-secondary-900 mb-4">Performance Recommendations</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3 p-4 bg-primary-50 rounded-lg border border-primary-200">
+                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M9.664 1.319a.75.75 0 01.672 0 41.059 41.059 0 018.198 5.424.75.75 0 01-.254 1.285 31.372 31.372 0 00-7.86 3.83.75.75 0 01-.84 0 31.508 31.508 0 00-2.08-1.287V9.394c0-.244.116-.463.302-.592a35.504 35.504 0 013.305-2.033.75.75 0 00-.714-1.319 37 37 0 00-3.446 2.12A2.216 2.216 0 006 9.393v.38a31.293 31.293 0 00-4.28-1.746.75.75 0 01-.254-1.285 41.059 41.059 0 018.198-5.424zM6 11.459a29.848 29.848 0 00-2.455-1.158 41.029 41.029 0 00-.39 3.114.75.75 0 00.419.74c.528.256 1.046.53 1.554.82-.21-.899-.385-1.83-.518-2.786zM21 12.543c0 1.032-.047 2.052-.138 3.061a.75.75 0 01-.419.74 29.9 29.9 0 01-5.556 2.286.75.75 0 01-.773-.441c-.584-1.036-1.084-2.115-1.499-3.232-.021-.047-.041-.094-.062-.14a23.53 23.53 0 013.001-1.678c.252-.11.499-.224.744-.342.077-.036.155-.072.233-.110.074-.036.147-.073.22-.111.287-.149.57-.304.848-.463z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-secondary-900 mb-1">Optimize API Calls</h4>
+                                    <p class="text-sm text-secondary-600">Consider batching API requests to reduce latency by up to 40%</p>
+                                    <button class="text-primary-600 hover:text-primary-700 text-sm font-medium mt-2">Apply optimization →</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-4 bg-warning-50 rounded-lg border border-warning-200">
+                                <div class="w-8 h-8 bg-warning-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 2L3 7v11a1 1 0 001 1h3v-8a1 1 0 011-1h4a1 1 0 011 1v8h3a1 1 0 001-1V7l-7-5z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-secondary-900 mb-1">Cache Strategy</h4>
+                                    <p class="text-sm text-secondary-600">Implement caching for repeated data transformations</p>
+                                    <button class="text-warning-600 hover:text-warning-700 text-sm font-medium mt-2">Configure caching →</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3 p-4 bg-secondary-50 rounded-lg border border-secondary-200">
+                                <div class="w-8 h-8 bg-secondary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 002 4.25v2.5A2.25 2.25 0 004.25 9h2.5A2.25 2.25 0 009 6.75v-2.5A2.25 2.25 0 006.75 2h-2.5zm0 9A2.25 2.25 0 002 13.25v2.5A2.25 2.25 0 004.25 18h2.5A2.25 2.25 0 009 15.75v-2.5A2.25 2.25 0 006.75 11h-2.5zm9-9A2.25 2.25 0 0011 4.25v2.5A2.25 2.25 0 0013.25 9h2.5A2.25 2.25 0 0018 6.75v-2.5A2.25 2.25 0 0015.75 2h-2.5zm0 9A2.25 2.25 0 0011 13.25v2.5A2.25 2.25 0 0013.25 18h2.5A2.25 2.25 0 0018 15.75v-2.5A2.25 2.25 0 0015.75 11h-2.5z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-secondary-900 mb-1">Parallel Execution</h4>
+                                    <p class="text-sm text-secondary-600">Run independent nodes in parallel to reduce total time</p>
+                                    <button class="text-secondary-600 hover:text-secondary-700 text-sm font-medium mt-2">Enable parallelization →</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-4 bg-danger-50 rounded-lg border border-danger-200">
+                                <div class="w-8 h-8 bg-danger-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-secondary-900 mb-1">Resource Monitoring</h4>
+                                    <p class="text-sm text-secondary-600">Set up alerts for high memory usage during peak hours</p>
+                                    <button class="text-danger-600 hover:text-danger-700 text-sm font-medium mt-2">Configure alerts →</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

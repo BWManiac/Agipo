@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Variables - Agipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'rgb(79, 70, 229)',
+                        'primary-dark': 'rgb(67, 56, 202)',
+                        secondary: 'rgb(16, 185, 129)',
+                        accent: 'rgb(245, 158, 11)',
+                        background: 'rgb(249, 250, 251)',
+                        surface: 'rgb(255, 255, 255)',
+                        'surface-dark': 'rgb(243, 244, 246)',
+                        text: 'rgb(17, 24, 39)',
+                        'text-secondary': 'rgb(75, 85, 99)',
+                        'text-muted': 'rgb(156, 163, 175)',
+                        border: 'rgb(229, 231, 235)',
+                        error: 'rgb(239, 68, 68)',
+                        warning: 'rgb(245, 158, 11)',
+                        success: 'rgb(34, 197, 94)',
+                        info: 'rgb(59, 130, 246)'
+                    },
+                    animation: {
+                        'env-sync': 'env-sync 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'variable-add': 'variable-add 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        'secret-reveal': 'secret-reveal 0.3s ease-out',
+                        'env-switch': 'env-switch 0.5s ease-in-out',
+                        'validation-check': 'validation-check 0.6s ease-in-out',
+                        'promote-flow': 'promote-flow 1s ease-in-out'
+                    },
+                    keyframes: {
+                        'env-sync': {
+                            '0%, 100%': { transform: 'rotate(0deg)', opacity: '0.7' },
+                            '50%': { transform: 'rotate(180deg)', opacity: '1' }
+                        },
+                        'variable-add': {
+                            'from': { transform: 'scale(0.9) translateY(10px)', opacity: '0' },
+                            'to': { transform: 'scale(1) translateY(0)', opacity: '1' }
+                        },
+                        'secret-reveal': {
+                            'from': { opacity: '0', filter: 'blur(4px)' },
+                            'to': { opacity: '1', filter: 'blur(0)' }
+                        },
+                        'env-switch': {
+                            '0%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.05)' },
+                            '100%': { transform: 'scale(1)' }
+                        },
+                        'validation-check': {
+                            '0%': { transform: 'scale(1)', borderColor: 'rgb(229, 231, 235)' },
+                            '50%': { transform: 'scale(1.02)', borderColor: 'rgb(34, 197, 94)' },
+                            '100%': { transform: 'scale(1)', borderColor: 'rgb(229, 231, 235)' }
+                        },
+                        'promote-flow': {
+                            '0%': { strokeDasharray: '0 100' },
+                            '100%': { strokeDasharray: '100 0' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- Header -->
+    <header class="bg-surface border-b border-border px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button class="flex items-center space-x-2 text-text-secondary hover:text-text transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold">Environment Variables</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="px-4 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                    Import Variables
+                </button>
+                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors animate-variable-add">
+                    <span class="flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Add Variable</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Environment Selector Sidebar -->
+        <aside class="w-72 bg-surface border-r border-border min-h-[calc(100vh-73px)]">
+            <div class="p-6">
+                <!-- Environment Tabs -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Environments</h3>
+                    <div class="space-y-2">
+                        <button class="w-full flex items-center justify-between p-3 bg-primary/10 border border-primary/20 rounded-lg text-primary font-medium animate-env-switch">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-primary rounded-full"></div>
+                                <span>Production</span>
+                            </div>
+                            <span class="text-xs bg-primary/20 px-2 py-1 rounded-full">142 vars</span>
+                        </button>
+
+                        <button class="w-full flex items-center justify-between p-3 border border-border rounded-lg text-text-secondary hover:bg-surface-dark transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-warning rounded-full"></div>
+                                <span>Staging</span>
+                            </div>
+                            <span class="text-xs bg-text-muted/20 px-2 py-1 rounded-full">138 vars</span>
+                        </button>
+
+                        <button class="w-full flex items-center justify-between p-3 border border-border rounded-lg text-text-secondary hover:bg-surface-dark transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-info rounded-full"></div>
+                                <span>Development</span>
+                            </div>
+                            <span class="text-xs bg-text-muted/20 px-2 py-1 rounded-full">156 vars</span>
+                        </button>
+
+                        <button class="w-full flex items-center justify-between p-3 border border-border rounded-lg text-text-secondary hover:bg-surface-dark transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-secondary rounded-full"></div>
+                                <span>Testing</span>
+                            </div>
+                            <span class="text-xs bg-text-muted/20 px-2 py-1 rounded-full">89 vars</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Environment Status -->
+                <div class="mb-6 p-4 bg-success/10 border border-success/20 rounded-lg">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <svg class="w-5 h-5 text-success animate-env-sync" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <h4 class="font-medium text-success">Sync Status</h4>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-3">All environments are synchronized</p>
+                    <div class="text-xs text-text-muted">Last sync: 2 minutes ago</div>
+                </div>
+
+                <!-- Variable Categories -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">Categories</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary" checked>
+                            <span class="text-sm">Database (24)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary" checked>
+                            <span class="text-sm">API Keys (18)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary" checked>
+                            <span class="text-sm">Feature Flags (32)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary">
+                            <span class="text-sm">URLs (15)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary">
+                            <span class="text-sm">Secrets (28)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary">
+                            <span class="text-sm">Configuration (25)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div>
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">Quick Actions</h4>
+                    <div class="space-y-2">
+                        <button class="w-full flex items-center space-x-3 p-3 text-left hover:bg-surface-dark rounded-lg transition-colors">
+                            <div class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">Promote to Staging</p>
+                                <p class="text-xs text-text-secondary">Copy from dev</p>
+                            </div>
+                        </button>
+
+                        <button class="w-full flex items-center space-x-3 p-3 text-left hover:bg-surface-dark rounded-lg transition-colors">
+                            <div class="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">Validate Config</p>
+                                <p class="text-xs text-text-secondary">Check all variables</p>
+                            </div>
+                        </button>
+
+                        <button class="w-full flex items-center space-x-3 p-3 text-left hover:bg-surface-dark rounded-lg transition-colors">
+                            <div class="w-8 h-8 bg-info/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium">Export Variables</p>
+                                <p class="text-xs text-text-secondary">.env format</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Variables List -->
+        <main class="flex-1 p-6">
+            <!-- Search and Controls -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <svg class="w-5 h-5 text-text-muted absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" placeholder="Search variables..." class="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all w-80">
+                    </div>
+                    <select class="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        <option>All Types</option>
+                        <option>String</option>
+                        <option>Number</option>
+                        <option>Boolean</option>
+                        <option>Secret</option>
+                        <option>URL</option>
+                    </select>
+                    <select class="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        <option>All Sources</option>
+                        <option>Manual</option>
+                        <option>Imported</option>
+                        <option>Generated</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                        Bulk Edit
+                    </button>
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                        <span class="flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+                            </svg>
+                            <span>Filters</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Environment Variables Table -->
+            <div class="bg-surface rounded-xl border border-border overflow-hidden">
+                <div class="px-6 py-4 border-b border-border bg-surface-dark">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-semibold">Production Environment Variables</h3>
+                        <div class="flex items-center space-x-2 text-sm text-text-secondary">
+                            <span>142 total variables</span>
+                            <div class="w-1 h-1 bg-text-muted rounded-full"></div>
+                            <span class="text-success">Last updated 2 min ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-surface-dark">
+                            <tr>
+                                <th class="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <span>Variable Name</span>
+                                    </label>
+                                </th>
+                                <th class="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Value</th>
+                                <th class="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Type</th>
+                                <th class="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Category</th>
+                                <th class="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Last Updated</th>
+                                <th class="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            <!-- Database URL -->
+                            <tr class="hover:bg-surface-dark transition-colors animate-variable-add">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <div>
+                                            <p class="font-medium font-mono text-sm">DATABASE_URL</p>
+                                            <p class="text-xs text-text-secondary">Primary database connection</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <code class="text-sm bg-surface-dark px-2 py-1 rounded font-mono">postgres://prod-***</code>
+                                        <button class="text-text-secondary hover:text-text transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-error/10 text-error rounded-full text-xs font-medium">Secret</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">Database</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">2 hours ago</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <button class="p-1 text-text-secondary hover:text-primary hover:bg-primary/10 rounded transition-colors animate-validation-check">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-secondary hover:bg-secondary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- API Key -->
+                            <tr class="hover:bg-surface-dark transition-colors animate-variable-add" style="animation-delay: 0.1s;">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <div>
+                                            <p class="font-medium font-mono text-sm">STRIPE_API_KEY</p>
+                                            <p class="text-xs text-text-secondary">Payment processing key</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <code class="text-sm bg-surface-dark px-2 py-1 rounded font-mono animate-secret-reveal">sk_live_***********</code>
+                                        <button class="text-text-secondary hover:text-text transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-error/10 text-error rounded-full text-xs font-medium">Secret</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">API Keys</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">1 day ago</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <button class="p-1 text-text-secondary hover:text-primary hover:bg-primary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-secondary hover:bg-secondary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Feature Flag -->
+                            <tr class="hover:bg-surface-dark transition-colors animate-variable-add" style="animation-delay: 0.2s;">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <div>
+                                            <p class="font-medium font-mono text-sm">ENABLE_NEW_DASHBOARD</p>
+                                            <p class="text-xs text-text-secondary">Feature flag for new UI</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <code class="text-sm bg-surface-dark px-2 py-1 rounded font-mono">true</code>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-success/10 text-success rounded-full text-xs font-medium">Boolean</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">Feature Flags</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">30 min ago</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <button class="p-1 text-text-secondary hover:text-primary hover:bg-primary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-secondary hover:bg-secondary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- API URL -->
+                            <tr class="hover:bg-surface-dark transition-colors animate-variable-add" style="animation-delay: 0.3s;">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <div>
+                                            <p class="font-medium font-mono text-sm">API_BASE_URL</p>
+                                            <p class="text-xs text-text-secondary">Main API endpoint</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <code class="text-sm bg-surface-dark px-2 py-1 rounded font-mono">https://api.company.com/v1</code>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-info/10 text-info rounded-full text-xs font-medium">URL</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">URLs</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">3 days ago</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <button class="p-1 text-text-secondary hover:text-primary hover:bg-primary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-secondary hover:bg-secondary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Configuration Number -->
+                            <tr class="hover:bg-surface-dark transition-colors animate-variable-add" style="animation-delay: 0.4s;">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <div>
+                                            <p class="font-medium font-mono text-sm">MAX_UPLOAD_SIZE</p>
+                                            <p class="text-xs text-text-secondary">File upload limit in MB</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <code class="text-sm bg-surface-dark px-2 py-1 rounded font-mono">100</code>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium">Number</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">Configuration</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-text-secondary">1 week ago</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <button class="p-1 text-text-secondary hover:text-primary hover:bg-primary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="p-1 text-text-secondary hover:text-secondary hover:bg-secondary/10 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Environment Promotion Flow -->
+            <div class="mt-8 bg-surface rounded-xl border border-border p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold">Environment Promotion</h3>
+                    <button class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors">
+                        Start Promotion
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <div class="flex items-center justify-between">
+                        <!-- Development -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-info/10 rounded-xl flex items-center justify-center mb-3 animate-env-switch">
+                                <svg class="w-8 h-8 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium mb-1">Development</h4>
+                            <p class="text-sm text-text-secondary">156 variables</p>
+                            <div class="mt-2">
+                                <span class="px-2 py-1 bg-info/10 text-info rounded-full text-xs">Latest Changes</span>
+                            </div>
+                        </div>
+
+                        <!-- Staging -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-warning/10 rounded-xl flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium mb-1">Staging</h4>
+                            <p class="text-sm text-text-secondary">138 variables</p>
+                            <div class="mt-2">
+                                <span class="px-2 py-1 bg-warning/10 text-warning rounded-full text-xs">18 behind</span>
+                            </div>
+                        </div>
+
+                        <!-- Production -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium mb-1">Production</h4>
+                            <p class="text-sm text-text-secondary">142 variables</p>
+                            <div class="mt-2">
+                                <span class="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">Stable</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Promotion Flow Lines -->
+                    <div class="absolute top-8 left-0 right-0 flex items-center justify-between px-16">
+                        <div class="flex-1 relative">
+                            <div class="h-0.5 bg-border"></div>
+                            <div class="absolute top-0 h-0.5 bg-secondary animate-promote-flow" style="width: 0%"></div>
+                            <div class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2">
+                                <svg class="w-3 h-3 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1 relative ml-8">
+                            <div class="h-0.5 bg-border"></div>
+                            <div class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2">
+                                <svg class="w-3 h-3 text-text-muted" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Promotion Actions -->
+                <div class="mt-8 pt-6 border-t border-border">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-info/5 border border-info/20 rounded-lg">
+                            <h4 class="font-medium text-info mb-2">Development → Staging</h4>
+                            <p class="text-sm text-text-secondary mb-3">Promote 18 new variables to staging environment</p>
+                            <button class="w-full px-4 py-2 bg-info/10 text-info rounded-lg hover:bg-info/20 transition-colors">
+                                Review & Promote
+                            </button>
+                        </div>
+
+                        <div class="p-4 bg-text-muted/5 border border-border rounded-lg">
+                            <h4 class="font-medium text-text-muted mb-2">Staging → Production</h4>
+                            <p class="text-sm text-text-secondary mb-3">No pending changes ready for production</p>
+                            <button class="w-full px-4 py-2 bg-text-muted/10 text-text-muted rounded-lg cursor-not-allowed" disabled>
+                                No Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mt-8">
+                <div class="text-sm text-text-secondary">
+                    Showing 5 of 142 environment variables
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors" disabled>
+                        Previous
+                    </button>
+                    <button class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">1</button>
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">2</button>
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">3</button>
+                    <span class="px-2 text-text-muted">...</span>
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">29</button>
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

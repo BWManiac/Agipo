@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Monitoring - Workflow Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: 'rgb(240, 253, 244)',
+                            500: 'rgb(34, 197, 94)',
+                            600: 'rgb(22, 163, 74)',
+                            700: 'rgb(21, 128, 61)'
+                        },
+                        secondary: {
+                            50: 'rgb(248, 250, 252)',
+                            100: 'rgb(241, 245, 249)',
+                            600: 'rgb(71, 85, 105)',
+                            700: 'rgb(51, 65, 85)',
+                            800: 'rgb(30, 41, 59)',
+                            900: 'rgb(15, 23, 42)'
+                        },
+                        warning: {
+                            50: 'rgb(255, 251, 235)',
+                            500: 'rgb(245, 158, 11)',
+                            600: 'rgb(217, 119, 6)'
+                        },
+                        danger: {
+                            50: 'rgb(254, 242, 242)',
+                            500: 'rgb(239, 68, 68)',
+                            600: 'rgb(220, 38, 38)'
+                        },
+                        info: {
+                            50: 'rgb(240, 249, 255)',
+                            500: 'rgb(59, 130, 246)',
+                            600: 'rgb(37, 99, 235)'
+                        }
+                    },
+                    animation: {
+                        'live-pulse': 'live-pulse 2s ease-in-out infinite',
+                        'data-stream': 'data-stream 3s linear infinite',
+                        'alert-bounce': 'alert-bounce 1s ease-in-out infinite',
+                        'metric-update': 'metric-update 0.5s ease-out',
+                        'status-indicator': 'status-indicator 2s ease-in-out infinite',
+                        'streaming-bar': 'streaming-bar 2s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        'live-pulse': {
+                            '0%, 100%': { 
+                                boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.7)',
+                                backgroundColor: 'rgba(34, 197, 94, 1)'
+                            },
+                            '50%': { 
+                                boxShadow: '0 0 0 6px rgba(34, 197, 94, 0)',
+                                backgroundColor: 'rgba(34, 197, 94, 0.8)'
+                            }
+                        },
+                        'data-stream': {
+                            '0%': { transform: 'translateX(-100%) scaleY(0.5)', opacity: '0' },
+                            '10%': { opacity: '1', transform: 'scaleY(1)' },
+                            '90%': { opacity: '1' },
+                            '100%': { transform: 'translateX(100%) scaleY(0.5)', opacity: '0' }
+                        },
+                        'alert-bounce': {
+                            '0%, 20%, 53%, 80%, 100%': { transform: 'translateY(0)' },
+                            '40%, 43%': { transform: 'translateY(-8px)' },
+                            '70%': { transform: 'translateY(-4px)' },
+                            '90%': { transform: 'translateY(-2px)' }
+                        },
+                        'metric-update': {
+                            '0%': { transform: 'scale(1.2)', backgroundColor: 'rgba(34, 197, 94, 0.2)' },
+                            '100%': { transform: 'scale(1)', backgroundColor: 'transparent' }
+                        },
+                        'status-indicator': {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.6' }
+                        },
+                        'streaming-bar': {
+                            '0%': { height: '4px' },
+                            '50%': { height: '12px' },
+                            '100%': { height: '4px' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-secondary-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-secondary-200">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-4">
+                <button class="p-2 hover:bg-secondary-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-semibold text-secondary-900">Real-time Monitoring</h1>
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-primary-500 rounded-full animate-live-pulse"></div>
+                    <span class="text-sm font-medium text-primary-700">Live</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <select class="bg-white border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option>All workflows</option>
+                    <option>Critical only</option>
+                    <option>High volume</option>
+                    <option>Recent failures</option>
+                </select>
+                <button class="bg-danger-500 hover:bg-danger-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    Alert Settings
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-sm border-r border-secondary-200">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Performance</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Usage Patterns</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Error Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Cost Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 bg-primary-50 text-primary-700 rounded-lg font-medium">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Real-time Monitoring</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <div class="p-6">
+                <!-- Live Status Overview -->
+                <div class="grid grid-cols-5 gap-6 mb-8">
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6 animate-metric-update">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Active Executions</h3>
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">127</div>
+                        <div class="text-sm text-primary-600">↑ 12 in last minute</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Throughput/min</h3>
+                            <div class="w-8 h-8 bg-info-50 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-info-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">89</div>
+                        <div class="text-sm text-secondary-600">avg 94 last hour</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Success Rate</h3>
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center animate-status-indicator">
+                                <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">96.8%</div>
+                        <div class="text-sm text-primary-600">+0.2% vs hour ago</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Avg Response</h3>
+                            <div class="w-8 h-8 bg-warning-50 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">2.4s</div>
+                        <div class="text-sm text-warning-600">+0.3s vs hour ago</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Active Alerts</h3>
+                            <div class="w-8 h-8 bg-danger-50 rounded-full flex items-center justify-center animate-alert-bounce">
+                                <svg class="w-4 h-4 text-danger-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">3</div>
+                        <div class="text-sm text-danger-600">2 critical, 1 warning</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- Live Activity Stream -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Live Activity Stream</h3>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-primary-500 rounded-full animate-live-pulse"></div>
+                                <span class="text-sm text-secondary-600">Auto-refresh</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 max-h-80 overflow-auto">
+                            <div class="flex items-start space-x-3 p-3 bg-primary-50 rounded-lg border border-primary-200 animate-data-stream">
+                                <div class="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-secondary-900">Customer Onboarding</span>
+                                        <span class="text-xs text-secondary-600">just now</span>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">Step 3/7: Email verification completed</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-secondary-50 rounded-lg animate-data-stream" style="animation-delay: 0.5s">
+                                <div class="w-2 h-2 bg-info-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-secondary-900">Data Processing Pipeline</span>
+                                        <span class="text-xs text-secondary-600">5s ago</span>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">Processing batch #4728 - 15,642 records</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-danger-50 rounded-lg border border-danger-200 animate-data-stream" style="animation-delay: 1s">
+                                <div class="w-2 h-2 bg-danger-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-secondary-900">Invoice Processing</span>
+                                        <span class="text-xs text-secondary-600">8s ago</span>
+                                    </div>
+                                    <div class="text-xs text-danger-600">Error: API timeout - retrying in 30s</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-warning-50 rounded-lg border border-warning-200 animate-data-stream" style="animation-delay: 1.5s">
+                                <div class="w-2 h-2 bg-warning-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-secondary-900">Email Campaign</span>
+                                        <span class="text-xs text-secondary-600">12s ago</span>
+                                    </div>
+                                    <div class="text-xs text-warning-600">Rate limit exceeded - throttling enabled</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-primary-50 rounded-lg border border-primary-200 animate-data-stream" style="animation-delay: 2s">
+                                <div class="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-secondary-900">Report Generation</span>
+                                        <span class="text-xs text-secondary-600">18s ago</span>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">Weekly sales report completed - 847 KB</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3 p-3 bg-secondary-50 rounded-lg animate-data-stream" style="animation-delay: 2.5s">
+                                <div class="w-2 h-2 bg-secondary-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-secondary-900">Backup Workflow</span>
+                                        <span class="text-xs text-secondary-600">25s ago</span>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">Daily backup started - estimated 12 min</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Performance Chart -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Real-time Performance</h3>
+                            <select class="bg-white border border-secondary-300 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-primary-500">
+                                <option>Last 10 minutes</option>
+                                <option>Last 30 minutes</option>
+                                <option>Last hour</option>
+                            </select>
+                        </div>
+                        
+                        <div class="h-60 flex items-end justify-between space-x-1">
+                            <!-- Streaming bars representing real-time data -->
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-400 w-3 animate-streaming-bar" style="height: 40px"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-10m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-500 w-3 animate-streaming-bar" style="height: 60px; animation-delay: 0.1s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-9m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-info-400 w-3 animate-streaming-bar" style="height: 45px; animation-delay: 0.2s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-8m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-500 w-3 animate-streaming-bar" style="height: 80px; animation-delay: 0.3s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-7m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-warning-400 w-3 animate-streaming-bar" style="height: 70px; animation-delay: 0.4s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-6m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-danger-400 w-3 animate-streaming-bar" style="height: 90px; animation-delay: 0.5s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-5m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-warning-500 w-3 animate-streaming-bar" style="height: 85px; animation-delay: 0.6s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-4m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-400 w-3 animate-streaming-bar" style="height: 50px; animation-delay: 0.7s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-3m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-500 w-3 animate-streaming-bar" style="height: 65px; animation-delay: 0.8s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-2m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-info-500 w-3 animate-streaming-bar" style="height: 75px; animation-delay: 0.9s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">-1m</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-600 w-3 animate-streaming-bar" style="height: 85px; animation-delay: 1s"></div>
+                                <span class="text-xs text-secondary-600 mt-1">Now</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex items-center justify-between text-xs text-secondary-600">
+                            <span>Executions per minute</span>
+                            <span>Current: 89/min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <!-- Active Workflows -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Active Workflows</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-primary-50 rounded-lg border border-primary-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-primary-500 rounded-full animate-status-indicator"></div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Customer Onboarding</div>
+                                        <div class="text-xs text-secondary-600">47 active executions</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-primary-600">98.2%</div>
+                                    <div class="text-xs text-secondary-600">success</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-info-50 rounded-lg border border-info-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-info-500 rounded-full animate-status-indicator"></div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Data Processing</div>
+                                        <div class="text-xs text-secondary-600">23 active executions</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-info-600">94.7%</div>
+                                    <div class="text-xs text-secondary-600">success</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-warning-50 rounded-lg border border-warning-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-warning-500 rounded-full animate-status-indicator"></div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Invoice Processing</div>
+                                        <div class="text-xs text-secondary-600">18 active executions</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-warning-600">89.3%</div>
+                                    <div class="text-xs text-secondary-600">success</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-secondary-500 rounded-full animate-status-indicator"></div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Report Generation</div>
+                                        <div class="text-xs text-secondary-600">12 active executions</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-secondary-600">96.8%</div>
+                                    <div class="text-xs text-secondary-600">success</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Health -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">System Health</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">API Gateway</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-primary-500 rounded-full animate-live-pulse"></div>
+                                    <span class="text-sm text-primary-600">Healthy</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">Database</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-primary-500 rounded-full animate-live-pulse"></div>
+                                    <span class="text-sm text-primary-600">Healthy</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">Cache Layer</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-warning-500 rounded-full animate-alert-bounce"></div>
+                                    <span class="text-sm text-warning-600">Degraded</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">Message Queue</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-primary-500 rounded-full animate-live-pulse"></div>
+                                    <span class="text-sm text-primary-600">Healthy</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-secondary-700">External APIs</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-danger-500 rounded-full animate-alert-bounce"></div>
+                                    <span class="text-sm text-danger-600">Issues</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-secondary-200">
+                                <div class="text-sm text-secondary-700 mb-2">Resource Usage</div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span>CPU</span>
+                                        <span>67%</span>
+                                    </div>
+                                    <div class="w-full bg-secondary-200 rounded-full h-1.5">
+                                        <div class="bg-warning-500 h-1.5 rounded-full animate-streaming-bar" style="width: 67%"></div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span>Memory</span>
+                                        <span>84%</span>
+                                    </div>
+                                    <div class="w-full bg-secondary-200 rounded-full h-1.5">
+                                        <div class="bg-danger-400 h-1.5 rounded-full animate-streaming-bar" style="width: 84%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Alerts -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Recent Alerts</h3>
+                        <div class="space-y-3">
+                            <div class="p-3 border border-danger-200 rounded-lg bg-danger-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-danger-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-xs font-medium text-danger-700">CRITICAL</span>
+                                    </div>
+                                    <span class="text-xs text-secondary-600">2 min ago</span>
+                                </div>
+                                <div class="text-sm font-medium text-secondary-900 mb-1">High memory usage detected</div>
+                                <div class="text-xs text-secondary-600">Processing node #3 at 94% capacity</div>
+                            </div>
+
+                            <div class="p-3 border border-warning-200 rounded-lg bg-warning-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-xs font-medium text-warning-700">WARNING</span>
+                                    </div>
+                                    <span class="text-xs text-secondary-600">5 min ago</span>
+                                </div>
+                                <div class="text-sm font-medium text-secondary-900 mb-1">Increased error rate</div>
+                                <div class="text-xs text-secondary-600">Invoice API errors up 25% from baseline</div>
+                            </div>
+
+                            <div class="p-3 border border-info-200 rounded-lg bg-info-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-info-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-xs font-medium text-info-700">INFO</span>
+                                    </div>
+                                    <span class="text-xs text-secondary-600">8 min ago</span>
+                                </div>
+                                <div class="text-sm font-medium text-secondary-900 mb-1">Scheduled maintenance</div>
+                                <div class="text-xs text-secondary-600">Cache maintenance completed successfully</div>
+                            </div>
+
+                            <div class="text-center pt-3 border-t border-secondary-200">
+                                <button class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                                    View all alerts →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Control Panel -->
+                <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-secondary-900">Real-time Controls</h3>
+                        <div class="flex items-center space-x-3">
+                            <button class="bg-warning-500 hover:bg-warning-600 text-white px-3 py-2 rounded text-sm font-medium">
+                                Pause All
+                            </button>
+                            <button class="bg-danger-500 hover:bg-danger-600 text-white px-3 py-2 rounded text-sm font-medium">
+                                Emergency Stop
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center">
+                            <div class="bg-primary-100 rounded-lg p-4 mb-3">
+                                <div class="text-2xl font-bold text-primary-600">127</div>
+                                <div class="text-sm text-secondary-600">Queued</div>
+                            </div>
+                            <button class="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 rounded text-sm">
+                                Manage Queue
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="bg-info-100 rounded-lg p-4 mb-3">
+                                <div class="text-2xl font-bold text-info-600">89</div>
+                                <div class="text-sm text-secondary-600">Running</div>
+                            </div>
+                            <button class="w-full bg-info-500 hover:bg-info-600 text-white py-2 rounded text-sm">
+                                View Details
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="bg-warning-100 rounded-lg p-4 mb-3">
+                                <div class="text-2xl font-bold text-warning-600">12</div>
+                                <div class="text-sm text-secondary-600">Throttled</div>
+                            </div>
+                            <button class="w-full bg-warning-500 hover:bg-warning-600 text-white py-2 rounded text-sm">
+                                Adjust Limits
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="bg-danger-100 rounded-lg p-4 mb-3">
+                                <div class="text-2xl font-bold text-danger-600">3</div>
+                                <div class="text-sm text-secondary-600">Failed</div>
+                            </div>
+                            <button class="w-full bg-danger-500 hover:bg-danger-600 text-white py-2 rounded text-sm">
+                                Investigate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

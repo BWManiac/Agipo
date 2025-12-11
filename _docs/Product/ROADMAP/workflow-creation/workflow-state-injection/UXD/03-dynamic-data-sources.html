@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Data Sources - Agipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'rgb(79, 70, 229)',
+                        'primary-dark': 'rgb(67, 56, 202)',
+                        secondary: 'rgb(16, 185, 129)',
+                        accent: 'rgb(245, 158, 11)',
+                        background: 'rgb(249, 250, 251)',
+                        surface: 'rgb(255, 255, 255)',
+                        'surface-dark': 'rgb(243, 244, 246)',
+                        text: 'rgb(17, 24, 39)',
+                        'text-secondary': 'rgb(75, 85, 99)',
+                        'text-muted': 'rgb(156, 163, 175)',
+                        border: 'rgb(229, 231, 235)',
+                        error: 'rgb(239, 68, 68)',
+                        warning: 'rgb(245, 158, 11)',
+                        success: 'rgb(34, 197, 94)',
+                        info: 'rgb(59, 130, 246)'
+                    },
+                    animation: {
+                        'source-connect': 'source-connect 1s ease-in-out',
+                        'status-ping': 'status-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                        'data-flow': 'data-flow 3s linear infinite',
+                        'connection-test': 'connection-test 0.5s ease-in-out',
+                        'source-add': 'source-add 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        'modal-slide': 'modal-slide 0.3s ease-out'
+                    },
+                    keyframes: {
+                        'source-connect': {
+                            '0%': { strokeDasharray: '0 100', opacity: '0.5' },
+                            '50%': { strokeDasharray: '50 100', opacity: '1' },
+                            '100%': { strokeDasharray: '100 0', opacity: '0.8' }
+                        },
+                        'status-ping': {
+                            '75%, 100%': { transform: 'scale(1.1)', opacity: '0' }
+                        },
+                        'data-flow': {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        'connection-test': {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.05)' }
+                        },
+                        'source-add': {
+                            'from': { transform: 'scale(0.9) translateY(10px)', opacity: '0' },
+                            'to': { transform: 'scale(1) translateY(0)', opacity: '1' }
+                        },
+                        'modal-slide': {
+                            'from': { transform: 'translateY(-20px)', opacity: '0' },
+                            'to': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- Header -->
+    <header class="bg-surface border-b border-border px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button class="flex items-center space-x-2 text-text-secondary hover:text-text transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Configuration</span>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold">Dynamic Data Sources</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors animate-source-add">
+                    <span class="flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Add Data Source</span>
+                    </span>
+                </button>
+                <button class="p-2 hover:bg-surface-dark rounded-lg transition-colors">
+                    <svg class="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Source Types Sidebar -->
+        <aside class="w-80 bg-surface border-r border-border min-h-[calc(100vh-73px)]">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold mb-4">Data Source Types</h3>
+                
+                <!-- API Sources -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">API Sources</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">REST API</p>
+                                    <p class="text-xs text-text-secondary">HTTP/HTTPS endpoints</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-success/10 text-success px-2 py-1 rounded-full">3 active</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-info/10 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">GraphQL</p>
+                                    <p class="text-xs text-text-secondary">Query-based API</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-warning/10 text-warning px-2 py-1 rounded-full">1 active</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Webhooks</p>
+                                    <p class="text-xs text-text-secondary">Event-driven data</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-text-muted/20 text-text-muted px-2 py-1 rounded-full">0 active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Sources -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">Database Sources</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7M4 7l2-3h12l2 3M4 7h16"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">PostgreSQL</p>
+                                    <p class="text-xs text-text-secondary">Relational database</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-success/10 text-success px-2 py-1 rounded-full">2 active</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-error/10 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7M4 7l2-3h12l2 3M4 7h16"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">MongoDB</p>
+                                    <p class="text-xs text-text-secondary">Document database</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-warning/10 text-warning px-2 py-1 rounded-full">1 active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Sources -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">File Sources</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">CSV Files</p>
+                                    <p class="text-xs text-text-secondary">Tabular data</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-success/10 text-success px-2 py-1 rounded-full">4 active</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-info/10 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">JSON Files</p>
+                                    <p class="text-xs text-text-secondary">Structured data</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-warning/10 text-warning px-2 py-1 rounded-full">2 active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Summary -->
+                <div class="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                    <h4 class="font-medium text-primary mb-2">Connection Summary</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Total Sources:</span>
+                            <span class="font-medium">13</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Active:</span>
+                            <span class="font-medium text-success">11</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Inactive:</span>
+                            <span class="font-medium text-error">2</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Health Score:</span>
+                            <span class="font-medium text-success">94%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Data Sources Grid -->
+        <main class="flex-1 p-6">
+            <!-- Search and Filters -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <svg class="w-5 h-5 text-text-muted absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" placeholder="Search data sources..." class="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all w-80">
+                    </div>
+                    <select class="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        <option>All Types</option>
+                        <option>API Sources</option>
+                        <option>Database Sources</option>
+                        <option>File Sources</option>
+                    </select>
+                    <select class="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        <option>All Status</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                        <option>Error</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                        <span class="flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+                            </svg>
+                            <span>Filters</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Sources Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Customer API Source -->
+                <div class="bg-surface rounded-xl border border-border p-6 hover:shadow-lg transition-shadow animate-source-add">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-primary animate-source-connect" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Customer API</h3>
+                                <p class="text-sm text-text-secondary">REST API</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative">
+                                <div class="w-3 h-3 bg-success rounded-full animate-status-ping"></div>
+                                <div class="absolute inset-0 w-3 h-3 bg-success rounded-full opacity-75 animate-ping"></div>
+                            </div>
+                            <span class="text-xs text-success font-medium">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Endpoint:</span>
+                            <span class="font-mono text-xs">api.company.com/customers</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Method:</span>
+                            <span class="px-2 py-1 bg-success/10 text-success rounded text-xs font-medium">GET</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Last Used:</span>
+                            <span>2 minutes ago</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Response Time:</span>
+                            <span class="text-success">142ms</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-border pt-4">
+                        <div class="flex items-center justify-between">
+                            <button class="flex items-center space-x-2 px-3 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors animate-connection-test">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                <span class="text-sm">Test Connection</span>
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <button class="p-2 text-text-secondary hover:text-error hover:bg-error/10 rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Source -->
+                <div class="bg-surface rounded-xl border border-border p-6 hover:shadow-lg transition-shadow animate-source-add" style="animation-delay: 0.1s;">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7M4 7l2-3h12l2 3M4 7h16"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Orders Database</h3>
+                                <p class="text-sm text-text-secondary">PostgreSQL</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative">
+                                <div class="w-3 h-3 bg-success rounded-full"></div>
+                                <div class="absolute inset-0 w-3 h-3 bg-success rounded-full opacity-75 animate-ping"></div>
+                            </div>
+                            <span class="text-xs text-success font-medium">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Host:</span>
+                            <span class="font-mono text-xs">db-prod-01.company.com</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Database:</span>
+                            <span class="font-mono text-xs">orders_production</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Last Query:</span>
+                            <span>5 minutes ago</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Avg Query Time:</span>
+                            <span class="text-success">89ms</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-border pt-4">
+                        <div class="flex items-center justify-between">
+                            <button class="flex items-center space-x-2 px-3 py-2 bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></span>
+                                <span class="text-sm">Test Query</span>
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <button class="p-2 text-text-secondary hover:text-error hover:bg-error/10 rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Source with Error -->
+                <div class="bg-surface rounded-xl border border-error/20 p-6 hover:shadow-lg transition-shadow animate-source-add" style="animation-delay: 0.2s;">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-error/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Product Catalog</h3>
+                                <p class="text-sm text-text-secondary">CSV File</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-error rounded-full"></div>
+                            <span class="text-xs text-error font-medium">Error</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">File Path:</span>
+                            <span class="font-mono text-xs">/data/products.csv</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">File Size:</span>
+                            <span>2.4 MB</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Last Modified:</span>
+                            <span>2 hours ago</span>
+                        </div>
+                        <div class="p-2 bg-error/10 border border-error/20 rounded text-xs text-error">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                                <span>File not found or permission denied</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-border pt-4">
+                        <div class="flex items-center justify-between">
+                            <button class="flex items-center space-x-2 px-3 py-2 bg-error/10 text-error rounded-lg hover:bg-error/20 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                <span class="text-sm">Retry Connection</span>
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <button class="p-2 text-text-secondary hover:text-error hover:bg-error/10 rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GraphQL Source -->
+                <div class="bg-surface rounded-xl border border-border p-6 hover:shadow-lg transition-shadow animate-source-add" style="animation-delay: 0.3s;">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-info/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">User Management</h3>
+                                <p class="text-sm text-text-secondary">GraphQL</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative">
+                                <div class="w-3 h-3 bg-success rounded-full"></div>
+                                <div class="absolute inset-0 w-3 h-3 bg-success rounded-full opacity-75 animate-ping"></div>
+                            </div>
+                            <span class="text-xs text-success font-medium">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Endpoint:</span>
+                            <span class="font-mono text-xs">api.users.com/graphql</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Schema Version:</span>
+                            <span>v2.1.0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Last Query:</span>
+                            <span>1 minute ago</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Avg Response:</span>
+                            <span class="text-success">267ms</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-border pt-4">
+                        <div class="flex items-center justify-between">
+                            <button class="flex items-center space-x-2 px-3 py-2 bg-info/10 text-info rounded-lg hover:bg-info/20 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                <span class="text-sm">Test Query</span>
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JSON File Source -->
+                <div class="bg-surface rounded-xl border border-border p-6 hover:shadow-lg transition-shadow animate-source-add" style="animation-delay: 0.4s;">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Configuration Data</h3>
+                                <p class="text-sm text-text-secondary">JSON File</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative">
+                                <div class="w-3 h-3 bg-warning rounded-full"></div>
+                            </div>
+                            <span class="text-xs text-warning font-medium">Updating</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">File Path:</span>
+                            <span class="font-mono text-xs">/config/settings.json</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">File Size:</span>
+                            <span>156 KB</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Last Modified:</span>
+                            <span>Just now</span>
+                        </div>
+                        <div class="p-2 bg-warning/10 border border-warning/20 rounded text-xs text-warning">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 border-2 border-warning border-t-transparent rounded-full animate-spin"></div>
+                                <span>File is being updated by external process</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-border pt-4">
+                        <div class="flex items-center justify-between">
+                            <button class="flex items-center space-x-2 px-3 py-2 bg-warning/10 text-warning rounded-lg hover:bg-warning/20 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <span class="text-sm">Preview Data</span>
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <button class="p-2 text-text-secondary hover:text-error hover:bg-error/10 rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MongoDB Source -->
+                <div class="bg-surface rounded-xl border border-border p-6 hover:shadow-lg transition-shadow animate-source-add" style="animation-delay: 0.5s;">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7M4 7l2-3h12l2 3M4 7h16"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Analytics Events</h3>
+                                <p class="text-sm text-text-secondary">MongoDB</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative">
+                                <div class="w-3 h-3 bg-success rounded-full"></div>
+                                <div class="absolute inset-0 w-3 h-3 bg-success rounded-full opacity-75 animate-ping"></div>
+                            </div>
+                            <span class="text-xs text-success font-medium">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Cluster:</span>
+                            <span class="font-mono text-xs">atlas-cluster-0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Database:</span>
+                            <span class="font-mono text-xs">analytics</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Collection:</span>
+                            <span class="font-mono text-xs">user_events</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-text-secondary">Avg Query Time:</span>
+                            <span class="text-success">156ms</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-border pt-4">
+                        <div class="flex items-center justify-between">
+                            <button class="flex items-center space-x-2 px-3 py-2 bg-success/10 text-success rounded-lg hover:bg-success/20 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></span>
+                                <span class="text-sm">Test Query</span>
+                            </button>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                                <button class="p-2 text-text-secondary hover:text-text hover:bg-surface-dark rounded transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Flow Visualization -->
+            <div class="mt-8 bg-surface rounded-xl border border-border p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold">Data Flow Visualization</h3>
+                    <button class="px-3 py-2 text-primary border border-primary rounded-lg hover:bg-primary/10 transition-colors">
+                        View Full Schema
+                    </button>
+                </div>
+                
+                <div class="relative">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="text-center">
+                            <div class="w-16 h-16 mx-auto bg-primary/10 rounded-xl flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium mb-1">Data Sources</h4>
+                            <p class="text-sm text-text-secondary">APIs, Databases, Files</p>
+                            <div class="mt-2 text-xs text-success">13 connected</div>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="w-16 h-16 mx-auto bg-secondary/10 rounded-xl flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium mb-1">Processing Layer</h4>
+                            <p class="text-sm text-text-secondary">Transform & Validate</p>
+                            <div class="mt-2 text-xs text-warning">Processing 127 events/min</div>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="w-16 h-16 mx-auto bg-accent/10 rounded-xl flex items-center justify-center mb-3">
+                                <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium mb-1">Workflow Injection</h4>
+                            <p class="text-sm text-text-secondary">Runtime State Updates</p>
+                            <div class="mt-2 text-xs text-success">24 active injections</div>
+                        </div>
+                    </div>
+
+                    <!-- Animated data flow lines -->
+                    <div class="absolute inset-0 pointer-events-none">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="rgb(79, 70, 229)" opacity="0.6"/>
+                                </marker>
+                            </defs>
+                            <line x1="25" y1="50" x2="50" y2="50" stroke="rgb(79, 70, 229)" stroke-width="2" stroke-opacity="0.6" marker-end="url(#arrowhead)" class="animate-data-flow"/>
+                            <line x1="50" y1="50" x2="75" y2="50" stroke="rgb(16, 185, 129)" stroke-width="2" stroke-opacity="0.6" marker-end="url(#arrowhead)" class="animate-data-flow" style="animation-delay: 1s;"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Data Source Modal (Hidden) -->
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden animate-modal-slide" id="addSourceModal">
+        <div class="bg-surface rounded-xl p-8 max-w-2xl w-full mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold">Add New Data Source</h3>
+                <button class="p-2 hover:bg-surface-dark rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal content would go here -->
+        </div>
+    </div>
+</body>
+</html>

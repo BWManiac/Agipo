@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runtime State Monitor - Agipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'rgb(79, 70, 229)',
+                        'primary-dark': 'rgb(67, 56, 202)',
+                        secondary: 'rgb(16, 185, 129)',
+                        accent: 'rgb(245, 158, 11)',
+                        background: 'rgb(249, 250, 251)',
+                        surface: 'rgb(255, 255, 255)',
+                        'surface-dark': 'rgb(243, 244, 246)',
+                        text: 'rgb(17, 24, 39)',
+                        'text-secondary': 'rgb(75, 85, 99)',
+                        'text-muted': 'rgb(156, 163, 175)',
+                        border: 'rgb(229, 231, 235)',
+                        error: 'rgb(239, 68, 68)',
+                        warning: 'rgb(245, 158, 11)',
+                        success: 'rgb(34, 197, 94)',
+                        info: 'rgb(59, 130, 246)'
+                    },
+                    animation: {
+                        'live-pulse': 'live-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'data-stream': 'data-stream 3s linear infinite',
+                        'state-update': 'state-update 0.6s ease-out',
+                        'monitor-scan': 'monitor-scan 4s ease-in-out infinite',
+                        'execution-flow': 'execution-flow 2s ease-in-out infinite',
+                        'real-time-update': 'real-time-update 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                    },
+                    keyframes: {
+                        'live-pulse': {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.9' },
+                            '50%': { transform: 'scale(1.05)', opacity: '1' }
+                        },
+                        'data-stream': {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '10%': { opacity: '1' },
+                            '90%': { opacity: '1' },
+                            '100%': { transform: 'translateY(-100%)', opacity: '0' }
+                        },
+                        'state-update': {
+                            '0%': { backgroundColor: 'rgb(249, 250, 251)', transform: 'scale(1)' },
+                            '50%': { backgroundColor: 'rgb(79, 70, 229, 0.1)', transform: 'scale(1.02)' },
+                            '100%': { backgroundColor: 'rgb(249, 250, 251)', transform: 'scale(1)' }
+                        },
+                        'monitor-scan': {
+                            '0%, 100%': { transform: 'translateX(-100%)' },
+                            '50%': { transform: 'translateX(100%)' }
+                        },
+                        'execution-flow': {
+                            '0%, 100%': { strokeDasharray: '20 20' },
+                            '50%': { strokeDasharray: '40 0' }
+                        },
+                        'real-time-update': {
+                            'from': { transform: 'translateY(-10px)', opacity: '0' },
+                            'to': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- Header -->
+    <header class="bg-surface border-b border-border px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button class="flex items-center space-x-2 text-text-secondary hover:text-text transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold">Runtime State Monitor</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 px-3 py-2 bg-success/10 text-success rounded-lg">
+                    <div class="w-2 h-2 bg-success rounded-full animate-live-pulse"></div>
+                    <span class="text-sm font-medium">Live Monitoring</span>
+                </div>
+                <button class="px-4 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                    Export Logs
+                </button>
+                <button class="p-2 hover:bg-surface-dark rounded-lg transition-colors">
+                    <svg class="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Active Executions Sidebar -->
+        <aside class="w-80 bg-surface border-r border-border min-h-[calc(100vh-73px)]">
+            <div class="p-6">
+                <!-- Active Executions -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Active Executions</h3>
+                        <span class="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">24 running</span>
+                    </div>
+                    
+                    <div class="space-y-3 max-h-96 overflow-y-auto">
+                        <div class="p-4 border border-success/20 rounded-lg bg-success/5 animate-real-time-update">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-success rounded-full animate-live-pulse"></div>
+                                    <span class="font-medium text-sm">exec-7f2a9b</span>
+                                </div>
+                                <span class="text-xs text-text-secondary">2m 15s</span>
+                            </div>
+                            <p class="text-xs text-text-secondary mb-2">Customer Onboarding Flow</p>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-success">Step 8/12</span>
+                                <span class="text-text-secondary">API Call</span>
+                            </div>
+                            <div class="mt-2 w-full bg-surface-dark rounded-full h-1">
+                                <div class="bg-success h-1 rounded-full" style="width: 67%"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-warning/20 rounded-lg bg-warning/5 animate-real-time-update" style="animation-delay: 0.1s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-warning rounded-full animate-live-pulse"></div>
+                                    <span class="font-medium text-sm">exec-3e8c1a</span>
+                                </div>
+                                <span class="text-xs text-text-secondary">5m 42s</span>
+                            </div>
+                            <p class="text-xs text-text-secondary mb-2">Data Processing Pipeline</p>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-warning">Step 3/8</span>
+                                <span class="text-text-secondary">DB Query</span>
+                            </div>
+                            <div class="mt-2 w-full bg-surface-dark rounded-full h-1">
+                                <div class="bg-warning h-1 rounded-full" style="width: 38%"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-info/20 rounded-lg bg-info/5 animate-real-time-update" style="animation-delay: 0.2s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-info rounded-full animate-live-pulse"></div>
+                                    <span class="font-medium text-sm">exec-9d5f7c</span>
+                                </div>
+                                <span class="text-xs text-text-secondary">12s</span>
+                            </div>
+                            <p class="text-xs text-text-secondary mb-2">User Authentication</p>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-info">Step 1/4</span>
+                                <span class="text-text-secondary">Validation</span>
+                            </div>
+                            <div class="mt-2 w-full bg-surface-dark rounded-full h-1">
+                                <div class="bg-info h-1 rounded-full" style="width: 25%"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-error/20 rounded-lg bg-error/5 animate-real-time-update" style="animation-delay: 0.3s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-error rounded-full animate-live-pulse"></div>
+                                    <span class="font-medium text-sm">exec-a1b4d2</span>
+                                </div>
+                                <span class="text-xs text-text-secondary">8m 31s</span>
+                            </div>
+                            <p class="text-xs text-text-secondary mb-2">Payment Processing</p>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-error">Failed</span>
+                                <span class="text-text-secondary">Error: Timeout</span>
+                            </div>
+                            <div class="mt-2 w-full bg-surface-dark rounded-full h-1">
+                                <div class="bg-error h-1 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Filters -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">Filters</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary" checked>
+                            <span class="text-sm">Running (24)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary">
+                            <span class="text-sm">Completed (156)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary">
+                            <span class="text-sm">Failed (8)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" class="text-primary focus:ring-primary">
+                            <span class="text-sm">Waiting (12)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Live Metrics -->
+                <div class="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                    <h4 class="font-medium text-primary mb-3">Live Metrics</h4>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Executions/min:</span>
+                            <span class="font-medium">32</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Avg Duration:</span>
+                            <span class="font-medium">3m 42s</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Success Rate:</span>
+                            <span class="font-medium text-success">94.2%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Queue Depth:</span>
+                            <span class="font-medium text-warning">12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Monitor Display -->
+        <main class="flex-1 p-6">
+            <!-- Execution Detail View -->
+            <div class="bg-surface rounded-xl border border-border p-6 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-4">
+                        <h2 class="text-xl font-semibold">Execution: exec-7f2a9b</h2>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-success rounded-full animate-live-pulse"></div>
+                            <span class="text-success font-medium">Running</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 text-sm text-text-secondary">
+                        <span>Started: 2:15 ago</span>
+                        <span>•</span>
+                        <span>ETA: 4m 32s</span>
+                        <span>•</span>
+                        <span>User: john.doe@company.com</span>
+                    </div>
+                </div>
+
+                <!-- Workflow Progress -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-semibold">Customer Onboarding Flow</h3>
+                        <span class="text-sm text-text-secondary">Step 8 of 12</span>
+                    </div>
+                    
+                    <div class="relative">
+                        <!-- Progress Visualization -->
+                        <div class="flex items-center space-x-2 overflow-x-auto pb-2">
+                            <!-- Completed Steps -->
+                            <div class="flex items-center space-x-1">
+                                <div class="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                <div class="w-12 h-0.5 bg-success"></div>
+                                <div class="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                <div class="w-12 h-0.5 bg-success"></div>
+                                <div class="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                <div class="w-12 h-0.5 bg-success"></div>
+                                <div class="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
+                                <div class="w-12 h-0.5 bg-success"></div>
+                                <div class="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">5</div>
+                                <div class="w-12 h-0.5 bg-success"></div>
+                                <div class="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">6</div>
+                                <div class="w-12 h-0.5 bg-success"></div>
+                                <div class="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">7</div>
+                                <div class="w-12 h-0.5 bg-success animate-execution-flow"></div>
+                            </div>
+                            
+                            <!-- Current Step -->
+                            <div class="w-8 h-8 bg-warning text-white rounded-full flex items-center justify-center text-xs font-bold animate-live-pulse">8</div>
+                            <div class="w-12 h-0.5 bg-border"></div>
+                            
+                            <!-- Pending Steps -->
+                            <div class="flex items-center space-x-1">
+                                <div class="w-8 h-8 bg-border text-text-muted rounded-full flex items-center justify-center text-xs">9</div>
+                                <div class="w-12 h-0.5 bg-border"></div>
+                                <div class="w-8 h-8 bg-border text-text-muted rounded-full flex items-center justify-center text-xs">10</div>
+                                <div class="w-12 h-0.5 bg-border"></div>
+                                <div class="w-8 h-8 bg-border text-text-muted rounded-full flex items-center justify-center text-xs">11</div>
+                                <div class="w-12 h-0.5 bg-border"></div>
+                                <div class="w-8 h-8 bg-border text-text-muted rounded-full flex items-center justify-center text-xs">12</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step Labels -->
+                        <div class="mt-3 flex justify-between text-xs text-text-secondary">
+                            <span>Validate Input</span>
+                            <span>Create Account</span>
+                            <span>Send Email</span>
+                            <span>Setup Profile</span>
+                            <span>Assign Permissions</span>
+                            <span>Create Workspace</span>
+                            <span>Send Welcome</span>
+                            <span class="font-medium text-warning">API Integration</span>
+                            <span>Configure Settings</span>
+                            <span>Final Validation</span>
+                            <span>Notification</span>
+                            <span>Complete</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current State Information -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- State Injections -->
+                    <div>
+                        <h4 class="font-semibold mb-4">Active State Injections</h4>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-surface-dark rounded-lg border-l-4 border-l-success animate-state-update">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-sm">USER_PROFILE_DATA</span>
+                                    <span class="text-xs text-success">Active</span>
+                                </div>
+                                <div class="text-xs text-text-secondary">
+                                    <p>Source: Customer API</p>
+                                    <p>Injected: Step 3 → Step 8</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-surface-dark rounded-lg border-l-4 border-l-primary animate-state-update" style="animation-delay: 0.1s;">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-sm">WORKSPACE_CONFIG</span>
+                                    <span class="text-xs text-primary">Active</span>
+                                </div>
+                                <div class="text-xs text-text-secondary">
+                                    <p>Source: Configuration DB</p>
+                                    <p>Injected: Step 6 → Step 12</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-surface-dark rounded-lg border-l-4 border-l-warning animate-state-update" style="animation-delay: 0.2s;">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-sm">API_CREDENTIALS</span>
+                                    <span class="text-xs text-warning">Pending</span>
+                                </div>
+                                <div class="text-xs text-text-secondary">
+                                    <p>Source: Secrets Manager</p>
+                                    <p>Will inject: Step 8 → Step 9</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Node Details -->
+                    <div>
+                        <h4 class="font-semibold mb-4">Current Node: API Integration</h4>
+                        <div class="space-y-4">
+                            <div class="p-3 bg-info/10 border border-info/20 rounded-lg">
+                                <h5 class="font-medium text-info mb-2">Node Status</h5>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-text-secondary">Status:</span>
+                                        <span class="text-info">Executing API Call</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-text-secondary">Duration:</span>
+                                        <span>47 seconds</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-text-secondary">Timeout:</span>
+                                        <span>5 minutes</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-text-secondary">Retries:</span>
+                                        <span>0/3</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-surface-dark rounded-lg">
+                                <h5 class="font-medium mb-2">Injected Data</h5>
+                                <div class="text-xs font-mono text-text-secondary bg-text/5 p-2 rounded">
+                                    <div>user_id: "user_12345"</div>
+                                    <div>workspace_type: "premium"</div>
+                                    <div>region: "us-west-2"</div>
+                                    <div>api_endpoint: "https://api.company.com/v1"</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Activity Feed -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Activity Stream -->
+                <div class="bg-surface rounded-xl border border-border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Live Activity Stream</h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-success rounded-full animate-live-pulse"></div>
+                            <span class="text-sm text-success">Live</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 max-h-80 overflow-y-auto">
+                        <div class="flex items-start space-x-3 p-3 bg-surface-dark rounded-lg animate-data-stream">
+                            <div class="w-2 h-2 bg-success rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">State injection completed</span>
+                                    <span class="text-xs text-text-muted">Just now</span>
+                                </div>
+                                <p class="text-xs text-text-secondary">USER_PROFILE_DATA injected into exec-7f2a9b at step 8</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 p-3 bg-surface-dark rounded-lg animate-data-stream" style="animation-delay: 0.5s;">
+                            <div class="w-2 h-2 bg-warning rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">API call initiated</span>
+                                    <span class="text-xs text-text-muted">2s ago</span>
+                                </div>
+                                <p class="text-xs text-text-secondary">Third-party service integration for exec-7f2a9b</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 p-3 bg-surface-dark rounded-lg animate-data-stream" style="animation-delay: 1s;">
+                            <div class="w-2 h-2 bg-info rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">New execution started</span>
+                                    <span class="text-xs text-text-muted">15s ago</span>
+                                </div>
+                                <p class="text-xs text-text-secondary">exec-9d5f7c: User Authentication workflow</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 p-3 bg-surface-dark rounded-lg animate-data-stream" style="animation-delay: 1.5s;">
+                            <div class="w-2 h-2 bg-success rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">Step completed</span>
+                                    <span class="text-xs text-text-muted">23s ago</span>
+                                </div>
+                                <p class="text-xs text-text-secondary">exec-7f2a9b step 7: Send Welcome completed successfully</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 p-3 bg-surface-dark rounded-lg animate-data-stream" style="animation-delay: 2s;">
+                            <div class="w-2 h-2 bg-error rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">Execution failed</span>
+                                    <span class="text-xs text-text-muted">45s ago</span>
+                                </div>
+                                <p class="text-xs text-text-secondary">exec-a1b4d2: Payment Processing - API timeout error</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 p-3 bg-surface-dark rounded-lg animate-data-stream" style="animation-delay: 2.5s;">
+                            <div class="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium">State update</span>
+                                    <span class="text-xs text-text-muted">1m ago</span>
+                                </div>
+                                <p class="text-xs text-text-secondary">Feature flag ENABLE_NEW_DASHBOARD updated to true</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Metrics -->
+                <div class="bg-surface rounded-xl border border-border p-6">
+                    <h3 class="text-lg font-semibold mb-4">System Metrics</h3>
+                    
+                    <!-- Performance Gauges -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="text-center p-4 bg-surface-dark rounded-lg">
+                            <div class="relative w-20 h-20 mx-auto mb-2">
+                                <svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-border" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    <path class="text-primary" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="75, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-lg font-bold text-primary">75%</span>
+                                </div>
+                            </div>
+                            <p class="text-sm font-medium">CPU Usage</p>
+                        </div>
+
+                        <div class="text-center p-4 bg-surface-dark rounded-lg">
+                            <div class="relative w-20 h-20 mx-auto mb-2">
+                                <svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-border" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    <path class="text-warning" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="62, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-lg font-bold text-warning">62%</span>
+                                </div>
+                            </div>
+                            <p class="text-sm font-medium">Memory</p>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Stats -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg animate-monitor-scan">
+                            <div>
+                                <p class="text-sm font-medium">Active Threads</p>
+                                <p class="text-xs text-text-secondary">Worker processes</p>
+                            </div>
+                            <span class="text-xl font-bold text-primary">142</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium">Queue Depth</p>
+                                <p class="text-xs text-text-secondary">Pending executions</p>
+                            </div>
+                            <span class="text-xl font-bold text-warning">12</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium">Network I/O</p>
+                                <p class="text-xs text-text-secondary">MB/s transfer rate</p>
+                            </div>
+                            <span class="text-xl font-bold text-success">8.4</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-surface-dark rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium">Error Rate</p>
+                                <p class="text-xs text-text-secondary">Failures per minute</p>
+                            </div>
+                            <span class="text-xl font-bold text-error">0.3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State Change Log -->
+            <div class="mt-6 bg-surface rounded-xl border border-border p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">State Change Log</h3>
+                    <div class="flex items-center space-x-2">
+                        <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors text-sm">
+                            Filter
+                        </button>
+                        <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors text-sm">
+                            Export
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="border-b border-border">
+                            <tr>
+                                <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Timestamp</th>
+                                <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Execution ID</th>
+                                <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">State Key</th>
+                                <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Change Type</th>
+                                <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Value</th>
+                                <th class="text-left py-3 text-xs font-medium text-text-secondary uppercase tracking-wide">Source</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            <tr class="hover:bg-surface-dark transition-colors animate-real-time-update">
+                                <td class="py-3 text-sm">12:34:56.789</td>
+                                <td class="py-3 text-sm font-mono">exec-7f2a9b</td>
+                                <td class="py-3 text-sm font-mono">USER_PROFILE_DATA</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 bg-success/10 text-success rounded-full text-xs">injected</span>
+                                </td>
+                                <td class="py-3 text-sm font-mono max-w-xs truncate">{"user_id": "12345", "name": "John Doe"...}</td>
+                                <td class="py-3 text-sm">Customer API</td>
+                            </tr>
+
+                            <tr class="hover:bg-surface-dark transition-colors animate-real-time-update" style="animation-delay: 0.1s;">
+                                <td class="py-3 text-sm">12:34:53.412</td>
+                                <td class="py-3 text-sm font-mono">exec-7f2a9b</td>
+                                <td class="py-3 text-sm font-mono">WORKSPACE_CONFIG</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 bg-info/10 text-info rounded-full text-xs">updated</span>
+                                </td>
+                                <td class="py-3 text-sm font-mono max-w-xs truncate">{"type": "premium", "region": "us-west-2"}</td>
+                                <td class="py-3 text-sm">Config DB</td>
+                            </tr>
+
+                            <tr class="hover:bg-surface-dark transition-colors animate-real-time-update" style="animation-delay: 0.2s;">
+                                <td class="py-3 text-sm">12:34:45.123</td>
+                                <td class="py-3 text-sm font-mono">exec-3e8c1a</td>
+                                <td class="py-3 text-sm font-mono">PROCESSING_STATUS</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 bg-warning/10 text-warning rounded-full text-xs">modified</span>
+                                </td>
+                                <td class="py-3 text-sm font-mono">{"progress": 38, "current_step": 3}</td>
+                                <td class="py-3 text-sm">Runtime Engine</td>
+                            </tr>
+
+                            <tr class="hover:bg-surface-dark transition-colors animate-real-time-update" style="animation-delay: 0.3s;">
+                                <td class="py-3 text-sm">12:34:32.987</td>
+                                <td class="py-3 text-sm font-mono">exec-9d5f7c</td>
+                                <td class="py-3 text-sm font-mono">AUTH_TOKEN</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 bg-error/10 text-error rounded-full text-xs">expired</span>
+                                </td>
+                                <td class="py-3 text-sm font-mono">***redacted***</td>
+                                <td class="py-3 text-sm">Auth Service</td>
+                            </tr>
+
+                            <tr class="hover:bg-surface-dark transition-colors animate-real-time-update" style="animation-delay: 0.4s;">
+                                <td class="py-3 text-sm">12:34:28.654</td>
+                                <td class="py-3 text-sm font-mono">global</td>
+                                <td class="py-3 text-sm font-mono">ENABLE_NEW_DASHBOARD</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">flag_updated</span>
+                                </td>
+                                <td class="py-3 text-sm font-mono">true</td>
+                                <td class="py-3 text-sm">Feature Manager</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-4">
+                    <div class="text-sm text-text-secondary">
+                        Showing recent 5 of 2,847 state changes
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors text-sm">
+                            Load More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

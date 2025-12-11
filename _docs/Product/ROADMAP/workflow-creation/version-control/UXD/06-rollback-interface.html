@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Control - Rollback Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'rollback-warning': 'rollbackWarning 2s ease-in-out infinite',
+                        'impact-analysis': 'impactAnalysis 1.5s ease-in-out infinite',
+                        'rollback-progress': 'rollbackProgress 3s ease-in-out infinite',
+                        'version-select': 'versionSelect 0.8s ease-out',
+                        'danger-pulse': 'dangerPulse 1.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        rollbackWarning: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 242 242)', borderColor: 'rgb(252 165 165)' },
+                            '50%': { backgroundColor: 'rgb(252 165 165)', borderColor: 'rgb(239 68 68)' },
+                        },
+                        impactAnalysis: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 249 195)', borderColor: 'rgb(250 204 21)' },
+                            '50%': { backgroundColor: 'rgb(253 224 71)', borderColor: 'rgb(245 158 11)' },
+                        },
+                        rollbackProgress: {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' },
+                        },
+                        versionSelect: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        dangerPulse: {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.4)' },
+                            '50%': { boxShadow: '0 0 20px 10px rgba(239, 68, 68, 0.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Rollback Version</h1>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l-2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
+                        </svg>
+                        <span>Email Processing Automation</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <div class="w-2 h-2 bg-red-500 rounded-full animate-danger-pulse"></div>
+                        <span class="text-red-600 font-medium">Destructive Operation</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Warning Banner -->
+    <div class="bg-red-50 border-b border-red-200 px-4 sm:px-6 lg:px-8 py-4 animate-rollback-warning">
+        <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <div>
+                <div class="text-sm font-medium text-red-700">Caution: Rollback Operation</div>
+                <div class="text-xs text-red-600">
+                    Rolling back will revert your workflow to a previous version. This action cannot be undone without creating a new commit.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-5 gap-8">
+            <!-- Left Sidebar: Current Status -->
+            <div class="col-span-2 space-y-6">
+                <!-- Current Version Info -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Current Version</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-blue-700">v2.1.0</div>
+                                <div class="text-xs text-blue-600">Enhanced attachment processing</div>
+                                <div class="text-xs text-muted-foreground mt-1">
+                                    Deployed 2 hours ago • John Doe
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-xs text-muted-foreground">
+                            <div class="flex justify-between">
+                                <span>Commit:</span>
+                                <span class="font-mono">af7b9c2</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Branch:</span>
+                                <span>main</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Status:</span>
+                                <span class="text-green-600">Production</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rollback Checklist -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Pre-Rollback Checklist</h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Backup current version</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Validate target version</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Analyze impact assessment</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <span>Notify stakeholders</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Execute rollback</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Verify rollback success</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Assessment -->
+                <div class="bg-white rounded-lg border border-yellow-200">
+                    <div class="px-4 py-3 border-b border-yellow-200 bg-yellow-50">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <h3 class="text-sm font-medium text-yellow-700">Risk Assessment</h3>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span>Data Loss Risk:</span>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">Medium</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Downtime Risk:</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Low</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Feature Impact:</span>
+                            <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">High</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>User Impact:</span>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">Medium</span>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                            <strong>Note:</strong> Rolling back will remove PDF processing features added in v2.1.0. 
+                            Users currently using these features may experience errors.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Quick Actions</h3>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            🔍 View Version History
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            📊 Compare Versions
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            💾 Create Backup First
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            📋 Export Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Rollback Interface -->
+            <div class="col-span-3 space-y-6">
+                <!-- Version Selection -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h2 class="text-lg font-semibold">Select Target Version</h2>
+                        <p class="text-sm text-muted-foreground mt-1">Choose the version you want to rollback to</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <!-- Version Timeline -->
+                        <div class="space-y-4">
+                            <!-- Target Version - Selected -->
+                            <div class="flex items-center gap-4 p-4 bg-green-50 border-2 border-green-300 rounded-lg animate-version-select">
+                                <input type="radio" name="rollback-version" class="w-4 h-4 text-green-600" checked>
+                                <div class="w-4 h-4 bg-green-500 border-4 border-white rounded-full shadow-sm"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">v2.0.3</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Target</span>
+                                        <span class="text-sm font-medium">Bug fixes and improvements</span>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                                        <span>Sarah Chen • 1 day ago • commit: 8e3d4f1</span>
+                                        <span class="text-green-600">Stable</span>
+                                    </div>
+                                    <div class="text-sm text-muted-foreground mt-1">
+                                        Fixed email filtering logic, resolved connection timeout issues, updated error handling.
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50">Preview</button>
+                                </div>
+                            </div>
+
+                            <!-- Other Version Options -->
+                            <div class="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 animate-version-select" style="animation-delay: 0.2s">
+                                <input type="radio" name="rollback-version" class="w-4 h-4 text-blue-600">
+                                <div class="w-4 h-4 bg-blue-500 border-4 border-white rounded-full shadow-sm"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded">v2.0.2</span>
+                                        <span class="text-sm font-medium">Performance optimization</span>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                                        <span>John Doe • 1 week ago • commit: 1b2c3d4</span>
+                                        <span class="text-green-600">Stable</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50">Preview</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 animate-version-select" style="animation-delay: 0.4s">
+                                <input type="radio" name="rollback-version" class="w-4 h-4 text-blue-600">
+                                <div class="w-4 h-4 bg-green-500 border-4 border-white rounded-full shadow-sm"></div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">v2.0.1</span>
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">📦 Release</span>
+                                        <span class="text-sm font-medium">Stable production release</span>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                                        <span>Sarah Chen • 2 weeks ago • commit: 9f8e7d6</span>
+                                        <span class="text-green-600">Production</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50">Preview</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impact Analysis -->
+                <div class="bg-white rounded-lg border border-yellow-200">
+                    <div class="px-6 py-4 border-b border-yellow-200 bg-yellow-50">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-yellow-600 animate-impact-analysis" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            <h3 class="text-lg font-semibold text-yellow-700">Impact Analysis</h3>
+                            <span class="ml-auto text-sm text-yellow-600">Rolling back from v2.1.0 to v2.0.3</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-3 gap-6 mb-6">
+                            <!-- Features Affected -->
+                            <div class="text-center p-4 bg-red-50 border border-red-200 rounded">
+                                <div class="text-2xl font-bold text-red-600">8</div>
+                                <div class="text-sm text-red-700">Features Removed</div>
+                            </div>
+                            
+                            <!-- Files Changed -->
+                            <div class="text-center p-4 bg-yellow-50 border border-yellow-200 rounded">
+                                <div class="text-2xl font-bold text-yellow-600">12</div>
+                                <div class="text-sm text-yellow-700">Files Affected</div>
+                            </div>
+                            
+                            <!-- Data Impact -->
+                            <div class="text-center p-4 bg-blue-50 border border-blue-200 rounded">
+                                <div class="text-2xl font-bold text-blue-600">3</div>
+                                <div class="text-sm text-blue-700">Config Changes</div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Impact -->
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-medium text-red-700 mb-2">Features That Will Be Removed:</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded text-sm">
+                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                        <span>Enhanced PDF processing with OCR</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded text-sm">
+                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                        <span>Advanced file compression</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded text-sm">
+                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                        <span>50MB file size limit (reverts to 25MB)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded text-sm">
+                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                        <span>DOCX, XLSX, PPT file support</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-sm font-medium text-blue-700 mb-2">Configuration Changes:</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        <span>maxFileSize: 50MB → 25MB</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        <span>ocrEnabled: true → false</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        <span>allowedTypes: removes docx, xlsx, ppt</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rollback Options -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Rollback Options</h3>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        <!-- Rollback Type -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Rollback Type</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="rollback-type" value="hard" class="mr-3" checked>
+                                    <div>
+                                        <span class="text-sm font-medium">Hard Rollback</span>
+                                        <div class="text-xs text-muted-foreground">Completely revert to target version, losing all changes</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="rollback-type" value="soft" class="mr-3">
+                                    <div>
+                                        <span class="text-sm font-medium">Soft Rollback</span>
+                                        <div class="text-xs text-muted-foreground">Create new commit with target version content</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="rollback-type" value="selective" class="mr-3">
+                                    <div>
+                                        <span class="text-sm font-medium">Selective Rollback</span>
+                                        <div class="text-xs text-muted-foreground">Choose specific files/features to rollback</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Additional Options -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Additional Options</label>
+                            <div class="space-y-2 text-sm">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" checked>
+                                    <span>Create backup before rollback</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2">
+                                    <span>Notify team members</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" checked>
+                                    <span>Run validation tests after rollback</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2">
+                                    <span>Schedule rollback for later</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Reason -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Rollback Reason</label>
+                            <textarea 
+                                placeholder="Describe why you're rolling back this version..."
+                                class="w-full text-sm border rounded px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation & Execute -->
+                <div class="bg-white rounded-lg border border-red-200">
+                    <div class="px-6 py-4 border-b border-red-200 bg-red-50">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <h3 class="text-lg font-semibold text-red-700">Confirm Rollback</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <div class="text-sm mb-4">
+                                You are about to rollback from <strong>v2.1.0</strong> to <strong>v2.0.3</strong>. 
+                                This will remove 8 features and affect 12 files.
+                            </div>
+                            
+                            <div class="p-4 bg-red-50 border border-red-200 rounded mb-4">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <div class="text-sm text-red-700">
+                                        <strong>Warning:</strong> This action cannot be undone. Users currently using 
+                                        PDF processing features may experience errors after the rollback.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 text-sm mb-4">
+                                <input type="checkbox" id="confirm-rollback" class="mr-2" required>
+                                <label for="confirm-rollback">
+                                    I understand the risks and want to proceed with the rollback
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button class="px-6 py-3 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors animate-danger-pulse">
+                                Execute Rollback
+                            </button>
+                            <button class="px-6 py-3 text-sm border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors">
+                                Preview Changes First
+                            </button>
+                            <button class="px-6 py-3 text-sm border rounded hover:bg-gray-50 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                        
+                        <div class="mt-4 text-xs text-muted-foreground">
+                            Estimated rollback time: 2-3 minutes • No scheduled maintenance window required
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rollback Progress Modal (Hidden) -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" id="rollbackModal">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full">
+                <div class="p-6">
+                    <div class="text-center mb-6">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">Rolling Back Workflow</h3>
+                        <p class="text-sm text-muted-foreground">Please wait while we revert to v2.0.3...</p>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Creating backup...</span>
+                                <span>100%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-600 h-2 rounded-full w-full"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Reverting files...</span>
+                                <span>45%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full animate-rollback-progress" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1 text-muted-foreground">
+                                <span>Running validation...</span>
+                                <span>Pending</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gray-400 h-2 rounded-full w-0"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

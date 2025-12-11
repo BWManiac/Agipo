@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Marketplace - Dependency Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'connection-check': 'connectionCheck 2s ease-in-out infinite',
+                        'dependency-install': 'dependencyInstall 1.5s ease-out',
+                        'status-update': 'statusUpdate 0.5s ease-out',
+                        'oauth-flow': 'oauthFlow 0.8s ease-in-out',
+                    },
+                    keyframes: {
+                        connectionCheck: {
+                            '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                            '50%': { opacity: '0.6', transform: 'scale(0.95)' },
+                        },
+                        dependencyInstall: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        statusUpdate: {
+                            '0%': { backgroundColor: 'rgb(219 234 254)', transform: 'scale(1.02)' },
+                            '100%': { backgroundColor: 'rgb(255 255 255)', transform: 'scale(1)' },
+                        },
+                        oauthFlow: {
+                            '0%': { opacity: '0', transform: 'scale(0.8)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-600 hover:text-gray-900 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-semibold">Dependency Setup</h1>
+                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                        Step 3 of 4
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm text-muted-foreground">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                            <span>2 connections required</span>
+                        </div>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Skip & Configure Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-8">
+            <!-- Left Sidebar: Dependency Overview -->
+            <div class="space-y-4">
+                <!-- Installation Progress -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Installation Progress</h3>
+                    <div class="space-y-3">
+                        <!-- Completed Steps -->
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-green-900">Template Selection</div>
+                                <div class="text-xs text-green-700">✓ Complete</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-green-900">Configuration</div>
+                                <div class="text-xs text-green-700">✓ Complete</div>
+                            </div>
+                        </div>
+
+                        <!-- Current Step -->
+                        <div class="flex items-center gap-3 p-2 bg-purple-50 border-2 border-purple-500 rounded-lg animate-dependency-install">
+                            <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">3</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-purple-900">Dependencies</div>
+                                <div class="text-xs text-purple-700">Setting up connections</div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Step -->
+                        <div class="flex items-center gap-3 p-2 bg-gray-50 border border-gray-200 rounded-lg opacity-60">
+                            <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">4</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-600">Finalize</div>
+                                <div class="text-xs text-gray-500">Complete setup</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Required Connections Summary -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Required Connections</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium">Gmail</div>
+                                <div class="text-xs text-red-700">Not connected</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium">Notion</div>
+                                <div class="text-xs text-red-700">Not connected</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 bg-gray-50 border border-gray-200 rounded-lg opacity-60">
+                            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-600">Slack</div>
+                                <div class="text-xs text-gray-500">Optional</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Health Check -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Connection Health</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">OAuth status:</span>
+                            <span class="font-medium text-orange-600">Pending</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Permissions:</span>
+                            <span class="font-medium text-orange-600">Checking...</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">API quotas:</span>
+                            <span class="font-medium text-green-600">Available</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Rate limits:</span>
+                            <span class="font-medium text-green-600">Within bounds</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help & Documentation -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Need Help?</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            📖 Connection Setup Guide
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            🔑 OAuth Permissions Help
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            🛠️ Troubleshooting Guide
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            💬 Contact Support
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dependency Setup -->
+            <div class="col-span-3 space-y-6">
+                <!-- Step Header -->
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold">Setup Required Connections</h3>
+                        <div class="text-sm text-muted-foreground">
+                            Step 3 of 4: Connect external services to enable automation
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-purple-600 h-2 rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <!-- Gmail Connection Setup -->
+                <div class="bg-white rounded-lg border animate-dependency-install">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold">Gmail Connection</h3>
+                                    <p class="text-sm text-muted-foreground">Required • Read access to inbox</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 bg-red-100 text-red-700 text-xs rounded-full">
+                                    ● Not Connected
+                                </span>
+                                <button class="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors animate-oauth-flow">
+                                    Connect Gmail
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Connection Details -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">What we'll access</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Read emails from your inbox</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Access email metadata (sender, subject, date)</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Mark emails as read (optional)</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="text-xs font-medium text-blue-900 mb-1">Security Note</div>
+                                    <div class="text-xs text-blue-700">
+                                        We only access emails that match your filter criteria. 
+                                        Full email content is processed locally and never stored on our servers.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Connection Status -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Connection Status</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <span class="text-sm">OAuth Authorization</span>
+                                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">Pending</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <span class="text-sm">Permissions Granted</span>
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">Waiting</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <span class="text-sm">Connection Test</span>
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">Waiting</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="text-xs text-muted-foreground mb-2">Account Selection</div>
+                                    <select class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                        <option>Select Gmail account...</option>
+                                        <option>john.doe@company.com</option>
+                                        <option>personal@gmail.com</option>
+                                        <option>+ Add new account</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gmail-specific Configuration -->
+                        <div class="mt-6">
+                            <h4 class="text-sm font-medium mb-3">Gmail Settings</h4>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium mb-1">Labels to Monitor</label>
+                                    <div class="space-y-1">
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" checked class="rounded border-gray-300">
+                                            <span class="text-xs">INBOX</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" class="rounded border-gray-300">
+                                            <span class="text-xs">IMPORTANT</span>
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" class="rounded border-gray-300">
+                                            <span class="text-xs">UNREAD</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium mb-1">Mark as Read</label>
+                                    <select class="w-full px-2 py-1 text-xs border rounded">
+                                        <option>Never</option>
+                                        <option>After processing</option>
+                                        <option>On successful task creation</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium mb-1">Rate Limiting</label>
+                                    <select class="w-full px-2 py-1 text-xs border rounded">
+                                        <option>Standard (10/minute)</option>
+                                        <option>Conservative (5/minute)</option>
+                                        <option>Aggressive (20/minute)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notion Connection Setup -->
+                <div class="bg-white rounded-lg border animate-dependency-install">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold">Notion Connection</h3>
+                                    <p class="text-sm text-muted-foreground">Required • Write access to databases</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 bg-red-100 text-red-700 text-xs rounded-full">
+                                    ● Not Connected
+                                </span>
+                                <button class="px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-900 transition-colors">
+                                    Connect Notion
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Connection Details -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">What we'll access</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Create new database entries</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Read database schema and properties</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Update existing pages (if needed)</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                    <div class="text-xs font-medium text-amber-900 mb-1">Database Setup Required</div>
+                                    <div class="text-xs text-amber-700">
+                                        A Notion database with the correct properties is required. 
+                                        We can help create one or connect to an existing database.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Database Selection -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Database Configuration</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Target Database</label>
+                                        <select class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500">
+                                            <option>Connect to authorize first...</option>
+                                        </select>
+                                        <div class="text-xs text-muted-foreground mt-1">Select database after connecting</div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Database Type</label>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center gap-2">
+                                                <input type="radio" name="db_type" value="existing" checked class="border-gray-300">
+                                                <span class="text-xs">Use existing database</span>
+                                            </label>
+                                            <label class="flex items-center gap-2">
+                                                <input type="radio" name="db_type" value="create" class="border-gray-300">
+                                                <span class="text-xs">Create new database</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 bg-gray-50 rounded-lg">
+                                        <div class="text-xs font-medium mb-2">Required Properties</div>
+                                        <div class="space-y-1 text-xs text-muted-foreground">
+                                            <div>• Title (Text)</div>
+                                            <div>• Priority (Select)</div>
+                                            <div>• Status (Select)</div>
+                                            <div>• Email Date (Date)</div>
+                                            <div>• Sender (Text)</div>
+                                            <div>• Content (Rich Text)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optional Slack Connection -->
+                <div class="bg-white rounded-lg border opacity-60">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-600">Slack Integration</h3>
+                                    <p class="text-sm text-muted-foreground">Optional • Notifications and alerts</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                                    ○ Optional
+                                </span>
+                                <button class="px-4 py-2 text-sm border border-gray-300 text-gray-500 rounded-lg cursor-not-allowed" disabled>
+                                    Skip for Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 text-gray-600">
+                        <div class="text-sm mb-3">
+                            Connect Slack to receive notifications when:
+                        </div>
+                        <div class="space-y-1 text-sm text-muted-foreground">
+                            <div>• High priority emails are processed</div>
+                            <div>• Processing errors occur</div>
+                            <div>• Daily/weekly summary reports</div>
+                            <div>• New tasks are created in Notion</div>
+                        </div>
+                        <div class="mt-4">
+                            <button class="text-sm text-blue-600 hover:underline">Set up later in settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection Testing -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Test Connections</h3>
+                        <p class="text-sm text-muted-foreground mt-1">Verify connections are working correctly before proceeding</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Gmail Test -->
+                            <div class="p-4 border-2 border-dashed border-gray-200 rounded-lg opacity-50">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span class="font-medium">Gmail Connection</span>
+                                    </div>
+                                    <button class="px-3 py-1 text-xs border border-gray-300 text-gray-500 rounded cursor-not-allowed" disabled>
+                                        Test Connection
+                                    </button>
+                                </div>
+                                <div class="text-xs text-muted-foreground">
+                                    Connect Gmail first to test the connection
+                                </div>
+                            </div>
+
+                            <!-- Notion Test -->
+                            <div class="p-4 border-2 border-dashed border-gray-200 rounded-lg opacity-50">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <span class="font-medium">Notion Database</span>
+                                    </div>
+                                    <button class="px-3 py-1 text-xs border border-gray-300 text-gray-500 rounded cursor-not-allowed" disabled>
+                                        Test Database
+                                    </button>
+                                </div>
+                                <div class="text-xs text-muted-foreground">
+                                    Connect Notion first to test database access
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- End-to-End Test -->
+                        <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium text-blue-900">Full Workflow Test</div>
+                                    <div class="text-sm text-blue-700">Test complete email processing pipeline</div>
+                                </div>
+                                <button class="px-4 py-2 text-sm border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors" disabled>
+                                    Run Full Test
+                                </button>
+                            </div>
+                            <div class="text-xs text-blue-600 mt-2">
+                                Available after all required connections are established
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between bg-white rounded-lg border p-6">
+                    <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        ← Back to Configuration
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Save Progress
+                        </button>
+                        <button class="px-6 py-2 text-sm border border-purple-500 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors" disabled>
+                            Continue to Finalize →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

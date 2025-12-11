@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Control - Branch Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'branch-flow': 'branchFlow 3s ease-in-out infinite',
+                        'merge-pulse': 'mergePulse 1.5s ease-in-out infinite',
+                        'conflict-alert': 'conflictAlert 2s ease-in-out infinite',
+                        'protection-glow': 'protectionGlow 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        branchFlow: {
+                            '0%, 100%': { opacity: '0.4', transform: 'scale(0.95)' },
+                            '50%': { opacity: '1', transform: 'scale(1.05)' },
+                        },
+                        mergePulse: {
+                            '0%, 100%': { backgroundColor: 'rgb(34 197 94)' },
+                            '50%': { backgroundColor: 'rgb(22 163 74)' },
+                        },
+                        conflictAlert: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 242 242)', borderColor: 'rgb(252 165 165)' },
+                            '50%': { backgroundColor: 'rgb(252 165 165)', borderColor: 'rgb(239 68 68)' },
+                        },
+                        protectionGlow: {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.4)' },
+                            '50%': { boxShadow: '0 0 20px 10px rgba(59, 130, 246, 0.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Email Processing Automation</h1>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3"></path>
+                        </svg>
+                        <span>Branch Management</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                        <span class="text-blue-600 font-medium">4 active branches</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Branch Settings
+                    </button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        New Branch
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-5 gap-8">
+            <!-- Left Sidebar: Branch List -->
+            <div class="col-span-2 space-y-4">
+                <!-- Active Branches -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Active Branches</h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <!-- Main Branch -->
+                        <div class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg animate-protection-glow">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full animate-merge-pulse"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-blue-700">main</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">Protected</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">Current</span>
+                                </div>
+                                <div class="text-xs text-blue-600 mt-1">47 commits • Updated 2 hours ago</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-muted-foreground">John Doe</div>
+                                <div class="text-xs text-green-600">✓ Up to date</div>
+                            </div>
+                        </div>
+
+                        <!-- Feature Branch -->
+                        <div class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-3 h-3 bg-green-500 rounded-full animate-branch-flow"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">feature/email-filters</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded">Ready to merge</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">7 commits ahead, 1 behind main</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-muted-foreground">Sarah Chen</div>
+                                <div class="text-xs text-yellow-600">⟳ 1 behind</div>
+                            </div>
+                        </div>
+
+                        <!-- Hotfix Branch -->
+                        <div class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-3 h-3 bg-orange-500 rounded-full animate-branch-flow" style="animation-delay: 0.5s"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">hotfix/attachment-bug</span>
+                                    <span class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded">Urgent</span>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">3 commits ahead of main</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-muted-foreground">Mike Wilson</div>
+                                <div class="text-xs text-green-600">✓ Up to date</div>
+                            </div>
+                        </div>
+
+                        <!-- Development Branch -->
+                        <div class="flex items-center gap-3 p-3 border-2 border-red-200 bg-red-50 rounded-lg animate-conflict-alert">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full animate-branch-flow" style="animation-delay: 1s"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-red-700">dev/new-ui</span>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">⚠️ Conflicts</span>
+                                </div>
+                                <div class="text-xs text-red-600 mt-1">12 commits ahead, 5 behind main</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-muted-foreground">Design Team</div>
+                                <div class="text-xs text-red-600">⚠ 3 conflicts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            🌿 Create Branch from main
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            🔄 Switch Branch
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            🔗 Merge Branch
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            🗑️ Delete Merged Branches
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm text-left border rounded hover:bg-gray-50 transition-colors">
+                            ⚙️ Branch Protection Rules
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Merge Queue -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Merge Queue</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                            <span class="text-xs">feature/email-filters</span>
+                            <span class="text-xs text-yellow-600 ml-auto">Waiting</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                            <span class="text-xs">hotfix/attachment-bug</span>
+                            <span class="text-xs text-blue-600 ml-auto">Testing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content: Branch Visualization & Management -->
+            <div class="col-span-3 space-y-6">
+                <!-- Branch Graph Visualization -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Branch Network</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50">Expand All</button>
+                                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50">Filter</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <!-- SVG Branch Visualization -->
+                        <div class="relative h-80 overflow-x-auto">
+                            <svg width="800" height="300" class="min-w-full">
+                                <!-- Main branch line -->
+                                <line x1="50" y1="150" x2="750" y2="150" stroke="rgb(59 130 246)" stroke-width="4" class="animate-branch-flow"/>
+                                
+                                <!-- Feature branch -->
+                                <line x1="200" y1="150" x2="200" y2="100" stroke="rgb(34 197 94)" stroke-width="3"/>
+                                <line x1="200" y1="100" x2="500" y2="100" stroke="rgb(34 197 94)" stroke-width="3"/>
+                                <line x1="500" y1="100" x2="500" y2="150" stroke="rgb(34 197 94)" stroke-width="3" stroke-dasharray="5,5"/>
+                                
+                                <!-- Hotfix branch -->
+                                <line x1="400" y1="150" x2="400" y2="200" stroke="rgb(249 115 22)" stroke-width="3"/>
+                                <line x1="400" y1="200" x2="600" y2="200" stroke="rgb(249 115 22)" stroke-width="3"/>
+                                <line x1="600" y1="200" x2="600" y2="150" stroke="rgb(249 115 22)" stroke-width="3" stroke-dasharray="5,5"/>
+                                
+                                <!-- Dev branch (with conflicts) -->
+                                <line x1="150" y1="150" x2="150" y2="50" stroke="rgb(168 85 247)" stroke-width="3"/>
+                                <line x1="150" y1="50" x2="650" y2="50" stroke="rgb(168 85 247)" stroke-width="3"/>
+                                <line x1="650" y1="50" x2="650" y2="150" stroke="rgb(239 68 68)" stroke-width="3" stroke-dasharray="10,5"/>
+                                
+                                <!-- Commit dots -->
+                                <circle cx="50" cy="150" r="6" fill="rgb(59 130 246)" class="animate-merge-pulse"/>
+                                <circle cx="150" cy="150" r="5" fill="rgb(59 130 246)"/>
+                                <circle cx="200" cy="150" r="5" fill="rgb(59 130 246)"/>
+                                <circle cx="300" cy="150" r="5" fill="rgb(59 130 246)"/>
+                                <circle cx="400" cy="150" r="5" fill="rgb(59 130 246)"/>
+                                <circle cx="500" cy="150" r="5" fill="rgb(59 130 246)"/>
+                                <circle cx="600" cy="150" r="5" fill="rgb(59 130 246)"/>
+                                <circle cx="700" cy="150" r="5" fill="rgb(59 130 246)"/>
+                                <circle cx="750" cy="150" r="8" fill="rgb(34 197 94)" class="animate-merge-pulse"/>
+                                
+                                <!-- Feature branch commits -->
+                                <circle cx="250" cy="100" r="4" fill="rgb(34 197 94)"/>
+                                <circle cx="350" cy="100" r="4" fill="rgb(34 197 94)"/>
+                                <circle cx="450" cy="100" r="4" fill="rgb(34 197 94)"/>
+                                <circle cx="500" cy="100" r="6" fill="rgb(251 191 36)" class="animate-branch-flow"/>
+                                
+                                <!-- Hotfix commits -->
+                                <circle cx="450" cy="200" r="4" fill="rgb(249 115 22)"/>
+                                <circle cx="550" cy="200" r="4" fill="rgb(249 115 22)"/>
+                                <circle cx="600" cy="200" r="6" fill="rgb(251 191 36)" class="animate-branch-flow"/>
+                                
+                                <!-- Dev branch commits -->
+                                <circle cx="250" cy="50" r="4" fill="rgb(168 85 247)"/>
+                                <circle cx="350" cy="50" r="4" fill="rgb(168 85 247)"/>
+                                <circle cx="450" cy="50" r="4" fill="rgb(168 85 247)"/>
+                                <circle cx="550" cy="50" r="4" fill="rgb(168 85 247)"/>
+                                <circle cx="650" cy="50" r="6" fill="rgb(239 68 68)" class="animate-conflict-alert"/>
+                                
+                                <!-- Branch labels -->
+                                <text x="60" y="145" fill="rgb(59 130 246)" font-size="12" font-weight="bold">main</text>
+                                <text x="460" y="95" fill="rgb(34 197 94)" font-size="11">feature/email-filters</text>
+                                <text x="460" y="215" fill="rgb(249 115 22)" font-size="11">hotfix/attachment-bug</text>
+                                <text x="460" y="45" fill="rgb(168 85 247)" font-size="11">dev/new-ui</text>
+                                
+                                <!-- Conflict indicator -->
+                                <circle cx="650" cy="100" r="8" fill="none" stroke="rgb(239 68 68)" stroke-width="2" stroke-dasharray="3,3" class="animate-conflict-alert"/>
+                                <text x="620" y="125" fill="rgb(239 68 68)" font-size="10">conflicts</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch Operations -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Create New Branch -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">Create New Branch</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-muted-foreground mb-1">Branch Name</label>
+                                <input type="text" placeholder="feature/new-feature-name" class="w-full text-sm border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-muted-foreground mb-1">Source Branch</label>
+                                <select class="w-full text-sm border rounded px-3 py-2">
+                                    <option>main</option>
+                                    <option>feature/email-filters</option>
+                                    <option>dev/new-ui</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="flex items-center text-xs">
+                                    <input type="checkbox" class="mr-2">
+                                    <span>Switch to branch after creation</span>
+                                </label>
+                                <label class="flex items-center text-xs">
+                                    <input type="checkbox" class="mr-2">
+                                    <span>Set up remote tracking</span>
+                                </label>
+                            </div>
+                            <button class="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                Create Branch
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Merge Operations -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="px-4 py-3 border-b">
+                            <h3 class="text-sm font-medium">Merge Operations</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-muted-foreground mb-1">Source Branch</label>
+                                <select class="w-full text-sm border rounded px-3 py-2">
+                                    <option>feature/email-filters (Ready)</option>
+                                    <option>hotfix/attachment-bug (Testing)</option>
+                                    <option disabled>dev/new-ui (Conflicts)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-muted-foreground mb-1">Target Branch</label>
+                                <select class="w-full text-sm border rounded px-3 py-2">
+                                    <option>main</option>
+                                    <option>develop</option>
+                                    <option>staging</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-muted-foreground mb-1">Merge Strategy</label>
+                                <select class="w-full text-sm border rounded px-3 py-2">
+                                    <option>Create merge commit</option>
+                                    <option>Squash and merge</option>
+                                    <option>Rebase and merge</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="flex items-center text-xs">
+                                    <input type="checkbox" class="mr-2" checked>
+                                    <span>Delete source branch after merge</span>
+                                </label>
+                                <label class="flex items-center text-xs">
+                                    <input type="checkbox" class="mr-2">
+                                    <span>Create pull request first</span>
+                                </label>
+                            </div>
+                            <button class="w-full px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                Merge Branch
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conflict Resolution -->
+                <div class="bg-white rounded-lg border border-red-200">
+                    <div class="px-4 py-3 border-b border-red-200 bg-red-50">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <h3 class="text-sm font-medium text-red-700">Merge Conflicts Detected</h3>
+                            <span class="ml-auto px-2 py-1 bg-red-100 text-red-700 text-xs rounded">3 conflicts</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3 p-3 border border-red-200 rounded bg-red-50">
+                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">Email Template Node</div>
+                                    <div class="text-xs text-red-600">Configuration conflicts between main and dev/new-ui</div>
+                                </div>
+                                <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Resolve</button>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-3 border border-red-200 rounded bg-red-50">
+                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">Connection Mapping</div>
+                                    <div class="text-xs text-red-600">Both branches modified the same connection parameters</div>
+                                </div>
+                                <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Resolve</button>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-3 border border-red-200 rounded bg-red-50">
+                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium">Workflow Metadata</div>
+                                    <div class="text-xs text-red-600">Version information differs between branches</div>
+                                </div>
+                                <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Resolve</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-4">
+                            <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                Open Conflict Editor
+                            </button>
+                            <button class="px-4 py-2 text-sm border rounded hover:bg-gray-50 transition-colors">
+                                Auto-resolve Safe Conflicts
+                            </button>
+                            <button class="px-4 py-2 text-sm border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors">
+                                Abort Merge
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branch Protection Rules -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Branch Protection Rules</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Protected Branches</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            <span class="text-sm font-medium">main</span>
+                                        </div>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">Protected</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 border rounded">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <span class="text-sm">production</span>
+                                        </div>
+                                        <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">Protected</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-medium mb-3">Protection Settings</h4>
+                                <div class="space-y-2 text-xs">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" checked>
+                                        <span>Require pull request reviews</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" checked>
+                                        <span>Require status checks to pass</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2">
+                                        <span>Require branches to be up to date</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2">
+                                        <span>Restrict who can push</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

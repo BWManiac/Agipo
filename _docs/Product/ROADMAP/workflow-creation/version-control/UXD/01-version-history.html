@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Control - Version History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'timeline-pulse': 'timelinePulse 2s ease-in-out infinite',
+                        'version-fade': 'versionFade 0.6s ease-out',
+                        'branch-slide': 'branchSlide 0.8s ease-out',
+                        'tag-glow': 'tagGlow 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        timelinePulse: {
+                            '0%, 100%': { backgroundColor: 'rgb(59 130 246)' },
+                            '50%': { backgroundColor: 'rgb(147 197 253)' },
+                        },
+                        versionFade: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        branchSlide: {
+                            '0%': { opacity: '0', transform: 'translateX(-40px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        tagGlow: {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.4)' },
+                            '50%': { boxShadow: '0 0 20px 10px rgba(34, 197, 94, 0.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Email Processing Automation</h1>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
+                        </svg>
+                        <span>Version History</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-timeline-pulse"></div>
+                        <span class="text-green-600 font-medium">main</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Compare Versions
+                    </button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Create Tag
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-8">
+            <!-- Left Sidebar: Branch & Filter Controls -->
+            <div class="space-y-4">
+                <!-- Branch Selector -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Branch</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded animate-branch-slide">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span class="text-sm font-medium text-blue-700">main</span>
+                            <span class="ml-auto text-xs text-blue-600">current</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer animate-branch-slide" style="animation-delay: 0.1s">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span class="text-sm text-muted-foreground">feature/email-filters</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer animate-branch-slide" style="animation-delay: 0.2s">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            <span class="text-sm text-muted-foreground">hotfix/attachment-bug</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer animate-branch-slide" style="animation-delay: 0.3s">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                            <span class="text-sm text-muted-foreground">dev/new-ui</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Tags</h3>
+                    <div class="space-y-2">
+                        <div class="px-3 py-2 bg-green-100 text-green-700 text-xs rounded-lg font-medium animate-tag-glow">
+                            📦 v2.1.0 (Latest)
+                        </div>
+                        <div class="px-3 py-2 bg-gray-100 text-gray-700 text-xs rounded cursor-pointer hover:bg-gray-200 transition-colors">
+                            📦 v2.0.3
+                        </div>
+                        <div class="px-3 py-2 bg-gray-100 text-gray-700 text-xs rounded cursor-pointer hover:bg-gray-200 transition-colors">
+                            📦 v2.0.2
+                        </div>
+                        <div class="px-3 py-2 bg-gray-100 text-gray-700 text-xs rounded cursor-pointer hover:bg-gray-200 transition-colors">
+                            📦 v2.0.1
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Filters</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium text-muted-foreground mb-1">Author</label>
+                            <select class="w-full text-sm border rounded px-2 py-1">
+                                <option>All authors</option>
+                                <option>John Doe</option>
+                                <option>Sarah Chen</option>
+                                <option>Mike Wilson</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-muted-foreground mb-1">Date Range</label>
+                            <select class="w-full text-sm border rounded px-2 py-1">
+                                <option>Last 30 days</option>
+                                <option>Last 7 days</option>
+                                <option>Last 3 months</option>
+                                <option>All time</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-muted-foreground mb-1">Change Type</label>
+                            <div class="space-y-1 text-xs">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" checked>
+                                    <span>Node changes</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2" checked>
+                                    <span>Connection changes</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2">
+                                    <span>Metadata only</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">History Stats</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Total versions:</span>
+                            <span class="font-medium">47</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Contributors:</span>
+                            <span class="font-medium">3</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Branches:</span>
+                            <span class="font-medium">4</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-muted-foreground">Tags:</span>
+                            <span class="font-medium">8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Timeline -->
+            <div class="col-span-3">
+                <!-- Timeline Header -->
+                <div class="bg-white rounded-lg border mb-6 p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold mb-1">Version Timeline</h2>
+                            <p class="text-sm text-muted-foreground">47 versions showing last 30 days on main branch</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50 transition-colors">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Export
+                            </button>
+                            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Compare
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Container -->
+                <div class="relative">
+                    <!-- Timeline Line -->
+                    <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                    
+                    <!-- Version Entries -->
+                    <div class="space-y-6">
+                        <!-- Current Version -->
+                        <div class="relative flex items-start gap-4 animate-version-fade">
+                            <div class="w-4 h-4 bg-green-500 border-4 border-white rounded-full shadow-sm z-10 animate-timeline-pulse"></div>
+                            <div class="flex-1 bg-white rounded-lg border border-green-200 p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">v2.1.0</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Current</span>
+                                        <span class="text-sm font-medium">Enhanced attachment processing</span>
+                                    </div>
+                                    <span class="text-xs text-muted-foreground">2 hours ago</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">JD</div>
+                                        <span>John Doe</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-green-600">+12</span>
+                                        <span class="text-red-600">-3</span>
+                                        <span>nodes</span>
+                                    </div>
+                                    <span>commit: af7b9c2</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground mb-3">
+                                    Added support for PDF attachments, improved email parsing accuracy, and optimized performance for large files.
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">View Changes</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Restore</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Create Branch</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Previous Version -->
+                        <div class="relative flex items-start gap-4 animate-version-fade" style="animation-delay: 0.1s">
+                            <div class="w-4 h-4 bg-blue-500 border-4 border-white rounded-full shadow-sm z-10"></div>
+                            <div class="flex-1 bg-white rounded-lg border p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded">v2.0.3</span>
+                                        <span class="text-sm font-medium">Bug fixes and improvements</span>
+                                    </div>
+                                    <span class="text-xs text-muted-foreground">1 day ago</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-medium">SC</div>
+                                        <span>Sarah Chen</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-green-600">+5</span>
+                                        <span class="text-red-600">-2</span>
+                                        <span>nodes</span>
+                                    </div>
+                                    <span>commit: 8e3d4f1</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground mb-3">
+                                    Fixed email filtering logic, resolved connection timeout issues, and updated error handling.
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">View Changes</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Restore</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Compare</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Merge Commit -->
+                        <div class="relative flex items-start gap-4 animate-version-fade" style="animation-delay: 0.2s">
+                            <div class="w-4 h-4 bg-purple-500 border-4 border-white rounded-full shadow-sm z-10"></div>
+                            <div class="flex-1 bg-white rounded-lg border border-purple-100 p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">Merge</span>
+                                        <span class="text-sm font-medium">Merged feature/email-filters into main</span>
+                                    </div>
+                                    <span class="text-xs text-muted-foreground">3 days ago</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-medium">MW</div>
+                                        <span>Mike Wilson</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-green-600">+18</span>
+                                        <span class="text-red-600">-7</span>
+                                        <span>nodes</span>
+                                    </div>
+                                    <span>commits: 7 merged</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground mb-3">
+                                    Merged comprehensive email filtering system with advanced rule engine and custom filter support.
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">View Merge</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Branch Details</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Feature Development -->
+                        <div class="relative flex items-start gap-4 animate-version-fade" style="animation-delay: 0.3s">
+                            <div class="w-4 h-4 bg-blue-500 border-4 border-white rounded-full shadow-sm z-10"></div>
+                            <div class="flex-1 bg-white rounded-lg border p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded">v2.0.2</span>
+                                        <span class="text-sm font-medium">Performance optimization</span>
+                                    </div>
+                                    <span class="text-xs text-muted-foreground">1 week ago</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">JD</div>
+                                        <span>John Doe</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-green-600">+3</span>
+                                        <span class="text-red-600">-8</span>
+                                        <span>nodes</span>
+                                    </div>
+                                    <span>commit: 1b2c3d4</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground mb-3">
+                                    Optimized workflow execution speed by 40%, reduced memory usage, and streamlined node connections.
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">View Changes</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Performance Report</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tagged Release -->
+                        <div class="relative flex items-start gap-4 animate-version-fade" style="animation-delay: 0.4s">
+                            <div class="w-4 h-4 bg-green-500 border-4 border-white rounded-full shadow-sm z-10"></div>
+                            <div class="flex-1 bg-white rounded-lg border border-green-200 p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">v2.0.1</span>
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">📦 Release</span>
+                                        <span class="text-sm font-medium">Stable production release</span>
+                                    </div>
+                                    <span class="text-xs text-muted-foreground">2 weeks ago</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-medium">SC</div>
+                                        <span>Sarah Chen</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-green-600">+25</span>
+                                        <span class="text-red-600">-12</span>
+                                        <span>nodes</span>
+                                    </div>
+                                    <span>commit: 9f8e7d6</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground mb-3">
+                                    Major release with new email template system, improved error handling, and comprehensive testing suite.
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Release Notes</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Download</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Deploy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Load More -->
+                    <div class="text-center mt-8">
+                        <button class="px-6 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                            Load Earlier Versions (42 more)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Version Comparison Modal (Hidden by default) -->
+        <div class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" id="compareModal">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                    <div class="flex items-center justify-between p-6 border-b">
+                        <h3 class="text-lg font-semibold">Compare Versions</h3>
+                        <button class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('compareModal').classList.add('hidden')">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">From Version</label>
+                                <select class="w-full border rounded px-3 py-2">
+                                    <option>v2.0.3 (1 day ago)</option>
+                                    <option>v2.0.2 (1 week ago)</option>
+                                    <option>v2.0.1 (2 weeks ago)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">To Version</label>
+                                <select class="w-full border rounded px-3 py-2">
+                                    <option>v2.1.0 (Current)</option>
+                                    <option>v2.0.3 (1 day ago)</option>
+                                    <option>v2.0.2 (1 week ago)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-6">
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                Compare Workflows
+                            </button>
+                            <button class="px-4 py-2 border rounded hover:bg-gray-50 transition-colors">
+                                View Diff Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

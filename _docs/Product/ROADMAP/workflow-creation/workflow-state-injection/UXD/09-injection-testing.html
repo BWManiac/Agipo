@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injection Testing - Agipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'rgb(79, 70, 229)',
+                        'primary-dark': 'rgb(67, 56, 202)',
+                        secondary: 'rgb(16, 185, 129)',
+                        accent: 'rgb(245, 158, 11)',
+                        background: 'rgb(249, 250, 251)',
+                        surface: 'rgb(255, 255, 255)',
+                        'surface-dark': 'rgb(243, 244, 246)',
+                        text: 'rgb(17, 24, 39)',
+                        'text-secondary': 'rgb(75, 85, 99)',
+                        'text-muted': 'rgb(156, 163, 175)',
+                        border: 'rgb(229, 231, 235)',
+                        error: 'rgb(239, 68, 68)',
+                        warning: 'rgb(245, 158, 11)',
+                        success: 'rgb(34, 197, 94)',
+                        info: 'rgb(59, 130, 246)'
+                    },
+                    animation: {
+                        'test-run': 'test-run 1.5s ease-in-out',
+                        'scenario-load': 'scenario-load 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        'validation-check': 'validation-check 0.8s ease-in-out',
+                        'progress-bar': 'progress-bar 3s linear',
+                        'result-reveal': 'result-reveal 0.6s ease-out',
+                        'mock-data-flow': 'mock-data-flow 2s linear infinite'
+                    },
+                    keyframes: {
+                        'test-run': {
+                            '0%': { transform: 'scale(1)', backgroundColor: 'rgb(249, 250, 251)' },
+                            '25%': { transform: 'scale(1.02)', backgroundColor: 'rgb(245, 158, 11, 0.1)' },
+                            '75%': { transform: 'scale(1.02)', backgroundColor: 'rgb(59, 130, 246, 0.1)' },
+                            '100%': { transform: 'scale(1)', backgroundColor: 'rgb(34, 197, 94, 0.1)' }
+                        },
+                        'scenario-load': {
+                            'from': { transform: 'translateY(10px) scale(0.95)', opacity: '0' },
+                            'to': { transform: 'translateY(0) scale(1)', opacity: '1' }
+                        },
+                        'validation-check': {
+                            '0%': { borderColor: 'rgb(229, 231, 235)' },
+                            '50%': { borderColor: 'rgb(79, 70, 229)' },
+                            '100%': { borderColor: 'rgb(34, 197, 94)' }
+                        },
+                        'progress-bar': {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
+                        },
+                        'result-reveal': {
+                            'from': { transform: 'translateX(-20px)', opacity: '0' },
+                            'to': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        'mock-data-flow': {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- Header -->
+    <header class="bg-surface border-b border-border px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button class="flex items-center space-x-2 text-text-secondary hover:text-text transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold">Injection Testing</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 text-sm text-text-secondary">
+                    <span>Test Suite:</span>
+                    <span class="font-mono bg-surface-dark px-2 py-1 rounded">injection_v2.4.7</span>
+                </div>
+                <button class="px-4 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                    Load Test Suite
+                </button>
+                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                    Run All Tests
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Test Scenarios Sidebar -->
+        <aside class="w-80 bg-surface border-r border-border min-h-[calc(100vh-73px)]">
+            <div class="p-6">
+                <!-- Test Suite Overview -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Test Scenarios</h3>
+                    
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="text-center p-3 bg-surface-dark rounded-lg">
+                            <p class="text-lg font-bold text-primary">24</p>
+                            <p class="text-xs text-text-secondary">Total Tests</p>
+                        </div>
+                        <div class="text-center p-3 bg-surface-dark rounded-lg">
+                            <p class="text-lg font-bold text-success">18</p>
+                            <p class="text-xs text-text-secondary">Passing</p>
+                        </div>
+                    </div>
+
+                    <!-- Test Categories -->
+                    <div class="space-y-2">
+                        <button class="w-full flex items-center justify-between p-3 bg-primary/10 border border-primary/20 rounded-lg text-primary font-medium animate-scenario-load">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-primary rounded-full"></div>
+                                <span>Unit Tests</span>
+                            </div>
+                            <span class="text-xs bg-primary/20 px-2 py-1 rounded-full">12 tests</span>
+                        </button>
+
+                        <button class="w-full flex items-center justify-between p-3 border border-border rounded-lg text-text-secondary hover:bg-surface-dark transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-secondary rounded-full"></div>
+                                <span>Integration Tests</span>
+                            </div>
+                            <span class="text-xs bg-text-muted/20 px-2 py-1 rounded-full">8 tests</span>
+                        </button>
+
+                        <button class="w-full flex items-center justify-between p-3 border border-border rounded-lg text-text-secondary hover:bg-surface-dark transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-accent rounded-full"></div>
+                                <span>Performance Tests</span>
+                            </div>
+                            <span class="text-xs bg-text-muted/20 px-2 py-1 rounded-full">4 tests</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Individual Test Cases -->
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-text-secondary mb-3 uppercase tracking-wide">Unit Tests</h4>
+                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                        <div class="p-3 border border-success/20 rounded-lg bg-success/5 animate-scenario-load">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">test_basic_injection</span>
+                                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-text-secondary">Basic state injection functionality</p>
+                            <p class="text-xs text-success mt-1">✓ Passed (142ms)</p>
+                        </div>
+
+                        <div class="p-3 border border-success/20 rounded-lg bg-success/5 animate-scenario-load" style="animation-delay: 0.1s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">test_conditional_rules</span>
+                                <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-text-secondary">Rule-based conditional injection</p>
+                            <p class="text-xs text-success mt-1">✓ Passed (89ms)</p>
+                        </div>
+
+                        <div class="p-3 border border-error/20 rounded-lg bg-error/5 animate-scenario-load" style="animation-delay: 0.2s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">test_validation_rules</span>
+                                <svg class="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-text-secondary">Input validation and sanitization</p>
+                            <p class="text-xs text-error mt-1">✗ Failed: Invalid schema</p>
+                        </div>
+
+                        <div class="p-3 border border-warning/20 rounded-lg bg-warning/5 animate-scenario-load" style="animation-delay: 0.3s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">test_priority_handling</span>
+                                <svg class="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-xs text-text-secondary">Rule priority resolution</p>
+                            <p class="text-xs text-warning mt-1">⚠ Running (1.2s)</p>
+                        </div>
+
+                        <div class="p-3 border border-border rounded-lg animate-scenario-load" style="animation-delay: 0.4s;">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">test_error_handling</span>
+                                <div class="w-4 h-4 bg-text-muted rounded-full"></div>
+                            </div>
+                            <p class="text-xs text-text-secondary">Error recovery mechanisms</p>
+                            <p class="text-xs text-text-muted mt-1">Queued</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Configuration -->
+                <div class="p-4 bg-surface-dark rounded-lg">
+                    <h4 class="font-medium mb-3">Test Configuration</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Environment:</span>
+                            <span class="font-medium">Testing</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Timeout:</span>
+                            <span class="font-medium">30s</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Parallel:</span>
+                            <span class="font-medium">4 threads</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-text-secondary">Coverage:</span>
+                            <span class="font-medium text-success">87.3%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Testing Interface -->
+        <main class="flex-1 p-6">
+            <!-- Test Runner -->
+            <div class="bg-surface rounded-xl border border-border p-6 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold">Test Runner</h2>
+                    <div class="flex items-center space-x-3">
+                        <select class="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                            <option>All Tests</option>
+                            <option>Unit Tests Only</option>
+                            <option>Integration Tests Only</option>
+                            <option>Failed Tests Only</option>
+                        </select>
+                        <button class="px-4 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                            Stop Tests
+                        </button>
+                        <button class="px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 transition-colors">
+                            Run Selected
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Test Display -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Current Test -->
+                    <div class="animate-test-run">
+                        <h3 class="font-semibold mb-4">Current Test: test_priority_handling</h3>
+                        
+                        <!-- Test Progress -->
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-text-secondary">Progress</span>
+                                <span class="font-medium">Step 3 of 5</span>
+                            </div>
+                            <div class="w-full bg-surface-dark rounded-full h-2">
+                                <div class="bg-warning h-2 rounded-full animate-progress-bar" style="width: 60%"></div>
+                            </div>
+                            <p class="text-xs text-text-secondary mt-1">Testing rule priority conflict resolution...</p>
+                        </div>
+
+                        <!-- Test Steps -->
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3 p-3 bg-success/5 border border-success/20 rounded-lg">
+                                <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-medium">Setup test environment</p>
+                                    <p class="text-xs text-text-secondary">Completed in 45ms</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 p-3 bg-success/5 border border-success/20 rounded-lg">
+                                <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-medium">Create conflicting rules</p>
+                                    <p class="text-xs text-text-secondary">Completed in 123ms</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 p-3 bg-warning/5 border border-warning/20 rounded-lg animate-validation-check">
+                                <div class="w-5 h-5 border-2 border-warning rounded-full"></div>
+                                <div>
+                                    <p class="text-sm font-medium">Test priority resolution</p>
+                                    <p class="text-xs text-text-secondary">Running... (1.2s elapsed)</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 p-3 bg-text-muted/5 border border-border rounded-lg opacity-50">
+                                <div class="w-5 h-5 border-2 border-text-muted rounded-full"></div>
+                                <div>
+                                    <p class="text-sm font-medium">Validate injection outcome</p>
+                                    <p class="text-xs text-text-secondary">Pending</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 p-3 bg-text-muted/5 border border-border rounded-lg opacity-50">
+                                <div class="w-5 h-5 border-2 border-text-muted rounded-full"></div>
+                                <div>
+                                    <p class="text-sm font-medium">Cleanup test data</p>
+                                    <p class="text-xs text-text-secondary">Pending</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Configuration -->
+                    <div>
+                        <h3 class="font-semibold mb-4">Test Configuration</h3>
+                        
+                        <!-- Mock Data Setup -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-medium mb-2">Mock Data</h4>
+                            <div class="bg-surface-dark border border-border rounded-lg p-3">
+                                <pre class="text-xs text-text-secondary font-mono overflow-x-auto">
+{
+  "user": {
+    "id": "test_user_123",
+    "role": "admin",
+    "department": "security"
+  },
+  "workflow": {
+    "id": "test_workflow_456",
+    "environment": "testing"
+  },
+  "injection_rules": [
+    {
+      "priority": 1,
+      "condition": "user.role === 'admin'",
+      "action": "inject('ADMIN_KEY', 'secret123')"
+    },
+    {
+      "priority": 2,
+      "condition": "user.department === 'security'",
+      "action": "inject('ADMIN_KEY', 'security456')"
+    }
+  ]
+}</pre>
+                            </div>
+                        </div>
+
+                        <!-- Expected Results -->
+                        <div>
+                            <h4 class="text-sm font-medium mb-2">Expected Results</h4>
+                            <div class="space-y-2">
+                                <div class="p-3 bg-info/5 border border-info/20 rounded-lg">
+                                    <p class="text-sm font-medium text-info">Priority Resolution</p>
+                                    <p class="text-xs text-text-secondary">Rule with priority 1 should win</p>
+                                </div>
+                                <div class="p-3 bg-success/5 border border-success/20 rounded-lg">
+                                    <p class="text-sm font-medium text-success">Final State</p>
+                                    <p class="text-xs text-text-secondary">ADMIN_KEY = 'secret123'</p>
+                                </div>
+                                <div class="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                                    <p class="text-sm font-medium text-warning">Performance</p>
+                                    <p class="text-xs text-text-secondary">Resolution time &lt; 100ms</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Output Console -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-semibold">Test Output Console</h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors text-sm">
+                                Clear
+                            </button>
+                            <button class="px-3 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors text-sm">
+                                Export Log
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-text text-white rounded-lg p-4 font-mono text-sm h-48 overflow-y-auto">
+                        <div class="space-y-1">
+                            <div class="text-text-muted">[12:34:56.123] Starting test suite: injection_v2.4.7</div>
+                            <div class="text-success">[12:34:56.145] ✓ test_basic_injection PASSED (142ms)</div>
+                            <div class="text-success">[12:34:56.287] ✓ test_conditional_rules PASSED (89ms)</div>
+                            <div class="text-error">[12:34:56.432] ✗ test_validation_rules FAILED (234ms)</div>
+                            <div class="text-error pl-4">Error: Schema validation failed for input type 'invalid'</div>
+                            <div class="text-error pl-4">Expected: string | number | boolean</div>
+                            <div class="text-error pl-4">Received: object</div>
+                            <div class="text-warning">[12:34:56.567] ⚠ test_priority_handling RUNNING...</div>
+                            <div class="text-info pl-4">Creating conflicting injection rules...</div>
+                            <div class="text-info pl-4">Testing priority resolution logic...</div>
+                            <div class="text-warning pl-4 animate-mock-data-flow">Resolving rule conflicts...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Results and Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Test Results Summary -->
+                <div class="bg-surface rounded-xl border border-border p-6">
+                    <h3 class="text-lg font-semibold mb-4">Test Results Summary</h3>
+                    
+                    <!-- Results Overview -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center p-4 bg-success/5 border border-success/20 rounded-lg animate-result-reveal">
+                            <p class="text-2xl font-bold text-success">18</p>
+                            <p class="text-sm text-text-secondary">Passed</p>
+                        </div>
+                        <div class="text-center p-4 bg-error/5 border border-error/20 rounded-lg animate-result-reveal" style="animation-delay: 0.1s;">
+                            <p class="text-2xl font-bold text-error">3</p>
+                            <p class="text-sm text-text-secondary">Failed</p>
+                        </div>
+                        <div class="text-center p-4 bg-warning/5 border border-warning/20 rounded-lg animate-result-reveal" style="animation-delay: 0.2s;">
+                            <p class="text-2xl font-bold text-warning">3</p>
+                            <p class="text-sm text-text-secondary">Running</p>
+                        </div>
+                    </div>
+
+                    <!-- Failed Tests Details -->
+                    <div class="mb-4">
+                        <h4 class="font-medium text-error mb-3">Failed Tests</h4>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-error/5 border border-error/20 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-sm">test_validation_rules</span>
+                                    <span class="text-xs text-error">234ms</span>
+                                </div>
+                                <p class="text-xs text-text-secondary mb-2">Schema validation failed for input type 'invalid'</p>
+                                <div class="flex space-x-2">
+                                    <button class="px-2 py-1 bg-error/10 text-error rounded text-xs hover:bg-error/20 transition-colors">
+                                        View Details
+                                    </button>
+                                    <button class="px-2 py-1 bg-primary/10 text-primary rounded text-xs hover:bg-primary/20 transition-colors">
+                                        Rerun
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-error/5 border border-error/20 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-sm">test_timeout_handling</span>
+                                    <span class="text-xs text-error">30.1s</span>
+                                </div>
+                                <p class="text-xs text-text-secondary mb-2">Test exceeded timeout limit</p>
+                                <div class="flex space-x-2">
+                                    <button class="px-2 py-1 bg-error/10 text-error rounded text-xs hover:bg-error/20 transition-colors">
+                                        View Details
+                                    </button>
+                                    <button class="px-2 py-1 bg-primary/10 text-primary rounded text-xs hover:bg-primary/20 transition-colors">
+                                        Rerun
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Coverage -->
+                    <div>
+                        <h4 class="font-medium mb-3">Test Coverage</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Injection Logic</span>
+                                    <span class="font-medium">94.2%</span>
+                                </div>
+                                <div class="w-full bg-surface-dark rounded-full h-2">
+                                    <div class="bg-success h-2 rounded-full" style="width: 94.2%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Rule Engine</span>
+                                    <span class="font-medium">87.6%</span>
+                                </div>
+                                <div class="w-full bg-surface-dark rounded-full h-2">
+                                    <div class="bg-warning h-2 rounded-full" style="width: 87.6%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Error Handling</span>
+                                    <span class="font-medium">76.3%</span>
+                                </div>
+                                <div class="w-full bg-surface-dark rounded-full h-2">
+                                    <div class="bg-error h-2 rounded-full" style="width: 76.3%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Overall Coverage</span>
+                                    <span class="font-medium text-success">87.3%</span>
+                                </div>
+                                <div class="w-full bg-surface-dark rounded-full h-2">
+                                    <div class="bg-success h-2 rounded-full" style="width: 87.3%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Scenario Builder -->
+                <div class="bg-surface rounded-xl border border-border p-6">
+                    <h3 class="text-lg font-semibold mb-4">Test Scenario Builder</h3>
+                    
+                    <!-- Scenario Configuration -->
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Test Name</label>
+                            <input type="text" placeholder="e.g., test_user_role_injection" class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Test Type</label>
+                            <select class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <option>Unit Test</option>
+                                <option>Integration Test</option>
+                                <option>Performance Test</option>
+                                <option>Security Test</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Test Description</label>
+                            <textarea rows="3" placeholder="Describe what this test validates..." class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Test Steps Builder -->
+                    <div class="mb-6">
+                        <h4 class="font-medium mb-3">Test Steps</h4>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-surface-dark border border-border rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-sm">1. Setup</span>
+                                    <button class="text-text-secondary hover:text-text">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <select class="w-full px-3 py-2 border border-border rounded-lg text-sm">
+                                    <option>Initialize test environment</option>
+                                    <option>Create mock data</option>
+                                    <option>Setup injection rules</option>
+                                    <option>Configure test user</option>
+                                </select>
+                            </div>
+
+                            <div class="p-3 bg-surface-dark border border-border rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-sm">2. Execute</span>
+                                    <button class="text-text-secondary hover:text-text">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <select class="w-full px-3 py-2 border border-border rounded-lg text-sm">
+                                    <option>Trigger state injection</option>
+                                    <option>Execute workflow step</option>
+                                    <option>Call injection API</option>
+                                    <option>Process rule evaluation</option>
+                                </select>
+                            </div>
+
+                            <div class="p-3 bg-surface-dark border border-border rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-sm">3. Assert</span>
+                                    <button class="text-text-secondary hover:text-text">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <select class="w-full px-3 py-2 border border-border rounded-lg text-sm">
+                                    <option>Verify injected state</option>
+                                    <option>Check rule execution</option>
+                                    <option>Validate performance metrics</option>
+                                    <option>Assert error handling</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="mt-3 w-full px-4 py-2 text-primary border border-primary/20 rounded-lg hover:bg-primary/10 transition-colors text-sm">
+                            <span class="flex items-center justify-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <span>Add Step</span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Test Actions -->
+                    <div class="flex space-x-3">
+                        <button class="flex-1 px-4 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                            Save Template
+                        </button>
+                        <button class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                            Create Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

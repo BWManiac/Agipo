@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injection Configuration - Agipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'rgb(79, 70, 229)',
+                        'primary-dark': 'rgb(67, 56, 202)',
+                        secondary: 'rgb(16, 185, 129)',
+                        accent: 'rgb(245, 158, 11)',
+                        background: 'rgb(249, 250, 251)',
+                        surface: 'rgb(255, 255, 255)',
+                        'surface-dark': 'rgb(243, 244, 246)',
+                        text: 'rgb(17, 24, 39)',
+                        'text-secondary': 'rgb(75, 85, 99)',
+                        'text-muted': 'rgb(156, 163, 175)',
+                        border: 'rgb(229, 231, 235)',
+                        error: 'rgb(239, 68, 68)',
+                        warning: 'rgb(245, 158, 11)',
+                        success: 'rgb(34, 197, 94)',
+                        info: 'rgb(59, 130, 246)'
+                    },
+                    animation: {
+                        'config-slide': 'config-slide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        'step-highlight': 'step-highlight 0.3s ease-out',
+                        'form-focus': 'form-focus 0.2s ease-out',
+                        'validation-shake': 'validation-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97)',
+                        'rule-expand': 'rule-expand 0.4s ease-out',
+                        'preview-fade': 'preview-fade 0.3s ease-in-out'
+                    },
+                    keyframes: {
+                        'config-slide': {
+                            'from': { transform: 'translateX(-20px)', opacity: '0' },
+                            'to': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        'step-highlight': {
+                            '0%': { backgroundColor: 'transparent' },
+                            '50%': { backgroundColor: 'rgb(79, 70, 229, 0.1)' },
+                            '100%': { backgroundColor: 'transparent' }
+                        },
+                        'form-focus': {
+                            'from': { boxShadow: '0 0 0 0 rgb(79, 70, 229, 0.3)' },
+                            'to': { boxShadow: '0 0 0 3px rgb(79, 70, 229, 0.1)' }
+                        },
+                        'validation-shake': {
+                            '10%, 90%': { transform: 'translateX(-1px)' },
+                            '20%, 80%': { transform: 'translateX(2px)' },
+                            '30%, 50%, 70%': { transform: 'translateX(-4px)' },
+                            '40%, 60%': { transform: 'translateX(4px)' }
+                        },
+                        'rule-expand': {
+                            'from': { maxHeight: '0', opacity: '0' },
+                            'to': { maxHeight: '300px', opacity: '1' }
+                        },
+                        'preview-fade': {
+                            'from': { opacity: '0', transform: 'scale(0.95)' },
+                            'to': { opacity: '1', transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- Header -->
+    <header class="bg-surface border-b border-border px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button class="flex items-center space-x-2 text-text-secondary hover:text-text transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                    </svg>
+                    <h1 class="text-xl font-semibold">Configure State Injection</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="px-4 py-2 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                    Save as Template
+                </button>
+                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                    Deploy Injection
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Configuration Steps Sidebar -->
+        <aside class="w-72 bg-surface border-r border-border min-h-[calc(100vh-73px)]">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold mb-4">Configuration Steps</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 p-3 bg-primary/10 border border-primary/20 rounded-lg animate-step-highlight">
+                        <div class="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                        <span class="font-medium text-primary">Basic Information</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 hover:bg-surface-dark rounded-lg transition-colors cursor-pointer">
+                        <div class="w-6 h-6 bg-text-muted text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                        <span class="text-text-secondary">Injection Source</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 hover:bg-surface-dark rounded-lg transition-colors cursor-pointer">
+                        <div class="w-6 h-6 bg-text-muted text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                        <span class="text-text-secondary">Target Configuration</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 hover:bg-surface-dark rounded-lg transition-colors cursor-pointer">
+                        <div class="w-6 h-6 bg-text-muted text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
+                        <span class="text-text-secondary">Injection Rules</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 hover:bg-surface-dark rounded-lg transition-colors cursor-pointer">
+                        <div class="w-6 h-6 bg-text-muted text-white rounded-full flex items-center justify-center text-xs font-bold">5</div>
+                        <span class="text-text-secondary">Validation & Testing</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 hover:bg-surface-dark rounded-lg transition-colors cursor-pointer">
+                        <div class="w-6 h-6 bg-text-muted text-white rounded-full flex items-center justify-center text-xs font-bold">6</div>
+                        <span class="text-text-secondary">Review & Deploy</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-info/10 border border-info/20 rounded-lg">
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-info mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-medium text-info mb-1">Configuration Tips</h4>
+                            <p class="text-xs text-text-secondary">Use descriptive names and test your injections before deploying to production.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Configuration Form -->
+        <main class="flex-1 p-8 animate-config-slide">
+            <div class="max-w-4xl">
+                <!-- Step 1: Basic Information -->
+                <div class="bg-surface rounded-xl border border-border p-8">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold mb-2">Basic Information</h2>
+                        <p class="text-text-secondary">Define the fundamental details for your state injection configuration.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Left Column -->
+                        <div class="space-y-6">
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Injection Name</label>
+                                <input type="text" placeholder="e.g., Customer Profile Data Injection" class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all animate-form-focus">
+                                <p class="text-xs text-text-muted mt-1">Choose a descriptive name for easy identification</p>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Injection Type</label>
+                                <select class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                    <option>Data Injection</option>
+                                    <option>Configuration Injection</option>
+                                    <option>Feature Flag</option>
+                                    <option>Environment Variable</option>
+                                    <option>Secret Management</option>
+                                    <option>Business Rule</option>
+                                </select>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Injection Scope</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                        <input type="radio" name="scope" value="workflow" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Workflow-level</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                        <input type="radio" name="scope" value="node" class="text-primary focus:ring-primary" checked>
+                                        <span class="text-sm">Node-level</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                        <input type="radio" name="scope" value="user" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">User-level</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                        <input type="radio" name="scope" value="session" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Session-level</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                        <input type="radio" name="scope" value="execution" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Execution-level</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Priority Level</label>
+                                <select class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                    <option>Low (1-3)</option>
+                                    <option>Medium (4-6)</option>
+                                    <option>High (7-8)</option>
+                                    <option>Critical (9-10)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Description</label>
+                                <textarea rows="4" placeholder="Describe what this injection does and when it's used..." class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Tags</label>
+                                <input type="text" placeholder="customer, profile, api, production" class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <p class="text-xs text-text-muted mt-1">Comma-separated tags for categorization</p>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Environment</label>
+                                <div class="flex space-x-4">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Development</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Staging</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" class="text-primary focus:ring-primary" checked>
+                                        <span class="text-sm">Production</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Configuration Preview -->
+                            <div class="bg-surface-dark border border-border rounded-lg p-4 animate-preview-fade">
+                                <h4 class="font-medium mb-3 flex items-center space-x-2">
+                                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    <span>Configuration Preview</span>
+                                </h4>
+                                <pre class="text-xs text-text-secondary bg-text/5 p-3 rounded overflow-x-auto">
+{
+  "name": "Customer Profile Data Injection",
+  "type": "data_injection",
+  "scope": "node_level",
+  "priority": "high",
+  "environments": ["production"],
+  "tags": ["customer", "profile", "api", "production"]
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Configuration Toggle -->
+                    <div class="mt-8 pt-6 border-t border-border">
+                        <button class="flex items-center space-x-2 text-primary hover:text-primary-dark transition-colors">
+                            <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                            <span>Advanced Configuration Options</span>
+                        </button>
+                        
+                        <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6 animate-rule-expand">
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Retry Configuration</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <input type="number" placeholder="Max retries" min="0" max="10" class="w-full px-3 py-2 border border-border rounded text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Retry delay (ms)" min="100" max="30000" class="w-full px-3 py-2 border border-border rounded text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Timeout Settings</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <input type="number" placeholder="Connection timeout" min="1000" max="60000" class="w-full px-3 py-2 border border-border rounded text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                    </div>
+                                    <div>
+                                        <input type="number" placeholder="Read timeout" min="1000" max="300000" class="w-full px-3 py-2 border border-border rounded text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Cache Configuration</label>
+                                <div class="space-y-3">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Enable caching</span>
+                                    </label>
+                                    <input type="number" placeholder="Cache TTL (seconds)" min="60" max="86400" class="w-full px-3 py-2 border border-border rounded text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-medium mb-2">Monitoring & Alerts</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" class="text-primary focus:ring-primary" checked>
+                                        <span class="text-sm">Enable monitoring</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Alert on failures</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" class="text-primary focus:ring-primary">
+                                        <span class="text-sm">Performance alerts</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between mt-8">
+                        <button class="px-6 py-3 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors" disabled>
+                            Previous Step
+                        </button>
+                        <div class="flex space-x-3">
+                            <button class="px-6 py-3 text-text-secondary border border-border rounded-lg hover:bg-surface-dark transition-colors">
+                                Save Draft
+                            </button>
+                            <button class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                                Next: Configure Source
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Messages -->
+                <div class="mt-6 p-4 bg-warning/10 border border-warning/20 rounded-lg animate-validation-shake hidden">
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-warning mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-medium text-warning mb-1">Validation Required</h4>
+                            <p class="text-sm text-text-secondary">Please fill in all required fields before proceeding to the next step.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Templates Sidebar -->
+                <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-3">
+                        <h3 class="text-lg font-semibold mb-4">Quick Start Templates</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="font-medium">API Data Injection</h4>
+                                </div>
+                                <p class="text-sm text-text-secondary">Inject external API data into workflow nodes</p>
+                            </div>
+
+                            <div class="p-4 border border-border rounded-lg hover:border-secondary/50 hover:bg-surface-dark transition-all cursor-pointer">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4z"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="font-medium">Feature Flag Toggle</h4>
+                                </div>
+                                <p class="text-sm text-text-secondary">Control feature availability dynamically</p>
+                            </div>
+
+                            <div class="p-4 border border-border rounded-lg hover:border-accent/50 hover:bg-surface-dark transition-all cursor-pointer">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="font-medium">Secure Secrets</h4>
+                                </div>
+                                <p class="text-sm text-text-secondary">Inject encrypted credentials safely</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

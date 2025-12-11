@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Marketplace - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'admin-metric': 'adminMetric 1s ease-out',
+                        'alert-pulse': 'alertPulse 2s ease-in-out infinite',
+                        'moderation-slide': 'moderationSlide 0.5s ease-out',
+                        'system-health': 'systemHealth 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        adminMetric: {
+                            '0%': { transform: 'scale(0.5)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        alertPulse: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 242 242)' },
+                            '50%': { backgroundColor: 'rgb(252 165 165)' },
+                        },
+                        moderationSlide: {
+                            '0%': { opacity: '0', transform: 'translateX(-20px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        systemHealth: {
+                            '0%, 100%': { borderColor: 'rgb(34 197 94)' },
+                            '50%': { borderColor: 'rgb(22 163 74)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold">Marketplace Administration</h1>
+                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                        Admin Only
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm text-muted-foreground">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-system-health"></div>
+                            <span>System healthy</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span class="text-sm text-orange-600 font-medium">3 pending</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        System Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-8">
+            <!-- Left Sidebar: System Overview -->
+            <div class="space-y-4">
+                <!-- System Health -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">System Health</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-2 bg-green-50 rounded animate-system-health">
+                            <span class="text-sm">API Status</span>
+                            <span class="text-sm font-medium text-green-600">Online</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                            <span class="text-sm">Database</span>
+                            <span class="text-sm font-medium text-green-600">Healthy</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-2 bg-yellow-50 rounded">
+                            <span class="text-sm">Queue</span>
+                            <span class="text-sm font-medium text-yellow-600">High Load</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                            <span class="text-sm">Storage</span>
+                            <span class="text-sm font-medium text-green-600">Normal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Moderation Queue -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Moderation Queue</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-muted-foreground">Pending review:</span>
+                            <span class="font-medium text-orange-600">3</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-muted-foreground">Flagged content:</span>
+                            <span class="font-medium text-red-600">1</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-muted-foreground">Reports:</span>
+                            <span class="font-medium">7</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-muted-foreground">Appeals:</span>
+                            <span class="font-medium">2</span>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-3 px-3 py-2 text-xs bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors">
+                        Review Queue
+                    </button>
+                </div>
+
+                <!-- Platform Metrics -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Platform Metrics</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Total templates:</span>
+                            <span class="font-medium">2,847</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Active authors:</span>
+                            <span class="font-medium">342</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Downloads today:</span>
+                            <span class="font-medium text-green-600">1,234</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-muted-foreground">Revenue (30d):</span>
+                            <span class="font-medium">$12,847</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            🔍 Search Templates
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            👥 Manage Authors
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            📊 Analytics Dashboard
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            ⚙️ System Settings
+                        </button>
+                        <button class="w-full px-3 py-2 text-xs border rounded-lg hover:bg-gray-50 transition-colors text-left">
+                            📝 Content Policy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="bg-white rounded-lg border p-4">
+                    <h3 class="text-sm font-medium mb-3">System Alerts</h3>
+                    <div class="space-y-2">
+                        <div class="p-2 bg-red-50 border border-red-200 rounded text-xs animate-alert-pulse">
+                            <div class="font-medium text-red-900">Security Alert</div>
+                            <div class="text-red-700">Unusual login activity detected</div>
+                        </div>
+                        
+                        <div class="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                            <div class="font-medium text-yellow-900">Performance Warning</div>
+                            <div class="text-yellow-700">High API response times</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Admin Dashboard -->
+            <div class="col-span-3 space-y-6">
+                <!-- Key Admin Metrics -->
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-white rounded-lg border p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-muted-foreground">Total Templates</h3>
+                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold animate-admin-metric">2,847</div>
+                        <div class="text-xs text-green-600 font-medium">+127 this month</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-muted-foreground">Active Users</h3>
+                            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold animate-admin-metric" style="animation-delay: 0.1s">18,432</div>
+                        <div class="text-xs text-green-600 font-medium">+892 this month</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-muted-foreground">Downloads</h3>
+                            <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold animate-admin-metric" style="animation-delay: 0.2s">156.7K</div>
+                        <div class="text-xs text-green-600 font-medium">+23% this month</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-muted-foreground">Revenue</h3>
+                            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                        </div>
+                        <div class="text-2xl font-bold animate-admin-metric" style="animation-delay: 0.3s">$12.8K</div>
+                        <div class="text-xs text-green-600 font-medium">+45% this month</div>
+                    </div>
+                </div>
+
+                <!-- Pending Reviews -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Templates Pending Review</h3>
+                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-sm rounded-full">3 pending</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <!-- Pending Template 1 -->
+                            <div class="flex items-center gap-4 p-4 border rounded-lg animate-moderation-slide">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="font-medium truncate">Customer Support Bot</h4>
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded">Pending</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground">by AI Workflows Team • Submitted 2 hours ago</p>
+                                    <p class="text-sm text-muted-foreground truncate">AI chatbot for automated customer support with ticket routing</p>
+                                </div>
+                                <div class="text-sm text-muted-foreground">
+                                    <div>Category: Customer Support</div>
+                                    <div>Size: 3.2 MB</div>
+                                    <div>Dependencies: 4</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors">Approve</button>
+                                    <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors">Reject</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Review</button>
+                                </div>
+                            </div>
+
+                            <!-- Pending Template 2 -->
+                            <div class="flex items-center gap-4 p-4 border rounded-lg animate-moderation-slide" style="animation-delay: 0.1s">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="font-medium truncate">Expense Report Generator</h4>
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded">Pending</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground">by DataFlow Solutions • Submitted 4 hours ago</p>
+                                    <p class="text-sm text-muted-foreground truncate">Automated expense tracking and reporting with receipt processing</p>
+                                </div>
+                                <div class="text-sm text-muted-foreground">
+                                    <div>Category: Finance</div>
+                                    <div>Size: 1.8 MB</div>
+                                    <div>Dependencies: 2</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors">Approve</button>
+                                    <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors">Reject</button>
+                                    <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-colors">Review</button>
+                                </div>
+                            </div>
+
+                            <!-- Flagged Template -->
+                            <div class="flex items-center gap-4 p-4 border-2 border-red-200 bg-red-50 rounded-lg animate-moderation-slide" style="animation-delay: 0.2s">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="font-medium truncate">Data Harvester Pro</h4>
+                                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">⚠️ Flagged</span>
+                                    </div>
+                                    <p class="text-sm text-red-700">by WebScraper Inc • Reported for policy violation</p>
+                                    <p class="text-sm text-red-700 truncate">Automated data extraction from websites - possible ToS violations</p>
+                                </div>
+                                <div class="text-sm text-red-700">
+                                    <div>Reports: 3</div>
+                                    <div>Size: 5.4 MB</div>
+                                    <div>Risk: High</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors">Remove</button>
+                                    <button class="px-3 py-1 text-xs border border-red-300 rounded hover:bg-red-100 transition-colors">Investigate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Recent Admin Activity</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4 text-sm">
+                            <div class="flex gap-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Template approved</div>
+                                    <div class="text-muted-foreground">"Email Processing Automation" by AI Workflows Team approved by Admin</div>
+                                    <div class="text-xs text-muted-foreground">15 minutes ago</div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Template rejected</div>
+                                    <div class="text-muted-foreground">"Social Media Scraper" rejected for policy violation</div>
+                                    <div class="text-xs text-muted-foreground">32 minutes ago</div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">User report received</div>
+                                    <div class="text-muted-foreground">Report filed against "Data Harvester Pro" for inappropriate content</div>
+                                    <div class="text-xs text-muted-foreground">1 hour ago</div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Author verification</div>
+                                    <div class="text-muted-foreground">"DataFlow Solutions" verified as legitimate business entity</div>
+                                    <div class="text-xs text-muted-foreground">2 hours ago</div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">System maintenance</div>
+                                    <div class="text-muted-foreground">Scheduled maintenance completed - marketplace performance improved</div>
+                                    <div class="text-xs text-muted-foreground">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Analytics -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Platform Analytics</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="text-sm text-blue-600 hover:underline">Last 7 days</button>
+                                <button class="text-sm text-muted-foreground">Last 30 days</button>
+                                <button class="text-sm text-muted-foreground">Last quarter</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-8">
+                            <!-- Category Distribution -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-4">Templates by Category</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm">Email & Communication</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-blue-500 h-2 rounded-full" style="width: 35%"></div>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground w-8">432</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm">Data Processing</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-500 h-2 rounded-full" style="width: 28%"></div>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground w-8">347</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm">Project Management</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-purple-500 h-2 rounded-full" style="width: 22%"></div>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground w-8">289</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm">Sales & CRM</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-orange-500 h-2 rounded-full" style="width: 18%"></div>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground w-8">234</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm">Others</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-gray-500 h-2 rounded-full" style="width: 15%"></div>
+                                            </div>
+                                            <span class="text-xs text-muted-foreground w-8">189</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quality Metrics -->
+                            <div>
+                                <h4 class="text-sm font-medium mb-4">Quality Metrics</h4>
+                                <div class="space-y-4">
+                                    <div class="text-center p-3 bg-green-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600">4.7</div>
+                                        <div class="text-xs text-green-700">Average Rating</div>
+                                    </div>
+                                    
+                                    <div class="text-center p-3 bg-blue-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-blue-600">96.3%</div>
+                                        <div class="text-xs text-blue-700">Approval Rate</div>
+                                    </div>
+                                    
+                                    <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-yellow-600">1.2%</div>
+                                        <div class="text-xs text-yellow-700">Report Rate</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

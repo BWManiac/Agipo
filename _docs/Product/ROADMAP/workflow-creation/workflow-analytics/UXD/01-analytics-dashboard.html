@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Analytics - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'metric-update': 'metricUpdate 2s ease-in-out infinite',
+                        'chart-draw': 'chartDraw 1.5s ease-out',
+                        'insight-fade': 'insightFade 0.8s ease-out',
+                        'data-stream': 'dataStream 3s ease-in-out infinite',
+                        'widget-pulse': 'widgetPulse 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        metricUpdate: {
+                            '0%, 100%': { transform: 'scale(1)', color: 'rgb(15 23 42)' },
+                            '50%': { transform: 'scale(1.05)', color: 'rgb(34 197 94)' },
+                        },
+                        chartDraw: {
+                            '0%': { strokeDashoffset: '100%' },
+                            '100%': { strokeDashoffset: '0%' },
+                        },
+                        insightFade: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        dataStream: {
+                            '0%, 100%': { opacity: '0.4', transform: 'translateX(-10px)' },
+                            '50%': { opacity: '1', transform: 'translateX(10px)' },
+                        },
+                        widgetPulse: {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.2)' },
+                            '50%': { boxShadow: '0 0 20px 5px rgba(59, 130, 246, 0.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Workflow Analytics</h1>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Email Processing Automation</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-data-stream"></div>
+                        <span class="text-green-600 font-medium">Live data</span>
+                    </div>
+                    <select class="text-sm border rounded px-3 py-2">
+                        <option>Last 24 hours</option>
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>Custom range</option>
+                    </select>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Customize
+                    </button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Key Metrics Row -->
+        <div class="grid grid-cols-5 gap-6 mb-8">
+            <!-- Executions -->
+            <div class="bg-white rounded-lg border p-6 animate-widget-pulse">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-muted-foreground">Total Executions</h3>
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold animate-metric-update">12,847</div>
+                <div class="text-sm text-green-600 flex items-center gap-1 mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    +23% vs yesterday
+                </div>
+            </div>
+
+            <!-- Success Rate -->
+            <div class="bg-white rounded-lg border p-6 animate-widget-pulse" style="animation-delay: 0.5s">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-muted-foreground">Success Rate</h3>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold animate-metric-update">98.7%</div>
+                <div class="text-sm text-green-600 flex items-center gap-1 mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    +0.3% vs yesterday
+                </div>
+            </div>
+
+            <!-- Avg Execution Time -->
+            <div class="bg-white rounded-lg border p-6 animate-widget-pulse" style="animation-delay: 1s">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-muted-foreground">Avg Execution Time</h3>
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold animate-metric-update">2.3s</div>
+                <div class="text-sm text-green-600 flex items-center gap-1 mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                    </svg>
+                    -15% faster
+                </div>
+            </div>
+
+            <!-- Cost -->
+            <div class="bg-white rounded-lg border p-6 animate-widget-pulse" style="animation-delay: 1.5s">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-muted-foreground">Daily Cost</h3>
+                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold animate-metric-update">$47.32</div>
+                <div class="text-sm text-red-600 flex items-center gap-1 mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    +8% vs yesterday
+                </div>
+            </div>
+
+            <!-- Active Users -->
+            <div class="bg-white rounded-lg border p-6 animate-widget-pulse" style="animation-delay: 2s">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-muted-foreground">Active Users</h3>
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold animate-metric-update">342</div>
+                <div class="text-sm text-green-600 flex items-center gap-1 mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    +12 new today
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-3 gap-8 mb-8">
+            <!-- Execution Trends -->
+            <div class="col-span-2 bg-white rounded-lg border">
+                <div class="px-6 py-4 border-b">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold">Execution Trends</h3>
+                        <div class="flex items-center gap-2">
+                            <button class="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded">24h</button>
+                            <button class="text-sm px-3 py-1 text-gray-600 hover:bg-gray-100 rounded">7d</button>
+                            <button class="text-sm px-3 py-1 text-gray-600 hover:bg-gray-100 rounded">30d</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <!-- Chart Area -->
+                    <div class="h-64 relative">
+                        <svg class="w-full h-full">
+                            <!-- Chart Grid -->
+                            <defs>
+                                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgb(243 244 246)" stroke-width="1"/>
+                                </pattern>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grid)" />
+                            
+                            <!-- Success Line -->
+                            <polyline points="40,200 80,190 120,185 160,180 200,175 240,170 280,165 320,160 360,155 400,150 440,145 480,140"
+                                     fill="none" stroke="rgb(34 197 94)" stroke-width="3" class="animate-chart-draw"/>
+                            
+                            <!-- Error Line -->
+                            <polyline points="40,240 80,238 120,235 160,230 200,228 240,225 280,222 320,220 360,218 400,215 440,212 480,210"
+                                     fill="none" stroke="rgb(239 68 68)" stroke-width="2" class="animate-chart-draw" style="animation-delay: 0.5s"/>
+                            
+                            <!-- Data Points -->
+                            <circle cx="480" cy="140" r="4" fill="rgb(34 197 94)" class="animate-metric-update"/>
+                            <circle cx="480" cy="210" r="3" fill="rgb(239 68 68)" class="animate-metric-update"/>
+                        </svg>
+                        
+                        <!-- Legend -->
+                        <div class="absolute top-4 right-4 flex items-center gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span>Successful</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <span>Failed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Breakdown -->
+            <div class="bg-white rounded-lg border">
+                <div class="px-6 py-4 border-b">
+                    <h3 class="text-lg font-semibold">Performance Breakdown</h3>
+                </div>
+                <div class="p-6">
+                    <!-- Donut Chart -->
+                    <div class="relative w-48 h-48 mx-auto mb-6">
+                        <svg class="w-48 h-48 transform -rotate-90">
+                            <circle cx="96" cy="96" r="80" stroke="rgb(229 231 235)" stroke-width="20" fill="transparent"/>
+                            <circle cx="96" cy="96" r="80" stroke="rgb(34 197 94)" stroke-width="20" fill="transparent" 
+                                    stroke-dasharray="402" stroke-dashoffset="60" class="animate-chart-draw"/>
+                            <circle cx="96" cy="96" r="80" stroke="rgb(59 130 246)" stroke-width="20" fill="transparent" 
+                                    stroke-dasharray="402" stroke-dashoffset="160" class="animate-chart-draw" style="animation-delay: 0.3s"/>
+                            <circle cx="96" cy="96" r="80" stroke="rgb(245 158 11)" stroke-width="20" fill="transparent" 
+                                    stroke-dasharray="402" stroke-dashoffset="300" class="animate-chart-draw" style="animation-delay: 0.6s"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">2.3s</div>
+                                <div class="text-sm text-muted-foreground">Average</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Legend -->
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-green-500 rounded"></div>
+                                <span>Fast (< 1s)</span>
+                            </div>
+                            <span class="font-medium">68%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                                <span>Normal (1-5s)</span>
+                            </div>
+                            <span class="font-medium">27%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-yellow-500 rounded"></div>
+                                <span>Slow (> 5s)</span>
+                            </div>
+                            <span class="font-medium">5%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights & Nodes Performance -->
+        <div class="grid grid-cols-3 gap-8 mb-8">
+            <!-- AI Insights -->
+            <div class="bg-white rounded-lg border">
+                <div class="px-6 py-4 border-b">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold">AI Insights</h3>
+                    </div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="p-3 bg-blue-50 border border-blue-200 rounded animate-insight-fade">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <div class="text-sm font-medium text-blue-800">Performance Opportunity</div>
+                                <div class="text-xs text-blue-600 mt-1">The PDF parser node is 40% slower than average. Consider optimizing or caching.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-green-50 border border-green-200 rounded animate-insight-fade" style="animation-delay: 0.2s">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <div class="text-sm font-medium text-green-800">Cost Savings</div>
+                                <div class="text-xs text-green-600 mt-1">Usage patterns suggest you could save 25% by switching to scheduled execution.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded animate-insight-fade" style="animation-delay: 0.4s">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <div>
+                                <div class="text-sm font-medium text-yellow-800">Usage Spike</div>
+                                <div class="text-xs text-yellow-600 mt-1">Peak usage detected at 2PM daily. Consider capacity planning.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full text-sm text-purple-600 hover:text-purple-700 font-medium">
+                        View All Insights →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Top Performing Nodes -->
+            <div class="bg-white rounded-lg border">
+                <div class="px-6 py-4 border-b">
+                    <h3 class="text-lg font-semibold">Top Performing Nodes</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Email Parser</div>
+                                    <div class="text-xs text-muted-foreground">0.2s avg</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-green-600">99.8%</div>
+                                <div class="text-xs text-muted-foreground">Success</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Validator</div>
+                                    <div class="text-xs text-muted-foreground">0.1s avg</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-green-600">99.5%</div>
+                                <div class="text-xs text-muted-foreground">Success</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Data Transformer</div>
+                                    <div class="text-xs text-muted-foreground">0.5s avg</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-green-600">98.9%</div>
+                                <div class="text-xs text-muted-foreground">Success</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">PDF Processor</div>
+                                    <div class="text-xs text-muted-foreground text-yellow-600">3.2s avg</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-yellow-600">96.1%</div>
+                                <div class="text-xs text-muted-foreground">Needs attention</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Alerts -->
+            <div class="bg-white rounded-lg border">
+                <div class="px-6 py-4 border-b">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold">Recent Alerts</h3>
+                        <span class="text-sm text-red-600">3 active</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="p-3 bg-red-50 border border-red-200 rounded animate-insight-fade">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-red-800">High Error Rate</div>
+                                        <div class="text-xs text-red-600 mt-1">PDF parser failing 8% of executions</div>
+                                        <div class="text-xs text-muted-foreground mt-1">2 minutes ago</div>
+                                    </div>
+                                </div>
+                                <button class="text-xs text-red-600 hover:text-red-700">Investigate</button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-yellow-50 border border-yellow-200 rounded animate-insight-fade" style="animation-delay: 0.2s">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-yellow-800">Slow Performance</div>
+                                        <div class="text-xs text-yellow-600 mt-1">Execution time increased 25%</div>
+                                        <div class="text-xs text-muted-foreground mt-1">15 minutes ago</div>
+                                    </div>
+                                </div>
+                                <button class="text-xs text-yellow-600 hover:text-yellow-700">Review</button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-orange-50 border border-orange-200 rounded animate-insight-fade" style="animation-delay: 0.4s">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-orange-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-orange-800">Cost Spike</div>
+                                        <div class="text-xs text-orange-600 mt-1">Daily cost exceeded budget by 15%</div>
+                                        <div class="text-xs text-muted-foreground mt-1">1 hour ago</div>
+                                    </div>
+                                </div>
+                                <button class="text-xs text-orange-600 hover:text-orange-700">Optimize</button>
+                            </div>
+                        </div>
+
+                        <button class="w-full text-sm text-gray-600 hover:text-gray-700 font-medium">
+                            View All Alerts →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg border p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold">Quick Actions</h3>
+                <button class="text-sm text-blue-600 hover:text-blue-700">Customize Dashboard</button>
+            </div>
+            
+            <div class="grid grid-cols-6 gap-4">
+                <button class="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+                    <svg class="w-6 h-6 mx-auto mb-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <div class="text-sm font-medium">Performance</div>
+                    <div class="text-xs text-muted-foreground">View metrics</div>
+                </button>
+
+                <button class="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+                    <svg class="w-6 h-6 mx-auto mb-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <div class="text-sm font-medium">Errors</div>
+                    <div class="text-xs text-muted-foreground">Analyze issues</div>
+                </button>
+
+                <button class="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+                    <svg class="w-6 h-6 mx-auto mb-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                    <div class="text-sm font-medium">Costs</div>
+                    <div class="text-xs text-muted-foreground">Optimize spending</div>
+                </button>
+
+                <button class="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+                    <svg class="w-6 h-6 mx-auto mb-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="text-sm font-medium">Reports</div>
+                    <div class="text-xs text-muted-foreground">Generate report</div>
+                </button>
+
+                <button class="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+                    <svg class="w-6 h-6 mx-auto mb-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    <div class="text-sm font-medium">Monitor</div>
+                    <div class="text-xs text-muted-foreground">Real-time view</div>
+                </button>
+
+                <button class="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+                    <svg class="w-6 h-6 mx-auto mb-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                    </svg>
+                    <div class="text-sm font-medium">Share</div>
+                    <div class="text-xs text-muted-foreground">Export data</div>
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

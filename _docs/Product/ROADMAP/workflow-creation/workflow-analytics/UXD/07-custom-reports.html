@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Reports - Workflow Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: 'rgb(240, 253, 244)',
+                            500: 'rgb(34, 197, 94)',
+                            600: 'rgb(22, 163, 74)',
+                            700: 'rgb(21, 128, 61)'
+                        },
+                        secondary: {
+                            50: 'rgb(248, 250, 252)',
+                            100: 'rgb(241, 245, 249)',
+                            600: 'rgb(71, 85, 105)',
+                            700: 'rgb(51, 65, 85)',
+                            800: 'rgb(30, 41, 59)',
+                            900: 'rgb(15, 23, 42)'
+                        },
+                        warning: {
+                            50: 'rgb(255, 251, 235)',
+                            500: 'rgb(245, 158, 11)',
+                            600: 'rgb(217, 119, 6)'
+                        },
+                        info: {
+                            50: 'rgb(240, 249, 255)',
+                            500: 'rgb(59, 130, 246)',
+                            600: 'rgb(37, 99, 235)'
+                        }
+                    },
+                    animation: {
+                        'report-build': 'report-build 2s ease-out forwards',
+                        'template-hover': 'template-hover 0.3s ease-out',
+                        'schedule-pulse': 'schedule-pulse 2s ease-in-out infinite',
+                        'export-progress': 'export-progress 3s ease-in-out forwards',
+                        'filter-slide': 'filter-slide 0.5s ease-out forwards'
+                    },
+                    keyframes: {
+                        'report-build': {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        'template-hover': {
+                            '0%': { transform: 'scale(1)' },
+                            '100%': { transform: 'scale(1.02)' }
+                        },
+                        'schedule-pulse': {
+                            '0%, 100%': { backgroundColor: 'rgb(240, 253, 244)' },
+                            '50%': { backgroundColor: 'rgb(220, 252, 231)' }
+                        },
+                        'export-progress': {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
+                        },
+                        'filter-slide': {
+                            '0%': { opacity: '0', transform: 'translateX(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-secondary-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-secondary-200">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-4">
+                <button class="p-2 hover:bg-secondary-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-semibold text-secondary-900">Custom Reports</h1>
+                <div class="flex items-center space-x-2 text-secondary-600">
+                    <span class="text-sm">Templates:</span>
+                    <span class="font-medium">12 available</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button class="border border-secondary-300 hover:bg-secondary-50 text-secondary-700 px-4 py-2 rounded-lg text-sm font-medium">
+                    Import Template
+                </button>
+                <button class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    Create Report
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-sm border-r border-secondary-200">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Performance</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Usage Patterns</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Error Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Cost Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Real-time Monitoring</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 bg-primary-50 text-primary-700 rounded-lg font-medium">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45.03a2.5 2.5 0 01-2.9 0L6 12a2 2 0 012-2h4a2 2 0 012 2l-.05.03z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Custom Reports</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <div class="p-6">
+                <!-- Quick Actions Bar -->
+                <div class="bg-white rounded-lg border border-secondary-200 p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <h3 class="text-sm font-medium text-secondary-900">Quick Start</h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-2 rounded-lg text-sm font-medium">
+                                    Weekly Summary
+                                </button>
+                                <button class="bg-info-100 hover:bg-info-200 text-info-700 px-3 py-2 rounded-lg text-sm font-medium">
+                                    Performance Report
+                                </button>
+                                <button class="bg-warning-100 hover:bg-warning-200 text-warning-700 px-3 py-2 rounded-lg text-sm font-medium">
+                                    Cost Analysis
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select class="bg-white border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                <option>All workflows</option>
+                                <option>Production only</option>
+                                <option>Development only</option>
+                                <option>By team</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <!-- Report Builder -->
+                    <div class="col-span-2 bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-secondary-900">Report Builder</h3>
+                            <button class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                Generate Report
+                            </button>
+                        </div>
+
+                        <!-- Report Configuration -->
+                        <div class="space-y-6">
+                            <!-- Report Type Selection -->
+                            <div>
+                                <label class="block text-sm font-medium text-secondary-700 mb-3">Report Type</label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div class="border border-primary-300 bg-primary-50 rounded-lg p-4 cursor-pointer hover:bg-primary-100 transition-colors">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="text-sm font-medium text-secondary-900">Executive Summary</div>
+                                                <div class="text-xs text-secondary-600">High-level metrics</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border border-secondary-200 rounded-lg p-4 cursor-pointer hover:bg-secondary-50 transition-colors">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-5 h-5 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="text-sm font-medium text-secondary-900">Detailed Analysis</div>
+                                                <div class="text-xs text-secondary-600">In-depth breakdown</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border border-secondary-200 rounded-lg p-4 cursor-pointer hover:bg-secondary-50 transition-colors">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-5 h-5 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="text-sm font-medium text-secondary-900">Custom Format</div>
+                                                <div class="text-xs text-secondary-600">Build your own</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Date Range -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary-700 mb-2">Date Range</label>
+                                    <select class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                        <option>Last 7 days</option>
+                                        <option>Last 30 days</option>
+                                        <option>Last 90 days</option>
+                                        <option>Custom range</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary-700 mb-2">Frequency</label>
+                                    <select class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                        <option>One-time</option>
+                                        <option>Daily</option>
+                                        <option>Weekly</option>
+                                        <option>Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Metrics Selection -->
+                            <div>
+                                <label class="block text-sm font-medium text-secondary-700 mb-3">Include Metrics</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" checked class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">Execution Count</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="checkbox" checked class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">Success Rate</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">Error Analysis</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="checkbox" checked class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">Performance</label>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">Cost Breakdown</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="checkbox" checked class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">Usage Trends</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">User Activity</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                            <label class="ml-2 text-sm text-secondary-700">Recommendations</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Output Format -->
+                            <div>
+                                <label class="block text-sm font-medium text-secondary-700 mb-3">Output Format</label>
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center">
+                                        <input type="radio" name="format" checked class="h-4 w-4 text-primary-600 border-secondary-300 focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">PDF</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="radio" name="format" class="h-4 w-4 text-primary-600 border-secondary-300 focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">Excel</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="radio" name="format" class="h-4 w-4 text-primary-600 border-secondary-300 focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">CSV</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="radio" name="format" class="h-4 w-4 text-primary-600 border-secondary-300 focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">JSON</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Templates & Sharing -->
+                    <div class="space-y-6">
+                        <!-- Report Templates -->
+                        <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-secondary-900">Templates</h3>
+                                <button class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                                    Browse All
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="p-3 border border-primary-200 rounded-lg bg-primary-50 cursor-pointer hover:scale-105 transition-transform animate-template-hover">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-secondary-900">Weekly Performance</span>
+                                        <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">Execution stats, success rates, and trends</div>
+                                </div>
+
+                                <div class="p-3 border border-secondary-200 rounded-lg cursor-pointer hover:scale-105 transition-transform">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-secondary-900">Cost Report</span>
+                                        <svg class="w-4 h-4 text-secondary-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">Resource usage and cost analysis</div>
+                                </div>
+
+                                <div class="p-3 border border-secondary-200 rounded-lg cursor-pointer hover:scale-105 transition-transform">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-secondary-900">Error Summary</span>
+                                        <svg class="w-4 h-4 text-secondary-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">Error rates and failure analysis</div>
+                                </div>
+
+                                <div class="p-3 border border-secondary-200 rounded-lg cursor-pointer hover:scale-105 transition-transform">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-secondary-900">Executive Dashboard</span>
+                                        <svg class="w-4 h-4 text-secondary-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-xs text-secondary-600">High-level KPIs and insights</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sharing Options -->
+                        <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                            <h3 class="text-lg font-semibold text-secondary-900 mb-4">Sharing Options</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary-700 mb-2">Recipients</label>
+                                    <input type="email" placeholder="Enter email addresses" 
+                                           class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary-700 mb-2">Access Level</label>
+                                    <select class="w-full border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                        <option>View only</option>
+                                        <option>Can comment</option>
+                                        <option>Can edit</option>
+                                    </select>
+                                </div>
+
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                    <label class="ml-2 text-sm text-secondary-700">Generate shareable link</label>
+                                </div>
+
+                                <button class="w-full bg-info-500 hover:bg-info-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    Share Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scheduled Reports -->
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Scheduled Reports</h3>
+                            <button class="bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-lg text-sm font-medium">
+                                Add Schedule
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-primary-50 rounded-lg border border-primary-200 animate-schedule-pulse">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Weekly Performance Report</div>
+                                    <div class="text-xs text-secondary-600 mt-1">Every Monday 9:00 AM • PDF • 5 recipients</div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">Active</span>
+                                    <button class="text-secondary-500 hover:text-secondary-700">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 border border-secondary-200 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Monthly Cost Analysis</div>
+                                    <div class="text-xs text-secondary-600 mt-1">1st of every month • Excel • 3 recipients</div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">Paused</span>
+                                    <button class="text-secondary-500 hover:text-secondary-700">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 border border-secondary-200 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Daily Error Summary</div>
+                                    <div class="text-xs text-secondary-600 mt-1">Every day 6:00 PM • Email • 2 recipients</div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">Active</span>
+                                    <button class="text-secondary-500 hover:text-secondary-700">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Recent Reports</h3>
+                            <button class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                                View All
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 border border-secondary-200 rounded-lg hover:bg-secondary-50 cursor-pointer animate-report-build">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-danger-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-danger-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Performance Analysis Q3</div>
+                                        <div class="text-xs text-secondary-600">Generated 2 hours ago • PDF • 2.4 MB</div>
+                                    </div>
+                                </div>
+                                <button class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-1 rounded text-sm">
+                                    Download
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 border border-secondary-200 rounded-lg hover:bg-secondary-50 cursor-pointer animate-report-build" style="animation-delay: 0.1s">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 112 0v1h2a1 1 0 110 2H9a1 1 0 01-1-1V9z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Cost Optimization Report</div>
+                                        <div class="text-xs text-secondary-600">Generated yesterday • Excel • 1.8 MB</div>
+                                    </div>
+                                </div>
+                                <button class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-1 rounded text-sm">
+                                    Download
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 border border-secondary-200 rounded-lg hover:bg-secondary-50 cursor-pointer animate-report-build" style="animation-delay: 0.2s">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-info-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-info-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Executive Summary Sep</div>
+                                        <div class="text-xs text-secondary-600">Generated 3 days ago • PDF • 956 KB</div>
+                                    </div>
+                                </div>
+                                <button class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-1 rounded text-sm">
+                                    Download
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 border border-secondary-200 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-secondary-100 rounded-lg flex items-center justify-center">
+                                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-secondary-600"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Weekly Trends Report</div>
+                                        <div class="text-xs text-secondary-600">Generating... • Est. 2 min remaining</div>
+                                    </div>
+                                </div>
+                                <div class="bg-secondary-200 rounded-full h-2 w-16">
+                                    <div class="bg-primary-500 h-2 rounded-full animate-export-progress" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export History & Analytics -->
+                <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-secondary-900">Report Analytics</h3>
+                        <select class="bg-white border border-secondary-300 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-primary-500">
+                            <option>Last 30 days</option>
+                            <option>Last 90 days</option>
+                            <option>This year</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-secondary-900">47</div>
+                            <div class="text-sm text-secondary-600">Reports Generated</div>
+                            <div class="text-xs text-primary-600 mt-1">↑ 23% vs last month</div>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-secondary-900">156</div>
+                            <div class="text-sm text-secondary-600">Total Downloads</div>
+                            <div class="text-xs text-primary-600 mt-1">↑ 18% vs last month</div>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-secondary-900">12</div>
+                            <div class="text-sm text-secondary-600">Active Schedules</div>
+                            <div class="text-xs text-secondary-600 mt-1">3 new this month</div>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-secondary-900">89%</div>
+                            <div class="text-sm text-secondary-600">Delivery Success</div>
+                            <div class="text-xs text-primary-600 mt-1">↑ 3% vs last month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

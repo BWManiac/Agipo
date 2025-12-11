@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Control - Review Workflow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'review-pending': 'reviewPending 2s ease-in-out infinite',
+                        'approval-glow': 'approvalGlow 1.5s ease-in-out infinite',
+                        'change-request': 'changeRequest 2s ease-in-out infinite',
+                        'review-slide': 'reviewSlide 0.8s ease-out',
+                        'status-update': 'statusUpdate 1s ease-out',
+                    },
+                    keyframes: {
+                        reviewPending: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 249 195)', borderColor: 'rgb(250 204 21)' },
+                            '50%': { backgroundColor: 'rgb(253 224 71)', borderColor: 'rgb(245 158 11)' },
+                        },
+                        approvalGlow: {
+                            '0%, 100%': { backgroundColor: 'rgb(240 253 244)', borderColor: 'rgb(34 197 94)' },
+                            '50%': { backgroundColor: 'rgb(187 247 208)', borderColor: 'rgb(22 163 74)' },
+                        },
+                        changeRequest: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 242 242)', borderColor: 'rgb(239 68 68)' },
+                            '50%': { backgroundColor: 'rgb(252 165 165)', borderColor: 'rgb(220 38 38)' },
+                        },
+                        reviewSlide: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        statusUpdate: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Pull Request #247</h1>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                        </svg>
+                        <span>feature/enhanced-pdf-processing → main</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded-full animate-review-pending">
+                            ⏳ Review Required
+                        </span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Edit
+                    </button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Request Review
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PR Summary Bar -->
+    <div class="bg-white border-b px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+                        JD
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium">Enhanced PDF Processing Support</div>
+                        <div class="text-xs text-muted-foreground">
+                            <span class="font-medium">John Doe</span> wants to merge 8 commits into 
+                            <span class="px-1 py-0.5 bg-gray-100 rounded text-xs font-mono">main</span> from 
+                            <span class="px-1 py-0.5 bg-green-100 text-green-700 rounded text-xs font-mono">feature/enhanced-pdf-processing</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4 text-sm">
+                    <div class="flex items-center gap-1">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span class="text-green-600">+47</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                        <span class="text-red-600">-12</span>
+                    </div>
+                    <span class="text-muted-foreground">in 6 files</span>
+                </div>
+            </div>
+
+            <!-- Review Status -->
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-sm">1/2 reviewers approved</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-sm text-green-600">All checks passed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-4 gap-8">
+            <!-- Left Sidebar: Review Status & Checks -->
+            <div class="space-y-6">
+                <!-- Reviewers -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Reviewers</h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <!-- Approved Reviewer -->
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded animate-approval-glow">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                SC
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Sarah Chen</div>
+                                <div class="text-xs text-green-600 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Approved • 1 hour ago
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Reviewer -->
+                        <div class="flex items-center gap-3 p-2 border rounded hover:bg-gray-50 animate-review-pending">
+                            <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                MW
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Mike Wilson</div>
+                                <div class="text-xs text-yellow-600 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Review requested
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Optional Reviewer -->
+                        <div class="flex items-center gap-3 p-2 border rounded hover:bg-gray-50">
+                            <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                DT
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Design Team</div>
+                                <div class="text-xs text-muted-foreground">Optional reviewer</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Checks -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Status Checks</h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <!-- Passing Checks -->
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded animate-status-update">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Workflow Validation</div>
+                                <div class="text-xs text-green-600">All nodes validated successfully</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded animate-status-update" style="animation-delay: 0.2s">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Security Scan</div>
+                                <div class="text-xs text-green-600">No vulnerabilities detected</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded animate-status-update" style="animation-delay: 0.4s">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Performance Tests</div>
+                                <div class="text-xs text-green-600">Execution time improved by 15%</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 bg-green-50 border border-green-200 rounded animate-status-update" style="animation-delay: 0.6s">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Integration Tests</div>
+                                <div class="text-xs text-green-600">All 24 tests passing</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Merge Requirements -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Merge Requirements</h3>
+                    </div>
+                    <div class="p-4 space-y-2 text-sm">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>At least 1 approval</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>All reviewers approved</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>All status checks passed</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>No merge conflicts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Actions</h3>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <button class="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                            Review Changes
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm border rounded hover:bg-gray-50 transition-colors">
+                            View Workflow
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm border rounded hover:bg-gray-50 transition-colors">
+                            Add Reviewers
+                        </button>
+                        <button class="w-full px-3 py-2 text-sm border rounded hover:bg-gray-50 transition-colors">
+                            Close PR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-span-3 space-y-6">
+                <!-- Description -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h2 class="text-lg font-semibold">Enhanced PDF Processing Support</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <p class="text-sm text-muted-foreground mb-4">
+                                This PR adds comprehensive PDF processing capabilities to the email automation workflow, including:
+                            </p>
+                            <ul class="text-sm space-y-1 ml-4">
+                                <li>• Enhanced PDF parser with OCR support</li>
+                                <li>• Improved file size validation (up to 50MB)</li>
+                                <li>• Multi-format attachment support (DOCX, XLSX, PPT)</li>
+                                <li>• Advanced compression algorithms</li>
+                                <li>• Better error handling for corrupted files</li>
+                            </ul>
+                            
+                            <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
+                                <h4 class="text-sm font-medium text-blue-700 mb-2">Testing Notes</h4>
+                                <p class="text-sm text-blue-600">
+                                    Tested with 50+ PDF files of various sizes and formats. All tests pass with 15% performance improvement over previous implementation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Comments -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Reviews & Comments</h3>
+                            <span class="text-sm text-muted-foreground">2 conversations</span>
+                        </div>
+                    </div>
+                    
+                    <div class="divide-y">
+                        <!-- Approved Review -->
+                        <div class="p-6 animate-review-slide">
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-medium shrink-0">
+                                    SC
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="font-medium">Sarah Chen</span>
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Approved
+                                        </span>
+                                        <span class="text-xs text-muted-foreground">1 hour ago</span>
+                                    </div>
+                                    <div class="text-sm mb-4">
+                                        Great work on the PDF processing improvements! The OCR integration looks solid and the performance gains are impressive. 
+                                        The error handling for corrupted files is a nice touch.
+                                    </div>
+                                    
+                                    <!-- Inline File Comment -->
+                                    <div class="bg-gray-50 border rounded p-3 mb-3">
+                                        <div class="text-xs text-muted-foreground mb-1">
+                                            📄 attachment-processor.workflow • Line 47
+                                        </div>
+                                        <div class="text-sm font-mono bg-white border rounded p-2 mb-2">
+                                            <span class="text-green-600">+</span> "ocrEnabled": true,
+                                        </div>
+                                        <div class="text-sm">
+                                            Consider adding a configuration option to disable OCR for performance-sensitive workflows.
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2">
+                                        <button class="text-xs text-blue-600 hover:underline">Reply</button>
+                                        <button class="text-xs text-muted-foreground hover:text-gray-600">Quote</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Review with Comments -->
+                        <div class="p-6 animate-review-slide" style="animation-delay: 0.3s">
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-medium shrink-0">
+                                    MW
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="font-medium">Mike Wilson</span>
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                            </svg>
+                                            Commented
+                                        </span>
+                                        <span class="text-xs text-muted-foreground">30 minutes ago</span>
+                                    </div>
+                                    <div class="text-sm mb-4">
+                                        The PDF processing looks good overall. I have a few questions about the implementation:
+                                    </div>
+                                    
+                                    <!-- Multiple File Comments -->
+                                    <div class="space-y-3">
+                                        <div class="bg-gray-50 border rounded p-3">
+                                            <div class="text-xs text-muted-foreground mb-1">
+                                                📄 pdf-parser.config • Lines 23-28
+                                            </div>
+                                            <div class="text-sm font-mono bg-white border rounded p-2 mb-2">
+                                                <div><span class="text-red-600">-</span> "maxFileSize": "25MB",</div>
+                                                <div><span class="text-green-600">+</span> "maxFileSize": "50MB",</div>
+                                                <div><span class="text-green-600">+</span> "compressionEnabled": true,</div>
+                                            </div>
+                                            <div class="text-sm">
+                                                Is 50MB the right limit? Have we tested with files that large? Also, should compression be configurable per workflow?
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-gray-50 border rounded p-3">
+                                            <div class="text-xs text-muted-foreground mb-1">
+                                                📄 error-handling.flow • Line 15
+                                            </div>
+                                            <div class="text-sm font-mono bg-white border rounded p-2 mb-2">
+                                                <span class="text-green-600">+</span> throw new Error("Unsupported file type");
+                                            </div>
+                                            <div class="text-sm">
+                                                Should we use a more specific error type here for better error categorization?
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 mt-4">
+                                        <button class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">
+                                            Approve
+                                        </button>
+                                        <button class="px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700">
+                                            Request Changes
+                                        </button>
+                                        <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50">
+                                            Comment Only
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Author Response -->
+                        <div class="p-6 animate-review-slide" style="animation-delay: 0.6s">
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium shrink-0">
+                                    JD
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="font-medium">John Doe</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Author</span>
+                                        <span class="text-xs text-muted-foreground">15 minutes ago</span>
+                                    </div>
+                                    <div class="text-sm mb-3">
+                                        @Mike Wilson Great questions! Let me address them:
+                                    </div>
+                                    <div class="text-sm space-y-2">
+                                        <p>
+                                            <strong>Re: 50MB limit:</strong> We tested with files up to 75MB and they processed fine. 
+                                            The 50MB limit provides a good balance between functionality and performance.
+                                        </p>
+                                        <p>
+                                            <strong>Re: Compression:</strong> Good point! I'll add a workflow-level configuration option 
+                                            for compression in the next commit.
+                                        </p>
+                                        <p>
+                                            <strong>Re: Error types:</strong> Agreed. I'll create specific error classes for better error handling.
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                                        <div class="text-sm text-blue-700">
+                                            📝 <strong>Action items:</strong> Adding compression config and custom error types in next update.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Files Changed -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Files Changed</h3>
+                            <div class="text-sm text-muted-foreground">
+                                <span class="text-green-600">+47</span> 
+                                <span class="text-red-600">-12</span> 
+                                in 6 files
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="divide-y">
+                        <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium">attachment-processor.workflow</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">2 comments</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground">
+                                    <span class="text-green-600">+15</span> 
+                                    <span class="text-red-600">-3</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium">pdf-parser.config</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">1 comment</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground">
+                                    <span class="text-green-600">+8</span> 
+                                    <span class="text-red-600">-2</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium">ocr-processor.node</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">New file</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground">
+                                    <span class="text-green-600">+24</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-6 py-3 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium">error-handling.flow</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">1 comment</span>
+                                </div>
+                                <div class="text-sm text-muted-foreground">
+                                    <span class="text-green-600">+5</span> 
+                                    <span class="text-red-600">-1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-3 border-t">
+                        <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                            View Full Diff
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Merge Actions -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Merge Pull Request</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <div class="text-sm font-medium">Waiting for approval from Mike Wilson</div>
+                                <div class="text-xs text-muted-foreground">1 of 2 required reviewers have approved</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button class="px-4 py-2 text-sm bg-gray-400 text-white rounded cursor-not-allowed" disabled>
+                                Merge Pull Request
+                            </button>
+                            <button class="px-4 py-2 text-sm border rounded hover:bg-gray-50 transition-colors">
+                                Close Pull Request
+                            </button>
+                        </div>
+                        
+                        <div class="mt-3 text-xs text-muted-foreground">
+                            This pull request will be automatically merged when all requirements are met
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

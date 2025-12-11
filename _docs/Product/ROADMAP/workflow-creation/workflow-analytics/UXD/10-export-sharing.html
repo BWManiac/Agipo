@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export & Sharing - Workflow Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: 'rgb(240, 253, 244)',
+                            500: 'rgb(34, 197, 94)',
+                            600: 'rgb(22, 163, 74)',
+                            700: 'rgb(21, 128, 61)'
+                        },
+                        secondary: {
+                            50: 'rgb(248, 250, 252)',
+                            100: 'rgb(241, 245, 249)',
+                            600: 'rgb(71, 85, 105)',
+                            700: 'rgb(51, 65, 85)',
+                            800: 'rgb(30, 41, 59)',
+                            900: 'rgb(15, 23, 42)'
+                        },
+                        warning: {
+                            50: 'rgb(255, 251, 235)',
+                            500: 'rgb(245, 158, 11)',
+                            600: 'rgb(217, 119, 6)'
+                        },
+                        info: {
+                            50: 'rgb(240, 249, 255)',
+                            500: 'rgb(59, 130, 246)',
+                            600: 'rgb(37, 99, 235)'
+                        },
+                        purple: {
+                            50: 'rgb(250, 245, 255)',
+                            500: 'rgb(168, 85, 247)',
+                            600: 'rgb(147, 51, 234)'
+                        }
+                    },
+                    animation: {
+                        'export-progress': 'export-progress 3s ease-in-out forwards',
+                        'share-bounce': 'share-bounce 0.6s ease-out',
+                        'link-copied': 'link-copied 2s ease-out forwards',
+                        'format-select': 'format-select 0.3s ease-out',
+                        'api-pulse': 'api-pulse 2s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        'export-progress': {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
+                        },
+                        'share-bounce': {
+                            '0%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.1)' },
+                            '100%': { transform: 'scale(1)' }
+                        },
+                        'link-copied': {
+                            '0%': { backgroundColor: 'rgb(34, 197, 94)', color: 'white' },
+                            '20%': { transform: 'scale(1.05)' },
+                            '100%': { backgroundColor: 'transparent', color: 'inherit', transform: 'scale(1)' }
+                        },
+                        'format-select': {
+                            '0%': { transform: 'scale(0.9)', opacity: '0.5' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        'api-pulse': {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)' },
+                            '50%': { boxShadow: '0 0 0 6px rgba(59, 130, 246, 0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-secondary-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-secondary-200">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-4">
+                <button class="p-2 hover:bg-secondary-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-semibold text-secondary-900">Export & Sharing</h1>
+                <div class="flex items-center space-x-2 text-secondary-600">
+                    <span class="text-sm">Active shares:</span>
+                    <span class="font-medium">7</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <select class="bg-white border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option>Current workspace</option>
+                    <option>All workspaces</option>
+                    <option>Public dashboards</option>
+                </select>
+                <button class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    New Export
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-sm border-r border-secondary-200">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Performance</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Usage Patterns</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Error Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Cost Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Real-time Monitoring</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45.03a2.5 2.5 0 01-2.9 0L6 12a2 2 0 012-2h4a2 2 0 012 2l-.05.03z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Custom Reports</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
+                            <path d="M15 8a1 1 0 10-2 0 1 1 0 002 0zm0 4a1 1 0 10-2 0 1 1 0 002 0z"></path>
+                        </svg>
+                        <span>Comparison Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Predictive Insights</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 bg-primary-50 text-primary-700 rounded-lg font-medium">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Export & Sharing</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <div class="p-6">
+                <!-- Export Options -->
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- Export Dashboard -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Export Data</h3>
+                            <button class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                                Export History
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Format Selection -->
+                            <div>
+                                <label class="block text-sm font-medium text-secondary-700 mb-3">Export Format</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="p-4 border-2 border-primary-300 bg-primary-50 rounded-lg cursor-pointer hover:bg-primary-100 transition-colors animate-format-select">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-8 h-8 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="font-medium text-secondary-900">PDF Report</div>
+                                                <div class="text-xs text-secondary-600">Formatted for presentation</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-4 border border-secondary-200 rounded-lg cursor-pointer hover:bg-secondary-50 transition-colors">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-8 h-8 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="font-medium text-secondary-900">Excel (XLSX)</div>
+                                                <div class="text-xs text-secondary-600">Spreadsheet with charts</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-4 border border-secondary-200 rounded-lg cursor-pointer hover:bg-secondary-50 transition-colors">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-8 h-8 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="font-medium text-secondary-900">CSV Data</div>
+                                                <div class="text-xs text-secondary-600">Raw data for analysis</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-4 border border-secondary-200 rounded-lg cursor-pointer hover:bg-secondary-50 transition-colors">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-8 h-8 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="font-medium text-secondary-900">JSON API</div>
+                                                <div class="text-xs text-secondary-600">Structured data format</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Selection -->
+                            <div>
+                                <label class="block text-sm font-medium text-secondary-700 mb-3">Include Data</label>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" checked class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">Performance metrics</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" checked class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">Usage statistics</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">Error analysis</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" checked class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">Cost breakdown</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="h-4 w-4 text-primary-600 border-secondary-300 rounded focus:ring-primary-500">
+                                        <label class="ml-2 text-sm text-secondary-700">Raw execution logs</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Export Button -->
+                            <button class="w-full bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-lg text-sm font-medium animate-share-bounce">
+                                Generate Export
+                            </button>
+
+                            <!-- Progress Indicator -->
+                            <div class="hidden" id="export-progress">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-secondary-700">Generating export...</span>
+                                    <span class="text-sm text-secondary-600">67%</span>
+                                </div>
+                                <div class="w-full bg-secondary-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full animate-export-progress" style="width: 67%"></div>
+                                </div>
+                                <div class="text-xs text-secondary-600 mt-1">Processing performance data...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sharing Options -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Share Dashboard</h3>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                <span class="text-xs text-primary-600">7 active shares</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Quick Share -->
+                            <div class="p-4 bg-info-50 rounded-lg border border-info-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-medium text-secondary-900">Public Share Link</h4>
+                                    <button class="text-info-600 hover:text-info-700 text-sm font-medium">
+                                        Generate New
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="text" readonly value="https://agipo.ai/share/dashboard/abc123xyz" 
+                                           class="flex-1 bg-white border border-secondary-300 rounded px-3 py-2 text-sm text-secondary-600">
+                                    <button class="bg-info-500 hover:bg-info-600 text-white px-3 py-2 rounded text-sm font-medium animate-link-copied">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between mt-3 text-xs">
+                                    <span class="text-secondary-600">Expires: Dec 11, 2024</span>
+                                    <span class="text-info-600">View-only access</span>
+                                </div>
+                            </div>
+
+                            <!-- Team Sharing -->
+                            <div>
+                                <label class="block text-sm font-medium text-secondary-700 mb-2">Share with Team</label>
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <input type="email" placeholder="Enter email addresses"
+                                           class="flex-1 border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                    <select class="border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                        <option>Can view</option>
+                                        <option>Can comment</option>
+                                        <option>Can edit</option>
+                                    </select>
+                                    <button class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                        Invite
+                                    </button>
+                                </div>
+                                
+                                <!-- Current Shares -->
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                                JD
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-secondary-900">John Doe</div>
+                                                <div class="text-xs text-secondary-600">john@company.com</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">Owner</span>
+                                            <button class="text-secondary-500 hover:text-secondary-700">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-info-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                                SM
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-secondary-900">Sarah Miller</div>
+                                                <div class="text-xs text-secondary-600">sarah@company.com</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">Can edit</span>
+                                            <button class="text-secondary-500 hover:text-secondary-700">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-warning-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                                MJ
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-secondary-900">Mike Johnson</div>
+                                                <div class="text-xs text-secondary-600">mike@company.com</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">Can view</span>
+                                            <button class="text-secondary-500 hover:text-secondary-700">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Integration -->
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">API Access</h3>
+                            <div class="w-3 h-3 bg-info-500 rounded-full animate-api-pulse"></div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="p-3 bg-info-50 rounded-lg border border-info-200">
+                                <div class="text-sm font-medium text-secondary-900 mb-1">Analytics API</div>
+                                <div class="text-xs text-secondary-600 mb-2">Programmatic access to all metrics</div>
+                                <code class="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded block">
+                                    GET /api/v1/analytics/workflows
+                                </code>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-secondary-700">API Key</span>
+                                    <button class="text-info-600 hover:text-info-700 text-xs font-medium">
+                                        Regenerate
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="password" value="sk-1234567890abcdef" readonly 
+                                           class="flex-1 bg-secondary-50 border border-secondary-300 rounded px-3 py-2 text-sm">
+                                    <button class="text-secondary-500 hover:text-secondary-700">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"></path>
+                                            <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button class="w-full bg-info-500 hover:bg-info-600 text-white py-2 rounded-lg text-sm font-medium">
+                                View Documentation
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">External Integrations</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 border border-secondary-200 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Slack</div>
+                                        <div class="text-xs text-secondary-600">Daily reports</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">Active</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 border border-secondary-200 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-warning-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Email</div>
+                                        <div class="text-xs text-secondary-600">Weekly summaries</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">Active</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 border border-secondary-200 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-secondary-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-secondary-900">Webhook</div>
+                                        <div class="text-xs text-secondary-600">Custom endpoint</div>
+                                    </div>
+                                </div>
+                                <span class="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">Inactive</span>
+                            </div>
+
+                            <button class="w-full border border-secondary-300 hover:bg-secondary-50 text-secondary-700 py-2 rounded-lg text-sm font-medium">
+                                Add Integration
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Export History</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Performance Report Q4</div>
+                                    <div class="text-xs text-secondary-600">PDF • 2 hours ago • 2.4 MB</div>
+                                </div>
+                                <button class="text-primary-600 hover:text-primary-700">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Usage Data Export</div>
+                                    <div class="text-xs text-secondary-600">CSV • Yesterday • 856 KB</div>
+                                </div>
+                                <button class="text-primary-600 hover:text-primary-700">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Cost Analysis Report</div>
+                                    <div class="text-xs text-secondary-600">Excel • 3 days ago • 1.2 MB</div>
+                                </div>
+                                <button class="text-primary-600 hover:text-primary-700">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <button class="w-full text-primary-600 hover:text-primary-700 py-2 text-sm font-medium">
+                                View All Exports →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collaboration Features -->
+                <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-secondary-900">Collaboration & Feedback</h3>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                <span class="text-sm text-secondary-600">3 comments</span>
+                            </div>
+                            <button class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                Add Comment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div class="p-4 border border-secondary-200 rounded-lg">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-info-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                        SM
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <span class="text-sm font-medium text-secondary-900">Sarah Miller</span>
+                                            <span class="text-xs text-secondary-600">2 hours ago</span>
+                                        </div>
+                                        <p class="text-sm text-secondary-700 mb-2">The performance improvement this month is impressive! Can we get a breakdown by workflow?</p>
+                                        <div class="flex items-center space-x-3 text-xs">
+                                            <button class="text-primary-600 hover:text-primary-700">Reply</button>
+                                            <button class="text-secondary-600 hover:text-secondary-700">Like</button>
+                                            <span class="text-secondary-500">3 likes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 border border-secondary-200 rounded-lg">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-warning-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                        MJ
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <span class="text-sm font-medium text-secondary-900">Mike Johnson</span>
+                                            <span class="text-xs text-secondary-600">1 day ago</span>
+                                        </div>
+                                        <p class="text-sm text-secondary-700 mb-2">I notice the cost per execution is trending upward. Should we investigate optimization opportunities?</p>
+                                        <div class="flex items-center space-x-3 text-xs">
+                                            <button class="text-primary-600 hover:text-primary-700">Reply</button>
+                                            <button class="text-secondary-600 hover:text-secondary-700">Like</button>
+                                            <span class="text-secondary-500">1 like</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-secondary-900 mb-3">Share Settings</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Allow comments</span>
+                                    <div class="relative">
+                                        <input type="checkbox" checked class="sr-only">
+                                        <div class="block bg-primary-500 w-8 h-4 rounded-full"></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-2 h-2 rounded-full transition"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Public access</span>
+                                    <div class="relative">
+                                        <input type="checkbox" class="sr-only">
+                                        <div class="block bg-secondary-300 w-8 h-4 rounded-full"></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-2 h-2 rounded-full transition"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Download enabled</span>
+                                    <div class="relative">
+                                        <input type="checkbox" checked class="sr-only">
+                                        <div class="block bg-primary-500 w-8 h-4 rounded-full"></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-2 h-2 rounded-full transition"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-6 border-t border-secondary-200">
+                                <h4 class="text-sm font-medium text-secondary-900 mb-3">Export Statistics</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-secondary-600">Total exports:</span>
+                                        <span class="font-medium text-secondary-900">47</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-secondary-600">Active shares:</span>
+                                        <span class="font-medium text-secondary-900">7</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-secondary-600">API calls (7d):</span>
+                                        <span class="font-medium text-secondary-900">1,247</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-secondary-600">Storage used:</span>
+                                        <span class="font-medium text-secondary-900">2.4 GB</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

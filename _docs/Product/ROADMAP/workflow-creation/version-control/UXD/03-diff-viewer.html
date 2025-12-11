@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Control - Diff Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'diff-highlight': 'diffHighlight 2s ease-in-out infinite',
+                        'change-indicator': 'changeIndicator 1.5s ease-in-out infinite',
+                        'diff-slide': 'diffSlide 0.8s ease-out',
+                        'sync-scroll': 'syncScroll 0.3s ease-out',
+                    },
+                    keyframes: {
+                        diffHighlight: {
+                            '0%, 100%': { backgroundColor: 'rgb(254 249 195)', borderColor: 'rgb(250 204 21)' },
+                            '50%': { backgroundColor: 'rgb(253 224 71)', borderColor: 'rgb(245 158 11)' },
+                        },
+                        changeIndicator: {
+                            '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
+                            '50%': { opacity: '1', transform: 'scale(1.1)' },
+                        },
+                        diffSlide: {
+                            '0%': { opacity: '0', transform: 'translateX(20px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        syncScroll: {
+                            '0%': { transform: 'translateY(-5px)' },
+                            '100%': { transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-full px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Diff Viewer</h1>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span>v2.0.3 → v2.1.0</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="text-green-600 font-medium">+15 additions</span>
+                        <span class="text-red-600 font-medium">-5 deletions</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Split View
+                    </button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Export Diff
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Version Selector -->
+    <div class="bg-white border-b px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <label class="text-sm font-medium">From:</label>
+                    <select class="text-sm border rounded px-3 py-1 bg-red-50 border-red-200">
+                        <option>v2.0.3 (1 day ago) - Bug fixes and improvements</option>
+                        <option>v2.0.2 (1 week ago) - Performance optimization</option>
+                        <option>v2.0.1 (2 weeks ago) - Stable production release</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="text-sm font-medium">To:</label>
+                    <select class="text-sm border rounded px-3 py-1 bg-green-50 border-green-200">
+                        <option>v2.1.0 (Current) - Enhanced attachment processing</option>
+                        <option>v2.0.3 (1 day ago) - Bug fixes and improvements</option>
+                        <option>v2.0.2 (1 week ago) - Performance optimization</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50">Unified</button>
+                <button class="px-3 py-1 text-sm bg-blue-100 text-blue-700 border border-blue-200 rounded">Split</button>
+                <button class="px-3 py-1 text-sm border rounded hover:bg-gray-50">Raw</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex h-[calc(100vh-128px)]">
+        <!-- Left Sidebar: File Tree with Changes -->
+        <div class="w-80 bg-white border-r flex flex-col">
+            <div class="px-4 py-3 border-b">
+                <h3 class="text-sm font-medium">Changed Files</h3>
+                <div class="text-xs text-muted-foreground mt-1">8 files changed, 15 insertions(+), 5 deletions(-)</div>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                <!-- Modified Files -->
+                <div class="space-y-1">
+                    <div class="text-xs font-medium text-muted-foreground mb-2">Modified (6)</div>
+                    
+                    <div class="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded cursor-pointer animate-diff-highlight">
+                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium truncate">email-processor.workflow</div>
+                            <div class="text-xs text-muted-foreground">+8 -2</div>
+                        </div>
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full animate-change-indicator"></div>
+                    </div>
+
+                    <div class="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer animate-diff-slide">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm truncate">attachment-handler.node</div>
+                            <div class="text-xs text-muted-foreground">+4 -1</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer animate-diff-slide" style="animation-delay: 0.1s">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm truncate">pdf-parser.config</div>
+                            <div class="text-xs text-muted-foreground">+2 -1</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer animate-diff-slide" style="animation-delay: 0.2s">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm truncate">error-handling.flow</div>
+                            <div class="text-xs text-muted-foreground">+1 -1</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer animate-diff-slide" style="animation-delay: 0.3s">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm truncate">workflow.metadata</div>
+                            <div class="text-xs text-muted-foreground">+0 -0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Added Files -->
+                <div class="space-y-1 mt-4">
+                    <div class="text-xs font-medium text-muted-foreground mb-2">Added (2)</div>
+                    
+                    <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded hover:bg-green-100 cursor-pointer animate-diff-slide" style="animation-delay: 0.4s">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium truncate">file-size-validator.node</div>
+                            <div class="text-xs text-green-600">+24 lines</div>
+                        </div>
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-change-indicator"></div>
+                    </div>
+
+                    <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded hover:bg-green-100 cursor-pointer animate-diff-slide" style="animation-delay: 0.5s">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium truncate">compression-utils.helper</div>
+                            <div class="text-xs text-green-600">+18 lines</div>
+                        </div>
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-change-indicator"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="mt-6 p-3 bg-gray-50 rounded">
+                    <h4 class="text-xs font-medium text-muted-foreground mb-2">Change Summary</h4>
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between">
+                            <span>Total changes:</span>
+                            <span class="font-medium">20</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-600">Additions:</span>
+                            <span class="font-medium text-green-600">+15</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-red-600">Deletions:</span>
+                            <span class="font-medium text-red-600">-5</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Files modified:</span>
+                            <span class="font-medium">8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Diff View -->
+        <div class="flex-1 flex flex-col">
+            <!-- File Header -->
+            <div class="bg-white border-b px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <h2 class="text-lg font-medium">email-processor.workflow</h2>
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">Modified</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="text-green-600">+8</span>
+                        <span class="text-red-600">-2</span>
+                        <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50">View File</button>
+                        <button class="px-3 py-1 text-xs border rounded hover:bg-gray-50">Raw Diff</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Split View Diff -->
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Left Side - Before (v2.0.3) -->
+                <div class="flex-1 flex flex-col border-r">
+                    <div class="bg-red-50 border-b px-4 py-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <span class="text-sm font-medium">v2.0.3 (Before)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 overflow-auto">
+                        <div class="font-mono text-sm">
+                            <!-- Line Numbers Column -->
+                            <div class="flex">
+                                <div class="w-12 bg-gray-50 border-r text-center text-xs text-muted-foreground select-none">
+                                    <div class="py-1">1</div>
+                                    <div class="py-1">2</div>
+                                    <div class="py-1">3</div>
+                                    <div class="py-1">4</div>
+                                    <div class="py-1">5</div>
+                                    <div class="py-1">6</div>
+                                    <div class="py-1">7</div>
+                                    <div class="py-1">8</div>
+                                    <div class="py-1">9</div>
+                                    <div class="py-1">10</div>
+                                    <div class="py-1">11</div>
+                                    <div class="py-1">12</div>
+                                    <div class="py-1">13</div>
+                                    <div class="py-1">14</div>
+                                    <div class="py-1">15</div>
+                                    <div class="py-1">16</div>
+                                    <div class="py-1">17</div>
+                                    <div class="py-1">18</div>
+                                    <div class="py-1">19</div>
+                                    <div class="py-1">20</div>
+                                </div>
+                                
+                                <!-- Code Content -->
+                                <div class="flex-1 px-4">
+                                    <div class="py-1">{</div>
+                                    <div class="py-1">  "name": "Email Processing Automation",</div>
+                                    <div class="py-1">  "version": "2.0.3",</div>
+                                    <div class="py-1">  "description": "Process emails with attachments",</div>
+                                    <div class="py-1">  "nodes": [</div>
+                                    <div class="py-1">    {</div>
+                                    <div class="py-1">      "id": "email-input",</div>
+                                    <div class="py-1">      "type": "email-receiver",</div>
+                                    <div class="py-1">      "config": {</div>
+                                    <div class="py-1 bg-red-100">        "maxSize": "10MB",</div>
+                                    <div class="py-1">        "allowedTypes": ["pdf", "doc", "txt"]</div>
+                                    <div class="py-1">      }</div>
+                                    <div class="py-1">    },</div>
+                                    <div class="py-1">    {</div>
+                                    <div class="py-1 bg-red-100">      "id": "attachment-processor",</div>
+                                    <div class="py-1 bg-red-100">      "type": "file-handler",</div>
+                                    <div class="py-1">      "config": {</div>
+                                    <div class="py-1">        "parseText": true,</div>
+                                    <div class="py-1">        "extractMetadata": false</div>
+                                    <div class="py-1">      }</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - After (v2.1.0) -->
+                <div class="flex-1 flex flex-col">
+                    <div class="bg-green-50 border-b px-4 py-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full animate-sync-scroll"></div>
+                            <span class="text-sm font-medium">v2.1.0 (After)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 overflow-auto">
+                        <div class="font-mono text-sm">
+                            <!-- Line Numbers Column -->
+                            <div class="flex">
+                                <div class="w-12 bg-gray-50 border-r text-center text-xs text-muted-foreground select-none">
+                                    <div class="py-1">1</div>
+                                    <div class="py-1">2</div>
+                                    <div class="py-1">3</div>
+                                    <div class="py-1">4</div>
+                                    <div class="py-1">5</div>
+                                    <div class="py-1">6</div>
+                                    <div class="py-1">7</div>
+                                    <div class="py-1">8</div>
+                                    <div class="py-1">9</div>
+                                    <div class="py-1">10</div>
+                                    <div class="py-1">11</div>
+                                    <div class="py-1">12</div>
+                                    <div class="py-1">13</div>
+                                    <div class="py-1">14</div>
+                                    <div class="py-1">15</div>
+                                    <div class="py-1">16</div>
+                                    <div class="py-1">17</div>
+                                    <div class="py-1">18</div>
+                                    <div class="py-1">19</div>
+                                    <div class="py-1">20</div>
+                                    <div class="py-1">21</div>
+                                    <div class="py-1">22</div>
+                                    <div class="py-1">23</div>
+                                    <div class="py-1">24</div>
+                                    <div class="py-1">25</div>
+                                </div>
+                                
+                                <!-- Code Content -->
+                                <div class="flex-1 px-4">
+                                    <div class="py-1">{</div>
+                                    <div class="py-1">  "name": "Email Processing Automation",</div>
+                                    <div class="py-1 bg-green-100">  "version": "2.1.0",</div>
+                                    <div class="py-1">  "description": "Process emails with attachments",</div>
+                                    <div class="py-1">  "nodes": [</div>
+                                    <div class="py-1">    {</div>
+                                    <div class="py-1">      "id": "email-input",</div>
+                                    <div class="py-1">      "type": "email-receiver",</div>
+                                    <div class="py-1">      "config": {</div>
+                                    <div class="py-1 bg-green-100">        "maxSize": "25MB",</div>
+                                    <div class="py-1 bg-green-100">        "allowedTypes": ["pdf", "doc", "txt", "docx", "xlsx"],</div>
+                                    <div class="py-1 bg-green-100">        "compression": true</div>
+                                    <div class="py-1">      }</div>
+                                    <div class="py-1">    },</div>
+                                    <div class="py-1 bg-green-100">    {</div>
+                                    <div class="py-1 bg-green-100">      "id": "file-size-validator",</div>
+                                    <div class="py-1 bg-green-100">      "type": "validator",</div>
+                                    <div class="py-1 bg-green-100">      "config": {</div>
+                                    <div class="py-1 bg-green-100">        "maxFileSize": "25MB",</div>
+                                    <div class="py-1 bg-green-100">        "allowCompression": true</div>
+                                    <div class="py-1 bg-green-100">      }</div>
+                                    <div class="py-1 bg-green-100">    },</div>
+                                    <div class="py-1">    {</div>
+                                    <div class="py-1 bg-green-100">      "id": "enhanced-attachment-processor",</div>
+                                    <div class="py-1 bg-green-100">      "type": "advanced-file-handler",</div>
+                                    <div class="py-1">      "config": {</div>
+                                    <div class="py-1">        "parseText": true,</div>
+                                    <div class="py-1 bg-green-100">        "extractMetadata": true,</div>
+                                    <div class="py-1 bg-green-100">        "ocrEnabled": true</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diff Navigation -->
+            <div class="bg-white border-t px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-green-500 rounded"></div>
+                            <span class="text-sm">8 additions</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-red-500 rounded"></div>
+                            <span class="text-sm">2 deletions</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-yellow-500 rounded"></div>
+                            <span class="text-sm">3 modifications</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button class="p-2 border rounded hover:bg-gray-50" title="Previous change">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <span class="text-sm text-muted-foreground">1 of 3</span>
+                        <button class="p-2 border rounded hover:bg-gray-50" title="Next change">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Workflow Visual Diff Modal (Hidden) -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" id="visualDiffModal">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-lg font-semibold">Visual Workflow Diff</h3>
+                    <button class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('visualDiffModal').classList.add('hidden')">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-6 h-96">
+                        <!-- Before Workflow -->
+                        <div>
+                            <h4 class="text-sm font-medium mb-3 text-red-700">Before (v2.0.3)</h4>
+                            <div class="bg-red-50 border border-red-200 rounded p-4 h-full">
+                                <div class="space-y-3">
+                                    <div class="bg-white p-3 rounded border shadow-sm">
+                                        <div class="text-sm font-medium">Email Input</div>
+                                        <div class="text-xs text-muted-foreground">Max: 10MB</div>
+                                    </div>
+                                    <div class="h-0.5 bg-gray-300"></div>
+                                    <div class="bg-white p-3 rounded border shadow-sm">
+                                        <div class="text-sm font-medium">File Handler</div>
+                                        <div class="text-xs text-muted-foreground">Basic processing</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- After Workflow -->
+                        <div>
+                            <h4 class="text-sm font-medium mb-3 text-green-700">After (v2.1.0)</h4>
+                            <div class="bg-green-50 border border-green-200 rounded p-4 h-full">
+                                <div class="space-y-3">
+                                    <div class="bg-white p-3 rounded border shadow-sm animate-diff-slide">
+                                        <div class="text-sm font-medium">Email Input</div>
+                                        <div class="text-xs text-green-600">Max: 25MB + Compression</div>
+                                    </div>
+                                    <div class="h-0.5 bg-gray-300"></div>
+                                    <div class="bg-green-100 p-3 rounded border border-green-300 shadow-sm animate-diff-slide" style="animation-delay: 0.2s">
+                                        <div class="text-sm font-medium">File Validator</div>
+                                        <div class="text-xs text-green-600">NEW: Size validation</div>
+                                    </div>
+                                    <div class="h-0.5 bg-gray-300"></div>
+                                    <div class="bg-white p-3 rounded border shadow-sm animate-diff-slide" style="animation-delay: 0.4s">
+                                        <div class="text-sm font-medium">Enhanced Processor</div>
+                                        <div class="text-xs text-green-600">Advanced + OCR</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle visual diff modal
+        function showVisualDiff() {
+            document.getElementById('visualDiffModal').classList.remove('hidden');
+        }
+        
+        // Sync scroll between split panels
+        function syncScroll(sourceElement, targetElement) {
+            targetElement.scrollTop = sourceElement.scrollTop;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Control - Collaborative Editing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    animation: {
+                        'cursor-blink': 'cursorBlink 1.5s ease-in-out infinite',
+                        'presence-pulse': 'presencePulse 2s ease-in-out infinite',
+                        'live-edit': 'liveEdit 0.8s ease-out',
+                        'conflict-shake': 'conflictShake 0.5s ease-in-out 3',
+                        'typing-indicator': 'typingIndicator 1s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        cursorBlink: {
+                            '0%, 50%': { opacity: '1' },
+                            '51%, 100%': { opacity: '0' },
+                        },
+                        presencePulse: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
+                            '50%': { transform: 'scale(1.2)', opacity: '1' },
+                        },
+                        liveEdit: {
+                            '0%': { backgroundColor: 'rgb(254 240 138)', transform: 'scale(1.02)' },
+                            '100%': { backgroundColor: 'transparent', transform: 'scale(1)' },
+                        },
+                        conflictShake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' },
+                        },
+                        typingIndicator: {
+                            '0%, 100%': { opacity: '0.3' },
+                            '50%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <h1 class="text-xl font-semibold">Email Processing Automation</h1>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                        <span>Collaborative Mode</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-presence-pulse"></div>
+                        <span class="text-green-600 font-medium">3 collaborators</span>
+                    </div>
+                    <button class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+                        Share
+                    </button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Collaboration Bar -->
+    <div class="bg-blue-50 border-b px-4 sm:px-6 lg:px-8 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <!-- Active Collaborators -->
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium text-blue-700">Active now:</span>
+                    <div class="flex items-center gap-2">
+                        <!-- User 1 -->
+                        <div class="relative">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium animate-presence-pulse">
+                                JD
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        </div>
+                        
+                        <!-- User 2 -->
+                        <div class="relative">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium animate-presence-pulse" style="animation-delay: 0.5s">
+                                SC
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        </div>
+                        
+                        <!-- User 3 -->
+                        <div class="relative">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium animate-presence-pulse" style="animation-delay: 1s">
+                                MW
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full border-2 border-white animate-typing-indicator"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Status -->
+                <div class="flex items-center gap-4 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-cursor-blink"></div>
+                        <span class="text-blue-600">John editing attachment-handler</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full animate-typing-indicator"></div>
+                        <span class="text-yellow-600">Mike typing comment...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sync Status -->
+            <div class="flex items-center gap-2 text-sm">
+                <svg class="w-4 h-4 text-green-600 animate-presence-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-green-600">All changes synced</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-5 gap-8">
+            <!-- Left Sidebar: Collaborators & Activity -->
+            <div class="space-y-6">
+                <!-- Online Users -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Collaborators</h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <!-- Current User -->
+                        <div class="flex items-center gap-3 p-2 bg-blue-50 border border-blue-200 rounded">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                YO
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">You</div>
+                                <div class="text-xs text-blue-600">Owner • Online</div>
+                            </div>
+                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-presence-pulse"></div>
+                        </div>
+
+                        <!-- Other Users -->
+                        <div class="flex items-center gap-3 p-2 border rounded hover:bg-gray-50">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                JD
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">John Doe</div>
+                                <div class="text-xs text-green-600">Editor • Editing node</div>
+                            </div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-presence-pulse"></div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 border rounded hover:bg-gray-50">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                SC
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Sarah Chen</div>
+                                <div class="text-xs text-green-600">Editor • Viewing diff</div>
+                            </div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-presence-pulse"></div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-2 border rounded hover:bg-gray-50">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                MW
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium">Mike Wilson</div>
+                                <div class="text-xs text-yellow-600">Editor • Typing comment</div>
+                            </div>
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full animate-typing-indicator"></div>
+                        </div>
+
+                        <!-- Offline Users -->
+                        <div class="flex items-center gap-3 p-2 opacity-60">
+                            <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                DT
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm">Design Team</div>
+                                <div class="text-xs text-muted-foreground">Viewer • Offline</div>
+                            </div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Activity Feed -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Live Activity</h3>
+                    </div>
+                    <div class="p-4 space-y-3 text-sm">
+                        <div class="flex gap-3 animate-live-edit">
+                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                JD
+                            </div>
+                            <div>
+                                <div class="font-medium">Modified attachment-handler</div>
+                                <div class="text-xs text-muted-foreground">2 minutes ago</div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                SC
+                            </div>
+                            <div>
+                                <div class="font-medium">Added comment on line 23</div>
+                                <div class="text-xs text-muted-foreground">5 minutes ago</div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                MW
+                            </div>
+                            <div>
+                                <div class="font-medium">Created new branch: feature/pdf-support</div>
+                                <div class="text-xs text-muted-foreground">8 minutes ago</div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                YO
+                            </div>
+                            <div>
+                                <div class="font-medium">Updated workflow metadata</div>
+                                <div class="text-xs text-muted-foreground">12 minutes ago</div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 opacity-60">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                SC
+                            </div>
+                            <div>
+                                <div class="font-medium">Resolved merge conflict</div>
+                                <div class="text-xs text-muted-foreground">15 minutes ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collaboration Settings -->
+                <div class="bg-white rounded-lg border">
+                    <div class="px-4 py-3 border-b">
+                        <h3 class="text-sm font-medium">Settings</h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="space-y-2 text-xs">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span>Show live cursors</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span>Sync viewport</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                <span>Follow active user</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span>Show presence indicators</span>
+                            </label>
+                        </div>
+                        
+                        <div class="border-t pt-3">
+                            <button class="w-full px-3 py-2 text-xs border rounded hover:bg-gray-50">
+                                Manage Permissions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Workflow Canvas -->
+            <div class="col-span-4 bg-white rounded-lg border">
+                <!-- Canvas Header -->
+                <div class="px-6 py-4 border-b">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold">Workflow Canvas</h2>
+                        <div class="flex items-center gap-2">
+                            <div class="text-sm text-muted-foreground">Auto-save every 30s</div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-presence-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas Content -->
+                <div class="p-6 relative h-[600px] bg-gray-50">
+                    <!-- Workflow Nodes with Live Editing Indicators -->
+                    
+                    <!-- Email Input Node -->
+                    <div class="absolute top-12 left-12 w-48 bg-white rounded-lg border-2 border-blue-200 shadow-sm">
+                        <div class="p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="text-sm font-medium">Email Input</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">
+                                <div>Max size: 25MB</div>
+                                <div>Types: pdf, doc, txt, xlsx</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Validator Node - Being edited by John -->
+                    <div class="absolute top-12 left-80 w-48 bg-white rounded-lg border-2 border-blue-500 shadow-lg animate-live-edit">
+                        <div class="bg-blue-100 px-2 py-1 text-xs flex items-center gap-2">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                                JD
+                            </div>
+                            <span class="text-blue-700">John is editing...</span>
+                            <div class="w-2 h-2 bg-blue-500 rounded-full animate-cursor-blink ml-auto"></div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-sm font-medium">File Validator</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">
+                                <div>Max file size: 25MB</div>
+                                <div>Compression: enabled</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attachment Processor Node -->
+                    <div class="absolute top-48 left-48 w-48 bg-white rounded-lg border-2 border-gray-200 shadow-sm">
+                        <div class="p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                </svg>
+                                <span class="text-sm font-medium">Enhanced Processor</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">
+                                <div>Parse text: enabled</div>
+                                <div>Extract metadata: enabled</div>
+                                <div>OCR: enabled</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output Node with Comment -->
+                    <div class="absolute top-48 right-12 w-48 bg-white rounded-lg border-2 border-gray-200 shadow-sm">
+                        <div class="p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                                </svg>
+                                <span class="text-sm font-medium">Output Handler</span>
+                            </div>
+                            <div class="text-xs text-muted-foreground">
+                                <div>Format: JSON</div>
+                                <div>Store: database</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Live Comment -->
+                        <div class="absolute -top-2 -right-2 bg-yellow-100 border border-yellow-300 rounded p-2 shadow-lg max-w-xs animate-typing-indicator">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                                    MW
+                                </div>
+                                <span class="text-xs font-medium">Mike Wilson</span>
+                                <span class="text-xs text-muted-foreground">typing...</span>
+                            </div>
+                            <div class="text-xs">Should we add error handling for large file outputs?</div>
+                        </div>
+                    </div>
+
+                    <!-- Connection Lines -->
+                    <svg class="absolute inset-0 pointer-events-none" width="100%" height="100%">
+                        <!-- Input to Validator -->
+                        <line x1="240" y1="80" x2="320" y2="80" stroke="rgb(59 130 246)" stroke-width="2" />
+                        <polygon points="315,75 325,80 315,85" fill="rgb(59 130 246)" />
+                        
+                        <!-- Validator to Processor -->
+                        <line x1="400" y1="120" x2="240" y2="200" stroke="rgb(34 197 94)" stroke-width="2" />
+                        <polygon points="245,195 240,205 235,195" fill="rgb(34 197 94)" />
+                        
+                        <!-- Processor to Output -->
+                        <line x1="360" y1="240" x2="500" y2="240" stroke="rgb(168 85 247)" stroke-width="2" />
+                        <polygon points="495,235 505,240 495,245" fill="rgb(168 85 247)" />
+                    </svg>
+
+                    <!-- Live Cursors -->
+                    <div class="absolute top-28 left-96 pointer-events-none animate-cursor-blink">
+                        <div class="flex items-center gap-1">
+                            <div class="w-4 h-5 bg-blue-500 text-white text-xs flex items-center justify-center rounded-sm">
+                                JD
+                            </div>
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M13.64,21.97C13.14,22.21 12.54,22 12.31,21.5L10.13,16.76L7.62,18.78C7.45,18.92 7.24,19 7,19A1,1 0 0,1 6,18V3A1,1 0 0,1 7,2C7.24,2 7.47,2.09 7.64,2.23L7.65,2.22L19.14,11.86C19.57,12.22 19.62,12.85 19.27,13.27C19.12,13.45 18.91,13.57 18.7,13.61L15.54,14.23L17.74,18.96C18,19.46 17.76,20.05 17.26,20.28L13.64,21.97Z"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Conflict Indicator -->
+                    <div class="absolute bottom-12 left-12 bg-red-100 border border-red-300 rounded p-3 shadow-lg animate-conflict-shake">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-red-700">Merge Conflict</span>
+                        </div>
+                        <div class="text-xs text-red-600">
+                            <div>John and Sarah modified the same node</div>
+                            <div class="mt-1">
+                                <button class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700">
+                                    Resolve
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas Footer - Comments Panel -->
+                <div class="border-t bg-gray-50">
+                    <div class="px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                                <span class="text-sm text-muted-foreground">2 active comments</span>
+                            </div>
+                            
+                            <div class="flex-1 flex items-center gap-2">
+                                <input type="text" placeholder="Add a comment..." class="flex-1 text-sm border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    Comment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conflict Resolution Modal -->
+        <div class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" id="conflictModal">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-lg max-w-2xl w-full">
+                    <div class="flex items-center justify-between p-6 border-b">
+                        <h3 class="text-lg font-semibold text-red-700">Resolve Merge Conflict</h3>
+                        <button class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-medium mb-2">Conflicting Changes</h4>
+                                <div class="text-sm text-muted-foreground mb-4">
+                                    Both John and Sarah modified the File Validator node configuration
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="border rounded p-3 bg-blue-50">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                                            JD
+                                        </div>
+                                        <span class="text-sm font-medium">John's Changes</span>
+                                    </div>
+                                    <div class="text-xs bg-white p-2 rounded border">
+                                        maxFileSize: "50MB"<br>
+                                        allowCompression: true<br>
+                                        strictValidation: false
+                                    </div>
+                                </div>
+                                
+                                <div class="border rounded p-3 bg-green-50">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                                            SC
+                                        </div>
+                                        <span class="text-sm font-medium">Sarah's Changes</span>
+                                    </div>
+                                    <div class="text-xs bg-white p-2 rounded border">
+                                        maxFileSize: "25MB"<br>
+                                        allowCompression: true<br>
+                                        securityScan: true
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                    Accept John's
+                                </button>
+                                <button class="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700">
+                                    Accept Sarah's
+                                </button>
+                                <button class="px-4 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700">
+                                    Merge Both
+                                </button>
+                                <button class="px-4 py-2 text-sm border rounded hover:bg-gray-50">
+                                    Manual Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Optimization - Workflow Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: 'rgb(240, 253, 244)',
+                            500: 'rgb(34, 197, 94)',
+                            600: 'rgb(22, 163, 74)',
+                            700: 'rgb(21, 128, 61)'
+                        },
+                        secondary: {
+                            50: 'rgb(248, 250, 252)',
+                            100: 'rgb(241, 245, 249)',
+                            600: 'rgb(71, 85, 105)',
+                            700: 'rgb(51, 65, 85)',
+                            800: 'rgb(30, 41, 59)',
+                            900: 'rgb(15, 23, 42)'
+                        },
+                        warning: {
+                            50: 'rgb(255, 251, 235)',
+                            500: 'rgb(245, 158, 11)',
+                            600: 'rgb(217, 119, 6)'
+                        },
+                        danger: {
+                            50: 'rgb(254, 242, 242)',
+                            500: 'rgb(239, 68, 68)',
+                            600: 'rgb(220, 38, 38)'
+                        },
+                        info: {
+                            50: 'rgb(240, 249, 255)',
+                            500: 'rgb(59, 130, 246)',
+                            600: 'rgb(37, 99, 235)'
+                        }
+                    },
+                    animation: {
+                        'cost-flow': 'cost-flow 3s ease-in-out infinite',
+                        'savings-counter': 'savings-counter 2s ease-out forwards',
+                        'budget-alert': 'budget-alert 2s ease-in-out infinite',
+                        'roi-gauge': 'roi-gauge 2.5s ease-out forwards',
+                        'optimization-slide': 'optimization-slide 1s ease-out forwards'
+                    },
+                    keyframes: {
+                        'cost-flow': {
+                            '0%, 100%': { transform: 'translateY(0)', opacity: '1' },
+                            '50%': { transform: 'translateY(-10px)', opacity: '0.8' }
+                        },
+                        'savings-counter': {
+                            '0%': { transform: 'scale(0.8)', opacity: '0.5' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        'budget-alert': {
+                            '0%, 100%': { backgroundColor: 'rgb(255, 251, 235)' },
+                            '50%': { backgroundColor: 'rgb(254, 242, 242)' }
+                        },
+                        'roi-gauge': {
+                            '0%': { strokeDasharray: '0 251', opacity: '0.6' },
+                            '100%': { opacity: '1' }
+                        },
+                        'optimization-slide': {
+                            '0%': { transform: 'translateX(-30px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-secondary-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-secondary-200">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-4">
+                <button class="p-2 hover:bg-secondary-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-semibold text-secondary-900">Cost Optimization</h1>
+                <div class="flex items-center space-x-2 text-secondary-600">
+                    <span class="text-sm">Budget Status:</span>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-warning-500 rounded-full animate-budget-alert"></div>
+                        <span class="font-medium text-warning-700">78% used</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <select class="bg-white border border-secondary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option>This month</option>
+                    <option>Last month</option>
+                    <option>Last 3 months</option>
+                    <option>Year to date</option>
+                </select>
+                <button class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    Export Analysis
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-sm border-r border-secondary-200">
+            <nav class="p-4">
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Performance</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Usage Patterns</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Error Analysis</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 bg-primary-50 text-primary-700 rounded-lg font-medium">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Cost Analysis</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <div class="p-6">
+                <!-- Cost Overview Cards -->
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6 animate-cost-flow">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Monthly Spend</h3>
+                            <div class="w-8 h-8 bg-warning-50 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">$4,567</div>
+                        <div class="text-sm text-warning-600">↑ $342 vs last month</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6 animate-savings-counter">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Potential Savings</h3>
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-primary-600">$1,234</div>
+                        <div class="text-sm text-primary-600">27% reduction possible</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Cost Per Execution</h3>
+                            <div class="w-8 h-8 bg-info-50 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-info-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                                    <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">$0.36</div>
+                        <div class="text-sm text-primary-600">↓ $0.08 vs last month</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-secondary-600">Budget Usage</h3>
+                            <div class="w-8 h-8 bg-danger-50 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-danger-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-secondary-900">78%</div>
+                        <div class="text-sm text-warning-600">$1,433 remaining</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- Cost Breakdown Chart -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Cost Breakdown</h3>
+                            <select class="bg-white border border-secondary-300 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-primary-500">
+                                <option>By service</option>
+                                <option>By workflow</option>
+                                <option>By time</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Donut Chart Simulation -->
+                        <div class="flex items-center justify-center mb-6">
+                            <div class="relative w-48 h-48">
+                                <svg class="w-48 h-48 transform -rotate-90">
+                                    <!-- Background circle -->
+                                    <circle cx="96" cy="96" r="80" fill="none" stroke="rgb(241, 245, 249)" stroke-width="16"></circle>
+                                    
+                                    <!-- API Calls segment (40%) -->
+                                    <circle cx="96" cy="96" r="80" fill="none" stroke="rgb(239, 68, 68)" stroke-width="16" 
+                                            stroke-dasharray="201 502" stroke-dashoffset="0" class="animate-roi-gauge"></circle>
+                                    
+                                    <!-- Compute segment (30%) -->
+                                    <circle cx="96" cy="96" r="80" fill="none" stroke="rgb(245, 158, 11)" stroke-width="16" 
+                                            stroke-dasharray="151 352" stroke-dashoffset="-201" class="animate-roi-gauge" style="animation-delay: 0.5s"></circle>
+                                    
+                                    <!-- Storage segment (20%) -->
+                                    <circle cx="96" cy="96" r="80" fill="none" stroke="rgb(59, 130, 246)" stroke-width="16" 
+                                            stroke-dasharray="101 401" stroke-dashoffset="-352" class="animate-roi-gauge" style="animation-delay: 1s"></circle>
+                                    
+                                    <!-- Other segment (10%) -->
+                                    <circle cx="96" cy="96" r="80" fill="none" stroke="rgb(34, 197, 94)" stroke-width="16" 
+                                            stroke-dasharray="50 452" stroke-dashoffset="-453" class="animate-roi-gauge" style="animation-delay: 1.5s"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-lg font-bold text-secondary-900">$4,567</div>
+                                        <div class="text-xs text-secondary-600">Total</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-4 h-4 bg-danger-500 rounded"></div>
+                                    <span class="text-sm font-medium text-secondary-700">API Calls</span>
+                                </div>
+                                <span class="text-sm text-secondary-900">$1,827 (40%)</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-4 h-4 bg-warning-500 rounded"></div>
+                                    <span class="text-sm font-medium text-secondary-700">Compute</span>
+                                </div>
+                                <span class="text-sm text-secondary-900">$1,370 (30%)</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-4 h-4 bg-info-500 rounded"></div>
+                                    <span class="text-sm font-medium text-secondary-700">Storage</span>
+                                </div>
+                                <span class="text-sm text-secondary-900">$913 (20%)</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-4 h-4 bg-primary-500 rounded"></div>
+                                    <span class="text-sm font-medium text-secondary-700">Other</span>
+                                </div>
+                                <span class="text-sm text-secondary-900">$457 (10%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost Trend Over Time -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-secondary-900">Cost Trend (6 months)</h3>
+                            <div class="flex items-center space-x-2 text-xs">
+                                <div class="flex items-center space-x-1">
+                                    <div class="w-3 h-1 bg-warning-500 rounded"></div>
+                                    <span class="text-secondary-600">Actual</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <div class="w-3 h-1 bg-primary-500 rounded border-2 border-primary-300"></div>
+                                    <span class="text-secondary-600">Forecast</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="h-48 flex items-end justify-between space-x-2">
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-400 w-8 h-20 rounded-t animate-cost-flow"></div>
+                                <span class="text-xs text-secondary-600 mt-2">Jan</span>
+                                <span class="text-xs font-medium text-secondary-800">$3.2K</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-primary-500 w-8 h-28 rounded-t animate-cost-flow" style="animation-delay: 0.1s"></div>
+                                <span class="text-xs text-secondary-600 mt-2">Feb</span>
+                                <span class="text-xs font-medium text-secondary-800">$3.6K</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-warning-400 w-8 h-32 rounded-t animate-cost-flow" style="animation-delay: 0.2s"></div>
+                                <span class="text-xs text-secondary-600 mt-2">Mar</span>
+                                <span class="text-xs font-medium text-secondary-800">$4.1K</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-warning-500 w-8 h-36 rounded-t animate-cost-flow" style="animation-delay: 0.3s"></div>
+                                <span class="text-xs text-secondary-600 mt-2">Apr</span>
+                                <span class="text-xs font-medium text-secondary-800">$4.2K</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-danger-400 w-8 h-40 rounded-t animate-cost-flow" style="animation-delay: 0.4s"></div>
+                                <span class="text-xs text-secondary-600 mt-2">May</span>
+                                <span class="text-xs font-medium text-secondary-800">$4.6K</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-danger-500 w-8 h-44 rounded-t animate-cost-flow" style="animation-delay: 0.5s"></div>
+                                <span class="text-xs text-secondary-600 mt-2">Jun</span>
+                                <span class="text-xs font-medium text-secondary-800">$4.9K</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <!-- Most Expensive Workflows -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Most Expensive Workflows</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 bg-danger-50 rounded-lg border border-danger-200 animate-optimization-slide">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Data Processing Pipeline</div>
+                                    <div class="text-xs text-secondary-600">1,247 executions</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-danger-700">$1,847</div>
+                                    <div class="text-xs text-secondary-600">$1.48/exec</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-warning-50 rounded-lg border border-warning-200 animate-optimization-slide" style="animation-delay: 0.1s">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Image Processing</div>
+                                    <div class="text-xs text-secondary-600">892 executions</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-warning-700">$1,234</div>
+                                    <div class="text-xs text-secondary-600">$1.38/exec</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg animate-optimization-slide" style="animation-delay: 0.2s">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Email Campaign</div>
+                                    <div class="text-xs text-secondary-600">2,156 executions</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-secondary-700">$789</div>
+                                    <div class="text-xs text-secondary-600">$0.37/exec</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg animate-optimization-slide" style="animation-delay: 0.3s">
+                                <div>
+                                    <div class="text-sm font-medium text-secondary-900">Report Generation</div>
+                                    <div class="text-xs text-secondary-600">456 executions</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-secondary-700">$567</div>
+                                    <div class="text-xs text-secondary-600">$1.24/exec</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROI Analysis -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">ROI Analysis</h3>
+                        <div class="space-y-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-primary-600 animate-savings-counter">342%</div>
+                                <div class="text-sm text-secondary-600">Overall ROI</div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Labor cost saved</span>
+                                    <span class="text-sm font-medium text-primary-600">$18,450/month</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Time saved</span>
+                                    <span class="text-sm font-medium text-primary-600">127 hours/month</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Error reduction</span>
+                                    <span class="text-sm font-medium text-primary-600">89% fewer errors</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-secondary-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-secondary-700">Break-even point</span>
+                                    <span class="text-sm font-medium text-secondary-900">2.3 months</span>
+                                </div>
+                                <div class="w-full bg-secondary-200 rounded-full h-2">
+                                    <div class="bg-primary-500 h-2 rounded-full animate-roi-gauge" style="width: 85%"></div>
+                                </div>
+                                <div class="text-xs text-secondary-600 mt-1">Achieved in month 3</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budget Forecasting -->
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Budget Forecasting</h3>
+                        <div class="space-y-4">
+                            <div class="p-3 bg-warning-50 rounded-lg border border-warning-200">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <svg class="w-4 h-4 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-warning-800">Budget Alert</span>
+                                </div>
+                                <div class="text-sm text-warning-700">At current rate, budget will exceed by $890 this month</div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Projected monthly</span>
+                                    <span class="text-sm font-medium text-secondary-900">$5,890</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Budget limit</span>
+                                    <span class="text-sm font-medium text-secondary-900">$5,000</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-700">Overage</span>
+                                    <span class="text-sm font-medium text-danger-600">$890</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-secondary-200">
+                                <div class="text-sm text-secondary-700 mb-2">Recommended actions:</div>
+                                <div class="space-y-2">
+                                    <button class="w-full text-left p-2 bg-primary-50 hover:bg-primary-100 rounded text-sm text-primary-700 border border-primary-200">
+                                        Optimize high-cost workflows
+                                    </button>
+                                    <button class="w-full text-left p-2 bg-secondary-50 hover:bg-secondary-100 rounded text-sm text-secondary-700 border border-secondary-200">
+                                        Implement usage limits
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optimization Recommendations -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Optimization Recommendations</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-primary-50 rounded-lg border border-primary-200 animate-optimization-slide">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-secondary-900">Implement Request Batching</h4>
+                                    <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">SAVE $847/mo</span>
+                                </div>
+                                <p class="text-sm text-secondary-600 mb-3">Batch API requests in Data Processing Pipeline to reduce per-call costs</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-600">Impact: 46% cost reduction</span>
+                                    <button class="bg-primary-500 hover:bg-primary-600 text-white px-3 py-1 text-xs rounded">Apply</button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-warning-50 rounded-lg border border-warning-200 animate-optimization-slide" style="animation-delay: 0.1s">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-secondary-900">Cache Computed Results</h4>
+                                    <span class="text-xs bg-warning-100 text-warning-700 px-2 py-1 rounded">SAVE $423/mo</span>
+                                </div>
+                                <p class="text-sm text-secondary-600 mb-3">Cache expensive computations for 24h to avoid redundant processing</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-600">Impact: 23% cost reduction</span>
+                                    <button class="bg-warning-500 hover:bg-warning-600 text-white px-3 py-1 text-xs rounded">Configure</button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-info-50 rounded-lg border border-info-200 animate-optimization-slide" style="animation-delay: 0.2s">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-secondary-900">Optimize Execution Schedule</h4>
+                                    <span class="text-xs bg-info-100 text-info-700 px-2 py-1 rounded">SAVE $234/mo</span>
+                                </div>
+                                <p class="text-sm text-secondary-600 mb-3">Schedule non-urgent workflows during off-peak hours for lower rates</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-600">Impact: 12% cost reduction</span>
+                                    <button class="bg-info-500 hover:bg-info-600 text-white px-3 py-1 text-xs rounded">Schedule</button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-secondary-50 rounded-lg border border-secondary-200 animate-optimization-slide" style="animation-delay: 0.3s">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-secondary-900">Resource Right-sizing</h4>
+                                    <span class="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">SAVE $156/mo</span>
+                                </div>
+                                <p class="text-sm text-secondary-600 mb-3">Adjust compute resources based on actual usage patterns</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-secondary-600">Impact: 8% cost reduction</span>
+                                    <button class="bg-secondary-500 hover:bg-secondary-600 text-white px-3 py-1 text-xs rounded">Analyze</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-secondary-200 p-6">
+                        <h3 class="text-lg font-semibold text-secondary-900 mb-4">Cost Allocation & Budgets</h3>
+                        <div class="space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-secondary-700">Marketing Team</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-20 bg-secondary-200 rounded-full h-2">
+                                            <div class="bg-primary-500 h-2 rounded-full" style="width: 67%"></div>
+                                        </div>
+                                        <span class="text-sm text-secondary-600">$1,340 / $2,000</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-secondary-700">Sales Team</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-20 bg-secondary-200 rounded-full h-2">
+                                            <div class="bg-warning-500 h-2 rounded-full" style="width: 89%"></div>
+                                        </div>
+                                        <span class="text-sm text-secondary-600">$1,780 / $2,000</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-secondary-700">Operations Team</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-20 bg-secondary-200 rounded-full h-2">
+                                            <div class="bg-danger-500 h-2 rounded-full" style="width: 95%"></div>
+                                        </div>
+                                        <span class="text-sm text-secondary-600">$1,447 / $1,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-secondary-700">Development Team</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-20 bg-secondary-200 rounded-full h-2">
+                                            <div class="bg-primary-400 h-2 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <span class="text-sm text-secondary-600">$675 / $1,500</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-secondary-200">
+                                <h4 class="font-medium text-secondary-900 mb-3">Budget Alerts</h4>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-danger-50 rounded-lg border border-danger-200">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <svg class="w-4 h-4 text-danger-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <span class="text-sm font-medium text-danger-800">Operations Team</span>
+                                        </div>
+                                        <div class="text-xs text-danger-700">95% of budget used - projected to exceed by $200</div>
+                                    </div>
+
+                                    <div class="p-3 bg-warning-50 rounded-lg border border-warning-200">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <svg class="w-4 h-4 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <span class="text-sm font-medium text-warning-800">Sales Team</span>
+                                        </div>
+                                        <div class="text-xs text-warning-700">89% of budget used - approaching limit</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
