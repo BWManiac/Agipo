@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Session Dialog - With Profile Creation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8 min-h-screen flex items-center justify-center">
+
+    <!-- Annotation -->
+    <div class="fixed top-4 left-4 max-w-sm bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 class="font-bold text-yellow-800 mb-2">UXD: New Session Dialog</h3>
+        <p class="text-sm text-yellow-700">Updated dialog with 3 profile options: No profile, Use existing, Create new.</p>
+        <p class="text-sm text-yellow-700 mt-2">When "Create new" is selected, user enters a profile name. Session will save as that profile when ended.</p>
+    </div>
+
+    <!-- Dialog Backdrop -->
+    <div class="fixed inset-0 bg-black/50"></div>
+
+    <!-- Dialog -->
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b">
+            <div>
+                <h2 class="text-lg font-semibold">New Browser Session</h2>
+                <p class="text-sm text-gray-500 mt-1">Start a new cloud browser session</p>
+            </div>
+            <button class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 space-y-6">
+
+            <!-- Initial URL -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">
+                    Initial URL <span class="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input
+                    type="text"
+                    placeholder="https://linkedin.com"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <p class="text-xs text-gray-500">Leave empty to start with a blank page</p>
+            </div>
+
+            <!-- Profile Options - Radio Group -->
+            <div class="space-y-3">
+                <label class="block text-sm font-medium text-gray-700">Browser Profile</label>
+
+                <!-- Option 1: No Profile -->
+                <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="profile-option" class="mt-0.5 mr-3" />
+                    <div>
+                        <span class="font-medium text-sm">No profile</span>
+                        <p class="text-xs text-gray-500 mt-0.5">Fresh browser, no saved state</p>
+                    </div>
+                </label>
+
+                <!-- Option 2: Use Existing -->
+                <label class="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="radio" name="profile-option" class="mt-0.5 mr-3" />
+                    <div class="flex-1">
+                        <span class="font-medium text-sm">Use existing profile</span>
+                        <p class="text-xs text-gray-500 mt-0.5">Start already logged in</p>
+                        <!-- Dropdown (disabled state shown) -->
+                        <select disabled class="mt-2 w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-400 text-sm">
+                            <option>Select a profile...</option>
+                        </select>
+                    </div>
+                </label>
+
+                <!-- Option 3: Create New (SELECTED) -->
+                <label class="flex items-start p-3 border-2 border-blue-500 bg-blue-50 rounded-lg cursor-pointer">
+                    <input type="radio" name="profile-option" checked class="mt-0.5 mr-3" />
+                    <div class="flex-1">
+                        <span class="font-medium text-sm text-blue-900">Create new profile</span>
+                        <p class="text-xs text-blue-700 mt-0.5">Save browser state when session ends</p>
+                        <!-- Profile Name Input (shown when selected) -->
+                        <input
+                            type="text"
+                            placeholder="linkedin-work"
+                            value="linkedin-work"
+                            class="mt-2 w-full px-3 py-2 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                        <p class="text-xs text-blue-600 mt-1">Lowercase letters, numbers, and dashes only</p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Info Box -->
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div class="flex gap-2">
+                    <svg class="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                    <p class="text-xs text-gray-600">
+                        <strong>How it works:</strong> Log into sites during your session. When you end the session, all cookies and login state will be saved to this profile. Next time, select this profile to start already logged in.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 p-6 border-t bg-gray-50">
+            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                Cancel
+            </button>
+            <button class="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800">
+                Start Session
+            </button>
+        </div>
+    </div>
+
+    <!-- States Annotation -->
+    <div class="fixed bottom-4 right-4 max-w-xs bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 class="font-bold text-blue-800 mb-2">States to implement:</h4>
+        <ul class="text-xs text-blue-700 space-y-1">
+            <li>1. "No profile" selected - just URL input</li>
+            <li>2. "Use existing" selected - show profile dropdown</li>
+            <li>3. "Create new" selected - show name input</li>
+            <li>4. Loading state while creating</li>
+            <li>5. Error state if name taken</li>
+        </ul>
+    </div>
+</body>
+</html>
