@@ -11,8 +11,10 @@ import type { BrowserStore } from "../types";
 export interface ProfileSummary {
   name: string;
   displayName: string;
-  icon: string;
-  credentialCount: number;
+  type: "anchor" | "local"; // anchor = saved session, local = credential profile
+  icon?: string;
+  credentialCount?: number;
+  description?: string;
   createdAt: string;
   lastUsed?: string;
 }

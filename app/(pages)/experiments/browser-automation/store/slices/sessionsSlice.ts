@@ -15,9 +15,18 @@ export interface BrowserSession {
   status: "starting" | "running" | "idle" | "stopped" | "error";
   currentUrl?: string;
   profileName?: string;
+  createNewProfile?: boolean; // Whether this session is creating a new persistent profile
   createdAt: string;
   actionCount: number;
   error?: string;
+}
+
+// Options for creating a new session
+export interface CreateSessionOptions {
+  profileName?: string;
+  profileDisplayName?: string;
+  initialUrl?: string;
+  createNewProfile?: boolean;
 }
 
 // 1. State Interface
@@ -36,10 +45,7 @@ export interface SessionsSliceState {
 export interface SessionsSliceActions {
   fetchSessions: () => Promise<void>;
   // Fetches all sessions from the API. Called when session list needs to be refreshed.
-  createSession: (
-    profileName?: string,
-    initialUrl?: string
-  ) => Promise<BrowserSession>;
+  createSession: (options?: CreateSessionOptions) => Promise<BrowserSession>;
   // Creates a new browser session. Called when user clicks create session button.
   terminateSession: (sessionId: string) => Promise<void>;
   // Terminates a browser session. Called when user clicks terminate/stop session button.
@@ -97,14 +103,20 @@ export const createSessionsSlice: StateCreator<
     }
   },
 
-  createSession: async (profileName, initialUrl) => {
-    console.log("📝 SessionsSlice: Creating session with profile:", profileName);
+  createSession: async (options) => {
+    const { profileName, profileDisplayName, initialUrl, createNewProfile } = options || {};
+    console.log("📝 SessionsSlice: Creating session", { profileName, createNewProfile });
     set({ isCreating: true, error: null });
     try {
       const response = await fetch("/api/browser-automation/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profileName, initialUrl }),
+        body: JSON.stringify({
+          profileName,
+          profileDisplayName,
+          initialUrl,
+          createNewProfile,
+        }),
       });
 
       const data = await response.json();
@@ -117,6 +129,7 @@ export const createSessionsSlice: StateCreator<
         ...data.session,
         actionCount: 0,
         status: "starting",
+        createNewProfile,
       };
 
       set((state) => ({
@@ -127,6 +140,12 @@ export const createSessionsSlice: StateCreator<
       // Auto-select new session
       get().selectSession(newSession.id);
       console.log("✅ SessionsSlice: Session created and selected:", newSession.id);
+
+      // Refresh profiles if we created a new one
+      if (createNewProfile) {
+        get().fetchProfiles();
+      }
+
       return newSession;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to create session";
