@@ -9,10 +9,12 @@ import type { AgentsSlice } from "./slices/agentsSlice";
 import type { ThreadsSlice } from "./slices/threadsSlice";
 import type { ChatSlice } from "./slices/chatSlice";
 import type { AccessSlice } from "./slices/accessSlice";
+import type { FolderSlice } from "./slices/folderSlice";
 
 export type RecordsStore = UiSlice &
   GridSlice &
   AgentsSlice &
   ThreadsSlice &
   ChatSlice &
-  AccessSlice;
+  AccessSlice &
+  FolderSlice;
