@@ -28,7 +28,7 @@ export interface CatalogSliceActions {
   
   /** Create a new document */
   createDocument: (title?: string) => Promise<string | null>;
-  
+
   /** Delete a document by ID */
   deleteDocument: (docId: string) => Promise<boolean>;
 }
