@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Data Source Dialog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-900/50 min-h-screen flex items-center justify-center p-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl w-full">
+
+        <!-- Dialog State 1: Select Source -->
+        <div class="space-y-4">
+            <h3 class="text-white text-sm font-medium">Step 1: Select Source</h3>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Assign Data Source</h2>
+                    <button class="p-1 hover:bg-secondary rounded">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-4">
+                    <!-- Search -->
+                    <div class="relative">
+                        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" placeholder="Search tables and documents..." class="w-full h-10 pl-10 pr-3 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+
+                    <!-- Source List -->
+                    <div class="border rounded-lg max-h-64 overflow-y-auto">
+                        <!-- Tables Section -->
+                        <div class="px-3 py-2 bg-secondary/50 text-xs font-medium text-muted-foreground uppercase tracking-wide sticky top-0">
+                            Tables
+                        </div>
+
+                        <!-- Table Item - Selected -->
+                        <button class="w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 bg-blue-50 border-l-2 border-blue-500">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Stakeholder Interviews</div>
+                                <div class="text-xs text-muted-foreground">124 records</div>
+                            </div>
+                            <svg class="w-5 h-5 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path>
+                            </svg>
+                        </button>
+
+                        <!-- Table Item -->
+                        <button class="w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Product Roadmap</div>
+                                <div class="text-xs text-muted-foreground">45 records</div>
+                            </div>
+                        </button>
+
+                        <!-- Table Item -->
+                        <button class="w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Customer Leads</div>
+                                <div class="text-xs text-muted-foreground">89 records</div>
+                            </div>
+                        </button>
+
+                        <!-- Documents Section -->
+                        <div class="px-3 py-2 bg-secondary/50 text-xs font-medium text-muted-foreground uppercase tracking-wide sticky top-0">
+                            Documents
+                        </div>
+
+                        <!-- Document Item -->
+                        <button class="w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Resume.md</div>
+                                <div class="text-xs text-muted-foreground">~1,200 words</div>
+                            </div>
+                        </button>
+
+                        <!-- Document Item -->
+                        <button class="w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">Company Research</div>
+                                <div class="text-xs text-muted-foreground">~3,400 words</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 border-t bg-secondary/30 flex justify-end gap-2">
+                    <button class="h-9 px-4 border rounded-md text-sm font-medium hover:bg-secondary transition-all">
+                        Cancel
+                    </button>
+                    <button class="h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-all">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialog State 2: Configure Access -->
+        <div class="space-y-4">
+            <h3 class="text-white text-sm font-medium">Step 2: Configure Access</h3>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <button class="p-1 hover:bg-secondary rounded">
+                            <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <h2 class="text-lg font-semibold">Configure Access</h2>
+                    </div>
+                    <button class="p-1 hover:bg-secondary rounded">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Selected Source Preview -->
+                    <div class="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium">Stakeholder Interviews</div>
+                            <div class="text-sm text-muted-foreground">Table • 124 records</div>
+                        </div>
+                    </div>
+
+                    <!-- Permission Level -->
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium">Permission Level</label>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-secondary/50 transition-all">
+                                <input type="radio" name="permission" class="mt-0.5" />
+                                <div>
+                                    <div class="font-medium text-sm">Read Only</div>
+                                    <div class="text-xs text-muted-foreground">Agent can view and query data but cannot make changes</div>
+                                </div>
+                            </label>
+                            <label class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-secondary/50 transition-all border-primary bg-primary/5">
+                                <input type="radio" name="permission" checked class="mt-0.5" />
+                                <div>
+                                    <div class="font-medium text-sm">Read & Write</div>
+                                    <div class="text-xs text-muted-foreground">Agent can view, query, add, update, and delete data</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- RAG Toggle -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium">RAG Integration</label>
+                            <span class="text-xs text-muted-foreground">Recommended</span>
+                        </div>
+                        <label class="flex items-start gap-3 p-4 border rounded-lg cursor-pointer hover:bg-secondary/50 transition-all border-green-200 bg-green-50">
+                            <input type="checkbox" checked class="mt-0.5 h-4 w-4 text-green-600 rounded border-gray-300" />
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-sm">Enable Semantic Search</span>
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-700">
+                                        RAG
+                                    </span>
+                                </div>
+                                <div class="text-xs text-muted-foreground mt-1">
+                                    Agent can semantically search this content to find relevant context during conversations. The data will be indexed using AI embeddings.
+                                </div>
+                            </div>
+                        </label>
+                        <p class="text-xs text-muted-foreground">
+                            Indexing may take a few minutes depending on data size.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 border-t bg-secondary/30 flex justify-between">
+                    <button class="h-9 px-4 border rounded-md text-sm font-medium hover:bg-secondary transition-all">
+                        Back
+                    </button>
+                    <button class="h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-all inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Assign Source
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialog State 3: Indexing Progress -->
+        <div class="space-y-4">
+            <h3 class="text-white text-sm font-medium">Step 3: Indexing (Optional)</h3>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Indexing Data</h2>
+                    <button class="p-1 hover:bg-secondary rounded" disabled>
+                        <svg class="w-5 h-5 text-muted-foreground/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Progress Animation -->
+                    <div class="flex flex-col items-center py-6 space-y-4">
+                        <div class="relative">
+                            <div class="w-16 h-16 rounded-full border-4 border-secondary"></div>
+                            <div class="w-16 h-16 rounded-full border-4 border-transparent border-t-blue-500 absolute top-0 left-0 animate-spin"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-medium">Creating embeddings...</div>
+                            <div class="text-sm text-muted-foreground">Processing 124 records</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Progress</span>
+                            <span class="font-medium">67%</span>
+                        </div>
+                        <div class="h-2 bg-secondary rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full transition-all duration-300" style="width: 67%"></div>
+                        </div>
+                        <div class="text-xs text-muted-foreground">
+                            83 of 124 records processed
+                        </div>
+                    </div>
+
+                    <!-- Steps -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm text-green-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Source assigned to agent</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-green-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Chunking complete</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-blue-600">
+                            <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Generating embeddings...</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                            <div class="w-4 h-4 rounded-full border-2 border-muted-foreground/30"></div>
+                            <span>Store in vector database</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 border-t bg-secondary/30 flex justify-end">
+                    <button class="h-9 px-4 border rounded-md text-sm font-medium hover:bg-secondary transition-all">
+                        Run in Background
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialog State 4: Complete -->
+        <div class="space-y-4">
+            <h3 class="text-white text-sm font-medium">Step 4: Complete</h3>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Source Assigned</h2>
+                    <button class="p-1 hover:bg-secondary rounded">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Success State -->
+                    <div class="flex flex-col items-center py-6 space-y-4">
+                        <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-medium text-lg">Successfully Assigned</div>
+                            <div class="text-sm text-muted-foreground">Stakeholder Interviews is now available to this agent</div>
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="bg-secondary/50 rounded-lg p-4 space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Permission</span>
+                            <span class="font-medium">Read & Write</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">RAG Status</span>
+                            <span class="inline-flex items-center gap-1 font-medium text-green-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Active
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Records Indexed</span>
+                            <span class="font-medium">124</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Chunks Created</span>
+                            <span class="font-medium">342</span>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-muted-foreground text-center">
+                        The agent can now access this data through tools and semantic search.
+                    </p>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 border-t bg-secondary/30 flex justify-end">
+                    <button class="h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-all">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
