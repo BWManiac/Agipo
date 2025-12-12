@@ -136,7 +136,7 @@ export function FolderTree({ onCreateFolder }: FolderTreeProps) {
               Loading...
             </div>
           ) : (
-            folderTree.map((node) => (
+            (folderTree ?? []).map((node) => (
               <FolderTreeItem key={node.id} node={node} level={0} />
             ))
           )}

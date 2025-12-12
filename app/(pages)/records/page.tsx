@@ -27,8 +27,8 @@ export default function RecordsPage() {
   const router = useRouter();
 
   const {
-    items,
-    breadcrumbs,
+    items: storeItems,
+    breadcrumbs: storeBreadcrumbs,
     currentFolder,
     currentFolderId,
     isItemsLoading,
@@ -41,6 +41,10 @@ export default function RecordsPage() {
     createDocument,
     deleteItem,
   } = useRecordsStore();
+
+  // Provide defaults for arrays that might be undefined during hydration
+  const items = storeItems ?? [];
+  const breadcrumbs = storeBreadcrumbs ?? [{ id: null, name: "All Records" }];
 
   // Dialog states
   const [folderDialogOpen, setFolderDialogOpen] = useState(false);
