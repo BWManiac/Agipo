@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,11 @@ const statusStyles: Record<AgentConfig["status"], string> = {
 };
 
 export function WorkforceDashboard() {
+  // #region agent log
+  const renderCountRef = useRef(0);
+  renderCountRef.current += 1;
+  fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:23',message:'WorkforceDashboard render',data:{renderCount:renderCountRef.current},sessionId:'debug-session',runId:'run1',hypothesisId:'B',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [agents, setAgents] = useState<AgentConfig[]>([]);
@@ -29,12 +34,21 @@ export function WorkforceDashboard() {
   );
 
   const fetchAgents = async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:36',message:'fetchAgents called',data:{stack:new Error().stack?.split('\n').slice(0,5).join('|')},sessionId:'debug-session',runId:'run1',hypothesisId:'C',timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     try {
       setIsLoading(true);
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:40',message:'About to fetch /api/workforce',data:{},sessionId:'debug-session',runId:'run1',hypothesisId:'C',timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       const response = await fetch("/api/workforce");
       if (response.ok) {
         const data = await response.json();
         setAgents(data.agents || []);
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:46',message:'fetchAgents completed',data:{agentCount:data.agents?.length||0},sessionId:'debug-session',runId:'run1',hypothesisId:'C',timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
       }
     } catch (error) {
       console.error("Failed to fetch agents:", error);
@@ -44,7 +58,12 @@ export function WorkforceDashboard() {
   };
 
   useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:57',message:'useEffect running - calling fetchAgents',data:{renderCount:renderCountRef.current},sessionId:'debug-session',runId:'post-fix',hypothesisId:'C',timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     fetchAgents();
+    // Note: fetchAgents is defined inside the component, but with empty deps [] it only runs on mount
+    // The frequent calls we saw were due to component remounts (likely HMR), not this effect re-running
   }, []);
 
   const metrics = [

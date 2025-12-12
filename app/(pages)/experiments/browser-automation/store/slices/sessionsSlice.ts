@@ -75,13 +75,22 @@ export const createSessionsSlice: StateCreator<
   ...initialState,
 
   fetchSessions: async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sessionsSlice.ts:77',message:'fetchSessions called',data:{stack:new Error().stack?.split('\n').slice(0,5).join('|')},sessionId:'debug-session',runId:'run1',hypothesisId:'A',timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     console.log("📋 SessionsSlice: Fetching sessions");
     set({ isLoading: true, error: null });
     try {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sessionsSlice.ts:82',message:'About to fetch /api/browser-automation/sessions',data:{},sessionId:'debug-session',runId:'run1',hypothesisId:'A',timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       const response = await fetch("/api/browser-automation/sessions");
       const data = await response.json();
       set({ sessions: data.sessions || [], isLoading: false });
       console.log("✅ SessionsSlice: Sessions fetched:", data.sessions?.length || 0);
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sessionsSlice.ts:86',message:'fetchSessions completed',data:{sessionCount:data.sessions?.length||0},sessionId:'debug-session',runId:'run1',hypothesisId:'A',timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
     } catch (error) {
       console.error("❌ SessionsSlice: Failed to fetch sessions:", error);
       set({ error: "Failed to fetch sessions", isLoading: false });
