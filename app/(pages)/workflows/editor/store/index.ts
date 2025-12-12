@@ -18,6 +18,7 @@ import { createToolsSlice } from "./slices/tabs/toolsSlice";
 import { createBindingsSlice } from "./slices/bindingsSlice";
 import { createWorkflowInputsSlice } from "./slices/workflowInputsSlice";
 import { createDetailsSlice } from "./slices/tabs/detailsSlice";
+import { createExecutionSlice } from "./slices/executionSlice";
 import type { WorkflowStore } from "./types";
 
 export const useWorkflowStore = create<WorkflowStore>()(
@@ -32,6 +33,7 @@ export const useWorkflowStore = create<WorkflowStore>()(
     ...createBindingsSlice(...args),
     ...createWorkflowInputsSlice(...args),
     ...createDetailsSlice(...args),
+    ...createExecutionSlice(...args),
   })
 );
 
