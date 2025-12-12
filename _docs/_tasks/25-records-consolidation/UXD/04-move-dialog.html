@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Move Item Dialog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(229 231 235)',
+                        input: 'rgb(229 231 235)',
+                        ring: 'rgb(59 130 246)',
+                        background: 'rgb(255 255 255)',
+                        foreground: 'rgb(15 23 42)',
+                        primary: {
+                            DEFAULT: 'rgb(15 23 42)',
+                            foreground: 'rgb(255 255 255)',
+                        },
+                        secondary: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(15 23 42)',
+                        },
+                        muted: {
+                            DEFAULT: 'rgb(243 244 246)',
+                            foreground: 'rgb(107 114 128)',
+                        },
+                    },
+                    borderRadius: {
+                        lg: '0.625rem',
+                        md: '0.425rem',
+                        sm: '0.225rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .folder-item:hover { background: rgb(243 244 246); }
+        .folder-item.selected { background: rgb(239 246 255); border-color: rgb(59 130 246); }
+    </style>
+</head>
+<body class="bg-gray-900/50 min-h-screen flex items-center justify-center p-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl w-full">
+
+        <!-- Move Dialog -->
+        <div class="space-y-4">
+            <h3 class="text-white text-sm font-medium">Move Item Dialog</h3>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Move to Folder</h2>
+                    <button class="p-1 hover:bg-secondary rounded">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-4">
+                    <!-- Item being moved -->
+                    <div class="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
+                        <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-sm">Stakeholder Interviews</div>
+                            <div class="text-xs text-muted-foreground">Table • 124 records</div>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="relative">
+                        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" placeholder="Search folders..." class="w-full h-10 pl-10 pr-3 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+
+                    <!-- Folder Tree -->
+                    <div class="border rounded-lg max-h-64 overflow-y-auto">
+                        <!-- Root -->
+                        <button class="folder-item w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span class="text-sm">All Records (root)</span>
+                        </button>
+
+                        <!-- Folder 1 - Selected -->
+                        <button class="folder-item selected w-full px-3 py-2.5 text-left flex items-center gap-3 border-l-2 border-blue-500 bg-blue-50">
+                            <svg class="w-3 h-3 text-muted-foreground ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-blue-700">Job Applications</span>
+                            <svg class="w-4 h-4 text-blue-500 ml-auto" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path>
+                            </svg>
+                        </button>
+
+                        <!-- Nested folder -->
+                        <button class="folder-item w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent pl-10">
+                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="text-sm">Cover Letters</span>
+                        </button>
+
+                        <!-- Folder 2 -->
+                        <button class="folder-item w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <svg class="w-3 h-3 text-muted-foreground ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="text-sm">Research</span>
+                        </button>
+
+                        <!-- Folder 3 -->
+                        <button class="folder-item w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <svg class="w-3 h-3 text-muted-foreground ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="text-sm">Marketing</span>
+                        </button>
+
+                        <!-- Folder 4 -->
+                        <button class="folder-item w-full px-3 py-2.5 text-left hover:bg-secondary flex items-center gap-3 border-l-2 border-transparent">
+                            <svg class="w-3 h-3 text-muted-foreground ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="text-sm">Product</span>
+                        </button>
+                    </div>
+
+                    <!-- Create New Folder -->
+                    <button class="w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-secondary border border-dashed">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Create new folder</span>
+                    </button>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 border-t bg-secondary/30 flex justify-between items-center">
+                    <div class="text-sm text-muted-foreground">
+                        Moving to: <span class="font-medium text-foreground">Job Applications</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="h-9 px-4 border rounded-md text-sm font-medium hover:bg-secondary transition-all">
+                            Cancel
+                        </button>
+                        <button class="h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-all">
+                            Move
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Folder Dialog -->
+        <div class="space-y-4">
+            <h3 class="text-white text-sm font-medium">Create Folder Dialog</h3>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+                <!-- Header -->
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Create Folder</h2>
+                    <button class="p-1 hover:bg-secondary rounded">
+                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-4">
+                    <!-- Folder Icon Preview -->
+                    <div class="flex justify-center py-4">
+                        <div class="w-16 h-16 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Folder Name -->
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Folder Name</label>
+                        <input type="text" value="Interview Notes" class="w-full h-10 px-3 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Enter folder name" />
+                    </div>
+
+                    <!-- Location -->
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Location</label>
+                        <button class="w-full h-10 px-3 border rounded-lg text-sm text-left flex items-center justify-between hover:bg-secondary">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span>Job Applications</span>
+                            </div>
+                            <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <p class="text-xs text-muted-foreground">Folder will be created inside "Job Applications"</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 border-t bg-secondary/30 flex justify-end gap-2">
+                    <button class="h-9 px-4 border rounded-md text-sm font-medium hover:bg-secondary transition-all">
+                        Cancel
+                    </button>
+                    <button class="h-9 px-4 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-all inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Create Folder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
