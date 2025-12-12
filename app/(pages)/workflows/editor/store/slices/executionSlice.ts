@@ -186,7 +186,7 @@ export const createExecutionSlice: StateCreator<
     const { steps } = get();
     const initialProgress: StepProgress[] = steps.map((step) => ({
       stepId: step.id,
-      stepName: step.label || step.toolName || step.id,
+      stepName: step.name || step.id,
       status: "pending",
     }));
 
@@ -201,11 +201,29 @@ export const createExecutionSlice: StateCreator<
   },
 
   updateStepProgress: (stepId, update) => {
-    set((state) => ({
-      stepProgress: state.stepProgress.map((step) =>
-        step.stepId === stepId ? { ...step, ...update } : step
-      ),
-    }));
+    set((state) => {
+      const existingStep = state.stepProgress.find((s) => s.stepId === stepId);
+
+      if (existingStep) {
+        // Update existing step
+        return {
+          stepProgress: state.stepProgress.map((step) =>
+            step.stepId === stepId ? { ...step, ...update } : step
+          ),
+        };
+      } else {
+        // Add new step (for dynamic step discovery from streaming)
+        const newStep: StepProgress = {
+          stepId,
+          stepName: update.stepName || stepId,
+          status: update.status || "pending",
+          ...update,
+        };
+        return {
+          stepProgress: [...state.stepProgress, newStep],
+        };
+      }
+    });
   },
 
   completeExecution: (output, durationMs) => {

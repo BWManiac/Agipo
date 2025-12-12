@@ -1,12 +1,13 @@
 /**
  * Workflow Execution Service
  *
- * Handles workflow execution with streaming progress events.
+ * Handles workflow execution with real-time streaming progress events.
  * Uses Mastra's run.stream() API to emit step-by-step progress.
  */
 
 import { getWorkflowExecutable, getWorkflowMetadata } from "@/app/api/workflows/services/workflow-loader";
 import type { ConnectionBindings } from "./connection-resolver";
+import { loadStepNames, getStepName } from "./step-name-resolver";
 import type { ExecutionStreamEvent } from "../types";
 
 /**
@@ -57,8 +58,8 @@ async function prepareWorkflow(workflowId: string): Promise<ExecutionSetup | nul
 }
 
 /**
- * Executes a workflow with streaming progress.
- * Yields SSE events for each step start/complete/error.
+ * Executes a workflow with real-time streaming progress.
+ * Uses run.stream() to yield events as each step executes.
  *
  * @param workflowId - The workflow to execute
  * @param userId - The authenticated user
@@ -78,7 +79,10 @@ export async function* executeWorkflowStream(
   console.log(`[execution-service] Starting execution: ${workflowId}`);
   console.log(`[execution-service] Input data:`, JSON.stringify(inputData, null, 2));
 
-  // 1. Prepare workflow
+  // 1. Load step names for human-readable display
+  const stepNameMap = await loadStepNames(workflowId);
+
+  // 2. Prepare workflow
   const setup = await prepareWorkflow(workflowId);
   if (!setup) {
     yield {
@@ -95,7 +99,7 @@ export async function* executeWorkflowStream(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const workflowObj = workflow as any;
 
-  // 2. Verify workflow has required methods
+  // 3. Verify workflow has required methods
   if (!workflowObj.createRunAsync) {
     yield {
       type: "workflow-error",
@@ -107,122 +111,165 @@ export async function* executeWorkflowStream(
   }
 
   try {
-    // 3. Build runtime context (must be Map, not plain object)
+    // 4. Build runtime context (must be Map, not plain object)
     const runtimeContext = new Map<string, unknown>();
     runtimeContext.set("connections", connectionBindings);
     runtimeContext.set("userId", userId);
 
-    // 4. Create run instance
+    // 5. Create run instance
     const run = await workflowObj.createRunAsync({
       resourceId: userId,
     });
 
-    // 5. Stream execution with real-time events
-    // Use watch pattern to get real-time events
-    let lastError: string | undefined;
-    let lastFailedStepId: string | undefined;
-    let finalOutput: unknown;
-    let workflowCompleted = false;
+    // 6. Check if run.stream() is available, fall back to run.start() if not
+    if (typeof run.stream === "function") {
+      // Use streaming API for real-time events
+      console.log(`[execution-service] Using run.stream() for real-time events`);
 
-    // Set up event watcher
-    run.watch((event: { type: string; stepId?: string; data?: unknown; error?: unknown; payload?: unknown }) => {
-      const timestamp = new Date().toISOString();
+      try {
+        for await (const event of run.stream({ inputData, runtimeContext })) {
+          console.log(`[execution-service] Stream event:`, JSON.stringify(event, null, 2));
 
-      if (event.type === "step-start" && event.stepId) {
-        stepStartTimes.set(event.stepId, Date.now());
+          const timestamp = new Date().toISOString();
+
+          // Handle different event types from Mastra
+          // Event structure may vary - handle common patterns
+          const eventType = event.type || event.eventType;
+          const stepId = event.stepId || event.payload?.stepId;
+
+          if (eventType === "step-start" || eventType === "workflow-step-start") {
+            if (stepId) {
+              stepStartTimes.set(stepId, Date.now());
+              yield {
+                type: "step-start",
+                stepId,
+                stepName: getStepName(stepNameMap, stepId),
+                timestamp,
+              };
+            }
+          } else if (eventType === "step-complete" || eventType === "workflow-step-complete") {
+            if (stepId) {
+              const stepStartTime = stepStartTimes.get(stepId) || startTime;
+              const durationMs = Date.now() - stepStartTime;
+              yield {
+                type: "step-complete",
+                stepId,
+                stepName: getStepName(stepNameMap, stepId),
+                output: event.data || event.payload?.data || event.output,
+                durationMs,
+                timestamp,
+              };
+            }
+          } else if (eventType === "step-error" || eventType === "workflow-step-error") {
+            if (stepId) {
+              const stepStartTime = stepStartTimes.get(stepId) || startTime;
+              const durationMs = Date.now() - stepStartTime;
+              const errorMsg = event.error instanceof Error
+                ? event.error.message
+                : String(event.error || event.payload?.error || "Unknown error");
+              yield {
+                type: "step-error",
+                stepId,
+                stepName: getStepName(stepNameMap, stepId),
+                error: errorMsg,
+                durationMs,
+                timestamp,
+              };
+            }
+          } else if (eventType === "workflow-complete" || eventType === "complete") {
+            yield {
+              type: "workflow-complete",
+              output: event.result || event.data || event.payload?.result,
+              totalDurationMs: Date.now() - startTime,
+              timestamp,
+            };
+            return; // Exit after workflow complete
+          } else if (eventType === "workflow-error" || eventType === "error") {
+            const errorMsg = event.error instanceof Error
+              ? event.error.message
+              : String(event.error || "Workflow failed");
+            yield {
+              type: "workflow-error",
+              error: errorMsg,
+              failedStepId: stepId,
+              totalDurationMs: Date.now() - startTime,
+              timestamp,
+            };
+            return; // Exit after error
+          } else {
+            // Log unknown event types for debugging
+            console.log(`[execution-service] Unknown event type: ${eventType}`, event);
+          }
+        }
+
+        // If stream completes without explicit workflow-complete, send one
+        yield {
+          type: "workflow-complete",
+          output: null,
+          totalDurationMs: Date.now() - startTime,
+          timestamp: new Date().toISOString(),
+        };
+      } catch (streamError) {
+        console.error(`[execution-service] Stream error:`, streamError);
+        yield {
+          type: "workflow-error",
+          error: streamError instanceof Error ? streamError.message : String(streamError),
+          totalDurationMs: Date.now() - startTime,
+          timestamp: new Date().toISOString(),
+        };
       }
+    } else {
+      // Fallback to run.start() if stream not available
+      console.log(`[execution-service] run.stream() not available, falling back to run.start()`);
 
-      if (event.type === "step-complete" && event.stepId) {
-        const stepStartTime = stepStartTimes.get(event.stepId) || startTime;
-        const durationMs = Date.now() - stepStartTime;
-        console.log(`[execution-service] Step complete: ${event.stepId} (${durationMs}ms)`);
-      }
+      const result = await run.start({
+        inputData,
+        runtimeContext,
+      });
 
-      if (event.type === "step-error" && event.stepId) {
-        const stepStartTime = stepStartTimes.get(event.stepId) || startTime;
-        const durationMs = Date.now() - stepStartTime;
-        lastError = event.error instanceof Error ? event.error.message : String(event.error);
-        lastFailedStepId = event.stepId;
-        console.error(`[execution-service] Step error: ${event.stepId} - ${lastError} (${durationMs}ms)`);
-      }
-    });
-
-    // 6. Start execution
-    const result = await run.start({
-      inputData,
-      runtimeContext,
-    });
-
-    // 7. Process final result
-    if (result.status === "success") {
-      workflowCompleted = true;
-      finalOutput = result.result;
-
-      // Emit step events from result.steps
+      // Process final result and emit events
       if (result.steps) {
         for (const [stepId, stepData] of Object.entries(result.steps)) {
-          const step = stepData as { status: string; output?: unknown; error?: unknown; startedAt?: string; completedAt?: string };
-          const stepStartTime = stepStartTimes.get(stepId) || startTime;
-          const durationMs = step.completedAt && step.startedAt
-            ? new Date(step.completedAt).getTime() - new Date(step.startedAt).getTime()
-            : Date.now() - stepStartTime;
+          const step = stepData as { status: string; output?: unknown; error?: unknown };
+          const stepName = getStepName(stepNameMap, stepId);
 
           if (step.status === "success") {
             yield {
               type: "step-complete",
               stepId,
-              stepName: stepId, // Use stepId as name for now
+              stepName,
               output: step.output,
-              durationMs,
-              timestamp: step.completedAt || new Date().toISOString(),
+              durationMs: 0, // Unknown without streaming
+              timestamp: new Date().toISOString(),
             };
           } else if (step.status === "failed") {
             yield {
               type: "step-error",
               stepId,
-              stepName: stepId,
+              stepName,
               error: step.error instanceof Error ? step.error.message : String(step.error || "Unknown error"),
-              durationMs,
-              timestamp: step.completedAt || new Date().toISOString(),
+              durationMs: 0,
+              timestamp: new Date().toISOString(),
             };
           }
         }
       }
 
-      yield {
-        type: "workflow-complete",
-        output: finalOutput,
-        totalDurationMs: Date.now() - startTime,
-        timestamp: new Date().toISOString(),
-      };
-    } else if (result.status === "failed") {
-      // Extract error details
-      const failedSteps = Object.entries(result.steps || {})
-        .filter(([_, step]) => (step as { status: string }).status === "failed")
-        .map(([id, step]) => ({
-          stepId: id,
-          error: (step as { error?: unknown }).error,
-        }));
-
-      const errorMessage = failedSteps.length > 0
-        ? `Step "${failedSteps[0].stepId}" failed: ${failedSteps[0].error}`
-        : lastError || "Workflow execution failed";
-
-      yield {
-        type: "workflow-error",
-        error: errorMessage,
-        failedStepId: failedSteps[0]?.stepId || lastFailedStepId,
-        totalDurationMs: Date.now() - startTime,
-        timestamp: new Date().toISOString(),
-      };
-    } else {
-      // Suspended or other status
-      yield {
-        type: "workflow-error",
-        error: `Workflow ended with status: ${result.status}`,
-        totalDurationMs: Date.now() - startTime,
-        timestamp: new Date().toISOString(),
-      };
+      if (result.status === "success") {
+        yield {
+          type: "workflow-complete",
+          output: result.result,
+          totalDurationMs: Date.now() - startTime,
+          timestamp: new Date().toISOString(),
+        };
+      } else {
+        yield {
+          type: "workflow-error",
+          error: `Workflow ended with status: ${result.status}`,
+          totalDurationMs: Date.now() - startTime,
+          timestamp: new Date().toISOString(),
+        };
+      }
     }
   } catch (error) {
     console.error(`[execution-service] Execution error:`, error);
@@ -233,25 +280,4 @@ export async function* executeWorkflowStream(
       timestamp: new Date().toISOString(),
     };
   }
-}
-
-/**
- * Gets step names from workflow metadata for better UX.
- * Falls back to step IDs if names aren't available.
- */
-export async function getStepNames(workflowId: string): Promise<Map<string, string>> {
-  const stepNames = new Map<string, string>();
-
-  try {
-    // Try to load workflow.json for step names
-    const metadata = await getWorkflowMetadata(workflowId);
-    if (metadata) {
-      // For now, we don't have step names in metadata
-      // Future: Add step names to WorkflowMetadata
-    }
-  } catch (error) {
-    console.warn(`[execution-service] Could not load step names:`, error);
-  }
-
-  return stepNames;
 }
