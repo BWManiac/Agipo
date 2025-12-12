@@ -61,6 +61,22 @@ export async function createSession(
   const session = await client.sessions.create({
     browser: {
       profile: profileConfig,
+      // Ad blocker removes unwanted advertisements
+      adblock: {
+        active: true,
+      },
+      // Popup blocker blocks ads and CAPTCHA consent banners (requires adblock)
+      popup_blocker: {
+        active: true,
+      },
+      // Extra stealth uses patched Chromium to avoid bot detection (requires proxy)
+      extra_stealth: {
+        active: true,
+      },
+      // CAPTCHA solver automatically handles CAPTCHAs (requires proxy)
+      captcha_solver: {
+        active: true,
+      },
     },
     session: {
       initial_url: options?.initialUrl,
@@ -71,9 +87,11 @@ export async function createSession(
       recording: {
         active: options?.recording ?? true,
       },
+      // Proxy enabled with residential IPs for better anti-detection
       proxy: {
-        active: false,
-        type: "anchor_proxy",
+        active: true,
+        type: "anchor_residential",
+        country_code: "us",
       },
     },
   });
