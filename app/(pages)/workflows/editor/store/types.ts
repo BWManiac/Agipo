@@ -14,6 +14,7 @@ import type { ToolsSlice } from "./slices/tabs/toolsSlice";
 import type { BindingsSlice } from "./slices/bindingsSlice";
 import type { WorkflowInputsSlice } from "./slices/workflowInputsSlice";
 import type { DetailsSlice } from "./slices/tabs/detailsSlice";
+import type { ExecutionSlice } from "./slices/executionSlice";
 
 // This is the final, combined store type that includes all slices.
 // It's the single source of truth for the entire editor's state.
@@ -26,4 +27,5 @@ export type WorkflowStore = WorkflowSlice &
   ToolsSlice &
   BindingsSlice &
   WorkflowInputsSlice &
-  DetailsSlice;
+  DetailsSlice &
+  ExecutionSlice;

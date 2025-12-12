@@ -136,6 +136,20 @@ export function getWorkflowExecutable(workflowId: string): Promise<unknown | nul
 }
 
 /**
+ * Checks if a workflow has been transpiled (workflow.ts exists).
+ * Used to determine if a workflow can be executed.
+ */
+export async function checkWorkflowTranspiled(workflowId: string): Promise<boolean> {
+  const workflowTsPath = path.join(WORKFLOWS_DIR, workflowId, "workflow.ts");
+  try {
+    await fs.access(workflowTsPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Validates a workflow binding by checking if all required connections are bound.
  * NO_AUTH toolkits (like browser_tool) are excluded from validation.
  */
