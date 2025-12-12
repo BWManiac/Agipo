@@ -165,7 +165,7 @@ export const createFolderSlice: StateCreator<
       if (!response.ok) throw new Error("Failed to fetch folder tree");
 
       const data = await response.json();
-      set({ folderTree: data.folders, isFolderLoading: false });
+      set({ folderTree: data.tree ?? [], isFolderLoading: false });
 
       console.log("[FolderSlice] Folder tree fetched");
     } catch (error) {
