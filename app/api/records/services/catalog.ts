@@ -118,9 +118,28 @@ export async function listItemsInFolder(
 async function listTablesInFolder(
   folderId: string | null
 ): Promise<TableMetadata[]> {
-  const tablesDir = path.join(getFolderDir(folderId), "tables");
   const tables: TableMetadata[] = [];
 
+  // Check the new folder-based location
+  const tablesDir = path.join(getFolderDir(folderId), "tables");
+  await collectTablesFromDir(tablesDir, folderId, tables);
+
+  // For root folder, also check the legacy flat location
+  if (folderId === null) {
+    await collectLegacyTables(tables);
+  }
+
+  return tables;
+}
+
+/**
+ * Collect tables from a directory
+ */
+async function collectTablesFromDir(
+  tablesDir: string,
+  folderId: string | null,
+  tables: TableMetadata[]
+): Promise<void> {
   try {
     const entries = await fs.readdir(tablesDir, { withFileTypes: true });
 
@@ -166,10 +185,69 @@ async function listTablesInFolder(
       }
     }
   } catch {
-    // Tables directory doesn't exist in this folder
+    // Tables directory doesn't exist
   }
+}
 
-  return tables;
+/**
+ * Collect tables from the legacy flat structure (_tables/records/[tableId]/)
+ * This is for backwards compatibility with tables created before the folder system
+ */
+async function collectLegacyTables(tables: TableMetadata[]): Promise<void> {
+  try {
+    const entries = await fs.readdir(BASE_DIR, { withFileTypes: true });
+    const existingIds = new Set(tables.map((t) => t.id));
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (entry.name.startsWith(".")) continue;
+      if (entry.name.startsWith("_")) continue; // Skip _root and other special dirs
+      if (entry.name.startsWith("fld_")) continue; // Skip folder directories
+
+      const tableId = entry.name;
+
+      // Skip if already found in new location
+      if (existingIds.has(tableId)) continue;
+
+      const schemaPath = path.join(BASE_DIR, tableId, "schema.json");
+
+      try {
+        const schemaContent = await fs.readFile(schemaPath, "utf-8");
+        const schema = JSON.parse(schemaContent);
+
+        // Count records
+        let recordCount = 0;
+        try {
+          const recordsPath = path.join(BASE_DIR, tableId, "records.json");
+          const stats = await fs.stat(recordsPath);
+          if (stats.size < 1024 * 1024) {
+            const recordsContent = await fs.readFile(recordsPath, "utf-8");
+            const records = JSON.parse(recordsContent);
+            recordCount = Array.isArray(records) ? records.length : 0;
+          }
+        } catch {
+          // Records file might not exist
+        }
+
+        tables.push({
+          id: schema.id || tableId,
+          name: schema.name || tableId,
+          type: "table",
+          description: schema.description,
+          createdAt: schema.createdAt || schema.lastModified || new Date().toISOString(),
+          updatedAt: schema.updatedAt || schema.lastModified || new Date().toISOString(),
+          folderId: null, // Legacy tables are at root
+          recordCount,
+          columnCount: schema.columns?.length || 0,
+        });
+      } catch {
+        // Not a valid table directory
+        continue;
+      }
+    }
+  } catch {
+    // Error reading directory
+  }
 }
 
 /**
