@@ -27,6 +27,7 @@ export interface CreateSessionOptions {
     idleTimeout?: number; // Minutes
   };
   recording?: boolean;
+  persist?: boolean; // When true, saves browser state when session ends
 }
 
 export interface SessionData {
@@ -35,6 +36,7 @@ export interface SessionData {
   liveViewUrl: string;
   status: "starting" | "running" | "idle" | "stopped";
   profileName?: string;
+  persist?: boolean; // Whether this session will save its state
   createdAt?: string;
 }
 
@@ -45,11 +47,36 @@ export async function createSession(
   options?: CreateSessionOptions
 ): Promise<SessionData> {
   const client = getClient();
+
+  // Build profile config: only include persist if explicitly creating a new profile
+  const profileConfig = options?.profileName
+    ? {
+        name: options.profileName,
+        // Only persist if explicitly requested (creating new profile)
+        // When loading existing profile, persist is not needed
+        ...(options.persist === true ? { persist: true } : {}),
+      }
+    : undefined;
+
   const session = await client.sessions.create({
     browser: {
-      profile: options?.profileName
-        ? { name: options.profileName, persist: true }
-        : undefined,
+      profile: profileConfig,
+      // Ad blocker removes unwanted advertisements
+      adblock: {
+        active: true,
+      },
+      // Popup blocker blocks ads and CAPTCHA consent banners (requires adblock)
+      popup_blocker: {
+        active: true,
+      },
+      // Extra stealth uses patched Chromium to avoid bot detection (requires proxy)
+      extra_stealth: {
+        active: true,
+      },
+      // CAPTCHA solver automatically handles CAPTCHAs (requires proxy)
+      captcha_solver: {
+        active: true,
+      },
     },
     session: {
       initial_url: options?.initialUrl,
@@ -60,9 +87,11 @@ export async function createSession(
       recording: {
         active: options?.recording ?? true,
       },
+      // Proxy enabled with residential IPs for better anti-detection
       proxy: {
-        active: false,
-        type: "anchor_proxy",
+        active: true,
+        type: "anchor_residential",
+        country_code: "us",
       },
     },
   });
@@ -83,6 +112,7 @@ export async function createSession(
     liveViewUrl: sessionData.live_view_url,
     status: "starting",
     profileName: options?.profileName,
+    persist: options?.persist,
     createdAt: new Date().toISOString(),
   };
 }

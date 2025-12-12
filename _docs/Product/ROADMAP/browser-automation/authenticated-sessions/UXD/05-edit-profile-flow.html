@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile Flow - Update Existing Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <!-- Annotation -->
+    <div class="max-w-2xl mx-auto mb-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 class="font-bold text-yellow-800 mb-2">UXD: Edit/Update Profile Flow</h3>
+        <p class="text-sm text-yellow-700 mb-2">
+            Entry points for updating an existing profile. Since Anchor doesn't have a direct "edit" API,
+            updating works by: loading the profile → making changes → ending session (auto-saves).
+        </p>
+        <p class="text-sm text-yellow-700">
+            <strong>Key insight:</strong> "Edit profile" = "Start session with profile, make changes, end session"
+        </p>
+    </div>
+
+    <div class="max-w-4xl mx-auto space-y-8">
+
+        <!-- Entry Point 1: Profile Card Actions -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-gray-50 px-4 py-3 border-b">
+                <h4 class="font-medium">Entry Point 1: Profile Card in Dropdown</h4>
+            </div>
+            <div class="p-6">
+                <!-- Profile Card with hover actions -->
+                <div class="max-w-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Browser Profile</label>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <!-- Selected profile with actions -->
+                        <div class="p-3 bg-blue-50 border-b border-blue-100">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-lg">💼</span>
+                                    <div>
+                                        <div class="text-sm font-medium">LinkedIn - Work</div>
+                                        <div class="text-xs text-gray-500">Last used: 2 hours ago</div>
+                                    </div>
+                                </div>
+                                <!-- Action buttons on hover/focus -->
+                                <div class="flex items-center gap-1">
+                                    <button class="p-1.5 text-blue-600 hover:bg-blue-100 rounded" title="Update profile">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="p-1.5 text-red-600 hover:bg-red-100 rounded" title="Delete profile">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-3">
+                    <strong>Pencil icon</strong> = Start session with this profile to update it
+                </p>
+            </div>
+        </div>
+
+        <!-- Entry Point 2: Context Menu -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-gray-50 px-4 py-3 border-b">
+                <h4 class="font-medium">Entry Point 2: Right-click Context Menu</h4>
+            </div>
+            <div class="p-6">
+                <div class="flex gap-8">
+                    <!-- Profile item -->
+                    <div class="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded">
+                        <span>💼</span>
+                        <span class="text-sm">LinkedIn - Work</span>
+                    </div>
+                    <!-- Context menu -->
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-48">
+                        <button class="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Use this profile
+                        </button>
+                        <button class="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 text-blue-700 flex items-center gap-2 bg-blue-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            Update profile...
+                        </button>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <button class="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Delete profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Profile Confirmation Dialog -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-gray-50 px-4 py-3 border-b">
+                <h4 class="font-medium">Dialog: Confirm Update Profile</h4>
+            </div>
+            <div class="p-6 flex justify-center">
+                <!-- Dialog -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-xl w-96">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Update Profile</h3>
+                                <p class="text-sm text-gray-500">linkedin-work</p>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-gray-600 mb-4">
+                            This will start a new session with your saved login state.
+                            Make any changes (log into new sites, update settings), then end the session to save.
+                        </p>
+
+                        <!-- What will happen -->
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                            <p class="text-xs font-medium text-gray-500 mb-2">When you end the session:</p>
+                            <ul class="text-xs text-gray-600 space-y-1">
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                    </svg>
+                                    New logins will be saved
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                    </svg>
+                                    Existing logins preserved
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-3 h-3 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                    </svg>
+                                    Logouts will be saved too
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Initial URL (optional) -->
+                        <div class="mb-4">
+                            <label class="block text-xs font-medium text-gray-700 mb-1">
+                                Initial URL <span class="text-gray-400">(optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="https://linkedin.com"
+                                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 p-4 border-t bg-gray-50">
+                        <button class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                            Start Update Session
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Toolbar in Update Mode -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-gray-50 px-4 py-3 border-b">
+                <h4 class="font-medium">Session Toolbar: Update Mode Indicator</h4>
+            </div>
+            <div class="p-6 bg-gray-900 rounded">
+                <!-- Toolbar -->
+                <div class="flex items-center justify-between px-4 py-2 bg-gray-800 rounded">
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span class="text-sm text-gray-300">Session Active</span>
+                        </div>
+                        <div class="w-px h-4 bg-gray-600"></div>
+                        <!-- Update mode badge -->
+                        <div class="flex items-center gap-2 px-2 py-1 bg-amber-900/50 border border-amber-700 rounded">
+                            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            <span class="text-sm text-amber-300">linkedin-work</span>
+                            <span class="px-1.5 py-0.5 bg-amber-700 text-amber-100 rounded text-xs">Updating</span>
+                        </div>
+                    </div>
+                    <button class="px-3 py-1.5 text-sm text-amber-400 hover:text-amber-300 hover:bg-amber-900/30 rounded border border-amber-700">
+                        End & Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="font-medium text-blue-900 mb-2">How Profile Update Works</h4>
+            <ol class="text-sm text-blue-800 space-y-2">
+                <li><strong>1.</strong> User clicks "Update profile" (pencil icon or context menu)</li>
+                <li><strong>2.</strong> Confirmation dialog explains what will happen</li>
+                <li><strong>3.</strong> Session starts with existing profile (already logged in)</li>
+                <li><strong>4.</strong> Toolbar shows "Updating" badge so user knows changes will save</li>
+                <li><strong>5.</strong> User makes changes (log into new sites, update settings)</li>
+                <li><strong>6.</strong> User clicks "End & Save Changes"</li>
+                <li><strong>7.</strong> Profile updated with new browser state</li>
+            </ol>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,7 +1,8 @@
 # Task 01.1: Authenticated Sessions & Persistent Profiles — Research Log
 
-**Status:** In Progress  
-**Date:** December 2024  
+**Status:** Complete
+**Date:** December 2024
+**Last Updated:** December 12, 2024
 **Parent Task:** `_docs/Product/ROADMAP/browser-automation/01-Authenticated-Sessions.md`
 
 ---
@@ -357,10 +358,115 @@ await fetch('https://api.anchorbrowser.io/v1/profiles', {
 
 ---
 
+## Part 3: Implementation Decisions
+
+### RQ-7: SDK Persist Flag vs REST API - Which to Use?
+
+**Why It Matters:** PR-1.7 (Implementation Approach) — Two methods exist for creating persistent profiles. Need to choose the right one.
+
+**Status:** ✅ Decided
+
+**Comparison:**
+
+| Method | When It Saves | Use Case | Complexity |
+|--------|---------------|----------|------------|
+| **SDK `persist: true`** | Auto-saves when session ENDS | Simple flow - login, end session, done | Low |
+| **REST API `POST /v1/profiles`** | Saves immediately from active session | Mid-session save, or save from session that wasn't started with persist | Medium |
+
+**Our Decision:** Use SDK `persist: true` for Phase 1.
+
+**Rationale:**
+- Simpler implementation - no additional REST calls needed
+- Natural UX flow: user creates session → logs in → ends session → profile saved
+- REST API available as fallback for advanced use cases (Phase 2+)
+
+**Source:** https://anchorbrowser.io/blog/authentication-for-agentic-workflows
+
+---
+
+### RQ-8: What Exactly Gets Persisted?
+
+**Why It Matters:** PR-1.8 (User Understanding) — Users need to understand what "saving a profile" means.
+
+**Status:** ✅ Answered
+
+**Key Insight:** Anchor profiles store the **result of authentication**, not credentials.
+
+**What's Saved:**
+- Cookies (session cookies, auth tokens)
+- localStorage data
+- sessionStorage data
+- Browser cache
+
+**What's NOT Saved:**
+- Usernames/passwords
+- Form field values
+- Browser history
+
+**Implication:** Users don't give us their credentials. They log in manually inside a browser session, and we save the authenticated state. This is more secure and handles complex auth flows (2FA, CAPTCHAs, OAuth redirects) automatically.
+
+**Source:** https://docs.anchorbrowser.io/essentials/authentication-and-identity
+
+---
+
+### RQ-9: How Does Profile "Editing" Work?
+
+**Why It Matters:** PR-1.9 (Profile Update Flow) — Users expect to be able to update/edit profiles.
+
+**Status:** ✅ Answered
+
+**The Model:** Anchor has no direct "edit profile" API. Instead, editing works through re-capture:
+
+```
+1. Start session WITH existing profile (loads saved state)
+2. Make changes (log into additional sites, update settings, etc.)
+3. End session
+4. Profile automatically updated with new state
+```
+
+**Example - Adding Facebook to existing LinkedIn profile:**
+1. User selects "linkedin-work" profile
+2. Session starts (already logged into LinkedIn)
+3. User opens Facebook, logs in
+4. User ends session
+5. "linkedin-work" now has BOTH LinkedIn and Facebook logged in
+
+**UI Implication:** We need an "Update Profile" action that:
+1. Starts a session with the existing profile
+2. Shows the user they're in "update mode"
+3. Saves changes when session ends
+
+**Source:** Inferred from Anchor's persist behavior + REST API constraints
+
+---
+
+### RQ-10: Profile Naming Constraints
+
+**Why It Matters:** PR-1.10 (Profile Creation UX) — Need to validate profile names.
+
+**Status:** ✅ Answered
+
+**Constraints:**
+- Must be unique per Anchor account
+- Recommended format: lowercase, alphanumeric, dashes (e.g., `linkedin-work`)
+- No spaces or special characters
+- Cannot be changed after creation (immutable identifier)
+
+**Our Validation:**
+```typescript
+const profileNameSchema = z.string()
+  .min(1)
+  .max(50)
+  .regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers, and dashes only");
+```
+
+---
+
 ## Resources Used
 
 - [Anchor Browser Authentication Docs](https://docs.anchorbrowser.io/essentials/authentication-and-identity)
 - [Anchor Browser SDK Reference](https://docs.anchorbrowser.io/)
+- [Anchor Blog: Authentication for Agentic Workflows](https://anchorbrowser.io/blog/authentication-for-agentic-workflows)
 - Existing code: `app/api/browser-automation/services/anchor-client.ts`
 
 

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Picker - With Type Badges</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <!-- Annotation -->
+    <div class="max-w-md mx-auto mb-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 class="font-bold text-yellow-800 mb-2">UXD: Profile Picker Dropdown</h3>
+        <p class="text-sm text-yellow-700">Shows two types of profiles:</p>
+        <ul class="text-sm text-yellow-700 mt-2 space-y-1">
+            <li><span class="inline-block px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Saved Session</span> - Anchor profiles with browser state (cookies, logins)</li>
+            <li><span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">Credentials</span> - Local profiles with username/password for auto-fill</li>
+        </ul>
+    </div>
+
+    <!-- Dropdown Container -->
+    <div class="max-w-md mx-auto">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Browser Profile</label>
+
+        <!-- Dropdown Trigger (Open State) -->
+        <div class="relative">
+            <button class="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white text-left">
+                <span class="flex items-center gap-2">
+                    <span class="text-lg">💼</span>
+                    <span class="text-sm">LinkedIn - Work Account</span>
+                    <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Saved Session</span>
+                </span>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+
+                <!-- Default Option -->
+                <div class="p-2 border-b border-gray-100">
+                    <div class="px-3 py-2 rounded hover:bg-gray-50 cursor-pointer">
+                        <span class="text-sm text-gray-500">Default (no profile)</span>
+                    </div>
+                </div>
+
+                <!-- Saved Sessions Section -->
+                <div class="p-2 border-b border-gray-100">
+                    <div class="px-3 py-1 text-xs font-medium text-gray-400 uppercase tracking-wide">
+                        Saved Sessions
+                    </div>
+
+                    <!-- Selected Item -->
+                    <div class="px-3 py-2 rounded bg-blue-50 cursor-pointer flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-lg">💼</span>
+                            <div>
+                                <div class="text-sm font-medium">LinkedIn - Work Account</div>
+                                <div class="text-xs text-gray-500">Last used: 2 hours ago</div>
+                            </div>
+                        </span>
+                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Saved Session</span>
+                    </div>
+
+                    <!-- Other Saved Session -->
+                    <div class="px-3 py-2 rounded hover:bg-gray-50 cursor-pointer flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-lg">🔍</span>
+                            <div>
+                                <div class="text-sm">Indeed Job Search</div>
+                                <div class="text-xs text-gray-500">Last used: 3 days ago</div>
+                            </div>
+                        </span>
+                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Saved Session</span>
+                    </div>
+
+                    <!-- Session with warning -->
+                    <div class="px-3 py-2 rounded hover:bg-gray-50 cursor-pointer flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-lg">📧</span>
+                            <div>
+                                <div class="text-sm text-amber-700">Gmail Personal</div>
+                                <div class="text-xs text-amber-600">May need re-login (30+ days)</div>
+                            </div>
+                        </span>
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">May Expire</span>
+                    </div>
+                </div>
+
+                <!-- Credential Profiles Section -->
+                <div class="p-2">
+                    <div class="px-3 py-1 text-xs font-medium text-gray-400 uppercase tracking-wide">
+                        Credential Profiles
+                    </div>
+
+                    <div class="px-3 py-2 rounded hover:bg-gray-50 cursor-pointer flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-lg">👤</span>
+                            <div>
+                                <div class="text-sm">Work Credentials</div>
+                                <div class="text-xs text-gray-500">3 saved logins</div>
+                            </div>
+                        </span>
+                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">Credentials</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- + Button -->
+        <div class="flex gap-2 mt-2">
+            <button class="flex-1 px-3 py-2 text-sm text-gray-600 border border-dashed border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors">
+                + Create new profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="max-w-md mx-auto mt-8 bg-gray-50 rounded-lg p-4 border">
+        <h4 class="font-medium text-sm mb-3">Profile Types Explained:</h4>
+        <div class="space-y-3 text-sm">
+            <div class="flex items-start gap-3">
+                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium whitespace-nowrap">Saved Session</span>
+                <p class="text-gray-600">Browser state saved on Anchor. Includes cookies, localStorage, logged-in sessions. Start already authenticated.</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium whitespace-nowrap">Credentials</span>
+                <p class="text-gray-600">Username/password stored locally. Browser can auto-fill login forms, but you still need to complete login flow.</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium whitespace-nowrap">May Expire</span>
+                <p class="text-gray-600">Profile hasn't been used in 30+ days. Session cookies may have expired. You might need to re-login.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

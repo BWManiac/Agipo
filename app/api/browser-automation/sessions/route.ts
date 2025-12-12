@@ -24,6 +24,9 @@ const optionalUrl = z.preprocess(
 const CreateSessionSchema = z.object({
   profileName: z.string().nullish(),
   initialUrl: optionalUrl,
+  // New fields for Anchor profile persistence
+  createNewProfile: z.boolean().optional(), // When true, creates a new persistent profile
+  profileDisplayName: z.string().optional(), // Human-readable name for the profile
   config: z
     .object({
       timeout: z
@@ -84,20 +87,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { profileName, initialUrl, config } = validated.data;
+    const { profileName, initialUrl, createNewProfile, profileDisplayName, config } = validated.data;
+
+    // Validate: if creating new profile, profileName is required
+    if (createNewProfile && !profileName) {
+      return NextResponse.json(
+        { error: "Profile name is required when creating a new profile" },
+        { status: 400 }
+      );
+    }
 
     const session = await createSession({
       profileName: profileName || undefined,
       initialUrl: initialUrl || undefined,
       timeout: config?.timeout,
       recording: config?.recording,
+      // Only persist if creating a new profile or using an existing one
+      persist: createNewProfile === true,
     });
+
+    // If creating a new profile, register it in local storage
+    if (createNewProfile && profileName) {
+      const { registerAnchorProfile } = await import("../services/profile-storage");
+      await registerAnchorProfile(
+        profileName,
+        profileDisplayName || profileName
+      );
+    }
 
     return NextResponse.json({
       success: true,
       session: {
         ...session,
         profileName,
+        createNewProfile,
         createdAt: new Date().toISOString(),
       },
     });
