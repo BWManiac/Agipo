@@ -57,6 +57,7 @@ type ExecutionEvent =
  */
 interface ExecutionInfo {
   workflowId: string;
+  isTranspiled: boolean;
   canExecute: boolean;
   errors: string[];
   missingConnections: string[];

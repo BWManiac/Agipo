@@ -133,9 +133,10 @@ export async function* executeWorkflowStream(
           const timestamp = new Date().toISOString();
 
           // Handle different event types from Mastra
-          // Event structure may vary - handle common patterns
+          // Mastra uses: workflow-step-start, workflow-step-result, workflow-finish
+          // Step ID is in payload.id, output in payload.output
           const eventType = event.type || event.eventType;
-          const stepId = event.stepId || event.payload?.stepId;
+          const stepId = event.payload?.id || event.stepId || event.payload?.stepId;
 
           if (eventType === "step-start" || eventType === "workflow-step-start") {
             if (stepId) {
@@ -147,7 +148,8 @@ export async function* executeWorkflowStream(
                 timestamp,
               };
             }
-          } else if (eventType === "step-complete" || eventType === "workflow-step-complete") {
+          } else if (eventType === "workflow-step-result" || eventType === "step-complete" || eventType === "workflow-step-complete") {
+            // workflow-step-result is Mastra's actual event for step completion
             if (stepId) {
               const stepStartTime = stepStartTimes.get(stepId) || startTime;
               const durationMs = Date.now() - stepStartTime;
@@ -155,7 +157,7 @@ export async function* executeWorkflowStream(
                 type: "step-complete",
                 stepId,
                 stepName: getStepName(stepNameMap, stepId),
-                output: event.data || event.payload?.data || event.output,
+                output: event.payload?.output || event.data || event.payload?.data || event.output,
                 durationMs,
                 timestamp,
               };
@@ -176,10 +178,11 @@ export async function* executeWorkflowStream(
                 timestamp,
               };
             }
-          } else if (eventType === "workflow-complete" || eventType === "complete") {
+          } else if (eventType === "workflow-finish" || eventType === "workflow-complete" || eventType === "complete") {
+            // workflow-finish is Mastra's actual event for workflow completion
             yield {
               type: "workflow-complete",
-              output: event.result || event.data || event.payload?.result,
+              output: event.payload?.result || event.result || event.data || event.payload?.result,
               totalDurationMs: Date.now() - startTime,
               timestamp,
             };
@@ -198,7 +201,7 @@ export async function* executeWorkflowStream(
             return; // Exit after error
           } else {
             // Log unknown event types for debugging
-            console.log(`[execution-service] Unknown event type: ${eventType}`, event);
+            console.log(`[execution-service] Unhandled event type: ${eventType}`, event);
           }
         }
 

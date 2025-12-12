@@ -21,6 +21,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/auth";
 import { resolveConnections } from "./services/connection-resolver";
 import { executeWorkflowStream } from "./services/execution-service";
+import { checkWorkflowTranspiled } from "@/app/api/workflows/services/workflow-loader";
 import type { ExecutionRequest, ExecutionStreamEvent } from "./types";
 
 export const runtime = "nodejs";
@@ -142,12 +143,16 @@ export async function GET(
 
     const { workflowId } = await params;
 
+    // Check if workflow is transpiled (workflow.ts exists)
+    const isTranspiled = await checkWorkflowTranspiled(workflowId);
+
     // Check what connections are required and which are available
     const { validation, bindings } = await resolveConnections(workflowId, userId);
 
     return NextResponse.json({
       workflowId,
-      canExecute: validation.valid,
+      isTranspiled,
+      canExecute: validation.valid && isTranspiled,
       errors: validation.errors,
       missingConnections: validation.missingConnections,
       resolvedConnections: Object.keys(bindings),

@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Play } from "lucide-react";
 import { useWorkflowLoader } from "./hooks/useWorkflowLoader";
 import { useWorkflowStore } from "./store";
 import { usePersistence } from "./hooks/usePersistence";
+import { useExecution } from "./hooks/useExecution";
 import { RailView } from "./components/RailView";
 import { EditorInspector } from "./components/EditorInspector";
 import { DndProvider } from "./providers/DndProvider";
@@ -19,13 +20,42 @@ function WorkflowEditorContent() {
   useWorkflowLoader();
   const workflowId = useWorkflowStore((state) => state.id);
   const workflowName = useWorkflowStore((state) => state.name);
-  const lastSaved = useWorkflowStore((state) => state.lastSaved);
   const openExecuteModal = useWorkflowStore((state) => state.openExecuteModal);
   const { isSaving, isLoading, saveWorkflow } = usePersistence();
+  const { checkExecution } = useExecution();
+
+  // Track if workflow is transpiled (can be run)
+  const [isTranspiled, setIsTranspiled] = useState(false);
+
+  // Check transpilation status when workflow loads or after save
+  useEffect(() => {
+    if (!workflowId) {
+      setIsTranspiled(false);
+      return;
+    }
+
+    checkExecution().then((info) => {
+      if (info) {
+        setIsTranspiled(info.isTranspiled);
+      }
+    });
+  }, [workflowId, checkExecution]);
+
+  // Re-check after save completes
+  const lastSaved = useWorkflowStore((state) => state.lastSaved);
+  useEffect(() => {
+    if (lastSaved && workflowId) {
+      checkExecution().then((info) => {
+        if (info) {
+          setIsTranspiled(info.isTranspiled);
+        }
+      });
+    }
+  }, [lastSaved, workflowId, checkExecution]);
 
   const canSave = !!workflowId && !isSaving && !isLoading;
-  // Can only run if workflow has been saved (transpiled)
-  const canRun = !!workflowId && !!lastSaved && !isSaving && !isLoading;
+  // Can run if workflow is transpiled (workflow.ts exists)
+  const canRun = !!workflowId && isTranspiled && !isSaving && !isLoading;
 
   return (
     <DndProvider>
@@ -41,7 +71,7 @@ function WorkflowEditorContent() {
                 onClick={openExecuteModal}
                 disabled={!canRun}
                 className="px-4 py-2 rounded-md border bg-background hover:bg-accent disabled:opacity-50 flex items-center gap-2"
-                title={!lastSaved ? "Save workflow first to enable running" : "Run workflow"}
+                title={!isTranspiled ? "Save workflow first to enable running" : "Run workflow"}
               >
                 <Play className="h-4 w-4" />
                 Run
