@@ -17,6 +17,10 @@ const statusStyles: Record<AgentConfig["status"], string> = {
   attention: "bg-amber-100 text-amber-700 border border-amber-200",
 };
 
+// Module-level flag to prevent duplicate fetches during rapid remounts (HMR)
+let lastFetchTime = 0;
+const FETCH_COOLDOWN_MS = 2000; // Don't fetch more than once every 2 seconds
+
 export function WorkforceDashboard() {
   // #region agent log
   const renderCountRef = useRef(0);
@@ -58,8 +62,20 @@ export function WorkforceDashboard() {
   };
 
   useEffect(() => {
+    const now = Date.now();
+    const timeSinceLastFetch = now - lastFetchTime;
+    
+    // Skip if we've fetched recently (prevents duplicate calls during HMR remounts)
+    if (timeSinceLastFetch < FETCH_COOLDOWN_MS) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:64',message:'Skipping fetchAgents - cooldown active',data:{renderCount:renderCountRef.current,timeSinceLastFetch},sessionId:'debug-session',runId:'post-fix-v2',hypothesisId:'D',timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      return;
+    }
+    
+    lastFetchTime = now;
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:57',message:'useEffect running - calling fetchAgents',data:{renderCount:renderCountRef.current},sessionId:'debug-session',runId:'post-fix',hypothesisId:'C',timestamp:Date.now()})}).catch(()=>{});
+    fetch('http://127.0.0.1:7242/ingest/0c625d3a-7743-4a04-bc75-ab472f58bc38',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'WorkforceDashboard.tsx:73',message:'useEffect running - calling fetchAgents',data:{renderCount:renderCountRef.current},sessionId:'debug-session',runId:'post-fix-v2',hypothesisId:'C',timestamp:Date.now()})}).catch(()=>{});
     // #endregion
     fetchAgents();
     // Note: fetchAgents is defined inside the component, but with empty deps [] it only runs on mount
