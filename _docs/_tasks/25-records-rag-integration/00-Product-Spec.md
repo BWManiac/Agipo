@@ -370,10 +370,21 @@ _docs/_tasks/25-records-rag-integration/UXD/
 
 ## 10. Related Documents
 
+### Architecture Principles
+
+| Principle | Application |
+|-----------|-------------|
+| [API Domain Principles](../../../app/api/DOMAIN_PRINCIPLES.md) | RAG routes nested under owning resources |
+| [Store Slice Principles](../../../app/STORE_SLICE_PRINCIPLES.md) | Folder and RAG slice structure |
+| [Component Principles](../../../app/COMPONENT_PRINCIPLES.md) | shadcn/ui first; state in stores |
+| [Route README Template](../../../app/api/ROUTE_README_TEMPLATE.md) | Documentation for new routes |
+| [Service README Template](../../../app/api/SERVICE_README_TEMPLATE.md) | Documentation for new services |
+
+### Feature Documentation
+
 - **RAG Roadmap:** `_docs/Product/ROADMAP/rag-integration/01-RAG-for-Records-and-Docs.md`
 - **Records Consolidation:** `_docs/Product/ROADMAP/records-consolidation/01-Records-and-Docs-Consolidation.md`
 - **Mastra RAG Docs:** https://mastra.ai/docs/rag/overview
-- **Domain Principles:** `app/api/DOMAIN_PRINCIPLES.md`
 - **Records Feature:** `_docs/_tasks/_completed/20-records-feature/`
 
 ---

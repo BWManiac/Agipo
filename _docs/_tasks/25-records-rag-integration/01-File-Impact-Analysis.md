@@ -5,6 +5,26 @@
 
 ---
 
+## Guiding Principles
+
+This analysis follows the established architecture principles:
+
+| Principle Document | Key Application |
+|--------------------|-----------------|
+| [API Domain Principles](../../../app/api/DOMAIN_PRINCIPLES.md) | Routes nested by ownership; no separate RAG domain |
+| [Store Slice Principles](../../../app/STORE_SLICE_PRINCIPLES.md) | Commented 4-part slice structure |
+| [Component Principles](../../../app/COMPONENT_PRINCIPLES.md) | shadcn/ui first; state in stores |
+| [Route README Template](../../../app/api/ROUTE_README_TEMPLATE.md) | Co-located README per route |
+| [Service README Template](../../../app/api/SERVICE_README_TEMPLATE.md) | Co-located README per service |
+
+### Key Architecture Decisions
+
+1. **No separate `/api/rag/` domain** - RAG belongs to its owning resources (records for indexing, workforce for retrieval)
+2. **Services co-located with consumers** - RAG indexing service under records, retrieval service under workforce
+3. **Documentation co-located** - Every route and service gets a README file
+
+---
+
 ## Overview
 
 Complete file impact analysis for the Records & RAG Integration task. This document catalogs all files that will be created, modified, or deleted across all phases.
@@ -15,13 +35,15 @@ Complete file impact analysis for the Records & RAG Integration task. This docum
 
 | Category | Create | Modify | Delete | Total |
 |----------|--------|--------|--------|-------|
-| Types | 2 | 1 | 0 | 3 |
-| Backend / API | 10 | 4 | 0 | 14 |
-| Backend / Services | 12 | 4 | 0 | 16 |
+| Types | 2 | 0 | 0 | 2 |
+| Backend / API Routes | 9 | 3 | 0 | 12 |
+| Backend / API READMEs | 9 | 0 | 0 | 9 |
+| Backend / Services | 8 | 3 | 0 | 11 |
+| Backend / Service READMEs | 8 | 0 | 0 | 8 |
 | Frontend / State | 2 | 1 | 0 | 3 |
-| Frontend / Components | 12 | 3 | 0 | 15 |
-| Frontend / Pages | 3 | 2 | 1 | 6 |
-| **Total** | **41** | **15** | **1** | **57** |
+| Frontend / Components | 11 | 1 | 0 | 12 |
+| Frontend / Pages | 1 | 2 | 0 | 3 |
+| **Total** | **50** | **10** | **0** | **60** |
 
 ---
 
@@ -47,7 +69,7 @@ Complete file impact analysis for the Records & RAG Integration task. This docum
 | `app/api/records/list/route.ts` | Modify | Support folder-based listing |
 | `app/api/records/create/route.ts` | Modify | Create table in specific folder |
 
-#### Backend / Services
+#### Backend / Services (Co-located under records)
 
 | File | Action | Purpose |
 |------|--------|---------|
@@ -57,9 +79,29 @@ Complete file impact analysis for the Records & RAG Integration task. This docum
 | `app/api/records/services/catalog.ts` | Modify | Support folder-based catalog queries |
 | `app/api/records/services/io.ts` | Modify | Support folder paths in file operations |
 
+#### Backend / Service READMEs
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `app/api/records/services/folders.README.md` | Create | Service documentation |
+| `app/api/records/services/folder-tree.README.md` | Create | Service documentation |
+| `app/api/records/services/migration.README.md` | Create | Service documentation |
+
+#### Backend / API READMEs
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `app/api/records/folders/README.md` | Create | Route documentation |
+| `app/api/records/folders/[folderId]/README.md` | Create | Route documentation |
+| `app/api/records/folders/[folderId]/items/README.md` | Create | Route documentation |
+| `app/api/records/items/[itemId]/move/README.md` | Create | Route documentation |
+| `app/api/records/search/README.md` | Create | Route documentation |
+
 ---
 
 ### Phase 2: Folder Frontend UI
+
+> **Architecture Note:** Store slices follow [Store Slice Principles](../../../app/STORE_SLICE_PRINCIPLES.md) with 4-part structure: State Interface (JSDoc), Actions Interface (JSDoc), Combined Type, Initial State (comments), Slice Creator.
 
 #### Frontend / State
 
@@ -68,17 +110,28 @@ Complete file impact analysis for the Records & RAG Integration task. This docum
 | `app/(pages)/records/store/slices/folderSlice.ts` | Create | Folder state management (current folder, tree, navigation) |
 | `app/(pages)/records/store/index.ts` | Modify | Add folder slice to store |
 
+**folderSlice.ts Structure:**
+```typescript
+// 1. State Interface - JSDoc on each property
+// 2. Actions Interface - JSDoc on each action
+// 3. Combined Slice Type
+// 4. Initial State - inline comments explaining defaults
+// 5. Slice Creator - with console logging prefix [FolderSlice]
+```
+
 #### Frontend / Components
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `app/(pages)/records/components/FolderView.tsx` | Create | Main folder contents view (grid + actions) |
-| `app/(pages)/records/components/FolderTree.tsx` | Create | Sidebar folder tree component |
-| `app/(pages)/records/components/Breadcrumbs.tsx` | Create | Breadcrumb navigation component |
-| `app/(pages)/records/components/CreateFolderDialog.tsx` | Create | Create folder dialog |
-| `app/(pages)/records/components/ItemCard.tsx` | Create | Unified item card (table or document) |
-| `app/(pages)/records/components/MoveItemDialog.tsx` | Create | Move item to folder dialog |
-| `app/(pages)/records/components/FolderCard.tsx` | Create | Folder card in grid view |
+> **Architecture Note:** Components follow [Component Principles](../../../app/COMPONENT_PRINCIPLES.md): shadcn/ui first, state in stores not hooks, meaningful granularity.
+
+| File | Action | Purpose | shadcn/ui components used |
+|------|--------|---------|---------------------------|
+| `app/(pages)/records/components/FolderView.tsx` | Create | Main folder contents view (grid + actions) | Card, Button, DropdownMenu |
+| `app/(pages)/records/components/FolderTree.tsx` | Create | Sidebar folder tree component | Collapsible, ScrollArea |
+| `app/(pages)/records/components/Breadcrumbs.tsx` | Create | Breadcrumb navigation component | Breadcrumb |
+| `app/(pages)/records/components/CreateFolderDialog.tsx` | Create | Create folder dialog | Dialog, Input, Button |
+| `app/(pages)/records/components/ItemCard.tsx` | Create | Unified item card (table or document) | Card, Badge, ContextMenu |
+| `app/(pages)/records/components/MoveItemDialog.tsx` | Create | Move item to folder dialog | Dialog, Command |
+| `app/(pages)/records/components/FolderCard.tsx` | Create | Folder card in grid view | Card, Badge |
 
 #### Frontend / Pages
 
@@ -92,52 +145,85 @@ Complete file impact analysis for the Records & RAG Integration task. This docum
 
 ### Phase 3: RAG Indexing Infrastructure
 
+> **Architecture Note:** RAG indexing is nested under `/records/` following Domain Principle #5 (Nested Resources = Ownership). The index belongs to the record, not a separate RAG domain.
+
 #### Types
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `app/api/rag/types.ts` | Create | RAG types (Chunk, IndexMetadata, EmbeddingResult) |
+| `app/api/records/rag/types.ts` | Create | RAG types (Chunk, IndexMetadata, EmbeddingResult) |
 
-#### Backend / API
+#### Backend / API Routes
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `app/api/rag/index/records/[tableId]/route.ts` | Create | POST trigger table indexing |
-| `app/api/rag/index/docs/[docId]/route.ts` | Create | POST trigger document indexing |
-| `app/api/rag/index/[indexName]/status/route.ts` | Create | GET index status |
+| `app/api/records/[tableId]/rag/index/route.ts` | Create | POST trigger table indexing |
+| `app/api/records/[tableId]/rag/status/route.ts` | Create | GET index status for table |
 | `app/api/records/[tableId]/access/agents/route.ts` | Modify | Add ragEnabled parameter |
 
-#### Backend / Services
+#### Backend / API READMEs
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `app/api/rag/services/vector-store.ts` | Create | LibSQL vector store wrapper |
-| `app/api/rag/services/indexing-service.ts` | Create | Core indexing orchestration |
-| `app/api/rag/services/record-indexer.ts` | Create | Index table rows as documents |
-| `app/api/rag/services/doc-indexer.ts` | Create | Index markdown documents |
+| `app/api/records/[tableId]/rag/index/README.md` | Create | Route documentation |
+| `app/api/records/[tableId]/rag/status/README.md` | Create | Route documentation |
+
+#### Backend / Services (Co-located under records)
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `app/api/records/services/rag/vector-store.ts` | Create | LibSQL vector store wrapper |
+| `app/api/records/services/rag/indexing-service.ts` | Create | Core indexing orchestration |
+| `app/api/records/services/rag/record-indexer.ts` | Create | Index table rows as documents |
+| `app/api/records/services/rag/doc-indexer.ts` | Create | Index markdown documents |
+
+#### Backend / Service READMEs
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `app/api/records/services/rag/vector-store.README.md` | Create | Service documentation |
+| `app/api/records/services/rag/indexing-service.README.md` | Create | Service documentation |
+| `app/api/records/services/rag/record-indexer.README.md` | Create | Service documentation |
+| `app/api/records/services/rag/doc-indexer.README.md` | Create | Service documentation |
 
 ---
 
 ### Phase 4: RAG Retrieval & Chat Integration
 
-#### Backend / API
+> **Architecture Note:** RAG retrieval is an agent capability, so it belongs under `/workforce/[agentId]/` following Domain Principle #7 (Domain-Driven Design). RAG query serves the chat feature, so services are co-located there.
+
+#### Backend / API Routes
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `app/api/rag/query/route.ts` | Create | POST query vector store |
+| `app/api/workforce/[agentId]/rag/query/route.ts` | Create | POST query agent's RAG sources |
 | `app/api/workforce/[agentId]/rag/sources/route.ts` | Create | GET agent's RAG sources |
 
-#### Backend / Services
+#### Backend / API READMEs
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `app/api/rag/services/retrieval-service.ts` | Create | Query vector store, retrieve chunks |
+| `app/api/workforce/[agentId]/rag/query/README.md` | Create | Route documentation |
+| `app/api/workforce/[agentId]/rag/sources/README.md` | Create | Route documentation |
+
+#### Backend / Services (Co-located under workforce/chat)
+
+| File | Action | Purpose |
+|------|--------|---------|
 | `app/api/workforce/[agentId]/chat/services/rag-context-service.ts` | Create | Load agent sources, retrieve context |
 | `app/api/workforce/[agentId]/chat/services/chat-service.ts` | Modify | Inject RAG context into chat |
+
+#### Backend / Service READMEs
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `app/api/workforce/[agentId]/chat/services/rag-context-service.README.md` | Create | Service documentation |
 
 ---
 
 ### Phase 5: Agent Assignment UI
+
+> **Architecture Note:** Agent modal components follow [Component Principles](../../../app/COMPONENT_PRINCIPLES.md). RecordsTab is nested under `agent-modal/components/tabs/` following the co-location pattern.
 
 #### Frontend / State
 
@@ -145,15 +231,24 @@ Complete file impact analysis for the Records & RAG Integration task. This docum
 |------|--------|---------|
 | `app/(pages)/workforce/components/agent-modal/store/slices/ragSlice.ts` | Create | RAG status state management |
 
+**ragSlice.ts Structure:**
+```typescript
+// 1. State Interface - sources, indexingStatus, error
+// 2. Actions Interface - fetchSources, toggleRag, getIndexStatus
+// 3. Combined Slice Type
+// 4. Initial State
+// 5. Slice Creator - with [RagSlice] logging prefix
+```
+
 #### Frontend / Components
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab.tsx` | Modify | Make functional with real data |
-| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/AssignTableDialog.tsx` | Create | Table/doc selection with RAG toggle |
-| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/RAGStatusBadge.tsx` | Create | RAG enabled/indexing/active badge |
-| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/IndexingProgress.tsx` | Create | Indexing progress indicator |
-| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/AssignedItemCard.tsx` | Create | Card for assigned table/doc |
+| File | Action | Purpose | shadcn/ui components used |
+|------|--------|---------|---------------------------|
+| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab.tsx` | Modify | Make functional with real data | Card, Button |
+| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/AssignTableDialog.tsx` | Create | Table/doc selection with RAG toggle | Dialog, Switch, Command |
+| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/RAGStatusBadge.tsx` | Create | RAG enabled/indexing/active badge | Badge |
+| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/IndexingProgress.tsx` | Create | Indexing progress indicator | Progress |
+| `app/(pages)/workforce/components/agent-modal/components/tabs/RecordsTab/AssignedItemCard.tsx` | Create | Card for assigned table/doc | Card, Badge, Button |
 
 ---
 
@@ -247,10 +342,9 @@ _tables/
 | GET | `/api/records/folders/[folderId]/items` | List items in folder | 1 |
 | PATCH | `/api/records/items/[itemId]/move` | Move item to folder | 1 |
 | GET | `/api/records/search` | Search across folders | 1 |
-| POST | `/api/rag/index/records/[tableId]` | Trigger table indexing | 3 |
-| POST | `/api/rag/index/docs/[docId]` | Trigger doc indexing | 3 |
-| GET | `/api/rag/index/[indexName]/status` | Get index status | 3 |
-| POST | `/api/rag/query` | Query vector store | 4 |
+| POST | `/api/records/[tableId]/rag/index` | Trigger table RAG indexing | 3 |
+| GET | `/api/records/[tableId]/rag/status` | Get table RAG index status | 3 |
+| POST | `/api/workforce/[agentId]/rag/query` | Query agent's RAG sources | 4 |
 | GET | `/api/workforce/[agentId]/rag/sources` | Get agent's RAG sources | 4 |
 
 ### Modified Routes
@@ -260,6 +354,16 @@ _tables/
 | GET | `/api/records/list` | Support folderId parameter | 1 |
 | POST | `/api/records/create` | Support folderId parameter | 1 |
 | POST | `/api/records/[tableId]/access/agents` | Add ragEnabled parameter | 3 |
+
+### Route Nesting Rationale
+
+Following [API Domain Principles](../../../app/api/DOMAIN_PRINCIPLES.md):
+
+| Route Pattern | Rationale |
+|---------------|-----------|
+| `/records/[tableId]/rag/*` | RAG index belongs to the table (ownership) |
+| `/workforce/[agentId]/rag/*` | RAG retrieval is an agent capability |
+| `/records/folders/[folderId]/items` | Items belong to folders (containment) |
 
 ---
 
@@ -318,4 +422,7 @@ _tables/
 
 | Date | Change | Author |
 |------|--------|--------|
+| 2025-12-12 | Restructured API routes to follow Domain Principles (no separate RAG domain) | Claude |
+| 2025-12-12 | Added documentation requirements (READMEs for routes/services) | Claude |
+| 2025-12-12 | Added architecture notes linking to principle documents | Claude |
 | 2025-12-12 | Initial file impact analysis | Claude |
