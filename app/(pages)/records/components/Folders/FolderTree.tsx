@@ -62,7 +62,7 @@ function FolderTreeItem({ node, level }: FolderTreeItemProps) {
         <Folder
           className={cn(
             "w-4 h-4",
-            isActive ? "text-blue-600" : "text-amber-500"
+            isActive ? "text-blue-600" : "text-emerald-500"
           )}
           fill={isActive ? "currentColor" : "currentColor"}
         />

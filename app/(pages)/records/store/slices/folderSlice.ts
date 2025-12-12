@@ -326,7 +326,7 @@ export const createFolderSlice: StateCreator<
     console.log("[FolderSlice] Creating table:", name);
 
     try {
-      const response = await fetch("/api/records", {
+      const response = await fetch("/api/records/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, description, folderId }),
@@ -335,7 +335,7 @@ export const createFolderSlice: StateCreator<
       if (!response.ok) throw new Error("Failed to create table");
 
       const data = await response.json();
-      const tableId = data.tableId;
+      const tableId = data.id; // Schema response returns { id, name, ... }
 
       // Refresh items
       await get().fetchItems();
