@@ -5,7 +5,7 @@
 
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { executeAgentTask, type AgentStep } from "../../../services/anchor-agent";
+import { executeAgentTask, type AgentStep } from "./services/anchor-agent";
 
 const ChatRequestSchema = z.object({
   message: z.string().min(1),
