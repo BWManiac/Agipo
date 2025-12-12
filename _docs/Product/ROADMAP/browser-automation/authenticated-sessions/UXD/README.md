@@ -17,6 +17,7 @@ These mockups show the UI changes needed for Phase 1 of Authenticated Sessions -
 | `02-profile-picker-dropdown.html` | Profile dropdown showing both "Saved Session" and "Credential" profile types |
 | `03-session-toolbar-with-profile.html` | Session toolbar showing active profile badge |
 | `04-end-session-confirmation.html` | Confirmation dialog when ending session with profile |
+| `05-edit-profile-flow.html` | Entry points and flow for updating existing profiles |
 
 ---
 

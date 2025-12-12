@@ -289,3 +289,103 @@ export async function touchProfile(name: string): Promise<void> {
     // Ignore errors
   }
 }
+
+// =============================================================================
+// Anchor Profile Management (Saved Sessions)
+// =============================================================================
+// These profiles store browser state (cookies, localStorage) on Anchor's servers.
+// We track metadata locally to know which profiles exist.
+
+const ANCHOR_PROFILES_FILE = path.join(PROFILES_DIR, "anchor-profiles.json");
+
+export interface AnchorProfileMeta {
+  name: string; // Anchor profile identifier (e.g., "linkedin-work")
+  displayName: string; // Human-readable name (e.g., "LinkedIn - Work Account")
+  description?: string;
+  createdAt: string;
+  lastUsed?: string;
+}
+
+/**
+ * Read Anchor profiles from local storage
+ */
+async function readAnchorProfiles(): Promise<AnchorProfileMeta[]> {
+  try {
+    await ensureProfilesDir();
+    const content = await fs.readFile(ANCHOR_PROFILES_FILE, "utf-8");
+    return JSON.parse(content);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Write Anchor profiles to local storage
+ */
+async function writeAnchorProfiles(profiles: AnchorProfileMeta[]): Promise<void> {
+  await ensureProfilesDir();
+  await fs.writeFile(ANCHOR_PROFILES_FILE, JSON.stringify(profiles, null, 2));
+}
+
+/**
+ * Register a new Anchor profile (after creating session with persist: true)
+ */
+export async function registerAnchorProfile(
+  name: string,
+  displayName: string,
+  description?: string
+): Promise<AnchorProfileMeta> {
+  const profiles = await readAnchorProfiles();
+
+  // Check if already exists
+  const existing = profiles.find((p) => p.name === name);
+  if (existing) {
+    // Update display name if changed
+    existing.displayName = displayName;
+    if (description) existing.description = description;
+    existing.lastUsed = new Date().toISOString();
+    await writeAnchorProfiles(profiles);
+    return existing;
+  }
+
+  // Create new
+  const newProfile: AnchorProfileMeta = {
+    name,
+    displayName,
+    description,
+    createdAt: new Date().toISOString(),
+    lastUsed: new Date().toISOString(),
+  };
+
+  profiles.push(newProfile);
+  await writeAnchorProfiles(profiles);
+  return newProfile;
+}
+
+/**
+ * List all Anchor profiles (metadata only - actual state is on Anchor servers)
+ */
+export async function listAnchorProfiles(): Promise<AnchorProfileMeta[]> {
+  return readAnchorProfiles();
+}
+
+/**
+ * Update lastUsed timestamp for an Anchor profile
+ */
+export async function touchAnchorProfile(name: string): Promise<void> {
+  const profiles = await readAnchorProfiles();
+  const profile = profiles.find((p) => p.name === name);
+  if (profile) {
+    profile.lastUsed = new Date().toISOString();
+    await writeAnchorProfiles(profiles);
+  }
+}
+
+/**
+ * Delete an Anchor profile (local metadata only - call Anchor API separately)
+ */
+export async function deleteAnchorProfile(name: string): Promise<void> {
+  const profiles = await readAnchorProfiles();
+  const filtered = profiles.filter((p) => p.name !== name);
+  await writeAnchorProfiles(filtered);
+}

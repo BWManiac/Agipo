@@ -7,7 +7,19 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { listProfiles, createProfile } from "../services/profile-storage";
+import { listProfiles, createProfile, listAnchorProfiles } from "../services/profile-storage";
+
+// Combined profile type for API response
+export interface CombinedProfile {
+  name: string;
+  displayName: string;
+  type: "anchor" | "local"; // anchor = saved session, local = credential profile
+  icon?: string;
+  credentialCount?: number;
+  description?: string;
+  createdAt: string;
+  lastUsed?: string;
+}
 
 const CreateProfileSchema = z.object({
   name: z
@@ -47,8 +59,43 @@ const CreateProfileSchema = z.object({
 
 export async function GET() {
   try {
-    const profiles = await listProfiles();
-    return NextResponse.json({ profiles });
+    // Get both types of profiles
+    const [localProfiles, anchorProfiles] = await Promise.all([
+      listProfiles(),
+      listAnchorProfiles(),
+    ]);
+
+    // Combine into unified list with type indicator
+    const combinedProfiles: CombinedProfile[] = [
+      // Anchor profiles (saved sessions) - show first as they're more reliable
+      ...anchorProfiles.map((p) => ({
+        name: p.name,
+        displayName: p.displayName,
+        type: "anchor" as const,
+        description: p.description,
+        createdAt: p.createdAt,
+        lastUsed: p.lastUsed,
+      })),
+      // Local credential profiles
+      ...localProfiles.map((p) => ({
+        name: p.name,
+        displayName: p.displayName,
+        type: "local" as const,
+        icon: p.icon,
+        credentialCount: p.credentialCount,
+        createdAt: p.createdAt,
+        lastUsed: p.lastUsed,
+      })),
+    ];
+
+    // Sort by lastUsed (most recent first), then by createdAt
+    combinedProfiles.sort((a, b) => {
+      const aTime = a.lastUsed || a.createdAt;
+      const bTime = b.lastUsed || b.createdAt;
+      return bTime.localeCompare(aTime);
+    });
+
+    return NextResponse.json({ profiles: combinedProfiles });
   } catch (error) {
     console.error("[Profiles] List error:", error);
     return NextResponse.json(

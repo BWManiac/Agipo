@@ -27,6 +27,7 @@ export interface CreateSessionOptions {
     idleTimeout?: number; // Minutes
   };
   recording?: boolean;
+  persist?: boolean; // When true, saves browser state when session ends
 }
 
 export interface SessionData {
@@ -35,6 +36,7 @@ export interface SessionData {
   liveViewUrl: string;
   status: "starting" | "running" | "idle" | "stopped";
   profileName?: string;
+  persist?: boolean; // Whether this session will save its state
   createdAt?: string;
 }
 
@@ -45,11 +47,20 @@ export async function createSession(
   options?: CreateSessionOptions
 ): Promise<SessionData> {
   const client = getClient();
+
+  // Build profile config: only include persist if explicitly creating a new profile
+  const profileConfig = options?.profileName
+    ? {
+        name: options.profileName,
+        // Only persist if explicitly requested (creating new profile)
+        // When loading existing profile, persist is not needed
+        ...(options.persist === true ? { persist: true } : {}),
+      }
+    : undefined;
+
   const session = await client.sessions.create({
     browser: {
-      profile: options?.profileName
-        ? { name: options.profileName, persist: true }
-        : undefined,
+      profile: profileConfig,
     },
     session: {
       initial_url: options?.initialUrl,
@@ -83,6 +94,7 @@ export async function createSession(
     liveViewUrl: sessionData.live_view_url,
     status: "starting",
     profileName: options?.profileName,
+    persist: options?.persist,
     createdAt: new Date().toISOString(),
   };
 }
