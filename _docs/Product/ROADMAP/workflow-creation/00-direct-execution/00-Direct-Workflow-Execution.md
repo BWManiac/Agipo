@@ -97,10 +97,8 @@ runtimeContext.set("userId", userId);
 const run = await workflow.createRunAsync({ resourceId: userId });
 
 // 4. Execute with streaming
-const stream = await run.streamVNext({ inputData });
-
-// 5. Process stream events
-for await (const chunk of stream) {
+for await (const event of run.stream({ inputData, runtimeContext })) {
+  // event.type: 'step-start' | 'step-complete' | 'step-error' | 'workflow-complete'
   // Emit progress to client via SSE
 }
 ```
@@ -146,7 +144,7 @@ execute: async ({ inputData, writer }) => {
 
 - Workflow must be saved (transpiled) before execution
 - Required connections must be available for user
-- Mastra streaming API (`streamVNext`)
+- Mastra streaming API (`run.stream()`)
 
 ---
 

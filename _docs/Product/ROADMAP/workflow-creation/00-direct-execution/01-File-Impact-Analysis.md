@@ -165,7 +165,69 @@ app/api/workflows/
 | Service location | Co-located under `execute/services/` | Single consumer (Domain Principles §10) |
 | Connection resolution | On-demand at execution | Don't require pre-binding; resolve from user's connections |
 | State management | Zustand slice | Consistent with existing editor patterns |
-| Execution API | `streamVNext()` | Mastra's recommended streaming API for real-time progress |
+| Execution API | `run.stream()` | Mastra API with `step-start`, `step-complete`, `step-error` events |
+
+---
+
+## Mastra Streaming API (Verified)
+
+The Mastra workflow API supports real-time step-by-step progress:
+
+```typescript
+// Option A: Async iteration (recommended for SSE)
+const run = await workflow.createRunAsync();
+for await (const event of run.stream({ inputData, runtimeContext })) {
+  // event.type: 'step-start' | 'step-complete' | 'step-error' | 'workflow-complete'
+  // event.stepId: which step
+  // event.data: step output or error
+}
+
+// Option B: Watch pattern (callback-based)
+run.watch((event) => {
+  if (event.type === 'step-complete') {
+    console.log(`Step ${event.stepId} completed:`, event.data);
+  }
+});
+await run.start({ inputData, runtimeContext });
+```
+
+**Event Types:**
+- `step-start` — Step began executing
+- `step-complete` — Step finished successfully (includes output)
+- `step-error` — Step failed (includes error details)
+- `workflow-complete` — All steps done
+
+This validates our UXD mockups showing step-by-step progress.
+
+---
+
+## Connection Resolution (Important Notes)
+
+**NO_AUTH Toolkits:**
+Some toolkits don't require user authentication. Currently hardcoded in 3 places:
+- `app/api/workflows/services/workflow-loader.ts:13` — `["browser_tool"]`
+- `app/api/connections/available/toolkits/services/tools.ts:110`
+- `app/api/connections/available/integrations/route.ts:8`
+
+**Resolution Logic:**
+```typescript
+// From workflow-loader.ts
+const NO_AUTH_TOOLKIT_SLUGS = ["browser_tool"];
+
+for (const step of workflow.steps) {
+  if (step.type === "composio" && step.toolkitSlug) {
+    // Only include toolkits that require authentication
+    if (!NO_AUTH_TOOLKIT_SLUGS.includes(step.toolkitSlug)) {
+      requiredConnections.add(step.toolkitSlug);
+    }
+  }
+}
+```
+
+**Impact on UX:**
+- Browser Tool steps should NOT show connection status (no auth needed)
+- Only toolkits NOT in `NO_AUTH_TOOLKIT_SLUGS` need connection binding
+- Update mockup: Don't show "Browser Tool - Connected" if it's NO_AUTH
 
 ---
 
