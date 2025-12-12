@@ -405,3 +405,4 @@ const indexes = await store.listIndexes();
 - [Mastra Vector Databases](https://mastra.ai/docs/rag/vector-databases)
 
 
+
