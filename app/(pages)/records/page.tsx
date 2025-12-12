@@ -56,7 +56,7 @@ export default function RecordsPage() {
   useEffect(() => {
     fetchFolderTree();
     fetchItems();
-  }, [fetchFolderTree, fetchItems]);
+  }, []); // Only fetch on mount
 
   // Handlers
   const handleCreateFolder = async (name: string) => {

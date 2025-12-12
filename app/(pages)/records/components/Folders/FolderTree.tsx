@@ -96,9 +96,7 @@ export function FolderTree({ onCreateFolder }: FolderTreeProps) {
     navigateToFolder,
   } = useRecordsStore();
 
-  useEffect(() => {
-    fetchFolderTree();
-  }, [fetchFolderTree]);
+  // Folder tree is fetched by parent component on mount
 
   const isRootActive = currentFolderId === null;
 
