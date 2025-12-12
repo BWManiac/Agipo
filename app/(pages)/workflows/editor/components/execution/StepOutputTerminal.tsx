@@ -11,12 +11,40 @@ interface StepOutputTerminalProps {
 }
 
 /**
+ * Get a clean one-line preview of output for collapsed state.
+ */
+function getPreviewText(output: unknown): string {
+  if (output === undefined || output === null) return "";
+
+  if (typeof output === "string") {
+    // Truncate long strings
+    return output.length > 80 ? output.slice(0, 80) + "..." : output;
+  }
+
+  if (typeof output === "object") {
+    // Show object keys as preview
+    const keys = Object.keys(output as object);
+    if (keys.length === 0) return "{}";
+    if (keys.length === 1) {
+      const val = (output as Record<string, unknown>)[keys[0]];
+      if (typeof val === "string" && val.length < 60) {
+        return `{ ${keys[0]}: "${val.slice(0, 50)}${val.length > 50 ? "..." : ""}" }`;
+      }
+      return `{ ${keys[0]}: ... }`;
+    }
+    return `{ ${keys.slice(0, 3).join(", ")}${keys.length > 3 ? ", ..." : ""} }`;
+  }
+
+  return String(output);
+}
+
+/**
  * Terminal-style component for displaying step output.
  * Shows truncated JSON with expand/collapse and copy functionality.
  */
 export function StepOutputTerminal({
   output,
-  maxHeight = 150,
+  maxHeight = 200,
   defaultExpanded = false,
 }: StepOutputTerminalProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
@@ -31,10 +59,8 @@ export function StepOutputTerminal({
     ? output
     : JSON.stringify(output, null, 2);
 
-  // Truncate for preview (first 200 chars)
-  const truncatedOutput = outputStr.length > 200
-    ? outputStr.slice(0, 200) + "..."
-    : outputStr;
+  // Get clean preview text
+  const previewText = getPreviewText(output);
 
   const handleCopy = async () => {
     try {
@@ -47,54 +73,50 @@ export function StepOutputTerminal({
   };
 
   return (
-    <div className="mt-2 rounded border border-muted bg-muted/30">
+    <div className="rounded border border-muted/60 bg-muted/20 overflow-hidden">
       {/* Header */}
       <div
-        className="flex items-center justify-between px-2 py-1 cursor-pointer hover:bg-muted/50"
+        className="flex items-center justify-between px-2.5 py-1.5 cursor-pointer hover:bg-muted/40 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0 flex-1">
           {isExpanded ? (
-            <ChevronDown className="h-3 w-3" />
+            <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />
           ) : (
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
           )}
-          <span>Output</span>
+          <span className="flex-shrink-0">Output</span>
+          {!isExpanded && previewText && (
+            <span className="font-mono text-muted-foreground/70 truncate ml-1">
+              {previewText}
+            </span>
+          )}
         </div>
         <Button
           variant="ghost"
           size="icon"
-          className="h-5 w-5"
+          className="h-6 w-6 flex-shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             handleCopy();
           }}
         >
           {copied ? (
-            <Check className="h-3 w-3 text-green-500" />
+            <Check className="h-3.5 w-3.5 text-green-500" />
           ) : (
-            <Copy className="h-3 w-3" />
+            <Copy className="h-3.5 w-3.5" />
           )}
         </Button>
       </div>
 
-      {/* Content */}
+      {/* Expanded Content */}
       {isExpanded && (
         <div
-          className="px-2 pb-2 overflow-auto"
+          className="px-2.5 pb-2.5 overflow-auto border-t border-muted/40"
           style={{ maxHeight: `${maxHeight}px` }}
         >
-          <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap break-all">
+          <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap break-all pt-2">
             {outputStr}
-          </pre>
-        </div>
-      )}
-
-      {/* Collapsed preview */}
-      {!isExpanded && outputStr.length > 0 && (
-        <div className="px-2 pb-1">
-          <pre className="text-xs font-mono text-muted-foreground truncate">
-            {truncatedOutput}
           </pre>
         </div>
       )}
